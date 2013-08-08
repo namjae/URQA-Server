@@ -3,6 +3,7 @@
 <head>
     <title>Post Test Page</title>
 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script>
         
         
@@ -16,7 +17,7 @@
 		    var form = document.createElement("form");
 		    form.setAttribute("method", method);
 		    form.setAttribute("action", path);
-
+            $(form).appendChild("{% csrf_token %}");
 			alert(JSON.stringify(params));
 		    for(var key in params) {
 		        var hiddenField = document.createElement("input");
@@ -106,7 +107,7 @@
 				<td>Delete</td>
 			</tr>
 		</table>
-    </form>{% csrf_token %} 
+    </form>
     <button onClick="addRow()">+</button>
 </body>
 </html>

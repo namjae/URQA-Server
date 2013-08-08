@@ -4,8 +4,8 @@
 from django.http import HttpResponse
 from django.template import Context, loader
 from httplib import HTTPResponse
-from django.core.context_processors import csrf
-from django.shortcuts import render_to_response
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
 
 def index(request):
 #	return HttpResponse('hello world')
@@ -25,7 +25,7 @@ def adduser(request):
 	#request.
 	return HttpResponse('hello world ' + str);
 
+@csrf_exempt
 def posttest(request):	
-	c = {}
-    c.update(csrf(request))    
-	return render_to_response('posttestmodule.html',c)
+	c = {} 
+	return render(request,'posttestmodule.html',c)
