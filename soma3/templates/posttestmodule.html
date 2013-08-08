@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Post Test Page</title>
+
+    <script>
+        
+        
+        /*
+		 * path : 전송 URL
+		 * params : 전송 데이터 {'q':'a','s':'b','c':'d'...}으로 묶어서 배열 입력
+		 * method : 전송 방식(생략가능)
+		 */
+		function post_to_url(path, params) {
+		    var method = "post";
+		    var form = document.createElement("form");
+		    form.setAttribute("method", method);
+		    form.setAttribute("action", path);
+
+			alert(JSON.stringify(params));
+		    for(var key in params) {
+		        var hiddenField = document.createElement("input");
+		        hiddenField.setAttribute("type", "hidden");
+		        hiddenField.setAttribute("name", key);
+		        hiddenField.setAttribute("value", params[key]);
+		        form.appendChild(hiddenField);
+		    }
+		    document.body.appendChild(form);
+		    form.submit();
+		}
+		
+		function send(frm){
+			if (frm.url.value == "") {
+				alert("not url!");
+			} else {
+				getCellValues(function(jsonString) {
+					post_to_url(frm.url.value, jsonString);
+					frm.url.value= "";
+				});	
+			}
+			frm.url.value= "";
+		}
+
+	
+		function addRow(){
+			var oRow = table.insertRow(table.rows.length);
+			 
+			var oCell1 = oRow.insertCell();
+			var oCell2 = oRow.insertCell();
+			var oCell3 = oRow.insertCell();
+			
+			oCell3.innerHTML = "<input type='text' id = 'key'>";
+			oCell2.innerHTML = "<input type='text' id = 'value'>";
+			oCell1.innerHTML = "<input type='button' value='삭제' onClick='removeRow(this.parentNode.parentNode)'> ";
+		}
+		
+		
+		function getCellValues(request) {
+			var jsonString = '{';
+			var isFist = true;
+			var isValue = false;
+	        for (var r = 1, n = table.rows.length; r < n; r++) {
+	            
+	            var key = table.rows[r].cells[0].firstChild.value;
+	            var value = table.rows[r].cells[1].firstChild.value;
+	            
+	            if(key != "") {
+					if(isFist == false) {
+						jsonString += ',';    
+					} else {
+						isFist = false;
+					}
+					
+					jsonString += '"' + key + '":' + '"' + value +'"';
+					isValue = true;
+	            }
+	        }
+	        jsonString += '}';
+	        if(isValue == false) {
+		        alert('error!!');
+		    }        
+	        request(JSON.parse(jsonString));
+        }
+
+		function removeRow(row)
+		{
+			try {
+				table.deleteRow(row.rowIndex);
+			} catch (ex) {
+				alert(!ex);
+			}
+		}
+	
+    </script>
+</head>
+<body>
+    
+    <form>
+	    URL
+	    <input type="text" name = "url"/>
+	    <input type="button" value="send" onclick="send(this.form)" />
+	    <table id = "table">
+			<tr>
+				<td>Key</td>
+				<td>Value</td>
+				<td>Delete</td>
+			</tr>
+		</table>
+    </form>{% csrf_token %} 
+    <button onClick="addRow()">+</button>
+</body>
+</html>

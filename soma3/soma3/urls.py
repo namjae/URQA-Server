@@ -4,7 +4,9 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^urqa$', 'urqa.views.index'),
+	url(r'^urqa$', 'urqa.views.index'),
+	url(r'^urqa/user/new$', 'urqa.views.adduser'),
+	url(r'^urqa/posttest$', 'urqa.views.posttest'),
     # Examples:
     # url(r'^$', 'soma4.views.home', name='home'),
     # url(r'^soma4/', include('soma4.foo.urls')),
