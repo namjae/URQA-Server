@@ -19,7 +19,7 @@ import sys
 # if running multiple sites in the same mod_wsgi process. To fix this, use
 # mod_wsgi daemon mode with each site in its own daemon process, or use
 # os.environ["DJANGO_SETTINGS_MODULE"] = "soma3.settings"
-sys.path.append('/urqa/URQA-Server/soma3')
+sys.path.append(os.path.join(os.path.dirname(__file__),os.path.pardir))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soma3.settings")
 
 # This application object is used by any WSGI server configured to use this
