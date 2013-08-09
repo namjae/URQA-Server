@@ -116,6 +116,21 @@ class Projects(models.Model):
     class Meta:
         db_table = 'projects'
 
+class Session(models.Model):
+    idsesstion = models.BigIntegerField(primary_key=True)
+    appversion = models.CharField(max_length=45L)
+    class Meta:
+        db_table = 'session'
+
+class Sessionevent(models.Model):
+    sessioneventid = models.IntegerField(primary_key=True)
+    idsession = models.ForeignKey(Session, db_column='idsession')
+    class_field = models.CharField(max_length=45L, db_column='class', blank=True) # Field renamed because it was a Python reserved word.
+    method = models.CharField(max_length=45L, blank=True)
+    line = models.IntegerField(null=True, blank=True)
+    class Meta:
+        db_table = 'sessionevent'
+
 class Tags(models.Model):
     idtag = models.IntegerField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
@@ -138,3 +153,4 @@ class Viewer(models.Model):
     pid = models.ForeignKey(Projects, db_column='pid')
     class Meta:
         db_table = 'viewer'
+
