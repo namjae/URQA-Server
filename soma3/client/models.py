@@ -67,9 +67,12 @@ class Errors(models.Model):
         db_table = 'errors'
 
 class Eventpaths(models.Model):
-    idinstance = models.ForeignKey('Instances', db_column='idinstance')
-    event = models.CharField(max_length=45L, blank=True)
     eventpathsid = models.IntegerField(primary_key=True)
+    idinstance = models.ForeignKey('Instances', db_column='idinstance')
+    date = models.DateTimeField(null=True, blank=True)
+    class_field = models.CharField(max_length=45L, db_column='class', blank=True) # Field renamed because it was a Python reserved word.
+    method = models.CharField(max_length=45L, blank=True)
+    line = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'eventpaths'
 
@@ -126,6 +129,7 @@ class Session(models.Model):
 class Sessionevent(models.Model):
     sessioneventid = models.IntegerField(primary_key=True)
     idsession = models.ForeignKey(Session, db_column='idsession')
+    datetime = models.DateTimeField(null=True, blank=True)
     class_field = models.CharField(max_length=45L, db_column='class', blank=True) # Field renamed because it was a Python reserved word.
     method = models.CharField(max_length=45L, blank=True)
     line = models.IntegerField(null=True, blank=True)
