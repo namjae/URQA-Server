@@ -117,7 +117,8 @@ class Projects(models.Model):
         db_table = 'projects'
 
 class Session(models.Model):
-    idsesstion = models.BigIntegerField(primary_key=True)
+    idsession = models.BigIntegerField(primary_key=True)
+    apikey = models.CharField(max_length=10L)
     appversion = models.CharField(max_length=45L)
     class Meta:
         db_table = 'session'

@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     url(r'^urqa/client/send/exception', 'client.views.receive_exception'),
     url(r'^urqa/client/send/uncaught$', 'client.views.receive_uncaught'),
     url(r'^urqa/client/send/eventpath$', 'client.views.receive_eventpath'),
+	 url(r'^urqa/client/test$', 'client.db.receive_ErrorData'),
     # Examples:
     # url(r'^$', 'soma4.views.home', name='home'),
     # url(r'^soma4/', include('soma4.foo.urls')),
