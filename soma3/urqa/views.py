@@ -9,7 +9,7 @@ from django.shortcuts import render
 def index(request):
 #	return HttpResponse('hello world')
 	tpl = loader.get_template('test.html')
-	ctx = Context({asdf='132'});
+	ctx = Context({});
 	return HttpResponse(tpl.render(ctx))
 	#return HttpResponse('awefawefawefawef')
 
