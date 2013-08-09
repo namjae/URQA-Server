@@ -130,9 +130,9 @@ class Sessionevent(models.Model):
     sessioneventid = models.IntegerField(primary_key=True)
     idsession = models.ForeignKey(Session, db_column='idsession')
     datetime = models.DateTimeField(null=True, blank=True)
-    class_field = models.CharField(max_length=45L, db_column='class', blank=True) # Field renamed because it was a Python reserved word.
-    method = models.CharField(max_length=45L, blank=True)
-    line = models.IntegerField(null=True, blank=True)
+    classname = models.CharField(max_length=45L, blank=True)
+    methodname = models.CharField(max_length=45L, blank=True)
+    linenum = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'sessionevent'
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import time
-import simplejson
+import json
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from client.models import Session
@@ -10,8 +10,8 @@ from client.models import Sessionevent
 
 def connect(request):
     sessionID = long(time.time() * 1000000)
-    #return HttpResponse(sessionID)
-    return HttpResponse(simplejson.dumps({'sessionID':sessionID}), 'application/json');
+    return HttpResponse(sessionID)
+    #return HttpResponse(simplejson.dumps({'sessionID':sessionID}), 'application/json');
 
 @csrf_exempt
 def receive_exception(request):
@@ -26,22 +26,19 @@ def receive_uncaught(request):
 @csrf_exempt
 def receive_eventpath(request):
 
-    jsonData = simplejson.loads(request.body)
+    jsonData = json.loads(request.body,encoding='utf-8')
     print jsonData
-    sessionID = jsonData['sessionID']
+    sessionID = long(jsonData['sessionID'])
     eventPath = jsonData['eventPath']
 
     print sessionID
-    print eventPath
-
+    print len(eventPath)
+    print eventPath[0]
+    i = 0
     for event in eventPath:
-        print event.dateTime
-        print event.className
-        print event.methodName
-        print event.lineNum
-        s = Sessionevent(datetime=event.dateTime,classname=event.className,methodname=event.method,linenum=event.lineNum)
+        s = Sessionevent(idsession=sessionID,datetime=event['dateTime'],classname=event['className'],methodname=event['methodName'],linenum=int(event['lineNum']))
         print s
-        #s.save()
+        s.save()
 
     #eventPaths = request.POST['eventPaths'];
     #print Session.objects.exists(idsesstion=long(sessionID))
