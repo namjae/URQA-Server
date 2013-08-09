@@ -17,7 +17,7 @@
 		    var form = document.createElement("form");
 		    form.setAttribute("method", method);
 		    form.setAttribute("action", path);
-            $(form).appendChild("{% csrf_token %}");
+            $(form).append("{% csrf_token %}");
 			alert(JSON.stringify(params));
 		    for(var key in params) {
 		        var hiddenField = document.createElement("input");
