@@ -7,6 +7,7 @@ urlpatterns = patterns('',
 	url(r'^urqa$', 'urqa.views.index'),
 	url(r'^urqa/user/new$', 'urqa.views.adduser'),
 	url(r'^urqa/posttest$', 'urqa.views.posttest'),
+    url(r'^urqa/client/connect$', 'client.views.connect'),
     # Examples:
     # url(r'^$', 'soma4.views.home', name='home'),
     # url(r'^soma4/', include('soma4.foo.urls')),
