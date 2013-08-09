@@ -35,8 +35,10 @@ def receive_eventpath(request):
     print len(eventPath)
     print eventPath[0]
     i = 0
+    entry = Session.objects.all()
+    entry = entry.get(idsession=long(sessionID))
     for event in eventPath:
-        s = Sessionevent(idsession=sessionID,datetime=event['dateTime'],classname=event['className'],methodname=event['methodName'],linenum=int(event['lineNum']))
+        s = Sessionevent(idsession=entry,datetime=event['dateTime'],classname=event['className'],methodname=event['methodName'],linenum=int(event['lineNum']))
         print s
         s.save()
 
