@@ -53,8 +53,8 @@ class Errors(models.Model):
     createdate = models.DateTimeField()
     lastdate = models.DateTimeField()
     callstack = models.TextField()
-    classname = models.CharField(max_length=45L)
-    filename = models.CharField(max_length=45L)
+    errorname = models.CharField(max_length=45L)
+    errorclassname = models.CharField(max_length=45L)
     linenum = models.CharField(max_length=45L)
     errorweight = models.IntegerField(null=True, blank=True)
     recur = models.IntegerField(null=True, blank=True)
@@ -117,7 +117,7 @@ class Osstatistics(models.Model):
         db_table = 'osstatistics'
 
 class Projects(models.Model):
-    pid = models.IntegerField(unique=True)
+    pid = models.IntegerField(primary_key=True)
     apikey = models.CharField(max_length=10L, unique=True)
     platform = models.IntegerField()
     name = models.CharField(max_length=45L)
@@ -150,7 +150,7 @@ class Tags(models.Model):
         db_table = 'tags'
 
 class Users(models.Model):
-    uid = models.IntegerField(unique=True)
+    uid = models.IntegerField(primary_key=True)
     email = models.CharField(max_length=45L, unique=True)
     passwd = models.CharField(max_length=20L)
     nickname = models.CharField(max_length=45L)
