@@ -8,10 +8,14 @@ from django.views.decorators.csrf import csrf_exempt
 from client.models import Session
 from client.models import Sessionevent
 
+
+@csrf_exempt
 def connect(request):
-    sessionID = long(time.time() * 1000000)
-    return HttpResponse(sessionID)
-    #return HttpResponse(simplejson.dumps({'sessionID':sessionID}), 'application/json');
+    idsession = long(time.time() * 1000000)
+    jsonData = json.loads(request.body,encoding='utf-8')
+    session = Session(idsession=idsession,apikey=jsonData['apikey'],appversion=jsonData['appversion'])
+
+    return HttpResponse(simplejson.dumps({'idsession':idsession}), 'application/json');
 
 @csrf_exempt
 def receive_exception(request):
@@ -28,7 +32,7 @@ def receive_eventpath(request):
 
     jsonData = json.loads(request.body,encoding='utf-8')
     print jsonData
-    sessionID = long(jsonData['sessionID'])
+    sessionID = long(jsonData['idsession'])
     eventPath = jsonData['eventPath']
 
     print sessionID
