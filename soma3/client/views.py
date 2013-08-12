@@ -158,10 +158,7 @@ def receive_exception_log(request, idinstance):
         return HttpResponse('Fail')
 
     #step2: log파일 저장하기
-    log_path = os.path.dirname(__file__)
-    log_path = os.path.join(log_path, os.path.pardir)
-    log_path = os.path.join(log_path, 'logpool')
-    log_path = os.path.join(log_path, '%s.txt' % str(idinstance))
+    log_path = os.path.join('/urqa/logpool', '%s.txt' % str(idinstance))
 
     f = file(log_path,'w')
     f.write(request.body)
@@ -189,4 +186,4 @@ def receive_eventpath(request):
                                     methodname = event['methodname'],
                                     linenum = int(event['linenum']))
 
-    return HttpResponse('done')
+    return HttpResponse('success')
