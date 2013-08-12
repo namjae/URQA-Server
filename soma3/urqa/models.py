@@ -11,7 +11,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 class Appstatistics(models.Model):
-    appstatisticsid = models.IntegerField(primary_key=True)
+    idappstatistics = models.IntegerField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
     appversion = models.CharField(max_length=10L)
     count = models.IntegerField()
@@ -19,7 +19,7 @@ class Appstatistics(models.Model):
         db_table = 'appstatistics'
 
 class Comments(models.Model):
-    commentsid = models.IntegerField(primary_key=True)
+    idcomments = models.IntegerField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
     date = models.DateTimeField()
     user = models.ForeignKey('Users', db_column='user')
@@ -28,7 +28,7 @@ class Comments(models.Model):
         db_table = 'comments'
 
 class Countrystatistics(models.Model):
-    countrystatisticsid = models.IntegerField(primary_key=True)
+    idcountrystatistics = models.IntegerField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
     countryname = models.CharField(max_length=45L)
     count = models.IntegerField()
@@ -36,7 +36,7 @@ class Countrystatistics(models.Model):
         db_table = 'countrystatistics'
 
 class Devicestatistics(models.Model):
-    devicestatisticsid = models.IntegerField(primary_key=True)
+    iddevicestatistics = models.IntegerField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
     devicename = models.CharField(max_length=45L)
     count = models.IntegerField()
@@ -47,6 +47,7 @@ class Errors(models.Model):
     iderror = models.IntegerField(primary_key=True)
     pid = models.ForeignKey('Projects', db_column='pid')
     rank = models.IntegerField()
+    autodetermine = models.IntegerField()
     status = models.IntegerField(null=True, blank=True)
     numofinstances = models.IntegerField()
     createdate = models.DateTimeField()
@@ -54,8 +55,7 @@ class Errors(models.Model):
     callstack = models.CharField(max_length=45L)
     classname = models.CharField(max_length=45L)
     filename = models.CharField(max_length=45L)
-    line = models.CharField(max_length=45L)
-    autodetermine = models.IntegerField()
+    linenum = models.CharField(max_length=45L)
     errorweight = models.IntegerField(null=True, blank=True)
     recur = models.IntegerField(null=True, blank=True)
     eventpath = models.TextField(blank=True)
@@ -63,16 +63,17 @@ class Errors(models.Model):
     gpson = models.IntegerField()
     mobileon = models.IntegerField()
     totalmemusage = models.IntegerField()
+    level = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'errors'
 
 class Eventpaths(models.Model):
-    eventpathsid = models.IntegerField(primary_key=True)
+    ideventpaths = models.IntegerField(primary_key=True)
     idinstance = models.ForeignKey('Instances', db_column='idinstance')
-    date = models.DateTimeField(null=True, blank=True)
-    class_field = models.CharField(max_length=45L, db_column='class', blank=True) # Field renamed because it was a Python reserved word.
-    method = models.CharField(max_length=45L, blank=True)
-    line = models.IntegerField(null=True, blank=True)
+    datetime = models.DateTimeField(null=True, blank=True)
+    classname = models.CharField(max_length=45L, blank=True)
+    methodname = models.CharField(max_length=45L, blank=True)
+    linenum = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'eventpaths'
 
@@ -82,8 +83,9 @@ class Instances(models.Model):
     sdkversion = models.CharField(max_length=45L, blank=True)
     appversion = models.CharField(max_length=45L, blank=True)
     osversion = models.CharField(max_length=45L, blank=True)
+    kernelversion = models.CharField(max_length=45L, blank=True)
     appmemmax = models.CharField(max_length=45L, blank=True)
-    appmemavail = models.CharField(max_length=45L, blank=True)
+    appmemfree = models.CharField(max_length=45L, blank=True)
     appmemtotal = models.CharField(max_length=45L, blank=True)
     country = models.CharField(max_length=45L, blank=True)
     date = models.DateTimeField(null=True, blank=True)
@@ -99,11 +101,15 @@ class Instances(models.Model):
     sysmemlow = models.CharField(max_length=45L, blank=True)
     eventpath = models.CharField(max_length=45L, blank=True)
     log_path = models.CharField(max_length=45L, blank=True)
+    betterylevel = models.IntegerField(null=True, blank=True)
+    availsdcard = models.IntegerField(null=True, blank=True)
+    xdpi = models.FloatField(null=True, blank=True)
+    ydpi = models.FloatField(null=True, blank=True)
     class Meta:
         db_table = 'instances'
 
 class Osstatistics(models.Model):
-    osstatisticsid = models.IntegerField(primary_key=True)
+    idosstatistics = models.IntegerField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
     osversion = models.CharField(max_length=10L)
     count = models.IntegerField()
@@ -127,7 +133,7 @@ class Session(models.Model):
         db_table = 'session'
 
 class Sessionevent(models.Model):
-    sessioneventid = models.IntegerField(primary_key=True)
+    idsessionevent = models.IntegerField(primary_key=True)
     idsession = models.ForeignKey(Session, db_column='idsession')
     datetime = models.DateTimeField(null=True, blank=True)
     classname = models.CharField(max_length=45L, blank=True)
