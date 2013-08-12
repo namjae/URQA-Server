@@ -3,55 +3,72 @@
 
 import time
 import json
+
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
+
 from client.models import Session
 from client.models import Sessionevent
-
+from client.models import Errors
+from client.models import Projects
 
 @csrf_exempt
 def connect(request):
     idsession = long(time.time() * 1000000)
     jsonData = json.loads(request.body,encoding='utf-8')
-    session = Session(idsession=idsession,apikey=jsonData['apikey'],appversion=jsonData['appversion'])
+    sessionElement = Session(idsession=idsession,apikey=jsonData['apikey'],appversion=jsonData['appversion'])
 
-    return HttpResponse(simplejson.dumps({'idsession':idsession}), 'application/json');
+    sessionElement.save()
+    return HttpResponse(json.dumps({'idsession':idsession}), 'application/json');
 
 @csrf_exempt
 def receive_exception(request):
+    jsonData = json.loads(request.body,encoding='utf-8')
+
+    #apikey가 validate한지 확인하기.
+    try:
+        apikey = jsonData['apikey']
+        proejctElement = Projects.objects.get(apikey=apikey)
+    except ObjectDoesNotExist:
+        print "Invalid apikey"
+        return HttpResponse('Invalid apikey')
+
+    errorname = jsonData['errorname']
+    errorclassname = jsonData['errorclassname']
+    linenum = jsonData['linenum']
+
+    print errorname
+    print errorclassname
+    print linenum
+
+    if Errors.objects.filter(errorname=errorname,errorclassname=errorclassname,linenum=linenum).exists():
+        print "here!"
+        print "here!"
+        print "here!"
+        print "here!"
 
     return HttpResponse('test')
 
 @csrf_exempt
-def receive_uncaught(request):
+def receive_exception_log(request):
 
-    return HttpResponse('test')
+    return HttpResponse('test');
 
 @csrf_exempt
 def receive_eventpath(request):
 
     jsonData = json.loads(request.body,encoding='utf-8')
     print jsonData
-    sessionID = long(jsonData['idsession'])
-    eventPath = jsonData['eventPath']
+    idsession = long(jsonData['idsession'])
+    eventpath = jsonData['eventpaths']
 
-    print sessionID
-    print len(eventPath)
-    print eventPath[0]
-    i = 0
-    entry = Session.objects.all()
-    entry = entry.get(idsession=long(sessionID))
-    for event in eventPath:
-        s = Sessionevent(idsession=entry,datetime=event['dateTime'],classname=event['className'],methodname=event['methodName'],linenum=int(event['lineNum']))
-        print s
-        s.save()
+    session_key = Session.objects.get(idsession=idsession)
+    for event in eventpath:
+        Sessionevent.objects.create(idsession=session_key,
+                                    datetime=event['datetime'],
+                                    classname=event['classname'],
+                                    methodname=event['methodname'],
+                                    linenum=int(event['linenum']))
 
-    #eventPaths = request.POST['eventPaths'];
-    #print Session.objects.exists(idsesstion=long(sessionID))
-    entry = Session.objects.all()
-    entry = entry.get(idsession=long(sessionID))
-    print entry
-    print entry.idsession
-    print entry.appversion
-    print entry.apikey
-    return HttpResponse('test')
+    return HttpResponse('done')
