@@ -14,7 +14,7 @@ class Appruncount(models.Model):
     idappruncount = models.IntegerField(primary_key=True)
     pid = models.ForeignKey('Projects', db_column='pid')
     appversion = models.CharField(max_length=45L, blank=True)
-    runcount = models.TextField(blank=True)
+    runcount = models.BigIntegerField(null=True, blank=True)
     class Meta:
         db_table = 'appruncount'
 
@@ -107,7 +107,7 @@ class Instances(models.Model):
     scrorientation = models.IntegerField(null=True, blank=True)
     sysmemlow = models.CharField(max_length=45L, blank=True)
     log_path = models.CharField(max_length=45L, blank=True)
-    betterylevel = models.IntegerField(null=True, blank=True)
+    batterylevel = models.IntegerField(null=True, blank=True)
     availsdcard = models.IntegerField(null=True, blank=True)
     xdpi = models.FloatField(null=True, blank=True)
     ydpi = models.FloatField(null=True, blank=True)
@@ -133,7 +133,7 @@ class Projects(models.Model):
 
 class Session(models.Model):
     idsession = models.BigIntegerField(primary_key=True)
-    apikey = models.CharField(max_length=10L)
+    pid = models.ForeignKey(Projects, db_column='pid')
     appversion = models.CharField(max_length=45L)
     class Meta:
         db_table = 'session'
