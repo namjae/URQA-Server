@@ -52,7 +52,7 @@ class Errors(models.Model):
     numofinstances = models.IntegerField()
     createdate = models.DateTimeField()
     lastdate = models.DateTimeField()
-    callstack = models.CharField(max_length=45L)
+    callstack = models.TextField()
     classname = models.CharField(max_length=45L)
     filename = models.CharField(max_length=45L)
     linenum = models.CharField(max_length=45L)
