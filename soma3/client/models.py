@@ -10,6 +10,14 @@ from __future__ import unicode_literals
 
 from django.db import models
 
+class Appruncount(models.Model):
+    idappruncount = models.IntegerField(primary_key=True)
+    pid = models.ForeignKey('Projects', db_column='pid')
+    appversion = models.CharField(max_length=45L, blank=True)
+    runcount = models.TextField(blank=True)
+    class Meta:
+        db_table = 'appruncount'
+
 class Appstatistics(models.Model):
     idappstatistics = models.IntegerField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
