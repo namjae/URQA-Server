@@ -13,6 +13,7 @@ from client.models import Sessionevent
 from client.models import Projects
 from client.models import Errors
 from client.models import Instances
+from client.models import Eventpaths
 @csrf_exempt
 def connect(request):
     idsession = long(time.time() * 1000000)
@@ -94,7 +95,6 @@ def receive_exception(request):
         scrwidth = jsonData['scrwidth'],
         scrorientation = jsonData['scr'],
         sysmemlow = jsonData['sysmemlow'],
-        #eventpath = ,
         #log_path = ,
         betterylevel = jsonData['betterylevel'],
         availsdcard = jsonData['availsdcard'],
@@ -103,8 +103,15 @@ def receive_exception(request):
     )
 
     #step4: 이벤트패스 생성
+    eventpath = jsonData['eventpaths']
 
-
+    for event in eventpath:
+        Eventpaths.objects.create(
+            datetime = event['datetime'],
+            classname = event['classname'],
+            methodname = event['methodname'],
+            linenum = int(event['linenum'])
+        )
 
     return HttpResponse('test')
 
