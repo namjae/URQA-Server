@@ -149,7 +149,15 @@ def receive_exception(request):
 
 @csrf_exempt
 def receive_exception_log(request, idinstance):
-    #print request.body
+
+    #step1: idinstance에 해당하는 인스턴스 구하기
+    try:
+        instanceElement = Instances.objects.get(idinstance=int(idinstance))
+    except ObjectDoesNotExist:
+        print 'Invalid idinstance %d' % int(idinstance)
+        return HttpResponse('Fail')
+
+    #step2: log파일 저장하기
     log_path = os.path.dirname(__file__)
     log_path = os.path.join(log_path, os.path.pardir)
     log_path = os.path.join(log_path, 'logpool')
@@ -159,8 +167,11 @@ def receive_exception_log(request, idinstance):
     f.write(request.body)
     f.close()
 
-    instanceElement = Instances.objects.get(idinstance=int(idinstance))
-    return HttpResponse('test')
+    #step3: 저장한 로그파일을 db에 명시하기
+    instanceElement.log_path = log_path
+    instanceElement.save()
+
+    return HttpResponse('success')
 
 @csrf_exempt
 def receive_eventpath(request):

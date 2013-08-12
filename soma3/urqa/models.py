@@ -106,7 +106,7 @@ class Instances(models.Model):
     scrwidth = models.IntegerField(null=True, blank=True)
     scrorientation = models.IntegerField(null=True, blank=True)
     sysmemlow = models.CharField(max_length=45L, blank=True)
-    log_path = models.CharField(max_length=45L, blank=True)
+    log_path = models.CharField(max_length=260L, blank=True)
     batterylevel = models.IntegerField(null=True, blank=True)
     availsdcard = models.IntegerField(null=True, blank=True)
     xdpi = models.FloatField(null=True, blank=True)

@@ -4,14 +4,14 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-	url(r'^urqa$', 'urqa.views.index'),
-	url(r'^urqa/user/new$', 'urqa.views.adduser'),
-	url(r'^urqa/posttest$', 'urqa.views.posttest'),
+    url(r'^urqa$', 'urqa.views.index'),
+    url(r'^urqa/user/new$', 'urqa.views.adduser'),
+    url(r'^urqa/posttest$', 'urqa.views.posttest'),
     url(r'^urqa/client/connect$', 'client.views.connect'),
-    url(r'^urqa/client/send/exception', 'client.views.receive_exception'),
-    url(r'^urqa/client/send/uncaught$', 'client.views.receive_uncaught'),
+    url(r'^urqa/client/send/exception$', 'client.views.receive_exception'),
+    url(r'^urqa/client/send/exception/log/(?P<idinstance>\d+)$', 'client.views.receive_exception_log'),
     url(r'^urqa/client/send/eventpath$', 'client.views.receive_eventpath'),
-	 url(r'^urqa/client/test$', 'client.db.receive_ErrorData'),
+    url(r'^urqa/client/test$', 'client.db.receive_ErrorData'),
     # Examples:
     # url(r'^$', 'soma4.views.home', name='home'),
     # url(r'^soma4/', include('soma4.foo.urls')),
