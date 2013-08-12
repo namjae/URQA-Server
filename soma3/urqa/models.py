@@ -21,7 +21,7 @@ class Appstatistics(models.Model):
 class Comments(models.Model):
     idcomments = models.IntegerField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
-    date = models.DateTimeField()
+    datetime = models.DateTimeField()
     user = models.ForeignKey('Users', db_column='user')
     comment = models.CharField(max_length=45L)
     class Meta:
@@ -63,7 +63,6 @@ class Errors(models.Model):
     gpson = models.IntegerField()
     mobileon = models.IntegerField()
     totalmemusage = models.IntegerField()
-    level = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'errors'
 
@@ -88,18 +87,17 @@ class Instances(models.Model):
     appmemfree = models.CharField(max_length=45L, blank=True)
     appmemtotal = models.CharField(max_length=45L, blank=True)
     country = models.CharField(max_length=45L, blank=True)
-    date = models.DateTimeField(null=True, blank=True)
+    datetime = models.DateTimeField(null=True, blank=True)
     locale = models.CharField(max_length=45L, blank=True)
-    mobileon = models.CharField(max_length=45L, blank=True)
-    gpson = models.CharField(max_length=45L, blank=True)
-    wifion = models.CharField(max_length=45L, blank=True)
+    mobileon = models.IntegerField(null=True, blank=True)
+    gpson = models.IntegerField(null=True, blank=True)
+    wifion = models.IntegerField(null=True, blank=True)
     device = models.CharField(max_length=45L, blank=True)
-    rooted = models.CharField(max_length=45L, blank=True)
-    scrheight = models.CharField(max_length=45L, blank=True)
-    scrwidth = models.CharField(max_length=45L, blank=True)
-    srcorientation = models.CharField(max_length=45L, blank=True)
+    rooted = models.IntegerField(null=True, blank=True)
+    scrheight = models.IntegerField(null=True, blank=True)
+    scrwidth = models.IntegerField(null=True, blank=True)
+    scrorientation = models.IntegerField(null=True, blank=True)
     sysmemlow = models.CharField(max_length=45L, blank=True)
-    eventpath = models.CharField(max_length=45L, blank=True)
     log_path = models.CharField(max_length=45L, blank=True)
     betterylevel = models.IntegerField(null=True, blank=True)
     availsdcard = models.IntegerField(null=True, blank=True)
