@@ -14,17 +14,15 @@ def logintest(request):
     return HttpResponse(tpl.render(ctx))
 
 def registration(request):
-    print request.user
     print request
 
     username = request.POST['username']
     password = request.POST['password']
     email = request.POST['email']
 
-    print ""
-    print username
-    print password
-    print email
+
+    if User.objects.filter(username__exact=username).exists():
+        return HttpResponse('%s already exists' % username)
 
     user = User.objects.create_user(username,email,password)
     user.save()
