@@ -11,7 +11,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 class Appruncount(models.Model):
-    idappruncount = models.IntegerField(primary_key=True)
+    idappruncount = models.AutoField(primary_key=True)
     pid = models.ForeignKey('Projects', db_column='pid')
     appversion = models.CharField(max_length=45L, blank=True)
     runcount = models.BigIntegerField(null=True, blank=True)
@@ -19,7 +19,7 @@ class Appruncount(models.Model):
         db_table = 'appruncount'
 
 class Appstatistics(models.Model):
-    idappstatistics = models.IntegerField(primary_key=True)
+    idappstatistics = models.AutoField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
     appversion = models.CharField(max_length=10L)
     count = models.IntegerField()
@@ -27,20 +27,20 @@ class Appstatistics(models.Model):
         db_table = 'appstatistics'
 
 class AuthGroup(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=80L, unique=True)
     class Meta:
         db_table = 'auth_group'
 
 class AuthGroupPermissions(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     group = models.ForeignKey(AuthGroup)
     permission = models.ForeignKey('AuthPermission')
     class Meta:
         db_table = 'auth_group_permissions'
 
 class AuthPermission(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50L)
     content_type = models.ForeignKey('DjangoContentType')
     codename = models.CharField(max_length=100L)
@@ -48,7 +48,7 @@ class AuthPermission(models.Model):
         db_table = 'auth_permission'
 
 class AuthUser(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     password = models.CharField(max_length=128L)
     last_login = models.DateTimeField()
     is_superuser = models.IntegerField()
@@ -63,21 +63,21 @@ class AuthUser(models.Model):
         db_table = 'auth_user'
 
 class AuthUserGroups(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(AuthUser)
     group = models.ForeignKey(AuthGroup)
     class Meta:
         db_table = 'auth_user_groups'
 
 class AuthUserUserPermissions(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(AuthUser)
     permission = models.ForeignKey(AuthPermission)
     class Meta:
         db_table = 'auth_user_user_permissions'
 
 class Comments(models.Model):
-    idcomments = models.IntegerField(primary_key=True)
+    idcomments = models.AutoField(primary_key=True)
     uid = models.ForeignKey(AuthUser, db_column='uid')
     iderror = models.ForeignKey('Errors', db_column='iderror')
     datetime = models.DateTimeField()
@@ -87,7 +87,7 @@ class Comments(models.Model):
         db_table = 'comments'
 
 class Countrystatistics(models.Model):
-    idcountrystatistics = models.IntegerField(primary_key=True)
+    idcountrystatistics = models.AutoField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
     countryname = models.CharField(max_length=45L)
     count = models.IntegerField()
@@ -95,7 +95,7 @@ class Countrystatistics(models.Model):
         db_table = 'countrystatistics'
 
 class Devicestatistics(models.Model):
-    iddevicestatistics = models.IntegerField(primary_key=True)
+    iddevicestatistics = models.AutoField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
     devicename = models.CharField(max_length=45L)
     count = models.IntegerField()
@@ -103,7 +103,7 @@ class Devicestatistics(models.Model):
         db_table = 'devicestatistics'
 
 class DjangoContentType(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100L)
     app_label = models.CharField(max_length=100L)
     model = models.CharField(max_length=100L)
@@ -118,14 +118,14 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 class DjangoSite(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     domain = models.CharField(max_length=100L)
     name = models.CharField(max_length=50L)
     class Meta:
         db_table = 'django_site'
 
 class Errors(models.Model):
-    iderror = models.IntegerField(primary_key=True)
+    iderror = models.AutoField(primary_key=True)
     pid = models.ForeignKey('Projects', db_column='pid')
     rank = models.IntegerField()
     autodetermine = models.IntegerField()
@@ -148,7 +148,7 @@ class Errors(models.Model):
         db_table = 'errors'
 
 class Eventpaths(models.Model):
-    ideventpaths = models.IntegerField(primary_key=True)
+    ideventpaths = models.AutoField(primary_key=True)
     idinstance = models.ForeignKey('Instances', db_column='idinstance')
     datetime = models.DateTimeField(null=True, blank=True)
     classname = models.CharField(max_length=45L, blank=True)
@@ -158,7 +158,7 @@ class Eventpaths(models.Model):
         db_table = 'eventpaths'
 
 class Instances(models.Model):
-    idinstance = models.IntegerField(primary_key=True)
+    idinstance = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
     sdkversion = models.CharField(max_length=45L, blank=True)
     appversion = models.CharField(max_length=45L, blank=True)
@@ -188,7 +188,7 @@ class Instances(models.Model):
         db_table = 'instances'
 
 class Osstatistics(models.Model):
-    idosstatistics = models.IntegerField(primary_key=True)
+    idosstatistics = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
     osversion = models.CharField(max_length=10L)
     count = models.IntegerField()
@@ -196,7 +196,7 @@ class Osstatistics(models.Model):
         db_table = 'osstatistics'
 
 class Projects(models.Model):
-    pid = models.IntegerField(primary_key=True)
+    pid = models.AutoField(primary_key=True)
     apikey = models.CharField(max_length=10L, unique=True)
     platform = models.IntegerField()
     name = models.CharField(max_length=45L)
@@ -213,7 +213,7 @@ class Session(models.Model):
         db_table = 'session'
 
 class Sessionevent(models.Model):
-    idsessionevent = models.IntegerField(primary_key=True)
+    idsessionevent = models.AutoField(primary_key=True)
     idsession = models.ForeignKey(Session, db_column='idsession')
     datetime = models.DateTimeField(null=True, blank=True)
     classname = models.CharField(max_length=45L, blank=True)
@@ -223,14 +223,14 @@ class Sessionevent(models.Model):
         db_table = 'sessionevent'
 
 class Tags(models.Model):
-    idtag = models.IntegerField(primary_key=True)
+    idtag = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
     tag = models.CharField(max_length=45L)
     class Meta:
         db_table = 'tags'
 
 class Users(models.Model):
-    uid = models.IntegerField(primary_key=True)
+    uid = models.AutoField(primary_key=True)
     email = models.CharField(max_length=45L, unique=True)
     passwd = models.CharField(max_length=20L)
     nickname = models.CharField(max_length=45L)

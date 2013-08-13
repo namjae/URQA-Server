@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from client.models import AuthUser
 from django.core.exceptions import ObjectDoesNotExist
 from client.models import Projects
+from client.models import Viewer
 
 def newApikey():
     while True:
@@ -18,26 +19,26 @@ def newApikey():
 
 
 def registration(request):
-    print request.user
-
+    #step1: login user element가져오기
     try:
         owner = AuthUser.objects.get(username=request.user)
     except ObjectDoesNotExist:
         return HttpResponse('user "%s" not exists' % request.user)
 
-    print owner
     name = request.POST['name']
     platform = int(request.POST['platform'])
     stage = int(request.POST['stage'])
 
+    #project name은 중복을 허용한다.
 
-    if Projects.objects.filter(owner_uid=owner,name=name).exists():
-        return HttpResponse('project %s already exists' % name)
-
+    #step2: apikey를 발급받는다. apikeysms 8자리 숫자
     apikey = newApikey()
     print 'new apikey = %s' % apikey
+    projectElement = Projects(owner_uid=owner,apikey=apikey,name=name,platform=platform,stage=stage)
+    projectElement.save();
+    #step3: viwer db에 사용자와 프로젝트를 연결한다.
+    Viewer.objects.create(uid=owner,pid=projectElement)
 
-    projectElement = Projects.objects.create(owner_uid=owner,apikey=apikey,name=name,platform=platform,stage=stage)
     return HttpResponse('success registration')
 
 def delete_req(request):
