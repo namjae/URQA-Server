@@ -5,3 +5,5 @@ sed -i 's/\.IntegerField(primary_key=True)/.AutoField(primary_key=True)/g' ./cli
 
 cp ./urqa/models.py ./client/models.py
 cp ./urqa/models.py ./usermanage/models.py
+cp ./urqa/models.py ./projectmanage/models.py
+

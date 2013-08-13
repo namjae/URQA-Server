@@ -201,6 +201,7 @@ class Projects(models.Model):
     platform = models.IntegerField()
     name = models.CharField(max_length=45L)
     stage = models.IntegerField()
+    owner_uid = models.ForeignKey(AuthUser, db_column='owner_uid')
     class Meta:
         db_table = 'projects'
 
