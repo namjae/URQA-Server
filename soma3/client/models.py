@@ -26,11 +26,62 @@ class Appstatistics(models.Model):
     class Meta:
         db_table = 'appstatistics'
 
+class AuthGroup(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=80L, unique=True)
+    class Meta:
+        db_table = 'auth_group'
+
+class AuthGroupPermissions(models.Model):
+    id = models.AutoField(primary_key=True)
+    group = models.ForeignKey(AuthGroup)
+    permission = models.ForeignKey('AuthPermission')
+    class Meta:
+        db_table = 'auth_group_permissions'
+
+class AuthPermission(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=50L)
+    content_type = models.ForeignKey('DjangoContentType')
+    codename = models.CharField(max_length=100L)
+    class Meta:
+        db_table = 'auth_permission'
+
+class AuthUser(models.Model):
+    id = models.AutoField(primary_key=True)
+    password = models.CharField(max_length=128L)
+    last_login = models.DateTimeField()
+    is_superuser = models.IntegerField()
+    username = models.CharField(max_length=30L, unique=True)
+    first_name = models.CharField(max_length=30L)
+    last_name = models.CharField(max_length=30L)
+    email = models.CharField(max_length=75L)
+    is_staff = models.IntegerField()
+    is_active = models.IntegerField()
+    date_joined = models.DateTimeField()
+    class Meta:
+        db_table = 'auth_user'
+
+class AuthUserGroups(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(AuthUser)
+    group = models.ForeignKey(AuthGroup)
+    class Meta:
+        db_table = 'auth_user_groups'
+
+class AuthUserUserPermissions(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(AuthUser)
+    permission = models.ForeignKey(AuthPermission)
+    class Meta:
+        db_table = 'auth_user_user_permissions'
+
 class Comments(models.Model):
     idcomments = models.AutoField(primary_key=True)
+    uid = models.ForeignKey(AuthUser, db_column='uid')
     iderror = models.ForeignKey('Errors', db_column='iderror')
     datetime = models.DateTimeField()
-    user = models.ForeignKey('Users', db_column='user')
+    user = models.CharField(max_length=45L)
     comment = models.CharField(max_length=45L)
     class Meta:
         db_table = 'comments'
@@ -50,6 +101,28 @@ class Devicestatistics(models.Model):
     count = models.IntegerField()
     class Meta:
         db_table = 'devicestatistics'
+
+class DjangoContentType(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100L)
+    app_label = models.CharField(max_length=100L)
+    model = models.CharField(max_length=100L)
+    class Meta:
+        db_table = 'django_content_type'
+
+class DjangoSession(models.Model):
+    session_key = models.CharField(max_length=40L, primary_key=True)
+    session_data = models.TextField()
+    expire_date = models.DateTimeField()
+    class Meta:
+        db_table = 'django_session'
+
+class DjangoSite(models.Model):
+    id = models.AutoField(primary_key=True)
+    domain = models.CharField(max_length=100L)
+    name = models.CharField(max_length=50L)
+    class Meta:
+        db_table = 'django_site'
 
 class Errors(models.Model):
     iderror = models.AutoField(primary_key=True)
@@ -166,7 +239,7 @@ class Users(models.Model):
         db_table = 'users'
 
 class Viewer(models.Model):
-    uid = models.ForeignKey(Users, db_column='uid')
+    uid = models.ForeignKey(AuthUser, db_column='uid')
     pid = models.ForeignKey(Projects, db_column='pid')
     class Meta:
         db_table = 'viewer'
