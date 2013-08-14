@@ -25,8 +25,12 @@ urlpatterns = patterns('',
     url(r'^urqa/project/delete$', 'projectmanage.views.delete_req'),
 
     #errors
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/new$', 'errors.views.newtag'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deletetag'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/new$', 'errors.views.newTag'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deleteTag'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/comment/new$', 'errors.views.newComment'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/comment/delete$', 'errors.views.deleteComment'),
+
+
     # Examples:
     # url(r'^$', 'soma4.views.home', name='home'),
     # url(r'^soma4/', include('soma4.foo.urls')),

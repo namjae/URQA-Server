@@ -1,5 +1,8 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
+
+import utility
+
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,6 +12,7 @@ from urqa.models import Projects
 from urqa.models import Errors
 from urqa.models import Viewer
 from urqa.models import Tags
+from urqa.models import Comments
 
 def validUserPjtError(username, pid, iderror):
 
@@ -17,33 +21,33 @@ def validUserPjtError(username, pid, iderror):
         userElement = AuthUser.objects.get(username=username)
     except ObjectDoesNotExist:
         #login url로 이동하
-        return None, 'user "%s" not exists' % username
+        return 'user "%s" not exists' % username, None, None, None
 
     # Project가 정상적으로 존재하는지 확인
     try:
         projectElement = Projects.objects.get(pid=pid)
     except ObjectDoesNotExist:
         print 'Fatal error'
-        return None, 'Invalid project id %s' % pid
+        return 'Invalid project id %s' % pid, userElement, None, None
 
     # User가 Project에 권한이 있는지 확인
     try:
         viewerElement = Viewer.objects.get(uid=userElement, pid=projectElement)
     except ObjectDoesNotExist:
-        return None, 'user "%s" have no permission %s' % (username, pid)
+        return 'user "%s" have no permission %s' % (username, pid), userElement, projectElement, None
 
     # Project에 Error ID 가 정상적으로 포함되어있는지 확인
     try:
         errorElement = Errors.objects.get(iderror=iderror,pid=projectElement)
     except ObjectDoesNotExist:
-        return None, 'Project "%s" have no error id %s' % (pid, iderror)
+        return 'Project "%s" have no error id %s' % (pid, iderror), userElement, projectElement, None
 
-    return errorElement, 'success'
+    return 'success', userElement, projectElement, errorElement
 
-def newtag(request, pid, iderror):
-    errorElement, msg = validUserPjtError(request.user,pid,iderror)
+def newTag(request, pid, iderror):
+    msg, userElement, projectElement, errorElement = validUserPjtError(request.user,pid,iderror)
 
-    print errorElement, msg
+    print msg
     if not errorElement:
         return HttpResponse(msg)
 
@@ -55,8 +59,8 @@ def newtag(request, pid, iderror):
     else:
         return HttpResponse('success')
 
-def deletetag(request, pid, iderror):
-    errorElement, msg = validUserPjtError(request.user, pid, iderror)
+def deleteTag(request, pid, iderror):
+    msg, userElement, projectElement, errorElement = validUserPjtError(request.user, pid, iderror)
 
     print msg
     if not errorElement:
@@ -64,10 +68,44 @@ def deletetag(request, pid, iderror):
 
     tag = request.POST['tag']
     try:
+        #Tags.objects.get(iderror=errorElement, tag=tag).delete()
         tagElement = Tags.objects.get(iderror=errorElement, tag=tag)
+        tagElement.delete()
     except ObjectDoesNotExist:
         HttpResponse('tag %s not exists' % tag)
 
-    tagElement.delete()
+
+
+    return HttpResponse('success')
+
+
+
+def newComment(request, pid, iderror):
+    msg, userElement, projectElement, errorElement = validUserPjtError(request.user,pid,iderror)
+
+    print msg
+    if not errorElement:
+        return HttpResponse(msg)
+
+    datetime = utility.getDatetime()
+
+    comment = request.POST['comment']
+    Comments.objects.create(uid=userElement, iderror=errorElement, datetime=datetime, comment=comment, user=(userElement.first_name + ' ' + userElement.last_name))
+
+    return HttpResponse('success')
+
+def deleteComment(request, pid, iderror):
+    msg, userElement, projectElement, errorElement = validUserPjtError(request.user, pid, iderror)
+
+    print msg
+    if not errorElement:
+        return HttpResponse(msg)
+
+    idcomment = request.POST['idcomment']
+    try:
+        commentElement = Comments.objects.get(idcomment=idcomment)
+        commentElement.delete()
+    except ObjectDoesNotExist:
+        HttpResponse('comment %s not exists' % idcomment)
 
     return HttpResponse('success')
