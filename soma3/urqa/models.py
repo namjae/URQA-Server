@@ -77,12 +77,12 @@ class AuthUserUserPermissions(models.Model):
         db_table = 'auth_user_user_permissions'
 
 class Comments(models.Model):
-    idcomments = models.AutoField(primary_key=True)
+    idcomment = models.AutoField(primary_key=True)
     uid = models.ForeignKey(AuthUser, db_column='uid')
     iderror = models.ForeignKey('Errors', db_column='iderror')
     datetime = models.DateTimeField()
     user = models.CharField(max_length=45L)
-    comment = models.CharField(max_length=45L)
+    comment = models.CharField(max_length=200L)
     class Meta:
         db_table = 'comments'
 
