@@ -71,6 +71,7 @@ def receive_exception(request):
         errorElement = Errors.objects.get(pid=projectElement,errorname=errorname,errorclassname=errorclassname,linenum=linenum)
         #새로온 인스턴스 정보로 시간 갱신
         errorElement.lastdate = jsonData['datetime']
+        errorElement.numofinstances += 1
         errorElement.totalmemusage += jsonData['appmemtotal']
         errorElement.save()
     except ObjectDoesNotExist:
