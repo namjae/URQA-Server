@@ -9,14 +9,14 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 
-from client.models import Session
-from client.models import Sessionevent
-from client.models import Projects
-from client.models import Errors
-from client.models import Instances
-from client.models import Eventpaths
-from client.models import Tags
-from client.models import Appruncount
+from urqa.models import Session
+from urqa.models import Sessionevent
+from urqa.models import Projects
+from urqa.models import Errors
+from urqa.models import Instances
+from urqa.models import Eventpaths
+from urqa.models import Tags
+from urqa.models import Appruncount
 
 @csrf_exempt
 def connect(request):
@@ -71,6 +71,7 @@ def receive_exception(request):
         errorElement = Errors.objects.get(pid=projectElement,errorname=errorname,errorclassname=errorclassname,linenum=linenum)
         #새로온 인스턴스 정보로 시간 갱신
         errorElement.lastdate = jsonData['datetime']
+        errorElement.totalmemusage += jsonData['appmemtotal']
         errorElement.save()
     except ObjectDoesNotExist:
         #새로 들어온 에러라면 새로운 에러 생성

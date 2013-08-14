@@ -5,10 +5,12 @@ import random
 
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from client.models import AuthUser
 from django.core.exceptions import ObjectDoesNotExist
-from client.models import Projects
-from client.models import Viewer
+
+
+from urqa.models import AuthUser
+from urqa.models import Projects
+from urqa.models import Viewer
 
 def newApikey():
     while True:
@@ -21,7 +23,7 @@ def newApikey():
 def registration(request):
     #step1: login user element가져오기
     try:
-        owner = AuthUser.objects.get(username=request.user)
+        userElement = AuthUser.objects.get(username=request.user)
     except ObjectDoesNotExist:
         return HttpResponse('user "%s" not exists' % request.user)
 
@@ -34,10 +36,10 @@ def registration(request):
     #step2: apikey를 발급받는다. apikeysms 8자리 숫자
     apikey = newApikey()
     print 'new apikey = %s' % apikey
-    projectElement = Projects(owner_uid=owner,apikey=apikey,name=name,platform=platform,stage=stage)
+    projectElement = Projects(owner_uid=userElement,apikey=apikey,name=name,platform=platform,stage=stage)
     projectElement.save();
     #step3: viwer db에 사용자와 프로젝트를 연결한다.
-    Viewer.objects.create(uid=owner,pid=projectElement)
+    Viewer.objects.create(uid=userElement,pid=projectElement)
 
     return HttpResponse('success registration')
 
