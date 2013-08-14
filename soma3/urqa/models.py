@@ -240,6 +240,7 @@ class Users(models.Model):
         db_table = 'users'
 
 class Viewer(models.Model):
+    idviewer = models.AutoField(primary_key=True)
     uid = models.ForeignKey(AuthUser, db_column='uid')
     pid = models.ForeignKey(Projects, db_column='pid')
     class Meta:
