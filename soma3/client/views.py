@@ -201,3 +201,109 @@ def receive_eventpath(request):
                                     linenum = int(event['linenum']))
 
     return HttpResponse('success')
+
+
+@csrf_exempt
+def receive_native(request):
+
+    jsonData = json.loads(request.body,encoding='utf-8')
+
+    print 'receive_native requested'
+    #step1: apikey를 이용하여 project찾기
+    #apikey가 validate한지 확인하기.
+    try:
+        apikey = jsonData['apikey']
+        projectElement = Projects.objects.get(apikey=apikey)
+    except ObjectDoesNotExist:
+        print 'Invalid apikey'
+        return HttpResponse('Invalid apikey')
+
+
+    #step2: dummy errorElement생성
+
+    #새로 들어온 에러라면 새로운 에러 생성
+    if int(jsonData['rank']) == -1:
+        autodetermine = 1 #True
+    else:
+        autodetermine = 0 #False
+
+    errorElement = Errors(
+        pid = projectElement,
+        errorname = 'dummy',
+        errorclassname = 'native',
+        linenum = 0,
+        autodetermine = autodetermine,
+        rank = int(jsonData['rank']),
+        #status = 0, # 0 = new, 1 = open, 2 = ignore, 3 = renew
+        createdate = jsonData['datetime'],
+        lastdate = jsonData['datetime'],
+        numofinstances = 1,
+        callstack = jsonData['callstack'],
+        wifion = jsonData['wifion'],
+        gpson = jsonData['gpson'],
+        mobileon = jsonData['mobileon'],
+        totalmemusage = jsonData['appmemtotal'],
+        errorweight = 10,
+        recur = 0,
+    )
+    errorElement.save()
+
+    #step3: 테그 저장
+    tagstr = jsonData['tag']
+    if tagstr:
+        tagElement, created = Tags.object.get_or_create(iderror=errorElement,tag=tagstr)
+
+    #step4: 인스턴스 생성하기
+
+    instanceElement = Instances(
+        iderror = errorElement,
+        sdkversion = jsonData['sdkversion'],
+        appversion = jsonData['appversion'],
+        osversion = jsonData['osversion'],
+        kernelversion = jsonData['kernelversion'],
+        appmemmax = jsonData['appmemmax'],
+        appmemfree = jsonData['appmemfree'],
+        appmemtotal = jsonData['appmemtotal'],
+        country = jsonData['country'],
+        datetime = jsonData['datetime'],
+        locale = jsonData['locale'],
+        mobileon = jsonData['mobileon'],
+        gpson = jsonData['gpson'],
+        wifion = jsonData['wifion'],
+        device = jsonData['device'],
+        rooted = jsonData['rooted'],
+        scrheight = jsonData['scrheight'],
+        scrwidth = jsonData['scrwidth'],
+        scrorientation = jsonData['scrorientation'],
+        sysmemlow = jsonData['sysmemlow'],
+        log_path = '',
+        batterylevel = jsonData['batterylevel'],
+        availsdcard = jsonData['availsdcard'],
+        xdpi = jsonData['xdpi'],
+        ydpi = jsonData['ydpi']
+    )
+    # primary key가 Auto-incrementing이기 때문에 save한 후 primary key를 읽을 수 있다.
+    instanceElement.save()
+
+
+    #step5: 이벤트패스 생성
+    #print 'here! ' + instanceElement.idinstance
+    #instanceElement.update()
+    print instanceElement.idinstance
+    eventpath = jsonData['eventpaths']
+
+    for event in eventpath:
+        Eventpaths.objects.create(
+            idinstance = instanceElement,
+            datetime = event['datetime'],
+            classname = event['classname'],
+            methodname = event['methodname'],
+            linenum = int(event['linenum'])
+        )
+
+
+    return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
+
+@csrf_exempt
+def receive_native_dump(request):
+    return HttpResponse('test')

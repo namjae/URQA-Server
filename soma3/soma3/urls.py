@@ -12,6 +12,8 @@ urlpatterns = patterns('',
     #client module
     url(r'^urqa/client/connect$', 'client.views.connect'),
     url(r'^urqa/client/send/exception$', 'client.views.receive_exception'),
+    url(r'^urqa/client/send/exception/native$', 'client.views.receive_native'),
+    url(r'^urqa/client/send/exception/dump/(?P<idinstance>\d+)$', 'client.views.receive_native_dump'),
     url(r'^urqa/client/send/exception/log/(?P<idinstance>\d+)$', 'client.views.receive_exception_log'),
     url(r'^urqa/client/send/eventpath$', 'client.views.receive_eventpath'),
 

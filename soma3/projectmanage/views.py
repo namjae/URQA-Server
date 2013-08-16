@@ -102,18 +102,22 @@ def so_upload(request, pid):
         if 'file' in request.FILES:
             file = request.FILES['file']
             filename = file._name
-            path = '/urqa/sopool/%s' % pid
-            if not os.path.isdir(path):
-                os.mkdir(path)
+            so_path = '/urqa/sopool/%s' % pid
+            if not os.path.isdir(so_path):
+                os.mkdir(so_path)
 
-            fp = open(os.path.join(path,filename) , 'wb')
+            so_path = so_path + '/%s' % appver
+            if not os.path.isdir(so_path):
+                os.mkdir(so_path)
+
+            fp = open(os.path.join(so_path,filename) , 'wb')
             for chunk in file.chunks():
                 fp.write(chunk)
             fp.close()
 
-            success_flag = so2sym(pid, appver, path, filename)
+            success_flag = so2sym(pid, appver, so_path, filename)
             if success_flag:
-                return HttpResponse('File Uploaded, Valid so file')
+                return HttpResponse('File Uploaded, and Valid so file')
             else:
                 return HttpResponse('File Uploaded, but it have no debug info')
     return HttpResponse('Failed to Upload File')
