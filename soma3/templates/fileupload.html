@@ -1,0 +1,14 @@
+﻿<html> 
+    <head><title>Upload Test</title></head> 
+    <body> 
+        <form action="http://172.16.100.67:9000/urqa/project/1/symbol/upload"
+              method="post"
+              enctype="multipart/form-data"> 
+            File:
+            <input type="text" name="version" id="appversion" />
+            <input type="file" name="file" id="id_file" />
+            <input type="submit" value="UPLOAD" /> 
+            {% csrf_token %}
+        </form> 
+    </body> 
+</html> 

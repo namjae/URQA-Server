@@ -32,3 +32,7 @@ def posttest(request):
     print request.user
     c = {}
     return render(request, 'posttestmodule.html', c)
+
+def fileuploadtest(request):
+    c = {}
+    return render(request, 'fileupload.html', c)

@@ -4,9 +4,10 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
+    #test page
     url(r'^urqa$', 'urqa.views.index'),
     url(r'^urqa/posttest$', 'urqa.views.posttest'),
-    url(r'^urqa/logintest', 'usermanage.views.logintest'),
+    url(r'^urqa/fileuploadtest$', 'urqa.views.fileuploadtest'),
 
     #client module
     url(r'^urqa/client/connect$', 'client.views.connect'),
@@ -24,11 +25,16 @@ urlpatterns = patterns('',
     url(r'^urqa/project/registration$', 'projectmanage.views.registration'),
     url(r'^urqa/project/delete$', 'projectmanage.views.delete_req'),
 
+
     #errors
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/new$', 'errors.views.newTag'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deleteTag'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/comment/new$', 'errors.views.newComment'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/comment/delete$', 'errors.views.deleteComment'),
+
+    #symbol
+    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/symbol/list$', 'errors.views.so_list'),
+    url(r'^urqa/project/(?P<pid>\d+)/symbol/upload$', 'projectmanage.views.so_upload'),
 
 
     # Examples:

@@ -1,13 +1,16 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
+import os
 import random
+import subprocess
 
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 
+from common import validUserPjt
 from urqa.models import AuthUser
 from urqa.models import Projects
 from urqa.models import Viewer
@@ -52,3 +55,53 @@ def delete_req(request):
     user.delete()
 
     return HttpResponse('delete success')
+
+def so2sym(pid, so_path, filename):
+    sym_path = '/urqa/sympool/%s' % pid
+
+    arg = ['/google-breakpad/src/tools/linux/dump_syms/dump_syms' ,os.path.join(so_path,filename)]
+    #arg = '/google-breakpad/src/tools/linux/dump_syms/dump_syms ' + os.path.join(so_path,filename)
+
+    #fd_popen = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (stdout, stderr) = fd_popen.communicate()
+
+    print 'yhc1'
+    print stderr.find('no debugging')
+    print 'yhc2'
+    if stderr.find('no debugging') != -1:
+        print stderr
+        return False
+
+    stdout = stdout.splitlines(False)
+    print stdout[0]
+    print stdout[2]
+
+    return True
+
+def so_upload(request, pid):
+
+    result, msg, userElement, projectElement = validUserPjt(request.user, pid)
+
+    if not result:
+        return HttpResponse(msg)
+
+    if request.method == 'POST':
+        if 'file' in request.FILES:
+            file = request.FILES['file']
+            filename = file._name
+            path = '/urqa/sopool/%s' % pid
+            if not os.path.isdir(path):
+                os.mkdir(path)
+
+            fp = open(os.path.join(path,filename) , 'wb')
+            for chunk in file.chunks():
+                fp.write(chunk)
+            fp.close()
+
+            success_flag = so2sym(pid, path, filename)
+            if success_flag:
+                return HttpResponse('File Uploaded, Valid so file')
+            else:
+                return HttpResponse('File Uploaded, but it have no debug info')
+    return HttpResponse('Failed to Upload File')
