@@ -15,6 +15,8 @@ from urqa.models import AuthUser
 from urqa.models import Projects
 from urqa.models import Viewer
 
+from config import get_config
+
 def newApikey():
     while True:
         apikey = "%08d" % random.randint(1,99999999)
@@ -70,7 +72,7 @@ def so2sym(pid, appver, so_path, filename):
 
     vkey =  stdout.splitlines(False)[0].split()[3]
 
-    sym_path = '/urqa/sympool/%s' % pid
+    sym_path = get_config('sym_pool_path') + '/%s' % pid
     if not os.path.isdir(sym_path):
         os.mkdir(sym_path)
 
@@ -102,7 +104,8 @@ def so_upload(request, pid):
         if 'file' in request.FILES:
             file = request.FILES['file']
             filename = file._name
-            so_path = '/urqa/sopool/%s' % pid
+
+            so_path = get_config('so_pool_path') +'/%s' % pid
             if not os.path.isdir(so_path):
                 os.mkdir(so_path)
 

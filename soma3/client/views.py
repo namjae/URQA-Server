@@ -1,6 +1,7 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
+
 import os
 import time
 import json
@@ -17,6 +18,8 @@ from urqa.models import Instances
 from urqa.models import Eventpaths
 from urqa.models import Tags
 from urqa.models import Appruncount
+
+from config import get_config
 
 @csrf_exempt
 def connect(request):
@@ -172,7 +175,7 @@ def receive_exception_log(request, idinstance):
         return HttpResponse('Fail')
 
     #step2: log파일 저장하기
-    log_path = os.path.join('/urqa/logpool', '%s.txt' % str(idinstance))
+    log_path = os.path.join(get_config('log_pool_path'), '%s.txt' % str(idinstance))
 
     f = file(log_path,'w')
     f.write(request.body)
@@ -305,5 +308,27 @@ def receive_native(request):
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
 
 @csrf_exempt
-def receive_native_dump(request):
+def receive_native_dump(request, idinstance):
+
+    #step1: idinstance에 해당하는 인스턴스 구하기
+    try:
+        instanceElement = Instances.objects.get(idinstance=int(idinstance))
+        #이미 로그가 저장되었다면 다음으로 들어오는 로그는 버그? 또는 외부공격으로 생각하고 차단
+        if instanceElement.dump_path:
+            return HttpResponse('Already exists')
+    except ObjectDoesNotExist:
+        print 'Invalid idinstance %d' % int(idinstance)
+        return HttpResponse('Fail')
+
+    #step2: dump파일 저장하기
+    dump_path = os.path.join(get_config('dump_pool_path'), '%s.dmp' % str(idinstance))
+
+    f = file(dump_path,'w')
+    f.write(request.body)
+    f.close()
+
+    #step3: 저장한 로그파일을 db에 명시하기
+    instanceElement.dump_path = dump_path
+    instanceElement.save()
+
     return HttpResponse('test')
