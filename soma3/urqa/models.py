@@ -222,6 +222,15 @@ class Sessionevent(models.Model):
     class Meta:
         db_table = 'sessionevent'
 
+class Sofiles(models.Model):
+    idsofiles = models.AutoField(primary_key=True)
+    pid = models.ForeignKey(Projects, db_column='pid')
+    appversion = models.CharField(max_length=45L)
+    versionkey = models.CharField(max_length=45L)
+    filename = models.CharField(max_length=45L)
+    class Meta:
+        db_table = 'sofiles'
+
 class Tags(models.Model):
     idtag = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
