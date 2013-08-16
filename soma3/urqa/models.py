@@ -184,6 +184,8 @@ class Instances(models.Model):
     availsdcard = models.IntegerField(null=True, blank=True)
     xdpi = models.FloatField(null=True, blank=True)
     ydpi = models.FloatField(null=True, blank=True)
+    callstack = models.TextField(blank=True)
+    dump_path = models.CharField(max_length=260L, blank=True)
     class Meta:
         db_table = 'instances'
 
@@ -226,8 +228,9 @@ class Sofiles(models.Model):
     idsofiles = models.AutoField(primary_key=True)
     pid = models.ForeignKey(Projects, db_column='pid')
     appversion = models.CharField(max_length=45L)
-    versionkey = models.CharField(max_length=45L)
-    filename = models.CharField(max_length=45L)
+    versionkey = models.CharField(max_length=45L, blank=True)
+    filename = models.CharField(max_length=45L, blank=True)
+    uploaded = models.CharField(max_length=45L, blank=True)
     class Meta:
         db_table = 'sofiles'
 
