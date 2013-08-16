@@ -56,9 +56,7 @@ def delete_req(request):
 
     return HttpResponse('delete success')
 
-def so2sym(pid, so_path, filename):
-    sym_path = '/urqa/sympool/%s' % pid
-
+def so2sym(pid, appver, so_path, filename):
     arg = ['/google-breakpad/src/tools/linux/dump_syms/dump_syms' ,os.path.join(so_path,filename)]
     #arg = '/google-breakpad/src/tools/linux/dump_syms/dump_syms ' + os.path.join(so_path,filename)
 
@@ -66,20 +64,34 @@ def so2sym(pid, so_path, filename):
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
-    print 'yhc1'
-    print stderr.find('no debugging')
-    print 'yhc2'
     if stderr.find('no debugging') != -1:
         print stderr
         return False
 
-    stdout = stdout.splitlines(False)
-    print stdout[0]
-    print stdout[2]
+    vkey =  stdout.splitlines(False)[0].split()[3]
+
+    sym_path = '/urqa/sympool/%s' % pid
+    if not os.path.isdir(sym_path):
+        os.mkdir(sym_path)
+
+    sym_path = sym_path + '/%s' % appver
+    if not os.path.isdir(sym_path):
+        os.mkdir(sym_path)
+
+    sym_path = sym_path + '/%s' % vkey
+    if not os.path.isdir(sym_path):
+        os.mkdir(sym_path)
+
+    filename = filename + '.sym'
+    fp = open(os.path.join(sym_path,filename) , 'wb')
+    fp.write(stdout)
+    fp.close()
 
     return True
 
 def so_upload(request, pid):
+
+    appver = request.POST['version']
 
     result, msg, userElement, projectElement = validUserPjt(request.user, pid)
 
@@ -99,7 +111,7 @@ def so_upload(request, pid):
                 fp.write(chunk)
             fp.close()
 
-            success_flag = so2sym(pid, path, filename)
+            success_flag = so2sym(pid, appver, path, filename)
             if success_flag:
                 return HttpResponse('File Uploaded, Valid so file')
             else:
