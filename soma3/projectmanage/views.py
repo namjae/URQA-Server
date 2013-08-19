@@ -15,6 +15,10 @@ from urqa.models import AuthUser
 from urqa.models import Projects
 from urqa.models import Viewer
 from urqa.models import Sofiles
+from urqa.models import Errors
+from urqa.models import Appstatistics
+from urqa.models import Instances
+
 from config import get_config
 
 def newApikey():
@@ -92,11 +96,49 @@ def so2sym(pid, appver, so_path, filename):
 
     return True
 
+def update_error_callstack(projectElement, appversion):
+
+    errorElements = Errors.objects.filter(pid=projectElement)
+    for errorElement in errorElements:
+        if not Appstatistics.objects.filter(iderror=errorElement,appversion=appversion).exists():
+            continue
+        instanceElements = Instances.objects.filter(iderror=errorElement,appversion=appversion)
+        if not instanceElements.exists():
+            continue
+        instanceElement = instanceElements[0]
+        sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.pid))
+        sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
+        arg = [get_config('minidump_stackwalk_path') , instanceElement.dump_path, sym_pool_path]
+        fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (stdout, stderr) = fd_popen.communicate()
+
+        #print stdout
+        cs_flag = 0
+        stdout_split = stdout.splitlines()
+        for line in stdout_split:
+            if line.find('(crashed)') != -1:
+                callstack = line + '\n'
+                cs_flag = cs_flag + 1
+            elif cs_flag:
+                if line.find('Thread') != -1 or cs_flag > 40:
+                    break;
+                callstack += line + '\n'
+                cs_flag = cs_flag + 1
+        errorElement.callstack = callstack
+        errorElement.save()
+        print errorElement.errorname
+        print errorElement.errorclassname
+        print callstack
+        print '','',''
+    return True
+
 def so_upload(request, pid):
 
     appver = request.POST['version']
 
     result, msg, userElement, projectElement = validUserPjt(request.user, pid)
+
+    #update_error_callstack(projectElement,appver)
 
     if not result:
         return HttpResponse(msg)
@@ -121,6 +163,8 @@ def so_upload(request, pid):
 
             success_flag = so2sym(pid, appver, so_path, filename)
             if success_flag:
+                #정상적으로 so파일이 업로드되었기 때문에 error들의 callstack 정보를 갱신한다.
+                update_error_callstack(projectElement,appver)
                 return HttpResponse('File Uploaded, and Valid so file')
             else:
                 os.remove(os.path.join(so_path, filename))
