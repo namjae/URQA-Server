@@ -5,6 +5,7 @@
 import os
 import time
 import json
+import subprocess
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -164,6 +165,7 @@ def receive_exception(request):
 @csrf_exempt
 def receive_exception_log(request, idinstance):
 
+
     #step1: idinstance에 해당하는 인스턴스 구하기
     try:
         instanceElement = Instances.objects.get(idinstance=int(idinstance))
@@ -181,6 +183,7 @@ def receive_exception_log(request, idinstance):
     f.write(request.body)
     f.close()
 
+    print 'log received : %s' % log_path
     #step3: 저장한 로그파일을 db에 명시하기
     instanceElement.log_path = log_path
     instanceElement.save()
@@ -208,10 +211,10 @@ def receive_eventpath(request):
 
 @csrf_exempt
 def receive_native(request):
-
+    print 'receive_native requested'
     jsonData = json.loads(request.body,encoding='utf-8')
 
-    print 'receive_native requested'
+
     #step1: apikey를 이용하여 project찾기
     #apikey가 validate한지 확인하기.
     try:
@@ -309,7 +312,6 @@ def receive_native(request):
 
 @csrf_exempt
 def receive_native_dump(request, idinstance):
-
     #step1: idinstance에 해당하는 인스턴스 구하기
     try:
         instanceElement = Instances.objects.get(idinstance=int(idinstance))
@@ -321,14 +323,24 @@ def receive_native_dump(request, idinstance):
         return HttpResponse('Fail')
 
     #step2: dump파일 저장하기
-    dump_path = os.path.join(get_config('dump_pool_path'), '%s.dmp' % str(idinstance))
+    dump_path = os.path.join(get_config('dmp_pool_path'), '%s.dmp' % str(idinstance))
 
     f = file(dump_path,'w')
     f.write(request.body)
     f.close()
-
+    print 'log received : %s' % dump_path
     #step3: 저장한 로그파일을 db에 명시하기
     instanceElement.dump_path = dump_path
     instanceElement.save()
+
+    #step4: dmp파일 분석
+    arg = [get_config('minidump_stackwalk_path') , dump_path]
+    fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (stdout, stderr) = fd_popen.communicate()
+
+    print stdout
+    print "soadhfosiadjfoiasjfoisadjfoiasdjfodsiaj"
+    print stderr
+
 
     return HttpResponse('test')

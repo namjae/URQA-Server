@@ -59,10 +59,7 @@ def delete_req(request):
     return HttpResponse('delete success')
 
 def so2sym(pid, appver, so_path, filename):
-    arg = ['/google-breakpad/src/tools/linux/dump_syms/dump_syms' ,os.path.join(so_path,filename)]
-    #arg = '/google-breakpad/src/tools/linux/dump_syms/dump_syms ' + os.path.join(so_path,filename)
-
-    #fd_popen = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    arg = [get_config('dump_syms_path') ,os.path.join(so_path,filename)]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
