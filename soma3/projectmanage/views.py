@@ -14,7 +14,7 @@ from common import validUserPjt
 from urqa.models import AuthUser
 from urqa.models import Projects
 from urqa.models import Viewer
-
+from urqa.models import Sofiles
 from config import get_config
 
 def newApikey():
@@ -68,6 +68,10 @@ def so2sym(pid, appver, so_path, filename):
         return False
 
     vkey =  stdout.splitlines(False)[0].split()[3]
+    try:
+        sofileElement = Sofiles.objects.get(appversion=appver,versionkey=vkey)
+    except ObjectDoesNotExist:
+        return False
 
     sym_path = get_config('sym_pool_path') + '/%s' % pid
     if not os.path.isdir(sym_path):
@@ -81,7 +85,7 @@ def so2sym(pid, appver, so_path, filename):
     if not os.path.isdir(sym_path):
         os.mkdir(sym_path)
 
-    filename = filename + '.sym'
+    filename = sofileElement.filename + '.sym'
     fp = open(os.path.join(sym_path,filename) , 'wb')
     fp.write(stdout)
     fp.close()
@@ -119,5 +123,6 @@ def so_upload(request, pid):
             if success_flag:
                 return HttpResponse('File Uploaded, and Valid so file')
             else:
+                os.remove(os.path.join(so_path, filename))
                 return HttpResponse('File Uploaded, but it have no debug info')
     return HttpResponse('Failed to Upload File')
