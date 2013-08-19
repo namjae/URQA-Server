@@ -20,6 +20,10 @@ from urqa.models import Eventpaths
 from urqa.models import Tags
 from urqa.models import Appruncount
 from urqa.models import Sofiles
+from urqa.models import Appstatistics
+from urqa.models import Osstatistics
+from urqa.models import Devicestatistics
+from urqa.models import Countrystatistics
 
 from config import get_config
 
@@ -83,6 +87,24 @@ def receive_exception(request):
         errorElement.mobileon += int(jsonData['mobileon']),
         errorElement.totalmemusage += int(jsonData['appmemtotal']),
         errorElement.save()
+
+        e, created = Appstatistics.objects.get_or_create(iderror=errorElement,appversion=jsonData['appversion'],defaults={'count':1})
+        if not created:
+            e.count += 1
+            e.save()
+        e, created = Osstatistics.objects.get_or_create(iderror=errorElement,osversion=jsonData['osversion'],defaults={'count':1})
+        if not created:
+            e.count += 1
+            e.save()
+        e, created = Devicestatistics.objects.get_or_create(iderror=errorElement,devicename=jsonData['device'],defaults={'count':1})
+        if not created:
+            e.count += 1
+            e.save()
+        e, created = Countrystatistics.objects.get_or_create(iderror=errorElement,countryname=jsonData['country'],defaults={'count':1})
+        if not created:
+            e.count += 1
+            e.save()
+
     except ObjectDoesNotExist:
         #새로 들어온 에러라면 새로운 에러 생성
         if int(jsonData['rank']) == -1:
@@ -110,7 +132,10 @@ def receive_exception(request):
             recur = 0,
         )
         errorElement.save()
-
+        Appstatistics.objects.create(iderror=errorElement,appversion=jsonData['appversion'],defaults={'count':1})
+        Osstatistics.objects.create(iderror=errorElement,osversion=jsonData['osversion'],defaults={'count':1})
+        Devicestatistics.objects.create(iderror=errorElement,devicename=jsonData['device'],defaults={'count':1})
+        Countrystatistics.objects.create(iderror=errorElement,countryname=jsonData['country'],defaults={'count':1})
     #step3: 테그 저장
     tagstr = jsonData['tag']
     if tagstr:
@@ -394,7 +419,7 @@ def receive_native_dump(request, idinstance):
             callstack += line + '\n'
             cs_flag = cs_flag + 1
 
-    print callstack
+    #print callstack
 
     try:
         errorElement_exist = Errors.objects.get(pid=projectElement, errorname=errorname, errorclassname=errorclassname)
@@ -405,6 +430,7 @@ def receive_native_dump(request, idinstance):
         errorElement_exist.mobileon += errorElement.mobileon
         errorElement_exist.totalmemusage += errorElement.totalmemusage
         errorElement_exist.save()
+        instanceElement.iderror = errorElement_exist
         errorElement.delete()
         print 'native error %s:%s already exist' % (errorname, errorclassname)
     except ObjectDoesNotExist:
