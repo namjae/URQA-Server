@@ -78,6 +78,10 @@ def receive_exception(request):
         errorElement.lastdate = jsonData['datetime']
         errorElement.numofinstances += 1
         errorElement.totalmemusage += jsonData['appmemtotal']
+        errorElement.wifion += int(jsonData['wifion']),
+        errorElement.gpson += int(jsonData['gpson']),
+        errorElement.mobileon += int(jsonData['mobileon']),
+        errorElement.totalmemusage += int(jsonData['appmemtotal']),
         errorElement.save()
     except ObjectDoesNotExist:
         #새로 들어온 에러라면 새로운 에러 생성
@@ -245,7 +249,7 @@ def receive_native(request):
         createdate = jsonData['datetime'],
         lastdate = jsonData['datetime'],
         numofinstances = 1,
-        callstack = jsonData['callstack'],
+        callstack = '',#jsonData['callstack'],
         wifion = jsonData['wifion'],
         gpson = jsonData['gpson'],
         mobileon = jsonData['mobileon'],
@@ -316,7 +320,9 @@ def receive_native_dump(request, idinstance):
     #step1: idinstance에 해당하는 인스턴스 구하기
     try:
         instanceElement = Instances.objects.get(idinstance=int(idinstance))
-        #이미 로그가 저장되었다면 다음으로 들어오는 로그는 버그? 또는 외부공격으로 생각하고 차단
+        errorElement = instanceElement.iderror
+        projectElement = errorElement.pid
+        #이미 로그가 저장되었다면 다음으로 들어오는 로그는 버그 또는 외부공격으로 생각하고 차단
         if instanceElement.dump_path:
             return HttpResponse('Already exists')
     except ObjectDoesNotExist:
@@ -335,7 +341,9 @@ def receive_native_dump(request, idinstance):
     instanceElement.save()
 
     #step4: dmp파일 분석
-    arg = [get_config('minidump_stackwalk_path') , dump_path]
+    sym_pool_path = os.path.join(get_config('sym_pool_path'),projectElement.pid)
+    sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
+    arg = [get_config('minidump_stackwalk_path') , dump_path, sym_pool_path]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
@@ -351,8 +359,8 @@ def receive_native_dump(request, idinstance):
         'libjavacore.so',
     ]
     libs = []
-    stderr = stderr.splitlines()
-    for line in stderr:
+    stderr_split = stderr.splitlines()
+    for line in stderr_split:
         if line.find('Couldn\'t load symbols') == -1: #magic keyword
             continue
         lib = line[line.find('for: ')+5:].split('|')
@@ -361,20 +369,49 @@ def receive_native_dump(request, idinstance):
         print lib[1] + ' ' + lib[0]
         libs.append(lib)
 
-    #DB저장하기
-    errorElement = instanceElement.iderror
-    projectElement = errorElement.pid
 
+
+
+    #DB저장하기
     for lib in libs:
         sofileElement, created = Sofiles.objects.get_or_create(pid=projectElement, appversion=instanceElement.appversion, versionkey=lib[1], filename=lib[0],defaults={'uploaded':0})
         print created, ' ', sofileElement
 
-
-    stdout = stdout.splitlines()
-    for line in stdout:
+    #print stdout
+    cs_flag = 0
+    stdout_split = stdout.splitlines()
+    for line in stdout_split:
         if line.find('Crash reason:') != -1:
-            print line
+            errorname = line.split()[2]
         if line.find('Crash address:') != -1:
-            print line
+            errorclassname = line.split()[2]
+        if line.find('(crashed)') != -1:
+            callstack = line + '\n'
+            cs_flag = cs_flag + 1
+        elif cs_flag:
+            if line.find('Thread') != -1 or cs_flag > 40:
+                break;
+            callstack += line + '\n'
+            cs_flag = cs_flag + 1
+
+    print callstack
+
+    try:
+        errorElement_exist = Errors.objects.get(pid=projectElement, errorname=errorname, errorclassname=errorclassname)
+        errorElement_exist.lastdate = errorElement.lastdate
+        errorElement_exist.numofinstances += 1
+        errorElement_exist.wifion += errorElement.wifion
+        errorElement_exist.gpson += errorElement.gpson
+        errorElement_exist.mobileon += errorElement.mobileon
+        errorElement_exist.totalmemusage += errorElement.totalmemusage
+        errorElement_exist.save()
+        errorElement.delete()
+        print 'native error %s:%s already exist' % (errorname, errorclassname)
+    except ObjectDoesNotExist:
+        errorElement.errorname = errorname
+        errorElement.errorclassname = errorclassname
+        errorElement.callstack = callstack
+        errorElement.save()
+
 
     return HttpResponse('Success')
