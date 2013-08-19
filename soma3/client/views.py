@@ -19,6 +19,7 @@ from urqa.models import Instances
 from urqa.models import Eventpaths
 from urqa.models import Tags
 from urqa.models import Appruncount
+from urqa.models import Sofiles
 
 from config import get_config
 
@@ -338,9 +339,42 @@ def receive_native_dump(request, idinstance):
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
-    print stdout
-    print "soadhfosiadjfoiasjfoisadjfoiasdjfodsiaj"
-    print stderr
+    #so library 추출
+    ignore_clib = [
+        'libdvm.so',
+        'libc.so',
+        'libcutils.so',
+        'app_process',
+        'libandroid_runtime.so',
+        'libutils.so',
+        'libbinder.so',
+        'libjavacore.so',
+    ]
+    libs = []
+    stderr = stderr.splitlines()
+    for line in stderr:
+        if line.find('Couldn\'t load symbols') == -1: #magic keyword
+            continue
+        lib = line[line.find('for: ')+5:].split('|')
+        if lib[1] == '000000000000000000000000000000000' or lib[0] in ignore_clib:
+            continue
+        print lib[1] + ' ' + lib[0]
+        libs.append(lib)
+
+    #DB저장하기
+    errorElement = instanceElement.iderror
+    projectElement = errorElement.pid
+
+    for lib in libs:
+        sofileElement, created = Sofiles.objects.get_or_create(pid=projectElement, appversion=instanceElement.appversion, versionkey=lib[1], filename=lib[0],defaults={'uploaded':0})
+        print created, ' ', sofileElement
 
 
-    return HttpResponse('test')
+    stdout = stdout.splitlines()
+    for line in stdout:
+        if line.find('Crash reason:') != -1:
+            print line
+        if line.find('Crash address:') != -1:
+            print line
+
+    return HttpResponse('Success')
