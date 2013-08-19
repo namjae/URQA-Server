@@ -431,6 +431,25 @@ def receive_native_dump(request, idinstance):
         errorElement_exist.totalmemusage += errorElement.totalmemusage
         errorElement_exist.save()
         instanceElement.iderror = errorElement_exist
+        instanceElement.save()
+
+        e, created = Appstatistics.objects.get_or_create(iderror=errorElement,appversion=instanceElement.appversion,defaults={'count':1})
+        if not created:
+            e.count += 1
+            e.save()
+        e, created = Osstatistics.objects.get_or_create(iderror=errorElement,osversion=instanceElement.osversion,defaults={'count':1})
+        if not created:
+            e.count += 1
+            e.save()
+        e, created = Devicestatistics.objects.get_or_create(iderror=errorElement,devicename=instanceElement.device,defaults={'count':1})
+        if not created:
+            e.count += 1
+            e.save()
+        e, created = Countrystatistics.objects.get_or_create(iderror=errorElement,countryname=instanceElement.country,defaults={'count':1})
+        if not created:
+            e.count += 1
+            e.save()
+
         errorElement.delete()
         print 'native error %s:%s already exist' % (errorname, errorclassname)
     except ObjectDoesNotExist:
@@ -438,6 +457,9 @@ def receive_native_dump(request, idinstance):
         errorElement.errorclassname = errorclassname
         errorElement.callstack = callstack
         errorElement.save()
-
+        Appstatistics.objects.create(iderror=errorElement,appversion=instanceElement.appversion,defaults={'count':1})
+        Osstatistics.objects.create(iderror=errorElement,osversion=instanceElement.osversion,defaults={'count':1})
+        Devicestatistics.objects.create(iderror=errorElement,devicename=instanceElement.device,defaults={'count':1})
+        Countrystatistics.objects.create(iderror=errorElement,countryname=instanceElement.country,defaults={'count':1})
 
     return HttpResponse('Success')
