@@ -42,11 +42,11 @@ def fileuploadtest(request):
     return render(request, 'fileupload.html', c)
 
 def cleanup(request):
-    expire_time = long(1 * 24 * 60 * 60 * 1000000) # 1일
+    expire_time = long(0.5 * 24 * 60 * 60 * 1000000) # 1일
     expire_time = long(time.time() * 1000000) - expire_time
 
-    sessionElements = Session.objects.raw('select * from session where idsession < %d' % expire_time)
-    print sessionElements
-    for element in sessionElements:
-        print element.idsession
+    elements = Session.objects.filter(idsession__lt=expire_time)
+
+    elements.delete()
+
     return HttpResponse('clean up')

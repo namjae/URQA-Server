@@ -82,10 +82,10 @@ def receive_exception(request):
         errorElement.lastdate = jsonData['datetime']
         errorElement.numofinstances += 1
         errorElement.totalmemusage += jsonData['appmemtotal']
-        errorElement.wifion += int(jsonData['wifion']),
-        errorElement.gpson += int(jsonData['gpson']),
-        errorElement.mobileon += int(jsonData['mobileon']),
-        errorElement.totalmemusage += int(jsonData['appmemtotal']),
+        errorElement.wifion += int(jsonData['wifion'])
+        errorElement.gpson += int(jsonData['gpson'])
+        errorElement.mobileon += int(jsonData['mobileon'])
+        errorElement.totalmemusage += int(jsonData['appmemtotal'])
         errorElement.save()
 
         e, created = Appstatistics.objects.get_or_create(iderror=errorElement,appversion=jsonData['appversion'],defaults={'count':1})
@@ -132,14 +132,14 @@ def receive_exception(request):
             recur = 0,
         )
         errorElement.save()
-        Appstatistics.objects.create(iderror=errorElement,appversion=jsonData['appversion'],defaults={'count':1})
-        Osstatistics.objects.create(iderror=errorElement,osversion=jsonData['osversion'],defaults={'count':1})
-        Devicestatistics.objects.create(iderror=errorElement,devicename=jsonData['device'],defaults={'count':1})
-        Countrystatistics.objects.create(iderror=errorElement,countryname=jsonData['country'],defaults={'count':1})
+        Appstatistics.objects.create(iderror=errorElement,appversion=jsonData['appversion'])
+        Osstatistics.objects.create(iderror=errorElement,osversion=jsonData['osversion'])
+        Devicestatistics.objects.create(iderror=errorElement,devicename=jsonData['device'])
+        Countrystatistics.objects.create(iderror=errorElement,countryname=jsonData['country'])
     #step3: 테그 저장
     tagstr = jsonData['tag']
     if tagstr:
-        tagElement, created = Tags.object.get_or_create(iderror=errorElement,tag=tagstr)
+        tagElement, created = Tags.objects.get_or_create(iderror=errorElement,tag=tagstr)
 
     #step4: 인스턴스 생성하기
 
@@ -366,7 +366,7 @@ def receive_native_dump(request, idinstance):
     instanceElement.save()
 
     #step4: dmp파일 분석
-    sym_pool_path = os.path.join(get_config('sym_pool_path'),projectElement.pid)
+    sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.pid))
     sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
     arg = [get_config('minidump_stackwalk_path') , dump_path, sym_pool_path]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -457,9 +457,9 @@ def receive_native_dump(request, idinstance):
         errorElement.errorclassname = errorclassname
         errorElement.callstack = callstack
         errorElement.save()
-        Appstatistics.objects.create(iderror=errorElement,appversion=instanceElement.appversion,defaults={'count':1})
-        Osstatistics.objects.create(iderror=errorElement,osversion=instanceElement.osversion,defaults={'count':1})
-        Devicestatistics.objects.create(iderror=errorElement,devicename=instanceElement.device,defaults={'count':1})
-        Countrystatistics.objects.create(iderror=errorElement,countryname=instanceElement.country,defaults={'count':1})
+        Appstatistics.objects.create(iderror=errorElement,appversion=instanceElement.appversion)
+        Osstatistics.objects.create(iderror=errorElement,osversion=instanceElement.osversion)
+        Devicestatistics.objects.create(iderror=errorElement,devicename=instanceElement.device)
+        Countrystatistics.objects.create(iderror=errorElement,countryname=instanceElement.country)
 
     return HttpResponse('Success')

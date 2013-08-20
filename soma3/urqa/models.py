@@ -1,3 +1,4 @@
+config.py
 # This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 #     * Rearrange models' order
@@ -134,8 +135,8 @@ class Errors(models.Model):
     createdate = models.DateTimeField()
     lastdate = models.DateTimeField()
     callstack = models.TextField()
-    errorname = models.CharField(max_length=45L)
-    errorclassname = models.CharField(max_length=45L)
+    errorname = models.CharField(max_length=300L)
+    errorclassname = models.CharField(max_length=300L)
     linenum = models.CharField(max_length=45L)
     errorweight = models.IntegerField(null=True, blank=True)
     recur = models.IntegerField(null=True, blank=True)
