@@ -30,6 +30,7 @@ from config import get_config
 @csrf_exempt
 def connect(request):
     jsonData = json.loads(request.body,encoding='utf-8')
+    #print jsonData
 
     #step1: apikey를 이용하여 project찾기
     try:
@@ -41,7 +42,7 @@ def connect(request):
 
     #step2: idsession 발급하기
     appversion = jsonData['appversion']
-    idsession = long(time.time() * 1000000)
+    idsession = long(time.time() * 1000)
     Session.objects.create(idsession=idsession,pid=projectElement,appversion=appversion)
     print 'new idsession: %d' % idsession
 
@@ -222,19 +223,19 @@ def receive_exception_log(request, idinstance):
 
 @csrf_exempt
 def receive_eventpath(request):
-
+    #print request.body
     jsonData = json.loads(request.body,encoding='utf-8')
-    print jsonData
-    idsession = long(jsonData['idsession'])
+    #print jsonData
+    idsession = jsonData['idsession']
     eventpath = jsonData['eventpaths']
 
-    session_key = Session.objects.get(idsession = idsession)
+    session_key = Session.objects.get(idsession=idsession)
     for event in eventpath:
-        Sessionevent.objects.create(idsession = session_key,
-                                    datetime = event['datetime'],
-                                    classname = event['classname'],
-                                    methodname = event['methodname'],
-                                    linenum = int(event['linenum']))
+        Sessionevent.objects.create(idsession=session_key,
+                                    datetime=event['datetime'],
+                                    classname=event['classname'],
+                                    methodname=event['methodname'],
+                                    linenum=int(event['linenum']))
 
     return HttpResponse('success')
 
@@ -242,8 +243,9 @@ def receive_eventpath(request):
 @csrf_exempt
 def receive_native(request):
     print 'receive_native requested'
+    #print request.body
     jsonData = json.loads(request.body,encoding='utf-8')
-
+    #print jsonData
 
     #step1: apikey를 이용하여 project찾기
     #apikey가 validate한지 확인하기.

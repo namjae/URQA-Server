@@ -16,6 +16,8 @@ urlpatterns = patterns('',
     url(r'^urqa/client/send/exception/native$', 'client.views.receive_native'),
     url(r'^urqa/client/send/exception/dump/(?P<idinstance>\d+)$', 'client.views.receive_native_dump'),
     url(r'^urqa/client/send/exception/log/(?P<idinstance>\d+)$', 'client.views.receive_exception_log'),
+    #url(r'^urqa/client/send/eventpath/(?P<idsession>\d+)$', 'client.views.receive_eventpath'),
+    #url(r'^urqa/client/send/eventpath/(?P<idsession>.+)$', 'client.views.receive_eventpath'),
     url(r'^urqa/client/send/eventpath$', 'client.views.receive_eventpath'),
 
     #user manage

@@ -151,8 +151,8 @@ class Eventpaths(models.Model):
     ideventpaths = models.AutoField(primary_key=True)
     idinstance = models.ForeignKey('Instances', db_column='idinstance')
     datetime = models.DateTimeField(null=True, blank=True)
-    classname = models.CharField(max_length=45L, blank=True)
-    methodname = models.CharField(max_length=45L, blank=True)
+    classname = models.CharField(max_length=300L, blank=True)
+    methodname = models.CharField(max_length=300L, blank=True)
     linenum = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'eventpaths'
@@ -218,8 +218,8 @@ class Sessionevent(models.Model):
     idsessionevent = models.AutoField(primary_key=True)
     idsession = models.ForeignKey(Session, db_column='idsession')
     datetime = models.DateTimeField(null=True, blank=True)
-    classname = models.CharField(max_length=45L, blank=True)
-    methodname = models.CharField(max_length=45L, blank=True)
+    classname = models.CharField(max_length=300L, blank=True)
+    methodname = models.CharField(max_length=300L, blank=True)
     linenum = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'sessionevent'

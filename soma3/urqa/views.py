@@ -42,8 +42,8 @@ def fileuploadtest(request):
     return render(request, 'fileupload.html', c)
 
 def cleanup(request):
-    expire_time = long(0.5 * 24 * 60 * 60 * 1000000) # 1일
-    expire_time = long(time.time() * 1000000) - expire_time
+    expire_time = long(0.5 * 24 * 60 * 60 * 1000) # 1일
+    expire_time = long(time.time() * 1000) - expire_time
 
     elements = Session.objects.filter(idsession__lt=expire_time)
 
