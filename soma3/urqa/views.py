@@ -1,17 +1,21 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
+import time
+
 from django.http import HttpResponse
 from django.template import Context, loader
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 
+from urqa.models import Session
 
 def index(request):
 #	return HttpResponse('hello world')
     tpl = loader.get_template('test.html')
     ctx = Context({});
-    return HttpResponse(tpl.render(ctx))
+    #return HttpResponse(tpl.render(ctx))
+    return HttpResponse(str(request.user) + ' ' + str(request.user.is_authenticated()))
 
 #return HttpResponse('awefawefawefawef')
 
@@ -36,3 +40,13 @@ def posttest(request):
 def fileuploadtest(request):
     c = {}
     return render(request, 'fileupload.html', c)
+
+def cleanup(request):
+    expire_time = long(1 * 24 * 60 * 60 * 1000000) # 1일
+    expire_time = long(time.time() * 1000000) - expire_time
+
+    sessionElements = Session.objects.raw('select * from session where idsession < %d' % expire_time)
+    print sessionElements
+    for element in sessionElements:
+        print element.idsession
+    return HttpResponse('clean up')

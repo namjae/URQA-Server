@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     url(r'^urqa$', 'urqa.views.index'),
     url(r'^urqa/posttest$', 'urqa.views.posttest'),
     url(r'^urqa/fileuploadtest$', 'urqa.views.fileuploadtest'),
+    url(r'^urqa/cleanup$', 'urqa.views.cleanup'),
 
     #client module
     url(r'^urqa/client/connect$', 'client.views.connect'),
