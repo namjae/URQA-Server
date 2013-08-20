@@ -132,10 +132,10 @@ def receive_exception(request):
             recur = 0,
         )
         errorElement.save()
-        Appstatistics.objects.create(iderror=errorElement,appversion=jsonData['appversion'])
-        Osstatistics.objects.create(iderror=errorElement,osversion=jsonData['osversion'])
-        Devicestatistics.objects.create(iderror=errorElement,devicename=jsonData['device'])
-        Countrystatistics.objects.create(iderror=errorElement,countryname=jsonData['country'])
+        Appstatistics.objects.create(iderror=errorElement,appversion=jsonData['appversion'],count=1)
+        Osstatistics.objects.create(iderror=errorElement,osversion=jsonData['osversion'],count=1)
+        Devicestatistics.objects.create(iderror=errorElement,devicename=jsonData['device'],count=1)
+        Countrystatistics.objects.create(iderror=errorElement,countryname=jsonData['country'],count=1)
     #step3: 테그 저장
     tagstr = jsonData['tag']
     if tagstr:
@@ -391,7 +391,7 @@ def receive_native_dump(request, idinstance):
         lib = line[line.find('for: ')+5:].split('|')
         if lib[1] == '000000000000000000000000000000000' or lib[0] in ignore_clib:
             continue
-        print lib[1] + ' ' + lib[0]
+        #print lib[1] + ' ' + lib[0]
         libs.append(lib)
 
 
@@ -400,7 +400,10 @@ def receive_native_dump(request, idinstance):
     #DB저장하기
     for lib in libs:
         sofileElement, created = Sofiles.objects.get_or_create(pid=projectElement, appversion=instanceElement.appversion, versionkey=lib[1], filename=lib[0],defaults={'uploaded':0})
-        print created, ' ', sofileElement
+        if created:
+            print 'new version key : ', lib[1], lib[0]
+        else:
+            print 'version key:', lib[1], lib[0], 'already exists'
 
     #print stdout
     cs_flag = 0
@@ -457,9 +460,9 @@ def receive_native_dump(request, idinstance):
         errorElement.errorclassname = errorclassname
         errorElement.callstack = callstack
         errorElement.save()
-        Appstatistics.objects.create(iderror=errorElement,appversion=instanceElement.appversion)
-        Osstatistics.objects.create(iderror=errorElement,osversion=instanceElement.osversion)
-        Devicestatistics.objects.create(iderror=errorElement,devicename=instanceElement.device)
-        Countrystatistics.objects.create(iderror=errorElement,countryname=instanceElement.country)
+        Appstatistics.objects.create(iderror=errorElement,appversion=instanceElement.appversion,count=1)
+        Osstatistics.objects.create(iderror=errorElement,osversion=instanceElement.osversion,count=1)
+        Devicestatistics.objects.create(iderror=errorElement,devicename=instanceElement.device,count=1)
+        Countrystatistics.objects.create(iderror=errorElement,countryname=instanceElement.country,count=1)
 
     return HttpResponse('Success')

@@ -62,7 +62,7 @@ def delete_req(request):
 
     return HttpResponse('delete success')
 
-def so2sym(pid, appver, so_path, filename):
+def so2sym(projectElement, appver, so_path, filename):
     arg = [get_config('dump_syms_path') ,os.path.join(so_path,filename)]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
@@ -73,11 +73,11 @@ def so2sym(pid, appver, so_path, filename):
 
     vkey =  stdout.splitlines(False)[0].split()[3]
     try:
-        sofileElement = Sofiles.objects.get(appversion=appver,versionkey=vkey)
+        sofileElement = Sofiles.objects.get(pid=projectElement, appversion=appver, versionkey=vkey)
     except ObjectDoesNotExist:
         return False
 
-    sym_path = get_config('sym_pool_path') + '/%s' % pid
+    sym_path = get_config('sym_pool_path') + '/%s' % projectElement.pid
     if not os.path.isdir(sym_path):
         os.mkdir(sym_path)
 
@@ -94,6 +94,9 @@ def so2sym(pid, appver, so_path, filename):
     fp.write(stdout)
     fp.close()
 
+    #sofile이 업로드되었음을 알림
+    sofileElement.uploaded = 1
+    sofileElement.save()
     return True
 
 def update_error_callstack(projectElement, appversion):
@@ -161,7 +164,7 @@ def so_upload(request, pid):
                 fp.write(chunk)
             fp.close()
 
-            success_flag = so2sym(pid, appver, so_path, filename)
+            success_flag = so2sym(projectElement, appver, so_path, filename)
             if success_flag:
                 #정상적으로 so파일이 업로드되었기 때문에 error들의 callstack 정보를 갱신한다.
                 update_error_callstack(projectElement,appver)
