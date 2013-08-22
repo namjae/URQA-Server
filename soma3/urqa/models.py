@@ -163,6 +163,7 @@ class Eventpaths(models.Model):
 class Instances(models.Model):
     idinstance = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
+    ins_count = models.IntegerField(null=True, blank=True)
     sdkversion = models.CharField(max_length=45L, blank=True)
     appversion = models.CharField(max_length=45L, blank=True)
     osversion = models.CharField(max_length=45L, blank=True)
