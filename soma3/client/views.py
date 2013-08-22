@@ -184,7 +184,8 @@ def receive_exception(request):
     print instanceElement.idinstance
     eventpath = jsonData['eventpaths']
 
-    depth = 1
+    #테스트때문에 잠시 안씀
+    """depth = 1
     for event in eventpath:
         Eventpaths.objects.create(
             idinstance = instanceElement,
@@ -196,7 +197,7 @@ def receive_exception(request):
             depth = depth
         )
         depth += 1
-
+    """
     calc_eventpath(errorElement)
 
 
@@ -483,5 +484,27 @@ def receive_native_dump(request, idinstance):
     return HttpResponse('Success')
 
 def calc_eventpath(errorElement):
-    instances = Instances.objects.filter(iderror=errorElement)
+
+    #node들 추출하기
+    eventHashs = []
+    depth = 10
+    while depth > 4:
+        eventHash = {}
+        #최근 인스턴스를 우선적으로 비교하기위해 -idinstance를 사용함
+        eventElements = Eventpaths.objects.filter(iderror=errorElement,depth=depth).order_by('-idinstance')
+        for event in eventElements:
+            #key = event.classname + ':' + event.methodname + ':' + str(event.linenum)
+            key = '%2d' % event.linenum
+            if not key in eventHash:
+                eventHash[key] = 1
+            else:
+                eventHash[key] += 1
+        print sorted(eventHash, key=eventHash.get, reverse=True)
+        #print eventHash
+        eventHashs.append(eventHash)
+
+        depth -= 1
+
+    #print eventHashs
+
     return
