@@ -141,8 +141,8 @@ def receive_exception(request):
         Devicestatistics.objects.create(iderror=errorElement,devicename=jsonData['device'],count=1)
         Countrystatistics.objects.create(iderror=errorElement,countryname=jsonData['country'],count=1)
     #step3: 테그 저장
-    tagstr = jsonData['tag']
-    if tagstr:
+    if jsonData['tag']:
+        tagstr = jsonData['tag']
         tagElement, created = Tags.objects.get_or_create(iderror=errorElement,tag=tagstr)
 
     #step4: 인스턴스 생성하기
@@ -193,6 +193,8 @@ def receive_exception(request):
             methodname = event['methodname'],
             linenum = int(event['linenum'])
         )
+
+    calc_eventpath(errorElement)
 
 
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
@@ -334,14 +336,17 @@ def receive_native(request):
     print instanceElement.idinstance
     eventpath = jsonData['eventpaths']
 
+    depth = 1
     for event in eventpath:
         Eventpaths.objects.create(
             idinstance = instanceElement,
             datetime = naive2aware(event['datetime']),
             classname = event['classname'],
             methodname = event['methodname'],
-            linenum = int(event['linenum'])
+            linenum = int(event['linenum']),
+            depth = depth,
         )
+        depth += 1
 
 
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
@@ -472,3 +477,7 @@ def receive_native_dump(request, idinstance):
         Countrystatistics.objects.create(iderror=errorElement,countryname=instanceElement.country,count=1)
 
     return HttpResponse('Success')
+
+def calc_eventpath(errorElement):
+    instances = Instances.objects.filter(iderror=errorElement)
+    return

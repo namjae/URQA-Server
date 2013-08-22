@@ -23,8 +23,8 @@ def index(request):
 
     #print now
     #print now_utc
-    print timezone.now()
-    print timezone.make_naive(timezone.now(),datetime.tzinfo)
+    #print timezone.now()
+    #print timezone.make_naive(timezone.now(),datetime.tzinfo)
     return HttpResponse(str(request.user) + ' ' + str(request.user.is_authenticated()))
 
 #return HttpResponse('awefawefawefawef')
