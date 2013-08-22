@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import time
-
+import datetime
+from django.utils.timezone import utc
+from django.utils import timezone
 from django.http import HttpResponse
 from django.template import Context, loader
 from django.views.decorators.csrf import csrf_exempt
@@ -15,6 +17,14 @@ def index(request):
     tpl = loader.get_template('test.html')
     ctx = Context({});
     #return HttpResponse(tpl.render(ctx))
+
+    #now = datetime.datetime.now()
+    #now_utc = datetime.datetime.utcnow().replace(tzinfo=utc)
+
+    #print now
+    #print now_utc
+    print timezone.now()
+    print timezone.make_naive(timezone.now(),datetime.tzinfo)
     return HttpResponse(str(request.user) + ' ' + str(request.user.is_authenticated()))
 
 #return HttpResponse('awefawefawefawef')
