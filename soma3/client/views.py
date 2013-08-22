@@ -485,26 +485,92 @@ def receive_native_dump(request, idinstance):
 
 def calc_eventpath(errorElement):
 
+
     #node들 추출하기
-    eventHashs = []
+#    eventHashs = []
+    instance_limit_count = 10 #최근 몇개의 Instance의 이벤트패스만 표시할지 결정
+
+    id_count = 0
+    k2i_table = {}
+    i2k_table = {}
+    link_table = {}
+
     depth = 10
     while depth > 4:
         eventHash = {}
         #최근 인스턴스를 우선적으로 비교하기위해 -idinstance를 사용함
         eventElements = Eventpaths.objects.filter(iderror=errorElement,depth=depth).order_by('-idinstance')
+        limit_count = 0
         for event in eventElements:
-            #key = event.classname + ':' + event.methodname + ':' + str(event.linenum)
-            key = '%2d' % event.linenum
+            #key = str(depth) + ':' + event.classname + ':' + event.methodname + ':' + str(event.linenum)
+            key = str(depth) + ':' + str(event.linenum)
             if not key in eventHash:
                 eventHash[key] = 1
             else:
                 eventHash[key] += 1
-        print sorted(eventHash, key=eventHash.get, reverse=True)
-        #print eventHash
-        eventHashs.append(eventHash)
+            limit_count += 1
+            if limit_count == instance_limit_count:
+                break;
+        sorted_list = sorted(eventHash, key=eventHash.get, reverse=True)
+
+        #이벤트가 5개를 초과하면 5번째를 Others로 변경함
+        other_count = 0
+        if len(sorted_list) > 5:
+            while len(sorted_list) > 4:
+                key = sorted_list[4]
+                other_count += eventHash[key]
+                del(eventHash[key])
+                sorted_list.pop(4)
+            eventHash[str(depth) + ':' + 'Others'] = other_count
+            sorted_list.append(str(depth) + ':' + 'Others')
+        print sorted_list
+        print len(sorted_list)
+
+        #id 발급하기
+        for key in sorted_list:
+            k2i_table[key] = id_count
+            i2k_table[id_count] = key
+            id_count += 1
 
         depth -= 1
 
+    #test라서 idinstance__lte=159쿼리를 날림
+    instanceElements = Instances.objects.filter(iderror=errorElement,idinstance__lte=159).order_by('-idinstance')
+
+    limit_count = 0
+    for instanceElement in instanceElements:
+        print instanceElement.idinstance
+        eventElements = Eventpaths.objects.filter(iderror=errorElement,idinstance=instanceElement).order_by('-depth')
+
+        length = len(eventElements)
+        for i in range(0,5):
+            #source_key = str(eventElements[i].depth) + ':' + eventElements[i].classname + ':' + eventElements[i].methodname + ':' + str(eventElements[i].linenum)
+            source_key = str(eventElements[i].depth) + ':' + str(eventElements[i].linenum)
+            if not source_key in k2i_table:
+                source_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
+            else:
+                source_id = k2i_table[source_key]
+            #target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum)
+            target_key = str(eventElements[i+1].depth) + ':' + str(eventElements[i+1].linenum)
+            if not target_key in k2i_table:
+                target_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
+            else:
+                target_id = k2i_table[target_key]
+
+            link_key = '%d:%d' % (source_id, target_id)
+            if link_key in link_table:
+                link_table[link_key] += 1
+            else:
+                link_table[link_key] = 1
+            #print source_key, target_key, source_id, target_id
+
+        limit_count += 1
+        if limit_count == instance_limit_count:
+            break;
+
+    print i2k_table
+    print link_table
+    #print k2i_table
     #print eventHashs
 
     return
