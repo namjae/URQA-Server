@@ -59,6 +59,7 @@ class AuthUser(models.Model):
     is_staff = models.IntegerField()
     is_active = models.IntegerField()
     date_joined = models.DateTimeField()
+    timezone = models.CharField(max_length=45L, blank=True)
     class Meta:
         db_table = 'auth_user'
 
@@ -154,6 +155,7 @@ class Eventpaths(models.Model):
     classname = models.CharField(max_length=300L, blank=True)
     methodname = models.CharField(max_length=300L, blank=True)
     linenum = models.IntegerField(null=True, blank=True)
+    depth = models.IntegerField(null=True, blank=True)
     class Meta:
         db_table = 'eventpaths'
 
