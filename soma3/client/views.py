@@ -6,6 +6,7 @@ import os
 import time
 import json
 import subprocess
+import datetime
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -24,6 +25,7 @@ from urqa.models import Appstatistics
 from urqa.models import Osstatistics
 from urqa.models import Devicestatistics
 from urqa.models import Countrystatistics
+from utility import naive2aware
 
 from config import get_config
 
@@ -80,7 +82,8 @@ def receive_exception(request):
     try:
         errorElement = Errors.objects.get(pid=projectElement,errorname=errorname,errorclassname=errorclassname,linenum=linenum)
         #새로온 인스턴스 정보로 시간 갱신
-        errorElement.lastdate = jsonData['datetime']
+
+        errorElement.lastdate = naive2aware(jsonData['datetime'])
         errorElement.numofinstances += 1
         errorElement.totalmemusage += jsonData['appmemtotal']
         errorElement.wifion += int(jsonData['wifion'])
@@ -121,8 +124,8 @@ def receive_exception(request):
             autodetermine = autodetermine,
             rank = int(jsonData['rank']),
             status = 0, # 0 = new, 1 = open, 2 = ignore, 3 = renew
-            createdate = jsonData['datetime'],
-            lastdate = jsonData['datetime'],
+            createdate = naive2aware(jsonData['datetime']),
+            lastdate = naive2aware(jsonData['datetime']),
             numofinstances = 1,
             callstack = jsonData['callstack'],
             wifion = jsonData['wifion'],
@@ -154,7 +157,7 @@ def receive_exception(request):
         appmemfree = jsonData['appmemfree'],
         appmemtotal = jsonData['appmemtotal'],
         country = jsonData['country'],
-        datetime = jsonData['datetime'],
+        datetime = naive2aware(jsonData['datetime']),
         locale = jsonData['locale'],
         mobileon = jsonData['mobileon'],
         gpson = jsonData['gpson'],
@@ -181,10 +184,11 @@ def receive_exception(request):
     print instanceElement.idinstance
     eventpath = jsonData['eventpaths']
 
+
     for event in eventpath:
         Eventpaths.objects.create(
             idinstance = instanceElement,
-            datetime = event['datetime'],
+            datetime = naive2aware(event['datetime']),
             classname = event['classname'],
             methodname = event['methodname'],
             linenum = int(event['linenum'])
@@ -232,7 +236,7 @@ def receive_eventpath(request):
     session_key = Session.objects.get(idsession=idsession)
     for event in eventpath:
         Sessionevent.objects.create(idsession=session_key,
-                                    datetime=event['datetime'],
+                                    datetime=naive2aware(event['datetime']),
                                     classname=event['classname'],
                                     methodname=event['methodname'],
                                     linenum=int(event['linenum']))
@@ -273,8 +277,8 @@ def receive_native(request):
         autodetermine = autodetermine,
         rank = int(jsonData['rank']),
         #status = 0, # 0 = new, 1 = open, 2 = ignore, 3 = renew
-        createdate = jsonData['datetime'],
-        lastdate = jsonData['datetime'],
+        createdate = naive2aware(jsonData['datetime']),
+        lastdate = naive2aware(jsonData['datetime']),
         numofinstances = 1,
         callstack = '',#jsonData['callstack'],
         wifion = jsonData['wifion'],
@@ -303,7 +307,7 @@ def receive_native(request):
         appmemfree = jsonData['appmemfree'],
         appmemtotal = jsonData['appmemtotal'],
         country = jsonData['country'],
-        datetime = jsonData['datetime'],
+        datetime = naive2aware(jsonData['datetime']),
         locale = jsonData['locale'],
         mobileon = jsonData['mobileon'],
         gpson = jsonData['gpson'],
@@ -333,7 +337,7 @@ def receive_native(request):
     for event in eventpath:
         Eventpaths.objects.create(
             idinstance = instanceElement,
-            datetime = event['datetime'],
+            datetime = naive2aware(event['datetime']),
             classname = event['classname'],
             methodname = event['methodname'],
             linenum = int(event['linenum'])
