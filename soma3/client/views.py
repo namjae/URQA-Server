@@ -184,15 +184,18 @@ def receive_exception(request):
     print instanceElement.idinstance
     eventpath = jsonData['eventpaths']
 
-
+    depth = 1
     for event in eventpath:
         Eventpaths.objects.create(
             idinstance = instanceElement,
+            iderror = errorElement,
             datetime = naive2aware(event['datetime']),
             classname = event['classname'],
             methodname = event['methodname'],
-            linenum = int(event['linenum'])
+            linenum = int(event['linenum']),
+            depth = depth
         )
+        depth += 1
 
     calc_eventpath(errorElement)
 
@@ -340,6 +343,7 @@ def receive_native(request):
     for event in eventpath:
         Eventpaths.objects.create(
             idinstance = instanceElement,
+            iderror = errorElement,
             datetime = naive2aware(event['datetime']),
             classname = event['classname'],
             methodname = event['methodname'],
