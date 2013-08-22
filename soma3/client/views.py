@@ -502,8 +502,8 @@ def calc_eventpath(errorElement):
         eventElements = Eventpaths.objects.filter(iderror=errorElement,depth=depth).order_by('-idinstance')
         limit_count = 0
         for event in eventElements:
-            #key = str(depth) + ':' + event.classname + ':' + event.methodname + ':' + str(event.linenum)
-            key = str(depth) + ':' + str(event.linenum)
+            key = str(depth) + ':' + event.classname + ':' + event.methodname + ':' + str(event.linenum)
+            #key = str(depth) + ':' + str(event.linenum)
             if not key in eventHash:
                 eventHash[key] = 1
             else:
@@ -535,7 +535,8 @@ def calc_eventpath(errorElement):
         depth -= 1
 
     #test라서 idinstance__lte=159쿼리를 날림
-    instanceElements = Instances.objects.filter(iderror=errorElement,idinstance__lte=159).order_by('-idinstance')
+    #instanceElements = Instances.objects.filter(iderror=errorElement,idinstance__lte=159).order_by('-idinstance')
+    instanceElements = Instances.objects.filter(iderror=errorElement).order_by('-idinstance')
 
     limit_count = 0
     for instanceElement in instanceElements:
@@ -544,20 +545,20 @@ def calc_eventpath(errorElement):
 
         length = len(eventElements)
         for i in range(0,5):
-            #source_key = str(eventElements[i].depth) + ':' + eventElements[i].classname + ':' + eventElements[i].methodname + ':' + str(eventElements[i].linenum)
-            source_key = str(eventElements[i].depth) + ':' + str(eventElements[i].linenum)
+            source_key = str(eventElements[i].depth) + ':' + eventElements[i].classname + ':' + eventElements[i].methodname + ':' + str(eventElements[i].linenum)
+            #source_key = str(eventElements[i].depth) + ':' + str(eventElements[i].linenum)
             if not source_key in k2i_table:
                 source_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
             else:
                 source_id = k2i_table[source_key]
-            #target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum)
-            target_key = str(eventElements[i+1].depth) + ':' + str(eventElements[i+1].linenum)
+            target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum)
+            #target_key = str(eventElements[i+1].depth) + ':' + str(eventElements[i+1].linenum)
             if not target_key in k2i_table:
                 target_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
             else:
                 target_id = k2i_table[target_key]
 
-            link_key = '%d:%d' % (source_id, target_id)
+            link_key = '%d>%d' % (source_id, target_id)
             if link_key in link_table:
                 link_table[link_key] += 1
             else:
@@ -568,9 +569,18 @@ def calc_eventpath(errorElement):
         if limit_count == instance_limit_count:
             break;
 
-    print i2k_table
-    print link_table
-    #print k2i_table
-    #print eventHashs
+    #print i2k_table
+    #print link_table
 
+    result = {}
+    result['nodes'] = []
+    for id in i2k_table:
+        result['nodes'].append({'name':i2k_table[id]})
+    result['links'] = []
+    for link in link_table:
+        key = link.split('>')
+        sid = int(key[0])
+        tid = int(key[1])
+        result['links'].append({'source':sid,'target':tid,'value':link_table[link]})
+    print result
     return
