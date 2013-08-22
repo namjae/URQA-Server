@@ -152,6 +152,7 @@ class Eventpaths(models.Model):
     ideventpaths = models.AutoField(primary_key=True)
     idinstance = models.ForeignKey('Instances', db_column='idinstance')
     iderror = models.ForeignKey(Errors, db_column='iderror')
+    ins_count = models.IntegerField(null=True, blank=True)
     datetime = models.DateTimeField(null=True, blank=True)
     classname = models.CharField(max_length=300L, blank=True)
     methodname = models.CharField(max_length=300L, blank=True)
