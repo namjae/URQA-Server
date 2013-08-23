@@ -149,6 +149,7 @@ def receive_exception(request):
 
     instanceElement = Instances(
         iderror = errorElement,
+        ins_count = errorElement.numofinstances,
         sdkversion = jsonData['sdkversion'],
         appversion = jsonData['appversion'],
         osversion = jsonData['osversion'],
@@ -185,11 +186,12 @@ def receive_exception(request):
     eventpath = jsonData['eventpaths']
 
     #테스트때문에 잠시 안씀
-    """depth = 1
+    depth = 1
     for event in eventpath:
         Eventpaths.objects.create(
             idinstance = instanceElement,
             iderror = errorElement,
+            ins_count = errorElement.numofinstances,
             datetime = naive2aware(event['datetime']),
             classname = event['classname'],
             methodname = event['methodname'],
@@ -197,8 +199,8 @@ def receive_exception(request):
             depth = depth
         )
         depth += 1
-    """
-    calc_eventpath(errorElement)
+
+    #calc_eventpath(errorElement)
 
 
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
@@ -305,6 +307,7 @@ def receive_native(request):
 
     instanceElement = Instances(
         iderror = errorElement,
+        ins_count = errorElement.numofinstances,
         sdkversion = jsonData['sdkversion'],
         appversion = jsonData['appversion'],
         osversion = jsonData['osversion'],
@@ -345,6 +348,7 @@ def receive_native(request):
         Eventpaths.objects.create(
             idinstance = instanceElement,
             iderror = errorElement,
+            ins_count = errorElement.numofinstances,
             datetime = naive2aware(event['datetime']),
             classname = event['classname'],
             methodname = event['methodname'],
@@ -489,6 +493,11 @@ def calc_eventpath(errorElement):
     #node들 추출하기
 #    eventHashs = []
     instance_limit_count = 10 #최근 몇개의 Instance의 이벤트패스만 표시할지 결정
+    depth_max = 10 # event path 최대 깊이
+    depth_count = 6 # Depth몇개 표현할지 정함
+
+
+    ins_count_limit = max(1, errorElement.numofinstances - instance_limit_count)
 
     id_count = 0
     k2i_table = {}
@@ -496,10 +505,10 @@ def calc_eventpath(errorElement):
     link_table = {}
 
     depth = 10
-    while depth > 4:
+    while depth > (depth_max - depth_count):
         eventHash = {}
         #최근 인스턴스를 우선적으로 비교하기위해 -idinstance를 사용함
-        eventElements = Eventpaths.objects.filter(iderror=errorElement,depth=depth).order_by('-idinstance')
+        eventElements = Eventpaths.objects.filter(iderror=errorElement,depth=depth,ins_count__gt=ins_count_limit).order_by('-idinstance')
         limit_count = 0
         for event in eventElements:
             key = str(depth) + ':' + event.classname + ':' + event.methodname + ':' + str(event.linenum)
@@ -523,8 +532,8 @@ def calc_eventpath(errorElement):
                 sorted_list.pop(4)
             eventHash[str(depth) + ':' + 'Others'] = other_count
             sorted_list.append(str(depth) + ':' + 'Others')
-        print sorted_list
-        print len(sorted_list)
+        #print sorted_list
+        #print len(sorted_list)
 
         #id 발급하기
         for key in sorted_list:
@@ -536,15 +545,16 @@ def calc_eventpath(errorElement):
 
     #test라서 idinstance__lte=159쿼리를 날림
     #instanceElements = Instances.objects.filter(iderror=errorElement,idinstance__lte=159).order_by('-idinstance')
-    instanceElements = Instances.objects.filter(iderror=errorElement).order_by('-idinstance')
+    instanceElements = Instances.objects.filter(iderror=errorElement,ins_count__gt=ins_count_limit).order_by('-idinstance')
 
     limit_count = 0
     for instanceElement in instanceElements:
-        print instanceElement.idinstance
+        #print instanceElement.idinstance
         eventElements = Eventpaths.objects.filter(iderror=errorElement,idinstance=instanceElement).order_by('-depth')
 
         length = len(eventElements)
-        for i in range(0,5):
+        for i in range(0,depth_count-1):
+            #print i
             source_key = str(eventElements[i].depth) + ':' + eventElements[i].classname + ':' + eventElements[i].methodname + ':' + str(eventElements[i].linenum)
             #source_key = str(eventElements[i].depth) + ':' + str(eventElements[i].linenum)
             if not source_key in k2i_table:
@@ -567,7 +577,7 @@ def calc_eventpath(errorElement):
 
         limit_count += 1
         if limit_count == instance_limit_count:
-            break;
+            break
 
     #print i2k_table
     #print link_table

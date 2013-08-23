@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	
+	<title>UrQA :: Dashboard</title>
+
+	<meta name="viewport" content="width=device-width">
+
+    {% load static %}
+
+	<script type="text/javascript" src="{% static 'js/lib.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/hashmap.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/jquery-2.0.0.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/raphael.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/r.raphael.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/r.pie.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/popup.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/graph/graph.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/graph/areaGraph.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/css-compile.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/user.js' %}"></script>
+	<script type="text/javascript">
+        $(document).ready(function(){
+			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
+		});
+    </script>
+</head>
+
+<body class="insight" style="display: none;">
+	<div id="container">
+		<div id="header-container">
+			<div id="header">
+				<a href="./"><div class="logo"></div></a>
+				<div class="navbar-menu">
+					<ul>
+						<li><a>Insights</a></li>
+						<li><a>Errors</a></li>
+						<li><a>Statistics</a></li>
+						<li><a>Settings</a></li>
+					</ul>
+				</div>
+				<div class="navbar-profile">
+					<div class="setting"></div>
+					<div class="profile"><img src="http://profile.ak.fbcdn.net/hprofile-ak-ash3/27350_100001314106197_1542605533_q.jpg" alt="profile" /></div>
+					<div id="profile-menu">
+						<div class="inv-triangle"></div>
+						<div class="color shadow">
+							<img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/c207.47.546.546/s160x160/531640_453529518034181_1497539635_n.jpg" alt="profile" />
+							<div class="text">
+								<div class="name">hello</div>
+                                <div class="user-style">Enterprise Customer</div>
+							</div>
+						</div>
+						<div class="white shadow">
+							<div class="content">
+								<span>
+									<p class="icon" data-name="profile"></p>
+									<p class="text">PROFILE</p>
+								</span>
+								<span>
+									<p class="notification" data="12"></p>
+									<p class="icon" data-name="notification"></p>
+									<p class="text">NOTIFICATION</p>
+								</span>
+								<span>
+									<p class="icon" data-name="logout"></p>
+									<p class="text">LOGOUT</p>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="color-line">
+				<div class="color1"></div>
+				<div class="color2"></div>
+				<div class="color3"></div>
+				<div class="color4"></div>
+			</div>
+		</div>
+		<!--header-container fin-->
+
+		<div id="content-container">
+			<div class="title" data="dashboard"></div>
+			<div id="dashboard-graph" class="content half">
+				<div>
+					<div id="dailyES" class="area">
+                        <script>
+                            $.ajax({
+                                type: 'GET',
+                                url: '{{ ServerURL }}' + '{{ projectid }}/'+'userdashboard/dailyes',
+                                success: Dailyesprint
+                                });
+                        </script>
+					</div>
+				</div>
+				<div>
+					<div id="typeES" class="area">
+                        <script>
+                            $.ajax({
+                                type: 'GET',
+                                dataType: 'json',
+                                url: '{{ ServerURL }}' + '{{ projectid }}/'+'userdashboard/typees',
+                                success: Dailyesprint
+                                });
+                        </script>
+					</div>
+				</div>
+				<div class="white-area"></div>
+			</div>
+			<div id="error-list" class="content">
+				<table class="content-large">
+					<thead><tr>
+						<td>Error Name</td>
+						<td style="width: 30%">Tags</td>
+						<td class="center" style="width: 88px">Error Score</td>
+					</tr></thead>
+					<tbody>
+						<tr>
+							<td class="float">
+								<img />
+								<p>java.lang.NoSuchMethodException: abcdefghijklnmopqrstuvwxyzabcdefghijklnmop<br>(ViewGroup.java:1372)</p>
+							</td>
+							<td>
+								<p>external, dev shin</p>
+							</td>
+							<td class="center">35</td>
+						</tr>
+						<tr>
+							<td class="float">
+								<img />
+								<p>java.lang.NoSuchMethodException: abcdefghijklnmopqrstuvwxyzabcdefghijklnmop<br>(ViewGroup.java:1372)</p>
+							</td>
+							<td>
+								<p>external, dev shin</p>
+							</td>
+							<td class="center">35</td>
+						</tr>
+						<tr>
+							<td class="float">
+								<img />
+								<p>java.lang.NoSuchMethodException: abcdefghijklnmopqrstuvwxyzabcdefghijklnmop<br>(ViewGroup.java:1372)</p>
+							</td>
+							<td>
+								<p>external, dev shin</p>
+							</td>
+							<td class="center">35</td>
+						</tr>
+						<tr>
+							<td class="float">
+								<img />
+								<p>java.lang.NoSuchMethodException: abcdefghijklnmopqrstuvwxyzabcdefghijklnmop<br>(ViewGroup.java:1372)</p>
+							</td>
+							<td>
+								<p>external, dev shin</p>
+							</td>
+							<td class="center">35</td>
+						</tr>
+						<tr class="empty">
+							<td data-match="true"></td>
+							<td data-match="true"></td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="white-area"></div>
+			</div>
+		</div>
+		<!--content-container fin-->
+
+		<div id="footer-container">Copyright(C) UrQA 2013., Allright reserved.</div>
+		<!--footer-container fin-->
+	</div>
+
+</body>
+</html>

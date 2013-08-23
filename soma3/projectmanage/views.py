@@ -4,11 +4,17 @@
 import os
 import random
 import subprocess
+import json
+import ast
 
+from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.template import Context, Template
+from django.template import loader
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 
 from common import validUserPjt
 from urqa.models import AuthUser
@@ -18,8 +24,13 @@ from urqa.models import Sofiles
 from urqa.models import Errors
 from urqa.models import Appstatistics
 from urqa.models import Instances
+from soma3.settings import STATIC_ROOT
+from soma3.settings import STATIC_URL
+from utility import getTemplatePath
 
 from config import get_config
+
+
 
 def newApikey():
     while True:
@@ -173,3 +184,67 @@ def so_upload(request, pid):
                 os.remove(os.path.join(so_path, filename))
                 return HttpResponse('File Uploaded, but it have no debug info')
     return HttpResponse('Failed to Upload File')
+
+def userdashboard(request, pid):
+    #dashboardtemplate = loader.get_template('userdashboard.html')
+    ctx = {
+        'templatepath' : getTemplatePath(),
+        'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
+        'projectid' : pid
+    }
+    return render(request, 'userdashboard.html', ctx)
+
+def dailyesgraph(request, pid):
+    print 'dailyesgraph in'
+    """
+    try:
+        ProjectElement = Projects.objects.get(pid= pid)
+    except ObjectDoesNotExist:
+        print 'invalid pid'
+        return HttpResponse(json.dumps({'idsession':'0'}), 'application/json');
+    """
+    dicexam = {}
+
+
+    listkeyvalue = []
+    for i in range(1,8):
+        dictmp = {}
+        dictmp['key'] = i
+        dictmp['value'] = i+10
+        listkeyvalue.append(dictmp)
+
+    dickeyvalue = {}
+    dickeyvalue['key'] = 31
+    dickeyvalue['value'] = 10
+
+    dicexam['max'] =dickeyvalue
+    dicexam['tags'] = listkeyvalue
+
+    result = json.dumps(dicexam)
+    print result
+
+    return HttpResponse(result,'application/json')
+
+def typeesgraph(request, pid):
+
+    jsondata = {
+        "tags":[
+            {"key":"Unhandler", "value":1},
+            {"key":"Critical", "value":1},
+            {"key":"Major", "value":1},
+            {"key":"Minor", "value":1}
+            ]
+        }
+
+
+    result = json.dumps(jsondata)
+    print result
+
+    return HttpResponse(result,'application/json')
+
+def mediapathrequest(request, path):
+    return HttpResponseRedirect(STATIC_URL+path)
+
+
+
+
