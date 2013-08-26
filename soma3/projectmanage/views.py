@@ -300,7 +300,7 @@ def errorscorelist(request,pid):
         print 'invalid pid'
         return HttpResponse('')
 
-    ErrorElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week, today) ).order_by('errorweight', 'rank', 'lastdate')
+    ErrorElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week, today) ).order_by('errorweight')
 
     jsondata = [
     ]
