@@ -20,12 +20,27 @@
 	<script type="text/javascript" src="{% static 'js/raphael/graph/areaGraph.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/css-compile.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/user.js' %}"></script>
-	<script type="text/javascript">
+
+    <script type="text/javascript">
         var project_id = {{ projectid }};
         var server_url = "{{ ServerURL }}"
         $(document).ready(function(){
 			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
+    </script>
+
+     <script>
+         $.ajax({
+            type: 'get' ,
+            url: server_url + project_id + "/userdashboard/errorscorelist",
+            success : function(data) {
+                for(var i =0; i< data.length; i++)
+                {
+                    $('#error-list>.content-large>tbody').append('<tr><td class="float"><img /><p>' + data[i].ErrorName + '<br>'+ data[i].ErrorClassName + '</p></td><td><p>' + data[i].tags+ '</p></td><td class="center">' + data[i].ErrorCounter + '</td></tr>')
+                }
+                $('#error-list>.content-large>tbody').append('<tr class="empty"><td data-match="true"></td><td data-match="true"></td><td></td></tr>')
+            }
+         });
     </script>
 </head>
 
@@ -102,21 +117,10 @@
 						<td class="center" style="width: 88px">Error Score</td>
 					</tr></thead>
 					<tbody>
-                        <script>
-                             $.ajax({
-                                type: 'get' ,
-                                async: true ,
-                                url: server_url + project_id + "/userdashboard/errorscorelist",
-                                success : function(data) {
-                                    for()
-                                    $('content-large'>'tbody').append('<tr><td class="float"><img /><p>' + errorname + '<br>'+ errorfile + '</p></td><td><p>' +tags+ '</p></td><td class="center">' + errorcounter + '</td></tr>')
 
-                                    $('content-large'>'tbody').append('<tr class="empty"> <td data-match="true"></td><td data-match="true"></td><td></td></tr>')
-                                }
-                             });
-                        </script>
+
                         <!-- table ajax script -->
-						<tr>
+                        <!-- <tr>
 							<td class="float">
 								<img />
 								<p>java.lang.NoSuchMethodException: abcdefghijklnmopqrstuvwxyzabcdefghijklnmop<br>(ViewGroup.java:1372)</p>
@@ -156,11 +160,13 @@
 							</td>
 							<td class="center">35</td>
 						</tr>
-						<tr class="empty">
+                        <tr class="empty">
 							<td data-match="true"></td>
 							<td data-match="true"></td>
 							<td></td>
 						</tr>
+						-->
+
 					</tbody>
 				</table>
 				<div class="white-area"></div>
