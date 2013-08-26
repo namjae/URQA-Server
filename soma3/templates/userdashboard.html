@@ -36,7 +36,7 @@
             success : function(data) {
                 for(var i =0; i< data.length; i++)
                 {
-                    $('#error-list>.content-large>tbody').append('<tr><td class="float"><img /><p>' + data[i].ErrorName + '<br>'+ data[i].ErrorClassName + '</p></td><td><p>' + data[i].tags+ '</p></td><td class="center">' + data[i].ErrorCounter + '</td></tr>')
+                    $('#error-list>.content-large>tbody').append('<tr><td class="float"><img /><p>' + data[i].ErrorName + '<br>'+ data[i].ErrorClassName + '</p></td><td><p>' + data[i].tags+ '</p></td><td class="center">' + data[i].ErrorScore + '</td></tr>')
                 }
                 $('#error-list>.content-large>tbody').append('<tr class="empty"><td data-match="true"></td><td data-match="true"></td><td></td></tr>')
             }

@@ -300,24 +300,28 @@ def errorscorelist(request,pid):
         print 'invalid pid'
         return HttpResponse('')
 
-    ErrorElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week, today) ).order_by('errorweight')
+    ErrorElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
 
     jsondata = [
     ]
 
 
     for error in ErrorElements:
+        if error.rank == -1:
+            continue
         TagElements = Tags.objects.filter(iderror = error)
         tagString = '';
         for tag in TagElements:
             tagString += tag.tag + ','
-        # 마지막 , 제거
-        if len(tagString) > 0:
-            stringlength = len(tagString)
-            tagString = tagString[0 : stringlength - 1]
+            # 마지막 , 제거
+            if len(tagString) > 0:
+                stringlength = len(tagString)
+                tagString = tagString[0 : stringlength - 1]
 
-        dicerrordata = {'ErrorName' : error.errorname ,  'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' , 'tags': tagString, 'ErrorCounter' : error.numofinstances }
+        dicerrordata = {'ErrorName' : error.errorname ,  'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' , 'tags': tagString, 'ErrorScore' : error.errorweight }
         jsondata.append(dicerrordata);
+
+        print dicerrordata
 
     return HttpResponse(json.dumps(jsondata),'application/json')
 
