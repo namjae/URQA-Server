@@ -77,12 +77,22 @@ Raphael.custom.windowResize = function() {
 	clearTimeout(this.id);
 	this.id = setTimeout(doneResizing, 100);
 }
-Raphael.custom.dataLoad = function(jsondata, index) {
-	//$.get(file, function(data)
-	//{
-		Raphael.custom.stack[index].data = jsondata;
-		Raphael.custom.stack[index].update(Raphael.custom.stack[index].objectName, jsondata, Raphael.custom.stack[index].info);
-	//});
+Raphael.custom.dataLoad = function(file, index) {
+    $.ajax({
+        url: file,
+        type: 'GET',
+        success: function(data){
+                Raphael.custom.stack[index].data = data;
+                Raphael.custom.stack[index].update(Raphael.custom.stack[index].objectName, data, Raphael.custom.stack[index].info);
+            }
+    });
+    /*
+    $.ajax(file, function(data)
+	{
+		Raphael.custom.stack[index].data = data;
+		Raphael.custom.stack[index].update(Raphael.custom.stack[index].objectName, data, Raphael.custom.stack[index].info);
+	});
+	*/
 }
 Raphael.custom.pieGraph = function(file, objName, att)
 {
@@ -112,7 +122,7 @@ Raphael.custom.pieGraph = function(file, objName, att)
 		var labels = [],
 			data = [];
 
-		var response = $.parseJSON(realData);
+		var response = realData;
 		var tags = response.tags;
 		for(var i = 0; i < tags.length; i ++)
 		{
@@ -195,8 +205,8 @@ Raphael.custom.areaGraph = function(file, objName, att)
 		var labels = [],
 			data = [];
 
-		var response = $.parseJSON(realData);
-        var tags = response.tags;
+		var response = realData;
+		var tags = response.tags;
 		for(var i = 0; i < tags.length; i ++)
 		{
 			labels.push(tags[i].key);

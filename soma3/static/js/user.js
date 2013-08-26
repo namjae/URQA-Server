@@ -44,29 +44,6 @@ $(document).ready(function()
 	$("#profile-menu").hover(profileShow, profileHide);
 });
 
-
-function Dailyesprint(data)
-{
-    if($("body").hasClass("insight") )
-	{
-        $("#dailyES").ready(function(){
-                jsondata = JSON.stringify(data);
-                Raphael.custom.areaGraph( jsondata , "#dailyES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
-                    "color": "#dca763", "lineColor": "#3a3f42", "textColor": "#303335", "autoResize": true });
-        });
-    }
-}
-function Typeesprint(data)
-{
-    if($("body").hasClass("insight") )
-	{
-	    $("#typeES").ready(function(){
-            jsondata = JSON.stringify(data);
-			Raphael.custom.pieGraph(jsondata, "#typeES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
-				"lineColor": "#ffffff", "textColor": "#303335", "labelPos": "east", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true });
-		});
-    }
-}
 // Stylesheet is load-complate
 $("head").styleReady(function(){
 	$("body").css("display", "block");
@@ -74,16 +51,14 @@ $("head").styleReady(function(){
 	// Graph rendering
 	if($("body").hasClass("insight") )
 	{
-        <!--
 		$("#dailyES").ready(function(){
-			Raphael.custom.areaGraph("./data", "#dailyES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
+			Raphael.custom.areaGraph(server_url + project_id + "/userdashboard/dailyes", "#dailyES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
 				"color": "#dca763", "lineColor": "#3a3f42", "textColor": "#303335", "autoResize": true });
 		});
 		$("#typeES").ready(function(){
-			Raphael.custom.pieGraph("./data2", "#typeES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
+			Raphael.custom.pieGraph(server_url + project_id + "/userdashboard/typees", "#typeES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
 				"lineColor": "#ffffff", "textColor": "#303335", "labelPos": "east", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true });
 		});
-		-->
 	}
 
 	/** Component Start **/

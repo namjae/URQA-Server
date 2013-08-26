@@ -22,3 +22,26 @@ def getProjectPath():
 
 def getTemplatePath():
     return getProjectPath() + '/templates/'
+
+class RANK:
+    Unhandle = 0
+    Critical = 1
+    Major    = 2
+    Minor    = 3
+
+class TimeRange:
+    oneday = 1
+    weekly = 7
+    monthly = 30
+    threemonthly = 90
+
+#weekly, monthly, 3monthly
+def getTimeRange(t):
+
+    today = datetime.datetime.utcnow().replace(tzinfo=utc)
+    today = today.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
+
+    datedelta = datetime.timedelta(days =  -(t - 1))
+    past = today + datedelta
+
+    return past, today

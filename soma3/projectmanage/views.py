@@ -6,7 +6,11 @@ import random
 import subprocess
 import json
 import ast
+import datetime
+import time
 
+from django.utils.timezone import utc
+from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
@@ -24,9 +28,13 @@ from urqa.models import Sofiles
 from urqa.models import Errors
 from urqa.models import Appstatistics
 from urqa.models import Instances
+from urqa.models import Tags
 from soma3.settings import STATIC_ROOT
 from soma3.settings import STATIC_URL
 from utility import getTemplatePath
+from utility import getTimeRange
+from utility import TimeRange
+from utility import RANK
 
 from config import get_config
 
@@ -195,55 +203,123 @@ def userdashboard(request, pid):
     return render(request, 'userdashboard.html', ctx)
 
 def dailyesgraph(request, pid):
-    print 'dailyesgraph in'
-    """
+
+    #기본 데이터
+    default = {
+	    "max":{"key":5, "value":0},
+	    "tags":[
+		    {"key":1, "value":0},
+		    {"key":2, "value":0},
+		    {"key":3, "value":0},
+		    {"key":4, "value":0},
+    		{"key":5, "value":0},
+	    	{"key":6, "value":0},
+		    {"key":7, "value":0}
+	        ]
+        }
+
+    #오늘 날짜 및 일주일 전을 계산
+    week , today = getTimeRange(TimeRange.weekly)
+
+    #defalut값에 날짜를 대입함
+    for i in range(0,TimeRange.weekly):
+        tmpdate = datetime.timedelta(days  = i-6 )
+        tmpdate = today + tmpdate
+        default['tags'][i]['key'] = tmpdate.__format__('%m / %d')
+        print default['tags'][i]['key']
+
+    #프로젝트 ID에 맞는 에러들을 가져오기 위함
     try:
-        ProjectElement = Projects.objects.get(pid= pid)
+        ProjectElement = Projects.objects.get(apikey= pid)
     except ObjectDoesNotExist:
         print 'invalid pid'
-        return HttpResponse(json.dumps({'idsession':'0'}), 'application/json');
-    """
-    dicexam = {}
+        return HttpResponse(json.dumps(default), 'application/json');
+
+    #weeklynaive = timezone.make_naive(weekly,timezone.utc)
 
 
-    listkeyvalue = []
-    for i in range(1,8):
-        dictmp = {}
-        dictmp['key'] = i
-        dictmp['value'] = i+10
-        listkeyvalue.append(dictmp)
 
-    dickeyvalue = {}
-    dickeyvalue['key'] = 31
-    dickeyvalue['value'] = 10
 
-    dicexam['max'] =dickeyvalue
-    dicexam['tags'] = listkeyvalue
+    for i in range(0,7):
+        tmpdate = datetime.timedelta(days  = i-6 )
+        tmpdate = today + tmpdate
+        ErrorsElements = Errors.objects.filter(pid = ProjectElement , lastdate__year = tmpdate.year , lastdate__month = tmpdate.month , lastdate__day = tmpdate.day)
+        errorweight = 0
+        if len(ErrorsElements) > 0:
+            for error in ErrorsElements:
+                errorweight += error.errorweight
+            default['tags'][i]['value'] = errorweight
+        else :
+            default['tags'][i]['value'] = 0
 
-    result = json.dumps(dicexam)
-    print result
-
-    return HttpResponse(result,'application/json')
+    return HttpResponse(json.dumps(default),'application/json')
 
 def typeesgraph(request, pid):
 
-    jsondata = {
+    week , today = getTimeRange(TimeRange.weekly)
+
+
+    default = {
         "tags":[
-            {"key":"Unhandler", "value":1},
-            {"key":"Critical", "value":1},
-            {"key":"Major", "value":1},
-            {"key":"Minor", "value":1}
+            {"key":"Unhandler", "value":0},
+            {"key":"Critical", "value":0},
+            {"key":"Major", "value":0},
+            {"key":"Minor", "value":0}
             ]
         }
 
+    #프로젝트 ID에 맞는 에러들을 가져오기 위함
+    try:
+        ProjectElement = Projects.objects.get(apikey= pid)
+    except ObjectDoesNotExist:
+        print 'invalid pid'
+        return HttpResponse(json.dumps(default), 'application/json')
 
-    result = json.dumps(jsondata)
+    print week
+
+    for i in range(0,4): # unhandled 부터 minor 까지
+       ErrorsElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week,today), rank = i) #일주일치 얻어옴
+       if len(ErrorsElements) > 0:
+           for error in ErrorsElements:
+               default['tags'][i]['value'] += error.errorweight
+               print str(i) + ':' +  str(default['tags'][i]['value'])
+
+    result = json.dumps(default)
     print result
 
     return HttpResponse(result,'application/json')
 
+#name, file, tag, counter
+def errorscorelist(request,pid):
+
+    week, today = getTimeRange(TimeRange.weekly)
+
+    try:
+        ProjectElement = Projects.objects.get(apikey = pid)
+    except ObjectDoesNotExist:
+        print 'invalid pid'
+        return HttpResponse('')
+
+    ErrorElements = Errors.obejcts.filter(pid = ProjectElement , lastdate__range = (week, today) ).order_by('errorweight', 'rank', 'lastdate')
+
+    jsondata = {'list':[
+    ]}
+
+
+    for error in ErrorElements:
+        TagElements = Tags.objects.filter(iderror = error)
+        tagString = '';
+        for tag in TagElements:
+            tagString += tag.tag + ','
+
+        
+        dicerrordata = {'ErrorName' : error.errorname ,  'ErrorClassName' : error.errorclassname, 'tags': 'a', 'ErrorCounter' : error.numofinstances} ,
+
+
+
 def mediapathrequest(request, path):
     return HttpResponseRedirect(STATIC_URL+path)
+
 
 
 

@@ -21,6 +21,8 @@
 	<script type="text/javascript" src="{% static 'js/css-compile.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/user.js' %}"></script>
 	<script type="text/javascript">
+        var project_id = {{ projectid }};
+        var server_url = "{{ ServerURL }}"
         $(document).ready(function(){
 			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
@@ -85,27 +87,10 @@
 			<div class="title" data="dashboard"></div>
 			<div id="dashboard-graph" class="content half">
 				<div>
-					<div id="dailyES" class="area">
-                        <script>
-                            $.ajax({
-                                type: 'GET',
-                                url: '{{ ServerURL }}' + '{{ projectid }}/'+'userdashboard/dailyes',
-                                success: Dailyesprint
-                                });
-                        </script>
-					</div>
+					<div id="dailyES" class="area"></div>
 				</div>
 				<div>
-					<div id="typeES" class="area">
-                        <script>
-                            $.ajax({
-                                type: 'GET',
-                                dataType: 'json',
-                                url: '{{ ServerURL }}' + '{{ projectid }}/'+'userdashboard/typees',
-                                success: Dailyesprint
-                                });
-                        </script>
-					</div>
+					<div id="typeES" class="area"></div>
 				</div>
 				<div class="white-area"></div>
 			</div>
@@ -117,6 +102,20 @@
 						<td class="center" style="width: 88px">Error Score</td>
 					</tr></thead>
 					<tbody>
+                        <script>
+                             $.ajax({
+                                type: 'get' ,
+                                async: true ,
+                                url: server_url + project_id + "/userdashboard/errorscorelist",
+                                success : function(data) {
+                                    for()
+                                    $('content-large'>'tbody').append('<tr><td class="float"><img /><p>' + errorname + '<br>'+ errorfile + '</p></td><td><p>' +tags+ '</p></td><td class="center">' + errorcounter + '</td></tr>')
+
+                                    $('content-large'>'tbody').append('<tr class="empty"> <td data-match="true"></td><td data-match="true"></td><td></td></tr>')
+                                }
+                             });
+                        </script>
+                        <!-- table ajax script -->
 						<tr>
 							<td class="float">
 								<img />

@@ -202,7 +202,7 @@ function newAreaGraph(file, objName, att)
 			addWindowResize(updateSize);
 		}
 	}
-
+	
 	$.get(file, function(data)
 	{
 		tempData = data;

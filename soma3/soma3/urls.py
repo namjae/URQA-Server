@@ -36,10 +36,12 @@ urlpatterns = patterns('',
     url(r'^urqa/project/(?P<pid>\d+)/userdashboard$', 'projectmanage.views.userdashboard'),
     url(r'^urqa/project/(?P<pid>\d+)/userdashboard/dailyes$', 'projectmanage.views.dailyesgraph'),
     url(r'^urqa/project/(?P<pid>\d+)/userdashboard/typees$', 'projectmanage.views.typeesgraph'),
+    url(r'^urqa/project/(?P<pid>\d+)/userdashboard/errorscorelist', 'projectmanage.views.errorscorelist'),
     #project manage static
     (r'(?:.*?/)?(?P<path>(css|font|js|images)/.+)$', 'projectmanage.views.mediapathrequest'),
 
     #errors
+    url(r'^urqa/project/(?P<pid>\d+)/errors$', 'errors.views.filter_view'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/new$', 'errors.views.newTag'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deleteTag'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/comment/new$', 'errors.views.newComment'),

@@ -13,6 +13,10 @@ from urqa.models import Comments
 
 from common import validUserPjtError
 
+def filter_view(request,pid):
+
+    return HttpResponse('공사중')
+
 def newTag(request, pid, iderror):
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,pid,iderror)
 
