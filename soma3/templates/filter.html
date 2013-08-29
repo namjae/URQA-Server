@@ -50,22 +50,22 @@
 				<a href="./"><div class="logo"></div></a>
 				<div class="navbar-menu">
 					<ul>
-						<li><a>Insights</a></li>
-						<li><a>Errors</a></li>
+						<li><a href="../">Insights</a></li>
+						<li><a href="./">Errors</a></li>
 						<li><a>Statistics</a></li>
 						<li><a>Settings</a></li>
 					</ul>
 				</div>
 				<div class="navbar-profile">
 					<div class="setting"></div>
-					<div class="profile"><img src="http://profile.ak.fbcdn.net/hprofile-ak-ash3/27350_100001314106197_1542605533_q.jpg" alt="profile" /></div>
+					<div class="profile"><img src="{{ profile_url }}" alt="profile" /></div>
 					<div id="profile-menu">
 						<div class="inv-triangle"></div>
 						<div class="color shadow">
-							<img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/c207.47.546.546/s160x160/531640_453529518034181_1497539635_n.jpg" alt="profile" />
+							<img src="{{ profile_url }}" alt="profile" />
 							<div class="text">
-								<div class="name">An Jeungwon</div>
-								<div class="user-style">Enterprise Customer</div>
+								<div class="name">{{ user_name }}</div>
+                                <div class="user-style">{{ user_email }}</div>
 							</div>
 						</div>
 						<div class="white shadow">

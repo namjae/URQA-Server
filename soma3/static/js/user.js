@@ -6,6 +6,41 @@ function resizePopupInformation()
 	$("#popup-information > .body").animate({'top': tops, 'left': lefts}, 250, function() { $(this).css({'top': tops, 'left': lefts}); } );
 }
 
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+function sameOrigin(url) {
+    // test that a given url is a same-origin URL
+    // url could be relative or scheme relative or absolute
+    var host = document.location.host; // host + port
+    var protocol = document.location.protocol;
+    var sr_origin = '//' + host;
+    var origin = protocol + sr_origin;
+    // Allow absolute or scheme relative URLs to same origin
+    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+        // or any other URL that isn't scheme relative or absolute i.e relative.
+        !(/^(\/\/|http:|https:).*/.test(url));
+}
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 function showPopupInformation(w, h)
 {
 	var oriW = $("#popup-information > .body").width();
@@ -112,7 +147,7 @@ $("head").styleReady(function(){
 	if($("body").hasClass("error") )
 	{
 		$("#event-path-parent").ready(function(){
-			Raphael.custom.eventPath("./data3", "#event-path", {"height": 230, "contentWidth": 20, "contentHeight": 20, "textColor": "#303335", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true, "topgutter": 5, "bottomgutter": -10 })
+			//Raphael.custom.eventPath("./data3", "#event-path", {"height": 230, "contentWidth": 20, "contentHeight": 20, "textColor": "#303335", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true, "topgutter": 5, "bottomgutter": -10 })
 		});
 	}
 
@@ -312,10 +347,31 @@ $("head").styleReady(function(){
 			}
 			// Restore event
 			restoreEvent = function(obj) {
-				var dropdown = $(this).parent().children("li:nth-last-child(1)").children("div").children("ul");
-				dropdown.append("<li data-value=\"false\"><a>" + $(this).html() + "</a></li>");
-				dropdown.children("li:nth-last-child(1)").click(itemClickEvent).click(addEvent);
-				$(this).remove();
+                //confirm
+                var confirmVal = confirm("Realy?");
+                if(confirmVal)
+                {
+                    var dropdown = $(this).parent().children("li:nth-last-child(1)").children("div").children("ul");
+                    dropdown.append("<li data-value=\"false\"><a>" + $(this).html() + "</a></li>");
+                    dropdown.children("li:nth-last-child(1)").click(itemClickEvent).click(addEvent);
+                    $(this).remove();
+                    var csrftoken = getCookie('csrftoken')
+                    var deletetag = {'tag' : $(this).text()}
+                    $.ajax({
+                          type: 'post'
+                        , url: error_id+'/tag/delete'
+                        , data: deletetag
+                        , beforeSend: function(xhr, settings) {
+                            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                                // Send the token to same-origin, relative URLs only.
+                                // Send the token only if the method warrants CSRF protection
+                                // Using the CSRFToken value acquired earlier
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            }
+                        }
+                    })
+                }
+
 			}
 
 			// Initialize

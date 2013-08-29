@@ -43,7 +43,6 @@ from urqa.views import index
 from config import get_config
 
 
-
 def newApikey():
     while True:
         apikey = "%08d" % random.randint(1,99999999)
@@ -197,8 +196,27 @@ def so_upload(request, pid):
                 return HttpResponse('File Uploaded, but it have no debug info')
     return HttpResponse('Failed to Upload File')
 
+
 def dashboard(request, pid):
-    #dashboardtemplate = loader.get_template('projectdashboard.html')
+
+    '''
+    from urqa.models import Osstatistics
+    week, today = getTimeRange(TimeRange.weekly)
+
+    try:
+        projectElement = Projects.objects.get(apikey = pid)
+    except ObjectDoesNotExist:
+        print 'invalid pid'
+        return HttpResponse('')
+
+    errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
+    valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct()
+    valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct()
+    for a in valid_app:
+        print a['appversion']
+    for a in valid_os:
+        print a['osversion']
+    '''
 
     username = request.user
 
@@ -300,7 +318,7 @@ def typeesgraph(request, pid):
        if len(ErrorsElements) > 0:
            for error in ErrorsElements:
                default['tags'][i]['value'] += error.errorweight
-               print str(i) + ':' +  str(default['tags'][i]['value'])
+               #print str(i) + ':' +  str(default['tags'][i]['value'])
 
     result = json.dumps(default)
     print result
@@ -318,7 +336,7 @@ def errorscorelist(pid):
         print 'invalid pid'
         return HttpResponse('')
 
-    print today
+    #print today
 
     ErrorElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
 
@@ -341,7 +359,7 @@ def errorscorelist(pid):
         dicerrordata = {'ErrorName' : error.errorname ,  'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' , 'tags': tagString, 'ErrorScore' : error.errorweight }
         jsondata.append(dicerrordata);
 
-        print dicerrordata
+        #print dicerrordata
 
     return jsondata
 

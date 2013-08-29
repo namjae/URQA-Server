@@ -592,5 +592,5 @@ def calc_eventpath(errorElement):
         sid = int(key[0])
         tid = int(key[1])
         result['links'].append({'source':sid,'target':tid,'value':link_table[link]})
-    print result
-    return
+    print json.dumps(result)
+    return result
