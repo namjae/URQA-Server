@@ -25,23 +25,10 @@
         var project_id = {{ projectid }};
         var server_url = "{{ ServerURL }}"
         $(document).ready(function(){
-			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
+            $("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
     </script>
 
-     <script>
-         $.ajax({
-            type: 'get' ,
-            url: server_url + project_id + "/errorscorelist",
-            success : function(data) {
-                for(var i =0; i< data.length; i++)
-                {
-                    $('#error-list>.content-large>tbody').append('<tr><td class="float"><img /><p>' + data[i].ErrorName + '<br>'+ data[i].ErrorClassName + '</p></td><td><p>' + data[i].tags+ '</p></td><td class="center">' + data[i].ErrorScore + '</td></tr>')
-                }
-                $('#error-list>.content-large>tbody').append('<tr class="empty"><td data-match="true"></td><td data-match="true"></td><td></td></tr>')
-            }
-         });
-    </script>
 </head>
 
 <body class="insight" style="display: none;">
@@ -59,12 +46,10 @@
 				</div>
 				<div class="navbar-profile">
 					<div class="setting"></div>
-					<!--<div class="profile"><img src="http://profile.ak.fbcdn.net/hprofile-ak-ash3/27350_100001314106197_1542605533_q.jpg" alt="profile" /></div>-->
                     <div class="profile"><img src="{{ profile_url }}" alt="profile" /></div>
 					<div id="profile-menu">
 						<div class="inv-triangle"></div>
 						<div class="color shadow">
-							<!--<img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/c207.47.546.546/s160x160/531640_453529518034181_1497539635_n.jpg" alt="profile" />-->
                             <img src="{{ profile_url }}" alt="profile" />
 							<div class="text">
 								<div class="name">{{ user_name }}</div>
@@ -120,54 +105,23 @@
 					</tr></thead>
 					<tbody>
 
-
-                        <!-- table ajax script -->
-                        <!-- <tr>
-							<td class="float">
+                        {% for data in error_list %}
+                        <tr>
+                            <td class="float">
 								<img />
-								<p>java.lang.NoSuchMethodException: abcdefghijklnmopqrstuvwxyzabcdefghijklnmop<br>(ViewGroup.java:1372)</p>
+								<p>{{ data.ErrorName }}<br>{{ data.ErrorClassName }}</p>
 							</td>
 							<td>
-								<p>external, dev shin</p>
+								<p>{{ data.tags }}</p>
 							</td>
-							<td class="center">35</td>
-						</tr>
-						<tr>
-							<td class="float">
-								<img />
-								<p>java.lang.NoSuchMethodException: abcdefghijklnmopqrstuvwxyzabcdefghijklnmop<br>(ViewGroup.java:1372)</p>
-							</td>
-							<td>
-								<p>external, dev shin</p>
-							</td>
-							<td class="center">35</td>
-						</tr>
-						<tr>
-							<td class="float">
-								<img />
-								<p>java.lang.NoSuchMethodException: abcdefghijklnmopqrstuvwxyzabcdefghijklnmop<br>(ViewGroup.java:1372)</p>
-							</td>
-							<td>
-								<p>external, dev shin</p>
-							</td>
-							<td class="center">35</td>
-						</tr>
-						<tr>
-							<td class="float">
-								<img />
-								<p>java.lang.NoSuchMethodException: abcdefghijklnmopqrstuvwxyzabcdefghijklnmop<br>(ViewGroup.java:1372)</p>
-							</td>
-							<td>
-								<p>external, dev shin</p>
-							</td>
-							<td class="center">35</td>
-						</tr>
+							<td class="center">{{ data.ErrorScore }}</td>
+                        </tr>
+                        {% endfor %}
                         <tr class="empty">
 							<td data-match="true"></td>
 							<td data-match="true"></td>
 							<td></td>
 						</tr>
-						-->
 
 					</tbody>
 				</table>

@@ -13,6 +13,7 @@ from urqa.models import Tags
 from urqa.models import Comments
 from urqa.models import AuthUser
 from urqa.models import Errors
+from urqa.models import Instances
 
 from common import validUserPjt
 from common import validUserPjtError
@@ -127,6 +128,20 @@ def errorDetail(request,pid,iderror):
     else:
         isManual = True
 
+    instanceElements = Instances.objects.filter(iderror = ErrorsElement)
+    #wifi
+    wifi = 0
+    wifielements = instanceElements.filter(wifion = 1)
+    wifi = len(wifielements)
+    #gps
+    gps = 0
+    gpselements = instanceElements.filter(gpson = 1)
+    gps = len(gpselements)
+    #mobilenetwork
+    mobilenetwork = 0
+    mobilenetworkelements = instanceElements.filter(mobileon = 1)
+    mobilenetwork = len(mobilenetworkelements)
+
 
     tpl = loader.get_template('details.html')
     ctx = Context({
@@ -137,6 +152,14 @@ def errorDetail(request,pid,iderror):
         'user_email': user.email ,
         'ErrorScore' : ErrorsElement.errorweight,
         'isManual' :  isManual,
-
+        'ErrorName' : ErrorsElement.errorname,
+        'ErrorFile' : '(' +ErrorsElement.errorclassname + ':' + ErrorsElement.linenum + ')',
+        'Errornumofinstances' : ErrorsElement.numofinstances,
+        'Errorrecur' : ErrorsElement.recur,
+        'Errorstatus' : ErrorsElement.status,
+        'Errorswifi' : wifi/ErrorsElement.numofinstances,
+        'Errorsgps' : gps/ErrorsElement.numofinstances,
+        'Errorsmobilenetwork' : mobilenetwork/ErrorsElement.numofinstances,
+        'Errorsmemoryusage' : ErrorsElement.totalmemusage / ErrorsElement.numofinstances,
     });
     return HttpResponse(tpl.render(ctx))

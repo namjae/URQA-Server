@@ -209,6 +209,7 @@ def dashboard(request, pid):
 
     user = AuthUser.objects.get(username = request.user)
 
+
     ctx = {
         'templatepath' : getTemplatePath(),
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
@@ -216,6 +217,7 @@ def dashboard(request, pid):
         'user_name' :user.first_name + ' ' + user.last_name ,
         'user_email': user.email,
         'profile_url' : user.image_path,
+        'error_list' : errorscorelist(pid),
     }
     return render(request, 'projectdashboard.html', ctx)
 
@@ -306,7 +308,7 @@ def typeesgraph(request, pid):
     return HttpResponse(result,'application/json')
 
 #name, file, tag, counter
-def errorscorelist(request,pid):
+def errorscorelist(pid):
 
     week, today = getTimeRange(TimeRange.weekly)
 
@@ -341,7 +343,7 @@ def errorscorelist(request,pid):
 
         print dicerrordata
 
-    return HttpResponse(json.dumps(jsondata),'application/json')
+    return jsondata
 
 
 
