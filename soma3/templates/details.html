@@ -265,14 +265,20 @@
 						<tr class="notHover">
 							<td style="width: 120px">
 								<div class="thumbnail large"></div>
-								<div class="center">{{ Manual_Auto }}</div>
+								<div class="center">
+                                    {% if isManual %}
+                                        <span class="bold">Manual</span>&nbsp;Auto
+                                    {% else %}
+                                        Manual&nbsp;<span class="bold">Auto</span>
+                                    {% endif %}
+                                </div>
 							</td>
 							<td class="float">
 								<p id="error-name">java.lang.NoSuchMethodException: abcdefghijklnmopqrstu</p>
 								<p id="error-file">(ViewGroup.java:1372)</p>
 								<div class="float">
 									<div class="infobox red">
-										<span></span>
+										<span>occurrence</span>
 										<label>1,302</label>
 									</div>
 									<div class="infobox red">

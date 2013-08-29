@@ -3,14 +3,16 @@ from urqa.models import Errors
 
 def manual_auto_determine(errorelement):
     boldstr = '<span class="bold">'
-    manualstr = 'Manual</span>&nbsp;'
+    boldstrend = '</span>&nbsp;'
+    manualstr = 'Manual'
     autostr = 'Auto'
 
     manual_autostr = ""
     if errorelement.autodetermine == 1:
-        manual_autostr = manualstr + boldstr + autostr
+        manual_autostr = manualstr + boldstr + autostr + boldstrend
     else:
-        manual_autostr = boldstr + manualstr + autostr
+        manual_autostr = boldstr + manualstr + boldstrend +autostr
 
+    print manual_autostr
     return manual_autostr
 

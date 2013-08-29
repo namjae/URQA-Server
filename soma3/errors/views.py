@@ -7,14 +7,22 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import Context, loader
+from django.http import HttpResponseRedirect
 
 from urqa.models import Tags
 from urqa.models import Comments
+from urqa.models import AuthUser
+from urqa.models import Errors
 
-
+from common import validUserPjt
 from common import validUserPjtError
 
+from errors.detailmodule import manual_auto_determine
+
 def filter_view(request,pid):
+
+
+
     tpl = loader.get_template('filter.html')
     osv_list = [1,1,1,1]
     appv_list = [1,1,1,1]
@@ -25,6 +33,7 @@ def filter_view(request,pid):
         'appv_list' : appv_list,
     });
     return HttpResponse(tpl.render(ctx))
+
 
 def newTag(request, pid, iderror):
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,pid,iderror)
@@ -91,3 +100,43 @@ def deleteComment(request, pid, iderror):
         HttpResponse('comment %s not exists' % idcomment)
 
     return HttpResponse('success')
+
+
+def errorDetail(request,pid,iderror):
+
+    #Iderror 잘못되었을시 접근 불가
+    try:
+        ErrorsElement = Errors.objects.get(iderror = iderror)
+    except ObjectDoesNotExist:
+        print 'DoesNotExist ErrorsElement'
+        return HttpResponseRedirect('/urqa')
+
+    #프로젝트 권한 없을시 접근 불가
+    #로그인 안되었을시 접근 불가
+    username = request.user
+    valid , message , userelement, projectelement = validUserPjt(username,pid)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    user = AuthUser.objects.get(username = request.user)
+
+    #manual_Auto
+    isManual = True
+    if ErrorsElement.autodetermine == 1:
+        isManual = False
+    else:
+        isManual = True
+
+
+    tpl = loader.get_template('details.html')
+    ctx = Context({
+        'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
+        'projectid' : pid,
+        'iderror' : iderror,
+        'user_name' :user.first_name + ' ' + user.last_name ,
+        'user_email': user.email ,
+        'ErrorScore' : ErrorsElement.errorweight,
+        'isManual' :  isManual,
+
+    });
+    return HttpResponse(tpl.render(ctx))

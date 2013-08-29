@@ -214,7 +214,8 @@ def dashboard(request, pid):
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
         'projectid' : pid,
         'user_name' :user.first_name + ' ' + user.last_name ,
-        'user_email': user.email
+        'user_email': user.email,
+        'profile_url' : user.image_path,
     }
     return render(request, 'projectdashboard.html', ctx)
 

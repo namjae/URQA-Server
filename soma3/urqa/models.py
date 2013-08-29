@@ -60,6 +60,7 @@ class AuthUser(models.Model):
     is_active = models.IntegerField()
     date_joined = models.DateTimeField()
     timezone = models.CharField(max_length=45L, blank=True)
+    image_path = models.CharField(max_length=260L, blank=True)
     class Meta:
         db_table = 'auth_user'
 
