@@ -16,7 +16,7 @@ def index(request):
 #	return HttpResponse('hello world')
     tpl = loader.get_template('test.html')
     ctx = Context({});
-    return HttpResponse(tpl.render(ctx))
+    #return HttpResponse(tpl.render(ctx))
 
     #now = datetime.datetime.now()
     #now_utc = datetime.datetime.utcnow().replace(tzinfo=utc)
@@ -25,9 +25,8 @@ def index(request):
     #print now_utc
     #print timezone.now()
     #print timezone.make_naive(timezone.now(),datetime.tzinfo)
-    #return HttpResponse(str(request.user) + ' ' + str(request.user.is_authenticated()))
+    return HttpResponse(str(request.user) + ' ' + str(request.user.is_authenticated()))
 
-#return HttpResponse('awefawefawefawef')
 
 @csrf_exempt
 def adduser(request):

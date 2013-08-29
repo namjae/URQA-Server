@@ -328,6 +328,26 @@
 									<input type="hidden" name="app_version[]" data-value="All" value="All" />
 								</div>
 							</td>
+
+                            {%  for o in temp_list %}
+                            <td>
+								<div class="dropdown multiple simple">
+									<a>1.4</a>
+									<span></span>
+									<div>
+										 <ul>
+										 	<li data-value="true"><a>1.4.2</a></li>
+										 	<li data-value="false"><a>1.4.5</a></li>
+										 	<li data-value="false"><a>1.4.6</a></li>
+										 	<li data-value="true"><a>1.4.7</a></li>
+										 	<li data-value="false"><a>1.4.8</a></li>
+										 </ul>
+									</div>
+									<input type="hidden" name="app_version" />
+								</div>
+							</td>
+                            {% endfor %}
+                            <!--
 							<td>
 								<div class="dropdown multiple simple">
 									<a>1.4</a>
@@ -419,7 +439,7 @@
 									</div>
 									<input type="hidden" name="app_version" />
 								</div>
-							</td>
+							</td>-->
 						</tr>
 
 						<!-- Tag -->

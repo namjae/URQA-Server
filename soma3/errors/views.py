@@ -16,9 +16,13 @@ from common import validUserPjtError
 
 def filter_view(request,pid):
     tpl = loader.get_template('filter.html')
+    osv_list = [1,1,1,1]
+    appv_list = [1,1,1,1]
     ctx = Context({
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
         'projectid' : pid,
+        'osv_list' : osv_list,
+        'appv_list' : appv_list,
     });
     return HttpResponse(tpl.render(ctx))
 

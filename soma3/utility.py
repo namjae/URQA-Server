@@ -24,6 +24,7 @@ def getTemplatePath():
     return getProjectPath() + '/templates/'
 
 class RANK:
+    Suspense = -1
     Unhandle = 0
     Critical = 1
     Major    = 2
@@ -39,9 +40,11 @@ class TimeRange:
 def getTimeRange(t):
 
     today = datetime.datetime.utcnow().replace(tzinfo=utc)
-    today = today.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
+    #today = today.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 
     datedelta = datetime.timedelta(days =  -(t - 1))
+
     past = today + datedelta
+    past = past.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 
     return past, today

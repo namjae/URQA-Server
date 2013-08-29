@@ -1,3 +1,52 @@
+function resizePopupInformation()
+{
+	var tops = ($(window).height() - $("#popup-information > .body").height()) / 2;
+	var lefts = ($(window).width() - $("#popup-information > .body").width()) / 2;
+	$("#popup-information > .body").stop(true, true);
+	$("#popup-information > .body").animate({'top': tops, 'left': lefts}, 250, function() { $(this).css({'top': tops, 'left': lefts}); } );
+}
+
+function showPopupInformation(w, h)
+{
+	var oriW = $("#popup-information > .body").width();
+	var oriH = $("#popup-information > .body").height();
+	if(w)
+	{
+		var tops = ($(window).height() - h) / 2;
+		var lefts = ($(window).width() - w) / 2;
+		$("#popup-information > .body").stop(true, true);
+		$("#popup-information > .body").animate({
+			"top": tops,
+			"left": lefts,
+			"width": w,
+			"height": h
+		}, 250, function(){
+			$(this).css({"top": tops, "left": lefts, "width": w, "height": h});
+		});
+	}
+	$("body").css("overflow", "hidden");
+	$("#popup-information").css("display", "block");
+
+	$("#popup-container").stop(true, true);
+	$("#popup-container").css({"display": "block", "opacity": 0.0});
+	$("#popup-container").animate({
+		opacity: 1.0,
+	}, 250, function(){
+		$(this).css({"opacity": 1.0});
+	});
+}
+function hidePopupInformation()
+{
+	$("#popup-container").stop(true, true);
+	$("#popup-container").animate({
+		opacity: 0.0,
+	}, 250, function(){
+		$(this).css({"display": "none"});
+		$("body").css("overflow", "");
+		$("#popup-information").css("display", "none");
+	});
+}
+
 $(document).ready(function()
 {
 	$("#container").addClass("container-js");
@@ -52,12 +101,18 @@ $("head").styleReady(function(){
 	if($("body").hasClass("insight") )
 	{
 		$("#dailyES").ready(function(){
-			Raphael.custom.areaGraph(server_url + project_id + "/userdashboard/dailyes", "#dailyES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
+			Raphael.custom.areaGraph(server_url + project_id + "/dailyes", "#dailyES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
 				"color": "#dca763", "lineColor": "#3a3f42", "textColor": "#303335", "autoResize": true });
 		});
 		$("#typeES").ready(function(){
-			Raphael.custom.pieGraph(server_url + project_id + "/userdashboard/typees", "#typeES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
+			Raphael.custom.pieGraph(server_url + project_id + "/typees", "#typeES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
 				"lineColor": "#ffffff", "textColor": "#303335", "labelPos": "east", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true });
+		});
+	}
+	if($("body").hasClass("error") )
+	{
+		$("#event-path-parent").ready(function(){
+			Raphael.custom.eventPath("./data3", "#event-path", {"height": 230, "contentWidth": 20, "contentHeight": 20, "textColor": "#303335", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true, "topgutter": 5, "bottomgutter": -10 })
 		});
 	}
 
@@ -335,10 +390,20 @@ $("head").styleReady(function(){
 				if($(this).attr("data-match") != "true")
 					return;
 
+				$(this).parent().parent().children().each(function(){
+					if($(this).parent().hasClass("empty") == true)
+						return;
+
+					$(this).children().eq(child).children("p").width("0px");
+				});
+
 				var w = $(this).width();
 				var chd = $(this).parent().parent().children().eq(0).children().eq($(this).index()).children(":not(p)");
 				for(var i = 0; i < chd.length; i ++)
-					w -= chd.eq(i).width() + 12;
+				{
+					if(chd.eq(i).css("float") != "none")
+						w -= chd.eq(i).width() + 12;
+				}
 
 				$(this).parent().parent().children().each(function(){
 					if($(this).parent().hasClass("empty") == true)
@@ -350,4 +415,11 @@ $("head").styleReady(function(){
 			$(this).css("display", "none");
 		});
 	})();
+
+	// Auto-resize popup-information
+	//$("#popup-information").click(hidePopupInformation);
+	var bodyChecker = false;
+	$("#popup-information").click(function(){ if(bodyChecker == false){ hidePopupInformation(); } bodyChecker = false; })
+	$("#popup-information > .body").click(function(){ bodyChecker = true; })
+	addWindowResize(resizePopupInformation)();
 });

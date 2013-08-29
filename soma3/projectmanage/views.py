@@ -197,8 +197,8 @@ def so_upload(request, pid):
                 return HttpResponse('File Uploaded, but it have no debug info')
     return HttpResponse('Failed to Upload File')
 
-def userdashboard(request, pid):
-    #dashboardtemplate = loader.get_template('userdashboard.html')
+def dashboard(request, pid):
+    #dashboardtemplate = loader.get_template('projectdashboard.html')
 
     username = request.user
 
@@ -216,7 +216,7 @@ def userdashboard(request, pid):
         'user_name' :user.first_name + ' ' + user.last_name ,
         'user_email': user.email
     }
-    return render(request, 'userdashboard.html', ctx)
+    return render(request, 'projectdashboard.html', ctx)
 
 def dailyesgraph(request, pid):
 
@@ -251,6 +251,8 @@ def dailyesgraph(request, pid):
         errorweight = 0
         if len(ErrorsElements) > 0:
             for error in ErrorsElements:
+                if error.rank == RANK.Suspense:
+                    continue
                 errorweight += error.errorweight
             value['value'] = errorweight
 
@@ -290,7 +292,7 @@ def typeesgraph(request, pid):
 
     print week
 
-    for i in range(0,4): # unhandled 부터 minor 까지
+    for i in range(RANK.Unhandle,RANK.Minor+1): # unhandled 부터 minor 까지
        ErrorsElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week,today), rank = i) #일주일치 얻어옴
        if len(ErrorsElements) > 0:
            for error in ErrorsElements:
@@ -313,6 +315,8 @@ def errorscorelist(request,pid):
         print 'invalid pid'
         return HttpResponse('')
 
+    print today
+
     ErrorElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
 
     jsondata = [
@@ -320,7 +324,7 @@ def errorscorelist(request,pid):
 
 
     for error in ErrorElements:
-        if error.rank == -1:
+        if error.rank == RANK.Suspense:
             continue
         TagElements = Tags.objects.filter(iderror = error)
         tagString = '';

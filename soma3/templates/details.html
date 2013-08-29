@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	
+	<title>UrQA :: Dashboard</title>
+
+	<meta name="viewport" content="width=device-width">
+
+    {% load static %}
+
+	<script type="text/javascript" src="{% static 'js/lib.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/hashmap.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/jquery-2.0.0.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/raphael.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/r.raphael.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/r.pie.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/popup.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/graph/graph.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/graph/areaGraph.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/css-compile.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/user.js' %}"></script>
+	<script type="text/javascript">
+      var error_id = {{ iderror }};
+      var project_id = {{ projectid }};
+      var server_url = "{{ ServerURL }}"
+	  $(document).ready(function(){
+			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
+		});
+	</script>
+</head>
+
+<body class="error" style="display: none;">
+	<div id="container">
+		<div id="popup-container">
+			<div id="popup-notification"></div>
+			<div id="popup-information">
+				<div class="body half mini">
+					<div>
+						<div class="area">
+							<span>Instance detail informations</span>
+							<table class="small" style="margin-top: 5px">
+								<thead><tr>
+									<td class="center" style="width: 45%">Category</td>
+									<td class="center">Value</td>
+								</tr></thead>
+								<tbody>
+									<tr>
+										<td class="left">OS Version</td>
+										<td class="left">4.1.1</td>
+									</tr>
+									<tr>
+										<td class="left">App Version</td>
+										<td class="left">1.1</td>
+									</tr>
+									<tr>
+										<td class="left">Device(Brand)</td>
+										<td class="left">SHV-E250H<br>(Samsung)</td>
+									</tr>
+									<tr>
+										<td class="left">Country</td>
+										<td class="left">KR</td>
+									</tr>
+									<tr>
+										<td class="left">Free Memory</td>
+										<td class="left">32MB</td>
+									</tr>
+									<tr>
+										<td class="left">Memory usage</td>
+										<td class="left">53MB</td>
+									</tr>
+									<tr>
+										<td class="left">GPS</td>
+										<td class="left">On</td>
+									</tr>
+									<tr>
+										<td class="left">Screen Orientation</td>
+										<td class="left">Normal</td>
+									</tr>
+									<tr>
+										<td class="left">Bettery</td>
+										<td class="left">25%</td>
+									</tr>
+									<tr>
+										<td class="left">Wifi</td>
+										<td class="left">On</td>
+									</tr>
+									<tr>
+										<td class="left">3G</td>
+										<td class="left">Off</td>
+									</tr>
+									<tr>
+										<td class="left">4G</td>
+										<td class="left">On</td>
+									</tr>
+									<tr>
+										<td class="left">Screen Size</td>
+										<td class="left">1024 x 768</td>
+									</tr>
+									<tr>
+										<td class="left">Rooted</td>
+										<td class="left">False</td>
+									</tr>
+									<tr>
+										<td class="left">SDK Version</td>
+										<td class="left">1.0</td>
+									</tr>
+									<tr>
+										<td class="left">Locale</td>
+										<td class="left">한국어</td>
+									</tr>
+									<tr>
+										<td class="left">Updated Date</td>
+										<td class="left">2013-07-13 PM12:00</td>
+									</tr>
+									<tr>
+										<td class="left">Crash ID</td>
+										<td class="left">#383985</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div>
+						<div class="area">
+							<span>Instance event path</span>
+							<table class="small" style="margin-top: 5px">
+								<thead><tr>
+									<td style="width: 24%">Date</td>
+									<td style="width: 36%">Event</td>
+									<td>Detail</td>
+								</tr></thead>
+								<tbody>
+									<tr>
+										<td class="center">2013.03.07<br>04:21:01</td>
+										<td>Activity Create</td>
+										<td>#3196<br>(HelloAndroid.java)</td>
+									</tr>
+									<tr>
+										<td class="center">2013.03.07<br>04:25:05</td>
+										<td>Custom Event</td>
+										<td>#124<br>(ChangeSound.java)</td>
+									</tr>
+									<tr>
+										<td class="center">2013.03.07<br>04:25:12</td>
+										<td>Custom Event</td>
+										<td>#333<br>(SlideActivity.java)</td>
+									</tr>
+									<tr>
+										<td class="center">2013.03.07<br>04:25:33</td>
+										<td>Custom Event</td>
+										<td>#785<br>(FrontendViewer.java)</td>
+									</tr>
+									<tr>
+										<td class="center">2013.03.07<br>04:25:53</td>
+										<td>Custom Event</td>
+										<td>#3164<br>(WindowsXP.java)</td>
+									</tr>
+								</tbody>
+							</table>
+							<div class="white-area"></div>
+							<span>Log Data</span>
+							<table class="small" style="margin-top: 5px">
+								<thead><tr>
+									<td style="width: 15%">Level</td>
+									<td style="width: 24%">Date</td>
+									<td>Detail</td>
+								</tr></thead>
+								<tbody>
+									<tr>
+										<td class="center">Info</td>
+										<td class="center">2013.03.07<br>04:21:01</td>
+										<td>Start message logging</td>
+									</tr>
+									<tr>
+										<td class="center">Debug</td>
+										<td class="center">2013.03.07<br>04:25:05</td>
+										<td>Event call</td>
+									</tr>
+									<tr>
+										<td class="center">Error</td>
+										<td class="center">2013.03.07<br>04:25:12</td>
+										<td>Some error occur</td>
+									</tr>
+									<tr>
+										<td class="center">Fatal</td>
+										<td class="center">2013.03.07<br>04:25:33</td>
+										<td>This is fatal error log</td>
+									</tr>
+									<tr>
+										<td class="center">Warn</td>
+										<td class="center">2013.03.07<br>04:25:53</td>
+										<td>Warning logic.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="header-container">
+			<div id="header">
+				<a href="./"><div class="logo"></div></a>
+				<div class="navbar-menu">
+					<ul>
+						<li><a>Insights</a></li>
+						<li><a>Errors</a></li>
+						<li><a>Statistics</a></li>
+						<li><a>Settings</a></li>
+					</ul>
+				</div>
+				<div class="navbar-profile">
+					<div class="setting"></div>
+					<div class="profile"><img src="http://profile.ak.fbcdn.net/hprofile-ak-ash3/27350_100001314106197_1542605533_q.jpg" alt="profile" /></div>
+					<div id="profile-menu">
+						<div class="inv-triangle"></div>
+						<div class="color shadow">
+							<img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/c207.47.546.546/s160x160/531640_453529518034181_1497539635_n.jpg" alt="profile" />
+							<div class="text">
+								<div class="name">{{ user_name }}</div>
+								<div class="user-style">{{ user_email }}</div>
+							</div>
+						</div>
+						<div class="white shadow">
+							<div class="content">
+								<span>
+									<p class="icon" data-name="profile"></p>
+									<p class="text">PROFILE</p>
+								</span>
+								<span>
+									<p class="notification" data="12"></p>
+									<p class="icon" data-name="notification"></p>
+									<p class="text">NOTIFICATION</p>
+								</span>
+								<span>
+									<p class="icon" data-name="logout"></p>
+									<p class="text">LOGOUT</p>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="color-line">
+				<div class="color1"></div>
+				<div class="color2"></div>
+				<div class="color3"></div>
+				<div class="color4"></div>
+			</div>
+		</div>
+		<!--header-container fin-->
+
+		<div id="content-container">
+			<div class="title" data="critical"> Information</div>
+			<div id="critical-information" class="content">
+				<div id="error-score">
+					<div>
+						Error Score
+						<p>{{ ErrorScore }}</p>
+					</div>
+				</div>
+				<table>
+					<tbody>
+						<tr class="notHover">
+							<td style="width: 120px">
+								<div class="thumbnail large"></div>
+								<div class="center">{{ Manual_Auto }}</div>
+							</td>
+							<td class="float">
+								<p id="error-name">java.lang.NoSuchMethodException: abcdefghijklnmopqrstu</p>
+								<p id="error-file">(ViewGroup.java:1372)</p>
+								<div class="float">
+									<div class="infobox red">
+										<span></span>
+										<label>1,302</label>
+									</div>
+									<div class="infobox red">
+										<span></span>
+										<label>90%</label>
+									</div>
+									<div class="infobox red">
+										<span></span>
+										<label>Fixed</label>
+									</div>
+								</div>
+								<div class="float">
+									<div class="infobox">
+										<span></span>
+										<label>30%</label>
+									</div>
+									<div class="infobox">
+										<span></span>
+										<label>50%</label>
+									</div>
+									<div class="infobox">
+										<span></span>
+										<label>69%</label>
+									</div>
+									<div class="infobox">
+										<span></span>
+										<label>1,268MB</label>
+									</div>
+								</div>
+								<span>TAG</span>
+								<div id="error-tag-list" class="float">
+									<div class="tags-list">
+										<ul>
+											<span></span>
+											<li>3D</li>
+											<li>Alert</li>
+											<li>App</li>
+											<li>Autocomplete</li>
+											<li>Badge</li>
+											<li>Blockquote</li>
+											<li>3D</li>
+											<li>Alert</li>
+											<li>App</li>
+											<li>Autocomplete</li>
+											<li>Badge</li>
+											<li>Blockquote</li>
+											<li class="dropdown">
+												<a>Add More</a>
+												<span></span>
+												<div>
+													 <ul>
+													 	<li data-value="false"><a>4.1.1</a></li>
+													 	<li data-value="true"><a>4.1.2</a></li>
+													 	<li data-value="false"><a>4.1.3</a></li>
+													 	<li data-value="false"><a>4.1.4</a></li>
+													 	<li data-value="false"><a>4.1.5</a></li>
+													 </ul>
+												</div>
+											</li>
+										</ul>
+										<input type="hidden" name="tag" />
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr class="empty">
+							<td></td>
+							<td data-match="true"></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="white-area"></div>
+			</div>
+			<div class="title" data="event-path"></div>
+			<div class="content">
+				<table style="margin-top: -10px;">
+					<tbody>
+						<tr class="notHover">
+							<td id="event-path-parent"><p id="event-path"></p></td>
+						</tr>
+						<tr class="empty">
+							<td data-match="true"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="title" data="call-stack"></div>
+			<div id="call-stack" class="content">
+				<table class="small">
+					<thead><tr>
+						<td class="center" style="width: 60px">Number</td>
+						<td>Stack</td>
+						<td class="center" style="width: 25%">Source</td>
+					</tr></thead>
+					<tbody>
+						<tr>
+							<td class="center">0</td>
+							<td class="float">
+								<p>java.lang.ArchitectException: devide by zero</p>
+							</td>
+							<td class="float center">
+								<p></p>
+							</td>
+						</tr>
+						<tr>
+							<td class="center">1</td>
+							<td class="float">
+								<p>at rollcake.State.StateRun.RotateFrameBuffer</p>
+							</td>
+							<td class="float center">
+								<p>(StateRun.java:347)</p>
+							</td>
+						</tr>
+						<tr>
+							<td class="center">2</td>
+							<td class="float">
+								<p>at rollcake.State.StateRun.Update</p>
+							</td>
+							<td class="float center">
+								<p>(StateRun.java:377)</p>
+							</td>
+						</tr>
+						<tr>
+							<td class="center">3</td>
+							<td class="float">
+								<p>at rollcake.Manager.GameManager.Update</p>
+							</td>
+							<td class="float center">
+								<p>(GameManager.java:92)</p>
+							</td>
+						</tr>
+						<tr>
+							<td class="center">4</td>
+							<td class="float">
+								<p>at rollcake.Manager.Renderer.onDrawFrame</p>
+							</td>
+							<td class="float center">
+								<p>(Renderer.java:67)</p>
+							</td>
+						</tr>
+						<tr>
+							<td class="center">5</td>
+							<td class="float">
+								<p>at android.opengl.GLSurfaceView$GLThread.guardedRun</p>
+							</td>
+							<td class="float center">
+								<p>(GLSurfaceView.java:1364)</p>
+							</td>
+						</tr>
+						<tr>
+							<td class="center">6</td>
+							<td class="float">
+								<p>at android.opengl.GLSurfaceView$GLThread.run</p>
+							</td>
+							<td class="float center">
+								<p>(GLSurfaceView.java:1119)</p>
+							</td>
+						</tr>
+						<tr class="empty">
+							<td></td>
+							<td data-match="true"></td>
+							<td data-match="true"></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="white-area"></div>
+			</div>
+			<div class="title" data="instance"></div>
+			<div id="instance" class="content">
+				<table class="small clickon">
+					<thead><tr>
+						<td class="center" style="width: 12%">Update Date</td>
+						<td class="center" style="width: 11%">OS Version</td>
+						<td class="center" style="width: 11%">APP Version</td>
+						<td class="center">Device</td>
+						<td class="center" style="width: 11%">Country</td>
+						<td class="center" style="width: 11%">Event Path</td>
+						<td class="center" style="width: 11%">Logs</td>
+					</tr></thead>
+					<tbody>
+						<tr onclick="showPopupInformation(800, 400);">
+							<td class="center">2013.07.13</td>
+							<td class="center">4.2.1</td>
+							<td class="center">1.0</td>
+							<td class="center">SHV-E250S</td>
+							<td class="center">KR</td>
+							<td class="center">View</td>
+							<td class="center">View</td>
+						</tr>
+						<tr onclick="showPopupInformation(800, 400);">
+							<td class="center">2013.07.18</td>
+							<td class="center">4.0.1</td>
+							<td class="center">1.0</td>
+							<td class="center">SHV-E250S</td>
+							<td class="center">JP</td>
+							<td class="center">View</td>
+							<td class="center">View</td>
+						</tr>
+						<tr onclick="showPopupInformation(800, 400);">
+							<td class="center">2013.07.13</td>
+							<td class="center">4.1.1</td>
+							<td class="center">1.0</td>
+							<td class="center">SHV-E250S</td>
+							<td class="center">US</td>
+							<td class="center">View</td>
+							<td class="center">View</td>
+						</tr>
+						<tr onclick="showPopupInformation(800, 400);">
+							<td class="center">2013.04.30</td>
+							<td class="center">3.9.1</td>
+							<td class="center">1.0</td>
+							<td class="center">SHV-E250S</td>
+							<td class="center">KR</td>
+							<td class="center">View</td>
+							<td class="center">View</td>
+						</tr>
+						<tr onclick="showPopupInformation(800, 400);">
+							<td class="center">2013.04.28</td>
+							<td class="center">4.2.1</td>
+							<td class="center">1.0</td>
+							<td class="center">SHV-E250S</td>
+							<td class="center">CN</td>
+							<td class="center">View</td>
+							<td class="center">View</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="white-area"></div>
+			</div>
+		</div>
+		<!--content-container fin-->
+
+		<div id="footer-container">Copyright(C) UrQA 2013., Allright reserved.</div>
+		<!--footer-container fin-->
+	</div>
+
+</body>
+</html>
