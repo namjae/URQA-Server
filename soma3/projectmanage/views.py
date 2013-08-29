@@ -19,6 +19,8 @@ from django.template import Context, Template
 from django.template import loader
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import redirect
+from django.core.urlresolvers import reverse
 
 from common import validUserPjt
 from urqa.models import AuthUser
@@ -35,6 +37,8 @@ from utility import getTemplatePath
 from utility import getTimeRange
 from utility import TimeRange
 from utility import RANK
+from common import validUserPjt
+from urqa.views import index
 
 from config import get_config
 
@@ -195,68 +199,77 @@ def so_upload(request, pid):
 
 def userdashboard(request, pid):
     #dashboardtemplate = loader.get_template('userdashboard.html')
+
+    username = request.user
+
+    valid , message , userelement, projectelement = validUserPjt(username,pid)
+
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    user = AuthUser.objects.get(username = request.user)
+
     ctx = {
         'templatepath' : getTemplatePath(),
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : pid
+        'projectid' : pid,
+        'user_name' :user.first_name + ' ' + user.last_name ,
+        'user_email': user.email
     }
     return render(request, 'userdashboard.html', ctx)
 
 def dailyesgraph(request, pid):
 
-    #기본 데이터
-    default = {
-	    "max":{"key":5, "value":0},
-	    "tags":[
-		    {"key":1, "value":0},
-		    {"key":2, "value":0},
-		    {"key":3, "value":0},
-		    {"key":4, "value":0},
-    		{"key":5, "value":0},
-	    	{"key":6, "value":0},
-		    {"key":7, "value":0}
-	        ]
-        }
-
-    #오늘 날짜 및 일주일 전을 계산
-    week , today = getTimeRange(TimeRange.weekly)
-
-    #defalut값에 날짜를 대입함
-    for i in range(0,TimeRange.weekly):
-        tmpdate = datetime.timedelta(days  = i-6 )
-        tmpdate = today + tmpdate
-        default['tags'][i]['key'] = tmpdate.__format__('%m / %d')
-        print default['tags'][i]['key']
-
-    #프로젝트 ID에 맞는 에러들을 가져오기 위함
+   #프로젝트 ID에 맞는 에러들을 가져오기 위함
     try:
         ProjectElement = Projects.objects.get(apikey= pid)
     except ObjectDoesNotExist:
         print 'invalid pid'
         return HttpResponse(json.dumps(default), 'application/json');
 
-    #weeklynaive = timezone.make_naive(weekly,timezone.utc)
+    #기본 데이터
+    default = {
+	    "max":{"key":5, "value":0},
+	    "tags":[
+	        ]
+        }
 
+    #오늘 날짜 및 일주일 전을 계산
+    timerange = TimeRange.weekly
+    week , today = getTimeRange(timerange)
 
-
-
-    for i in range(0,7):
-        tmpdate = datetime.timedelta(days  = i-6 )
+    #defalut값에 날짜를 대입함
+    maxvalue = 0
+    for i in range(0,timerange):
+        value = {'key' : 0 , 'value' : 0}
+        tmpdate = datetime.timedelta(days  = i-(timerange-1) )
         tmpdate = today + tmpdate
+        value['key'] = tmpdate.__format__('%m / %d')
+
+
         ErrorsElements = Errors.objects.filter(pid = ProjectElement , lastdate__year = tmpdate.year , lastdate__month = tmpdate.month , lastdate__day = tmpdate.day)
         errorweight = 0
         if len(ErrorsElements) > 0:
             for error in ErrorsElements:
                 errorweight += error.errorweight
-            default['tags'][i]['value'] = errorweight
+            value['value'] = errorweight
+
+            if maxvalue < errorweight:  #maxvalue!
+                maxvalue = errorweight
         else :
-            default['tags'][i]['value'] = 0
+            value['value'] = 0
+
+        default['tags'].append(value)
+
+    default['max']['key'] = len(default['tags'])
+    default['max']['value'] = maxvalue
 
     return HttpResponse(json.dumps(default),'application/json')
 
 def typeesgraph(request, pid):
 
-    week , today = getTimeRange(TimeRange.weekly)
+    timerange = TimeRange.weekly
+    week , today = getTimeRange(timerange)
 
 
     default = {

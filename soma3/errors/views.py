@@ -6,6 +6,7 @@ import utility
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
+from django.template import Context, loader
 
 from urqa.models import Tags
 from urqa.models import Comments
@@ -14,8 +15,12 @@ from urqa.models import Comments
 from common import validUserPjtError
 
 def filter_view(request,pid):
-
-    return HttpResponse('공사중')
+    tpl = loader.get_template('filter.html')
+    ctx = Context({
+        'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
+        'projectid' : pid,
+    });
+    return HttpResponse(tpl.render(ctx))
 
 def newTag(request, pid, iderror):
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,pid,iderror)

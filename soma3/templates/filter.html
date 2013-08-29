@@ -6,23 +6,41 @@
 	<title>UrQA :: Dashboard</title>
 
 	<meta name="viewport" content="width=device-width">
-	
-	<script type="text/javascript" src="../static/js/lib.js"></script>
-	<script type="text/javascript" src="../static/js/hashmap.js"></script>
-	<script type="text/javascript" src="../static/js/jquery-2.0.0.min.js"></script>
-	<script type="text/javascript" src="../static/js/raphael/raphael.min.js"></script>
-	<script type="text/javascript" src="../static/js/raphael/r.raphael.min.js"></script>
-	<script type="text/javascript" src="../static/js/raphael/r.pie.min.js"></script>
-	<script type="text/javascript" src="../static/js/raphael/popup.js"></script>
-	<script type="text/javascript" src="../static/js/raphael/graph/graph.js"></script>
-	<script type="text/javascript" src="../static/js/raphael/graph/areaGraph.js"></script>
-	<script type="text/javascript" src="../static/js/css-compile.js"></script>
-	<script type="text/javascript" src="../static/js/user.js"></script>
+
+	{% load static %}
+
+	<script type="text/javascript" src="{% static 'js/lib.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/hashmap.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/jquery-2.0.0.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/raphael.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/r.raphael.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/r.pie.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/popup.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/graph/graph.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/raphael/graph/areaGraph.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/css-compile.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/user.js' %}"></script>
+
 	<script type="text/javascript">
-		$(document).ready(function(){
-			$("head").compileCSS("style.css", new Array("theme/dark") );
+        var project_id = {{ projectid }};
+        var server_url = "{{ ServerURL }}"
+        $(document).ready(function(){
+			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
-	</script>
+    </script>
+
+    <script type="text/javascript">
+        function query_maker(){
+            console.log(this)
+        }
+        $(document).ready(function(){
+            $('.checkbox').click(query_maker);
+            $('.scrollbar').click(query_maker);
+            $('.radiobox').click(query_maker);
+            $('.tags-list').click(query_maker);
+            $('ul>li>.checkbox').click(query_maker);
+        });
+    </script>
 </head>
 
 <body class="errors" style="display: none;">
@@ -423,7 +441,7 @@
 										<li>Badge</li>
 										<li>Blockquote</li>
 										<li class="dropdown">
-											<a>Add Tag</a>
+											<a>Add More</a>
 											<span></span>
 											<div>
 												 <ul>
@@ -448,7 +466,7 @@
 								<div class="tags-list">
 									<ul>
 										<li class="dropdown">
-											<a>Add Tag</a>
+											<a>Add More</a>
 											<span></span>
 											<div>
 												 <ul>

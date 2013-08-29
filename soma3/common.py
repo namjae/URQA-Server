@@ -22,7 +22,7 @@ def validUserPjtError(username, pid, iderror):
     return True, 'success', userElement, projectElement, errorElement
 
 
-def validUserPjt(username,pid):
+def validUserPjt(username,apikey):
     # User가 로그인되어있는지 확인
     try:
         userElement = AuthUser.objects.get(username=username)
@@ -32,15 +32,15 @@ def validUserPjt(username,pid):
 
     # Project가 정상적으로 존재하는지 확인
     try:
-        projectElement = Projects.objects.get(pid=pid)
+        projectElement = Projects.objects.get(apikey=apikey)
     except ObjectDoesNotExist:
         print 'Fatal error'
-        return False, 'Invalid project id %s' % pid, userElement, None
+        return False, 'Invalid project id %s' % apikey, userElement, None
 
     # User가 Project에 권한이 있는지 확인
     try:
         viewerElement = Viewer.objects.get(uid=userElement, pid=projectElement)
     except ObjectDoesNotExist:
-        return False, 'user "%s" have no permission %s' % (username, pid), userElement, projectElement
+        return False, 'user "%s" have no permission %s' % (username, apikey), userElement, projectElement
 
     return True, 'success', userElement, projectElement
