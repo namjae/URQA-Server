@@ -959,7 +959,7 @@ blockquote:after {
     position: absolute;
 }
 #chart {
-    height: 500px;
+    height: 300px;
 }
     .node rect {
         cursor: move;

@@ -122,7 +122,7 @@ def receive_exception(request):
             errorclassname = errorclassname,
             linenum = linenum,
             autodetermine = autodetermine,
-            rank = int(jsonData['rank']),
+            rank = int(jsonData['rank']), # unhandled = 0, critical = 1, major = 2, minor = 3
             status = 0, # 0 = new, 1 = open, 2 = ignore, 3 = renew
             createdate = naive2aware(jsonData['datetime']),
             lastdate = naive2aware(jsonData['datetime']),

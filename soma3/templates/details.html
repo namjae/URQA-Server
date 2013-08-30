@@ -9,6 +9,7 @@
 
     {% load static %}
 
+    <script type="text/javascript" src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
 	<script type="text/javascript" src="{% static 'js/lib.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/hashmap.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/jquery-2.0.0.min.js' %}"></script>
@@ -31,22 +32,6 @@
 		});
 	</script>
 
-    <script>
-           $.ajax({
-            type: 'get'
-          , url: error_id+'/'+ idinstance
-          , beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-                    // Send the token to same-origin, relative URLs only.
-                    // Send the token only if the method warrants CSRF protection
-                    // Using the CSRFToken value acquired earlier
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }}
-          , success : function(data) {
-                   drawsankey(data)
-               }
-           })
-    </script>
 
 </head>
 

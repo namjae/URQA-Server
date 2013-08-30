@@ -45,6 +45,7 @@ urlpatterns = patterns('',
     #errors
     url(r'^urqa/project/(?P<pid>\d+)/errors/$', 'projectmanage.views.filter_view'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/version_list/$', 'projectmanage.views.version_list'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/list$', 'projectmanage.views.error_list'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)$', 'errors.views.errorDetail'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)$', 'errors.views.instancedetatil'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/log$', 'errors.views.log'),

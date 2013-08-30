@@ -369,8 +369,7 @@ def version_list(request,pid):
     errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
     valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct().order_by('-appversion')
     valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
-    valid_tag = Tags.objects.filter(iderror__in=errorElements).values('tag').distinct().order_by('tag')
-    valid_class = errorElements.values('errorclassname').order_by('errorclassname').distinct()
+
 
 
     osv_list = {}
@@ -394,13 +393,8 @@ def version_list(request,pid):
             if not key in appv_list:
                 appv_list[key] = []
             appv_list[key].append(e['appversion'])
-    print appv_list
 
-    tag_list = []
-    for e in valid_tag:
-        tag_list.append(e['tag'])
-
-    list = {'appv_list':appv_list,'osv_list':osv_list,'tag_list':tag_list,'class_list':valid_class}
+    list = {'appv_list':appv_list,'osv_list':osv_list}
     return HttpResponse(json.dumps(list),'application/json')
 
 
@@ -416,47 +410,34 @@ def filter_view(request,pid):
 
     tpl = loader.get_template('filter.html')
 
-#    from urqa.models import Osstatistics
-#    week, today = getTimeRange(TimeRange.weekly)
+    week, today = getTimeRange(TimeRange.weekly)
 
     try:
-        Projects.objects.get(apikey = pid)
+        projectElement = Projects.objects.get(apikey = pid)
     except ObjectDoesNotExist:
         print 'invalid pid'
         return HttpResponse('')
 
-#    errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
+    errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
+    valid_tag = Tags.objects.filter(iderror__in=errorElements).values('tag').distinct().order_by('tag')
+    valid_class = errorElements.values('errorclassname').distinct().order_by('errorclassname')
 #    valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct().order_by('-appversion')
 #    valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
 
-#    appv_list = {}
-#    v = []
-#    prev_v = ['-1','-1','-1']
-#    for e in valid_app:
-#        v = e['appversion'].split('.')
-#        if v[0] != prev_v[0] or v[1] != prev_v[1]:
-#            prev_v = v
-#            key = '%s.%s' % (v[0],v[1])
-#            if not key in appv_list:
-#                appv_list[key] = []
-#            appv_list[key].append(e['appversion'])
+    tag_list = []
+    for e in valid_tag:
+        tag_list.append(e['tag'])
 
-#    osv_list = {}
-#    for e in valid_os:
-#        v = e['osversion'].split('.')
-#        if v[0] != prev_v[0] or v[1] != prev_v[1]:
-#            prev_v = v
-#            key = '%s.%s' % (v[0],v[1])
-#            if not key in appv_list:
-#                osv_list[key] = []
-#            osv_list[key].append(e['osversion'])
-#    print osv_list
+    class_list = []
+    for e in valid_class:
+        class_list.append(e['errorclassname'])
+
 
     ctx = Context({
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
         'projectid' : pid,
-        #'osv_list' : json.dumps(osv_list, ensure_ascii=False).encode('utf8'),
-        #'appv_list' : appv_list,
+        'tag_list' : tag_list,
+        'class_list' : class_list,
         'user_name' :user.first_name + ' ' + user.last_name ,
         'user_email': user.email,
         'profile_url' : user.image_path,
@@ -464,3 +445,28 @@ def filter_view(request,pid):
     return HttpResponse(tpl.render(ctx))
 
 
+def error_list(request,pid):
+    username = request.user
+
+    valid , message , userelement, projectelement = validUserPjt(username,pid)
+
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+    try:
+        projectElement = Projects.objects.get(apikey = pid)
+    except ObjectDoesNotExist:
+        print 'invalid pid'
+        return HttpResponse(json.dumps({"response":"fail"}), 'application/json');
+
+    print request.POST
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+
+    date = int(jsonData['date'])
+    status = int(jsonData['status'])
+    rank = jsonData['rank']
+
+    week, today = getTimeRange(date)
+    errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status=status,lastdate__range=(week,today) ).order_by('-errorweight','rank', '-lastdate')
+    print errorElements
+    default = {"abc":'dfs'}
+    return HttpResponse(json.dumps(default), 'application/json');

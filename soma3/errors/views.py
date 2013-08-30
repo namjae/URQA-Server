@@ -288,7 +288,8 @@ def eventpath(request,pid,iderror):
 
     result = calc_eventpath(ErrorsElement)
 
-    return HttpResponse(result,'application/json')
+    print 'eventpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+    return HttpResponse(json.dumps(result),'application/json')
 
 
 def author_check_error_page(username,pid,iderror):
