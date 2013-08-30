@@ -43,11 +43,13 @@ urlpatterns = patterns('',
 
 
     #errors
-    url(r'^urqa/project/(?P<pid>\d+)/errors/$', 'errors.views.filter_view'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/$', 'projectmanage.views.filter_view'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/version_list/$', 'projectmanage.views.version_list'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)$', 'errors.views.errorDetail'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)$', 'errors.views.instancedetatil'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/log$', 'errors.views.log'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/eventpath$', 'errors.views.eventpath'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/instanceeventpath$', 'errors.views.instanceeventpath'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/eventpath$', 'errors.views.eventpath'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/new$', 'errors.views.newTag'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deleteTag'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/comment/new$', 'errors.views.newComment'),

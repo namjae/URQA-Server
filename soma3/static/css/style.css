@@ -908,3 +908,76 @@ table.content-large {
 	color: @tm-tx-c2;
 	background-color: @tm-dk-c3;
 }
+
+
+.d3-tip {
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+}
+
+.d3-tip text {
+    fill: #fff;
+    font-size: 12px;
+    stroke: none;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+svg {
+    font: 10px sans-serif;
+}
+
+    .axis path, .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+sup, sub {
+    line-height: 0;
+}
+
+q:before,
+blockquote:before {
+    content: "“";
+}
+
+q:after,
+blockquote:after {
+    content: "”";
+}
+
+blockquote:before {
+    position: absolute;
+    left: 2em;
+}
+
+blockquote:after {
+    position: absolute;
+}
+#chart {
+    height: 500px;
+}
+    .node rect {
+        cursor: move;
+        fill-opacity: 1;
+        shape-rendering: crispEdges;
+    }
+    .node rect:hover {
+        fill-opacity: .2;
+    }
+    .node text {
+        pointer-events: none;
+        text-shadow: 0 1px 0 #fff;
+    }
+    .link {
+        fill: none;
+        stroke: #000;
+        stroke-opacity: .2;
+    }
+    .link:hover {
+        stroke-opacity: .5;
+    }

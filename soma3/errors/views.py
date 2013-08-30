@@ -4,6 +4,7 @@
 import utility
 import re
 import json
+import sys
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -17,10 +18,12 @@ from urqa.models import AuthUser
 from urqa.models import Errors
 from urqa.models import Instances
 from urqa.models import Tags
+from urqa.models import Eventpaths
 
 from common import validUserPjt
 from common import validUserPjtError
 
+from client.views import calc_eventpath
 from errors.detailmodule import manual_auto_determine
 
 def filter_view(request,pid):
@@ -216,14 +219,18 @@ def instancedetatil(request, pid, iderror, idinstance):
         print message
         return HttpResponseRedirect('/urqa')
 
-    print ' come in'
     #instance정보
     instance = Instances.objects.filter(idinstance = int(idinstance)).values()
     #dict = instance.objects.values()
-    #print dict
-    print instance
+    #datetime은 json sealize 안되서 ....
+
+    key_to_remove = 'datetime'
+    dict = {key : value for key, value in instance[0].items() if key != key_to_remove}
+    dict['datetime'] = instance[0]['datetime'].__format__('%Y.%m.%d - %H:%M:%S')
+    result = json.dumps(dict)
+
     #single 즉 get일땐 __dict__ filter 즉 복수 일땐 obejcts.values() 이것때문에 한시간 날림
-    return HttpResponse(json.dumps(instance),'application/json')
+    return HttpResponse(result,'application/json')
 
 def log(request, pid, iderror, idinstance):
     #권한 있나 없나 체크
@@ -232,13 +239,57 @@ def log(request, pid, iderror, idinstance):
         print message
         return HttpResponseRedirect('/urqa')
 
+    instanceElement = Instances.objects.get(idinstance = int(idinstance))
 
-def eventpath(request, pid, iderror, idinstance):
+    logpath = instanceElement.log_path
+
+
+    logstringlist = []
+    try:
+        logfile = open(logpath)
+        for s in logfile:
+            logstringlist.append(s)
+    except IOError:
+        print 'file read fail'
+
+    print '!!!!!!!log'
+    return HttpResponse(json.dumps(logstringlist),'appliacation/json')
+
+#instanceEventpath
+def instanceeventpath(request, pid, iderror, idinstance):
     #권한 있나 없나 체크
     valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
+
+    instanceElement = Instances.objects.get(idinstance = idinstance)
+
+    EventPathElements = Eventpaths.objects.filter(idinstance = instanceElement)
+
+    eventpathlist = []
+    for eventpath in EventPathElements:
+        eventpathttuple = {'date' : '' , 'time' : '', 'class' : '', 'methodline' : ''}
+        eventpathttuple['date'] =eventpath.datetime.__format__('%Y.%m.%d')
+        eventpathttuple['time'] =eventpath.datetime.__format__('%H:%M:%S')
+        eventpathttuple['class'] = eventpath.classname
+        eventpathttuple['methodline'] = str(eventpath.methodname) + ':' + str(eventpath.linenum)
+        eventpathlist.append(eventpathttuple)
+
+    return HttpResponse(json.dumps(eventpathlist),'application/json')
+
+#eventpath
+def eventpath(request,pid,iderror):
+
+    valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
+    if not valid:
+        print message
+        return HttpResponseRedirect('/urqa')
+
+    result = calc_eventpath(ErrorsElement)
+
+    return HttpResponse(result,'application/json')
+
 
 def author_check_error_page(username,pid,iderror):
 
