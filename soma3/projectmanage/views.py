@@ -241,12 +241,6 @@ def dashboard(request, pid):
 
 def dailyesgraph(request, pid):
 
-   #프로젝트 ID에 맞는 에러들을 가져오기 위함
-    try:
-        ProjectElement = Projects.objects.get(apikey= pid)
-    except ObjectDoesNotExist:
-        print 'invalid pid'
-        return HttpResponse(json.dumps(default), 'application/json');
 
     #기본 데이터
     default = {
@@ -254,6 +248,14 @@ def dailyesgraph(request, pid):
 	    "tags":[
 	        ]
         }
+
+    #프로젝트 ID에 맞는 에러들을 가져오기 위함
+    try:
+        ProjectElement = Projects.objects.get(apikey= pid)
+    except ObjectDoesNotExist:
+        print 'invalid pid'
+        return HttpResponse(json.dumps(default), 'application/json');
+
 
     #오늘 날짜 및 일주일 전을 계산
     timerange = TimeRange.weekly

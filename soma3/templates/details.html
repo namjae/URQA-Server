@@ -44,7 +44,8 @@
 									<td class="center" style="width: 45%">Category</td>
 									<td class="center">Value</td>
 								</tr></thead>
-								<tbody>
+								<!--
+                                <tbody>
 									<tr>
 										<td class="left">OS Version</td>
 										<td class="left">4.1.1</td>
@@ -118,6 +119,7 @@
 										<td class="left">#383985</td>
 									</tr>
 								</tbody>
+								-->
 							</table>
 						</div>
 					</div>
@@ -316,7 +318,7 @@
                                             {% for tag in tag_list %}
 											    <li>{{ tag }}</li>
                                             {% endfor %}
-											<!--
+											<!-- 드랍다운 박스 필요 없음 태그 추가는 사용자가 하는일..
                                             <li class="dropdown">
 												<a>Add More</a>
 												<span></span>
@@ -400,7 +402,18 @@
 						<td class="center" style="width: 11%">Logs</td>
 					</tr></thead>
 					<tbody>
-						<tr onclick="showPopupInformation(800, 400);">
+                        {% for instance in instance_list %}
+                            <tr onclick="showPopupInformation(800, 400,{{ instance.idinstance }});">
+							<td class="center">{{ instance.datetime}}</td>
+							<td class="center">{{ instance.osversion }}</td>
+							<td class="center">{{ instance.appversion }}</td>
+							<td class="center">{{ instance.device }}</td>
+							<td class="center">{{ instance.country }}</td>
+							<td class="center">View</td>
+							<td class="center">View</td>
+                        {% endfor %}
+						<!--
+						    <tr onclick="showPopupInformation(800, 400);">
 							<td class="center">2013.07.13</td>
 							<td class="center">4.2.1</td>
 							<td class="center">1.0</td>
@@ -409,42 +422,8 @@
 							<td class="center">View</td>
 							<td class="center">View</td>
 						</tr>
-						<tr onclick="showPopupInformation(800, 400);">
-							<td class="center">2013.07.18</td>
-							<td class="center">4.0.1</td>
-							<td class="center">1.0</td>
-							<td class="center">SHV-E250S</td>
-							<td class="center">JP</td>
-							<td class="center">View</td>
-							<td class="center">View</td>
-						</tr>
-						<tr onclick="showPopupInformation(800, 400);">
-							<td class="center">2013.07.13</td>
-							<td class="center">4.1.1</td>
-							<td class="center">1.0</td>
-							<td class="center">SHV-E250S</td>
-							<td class="center">US</td>
-							<td class="center">View</td>
-							<td class="center">View</td>
-						</tr>
-						<tr onclick="showPopupInformation(800, 400);">
-							<td class="center">2013.04.30</td>
-							<td class="center">3.9.1</td>
-							<td class="center">1.0</td>
-							<td class="center">SHV-E250S</td>
-							<td class="center">KR</td>
-							<td class="center">View</td>
-							<td class="center">View</td>
-						</tr>
-						<tr onclick="showPopupInformation(800, 400);">
-							<td class="center">2013.04.28</td>
-							<td class="center">4.2.1</td>
-							<td class="center">1.0</td>
-							<td class="center">SHV-E250S</td>
-							<td class="center">CN</td>
-							<td class="center">View</td>
-							<td class="center">View</td>
-						</tr>
+						-->
+
 					</tbody>
 				</table>
 				<div class="white-area"></div>

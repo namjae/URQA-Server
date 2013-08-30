@@ -41,7 +41,7 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function showPopupInformation(w, h)
+function showPopupInformation(w, h, idinstance)
 {
 	var oriW = $("#popup-information > .body").width();
 	var oriH = $("#popup-information > .body").height();
@@ -69,7 +69,102 @@ function showPopupInformation(w, h)
 	}, 250, function(){
 		$(this).css({"opacity": 1.0});
 	});
+
+    //여기서 팝업창 띄울 놈 얻어옴
+    getinstancedata(idinstance)
+
 }
+//
+function getinstancedata(idinstance)
+{
+    $.ajax({
+      type: 'get'
+    , url: error_id+'/'+ idinstance
+    , beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+            // Send the token to same-origin, relative URLs only.
+            // Send the token only if the method warrants CSRF protection
+            // Using the CSRFToken value acquired earlier
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }}
+    , success : function(data) {
+            $('.body half miny' > '.area' >'.small' > 'tbody').write(' <tr>                                      \
+										<td class="left">OS Version</td>                                                \
+										<td class="left">4.1.1</td>                                                     \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">App Version</td>                                               \
+										<td class="left">1.1</td>                                                       \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">Device(Brand)</td>                                             \
+										<td class="left">SHV-E250H<br>(Samsung)</td>                                    \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">Country</td>                                                   \
+										<td class="left">KR</td>                                                        \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">Free Memory</td>                                               \
+										<td class="left">32MB</td>                                                      \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">Memory usage</td>                                              \
+										<td class="left">53MB</td>                                                      \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">GPS</td>                                                       \
+										<td class="left">On</td>                                                        \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">Screen Orientation</td>                                        \
+										<td class="left">Normal</td>                                                    \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">Bettery</td>                                                   \
+										<td class="left">25%</td>                                                       \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">Wifi</td>                                                      \
+										<td class="left">On</td>                                                        \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">3G</td>                                                        \
+										<td class="left">Off</td>                                                       \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">4G</td>                                                         \
+										<td class="left">On</td>                                                         \
+									</tr>                                                                               \
+									<tr>                                                                                \
+										<td class="left">Screen Size</td>                                               \
+										<td class="left">1024 x 768</td>                                                \
+									</tr>                                                \
+									<tr>                                                \
+										<td class="left">Rooted</td>                                                \
+										<td class="left">False</td>                                                \
+									</tr>                                                \
+									<tr>                                                \
+										<td class="left">SDK Version</td>                                                \
+										<td class="left">1.0</td>                                                \
+									</tr>                                                \
+									<tr>                                                \
+										<td class="left">Locale</td>                                                \
+										<td class="left">한국어</td>                                                \
+									</tr>                                                \
+									<tr>                                                \
+										<td class="left">Updated Date</td>                                                \
+										<td class="left">2013-07-13 PM12:00</td>                                                \
+									</tr>                                                \
+									<tr>                                                \
+										<td class="left">Crash ID</td>                                                \
+										<td class="left">#383985</td>                                                \
+									</tr>')
+        }
+    })
+
+}
+
 function hidePopupInformation()
 {
 	$("#popup-container").stop(true, true);

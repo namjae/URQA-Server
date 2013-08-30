@@ -3,6 +3,7 @@
 
 import utility
 import re
+import json
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -23,8 +24,6 @@ from common import validUserPjtError
 from errors.detailmodule import manual_auto_determine
 
 def filter_view(request,pid):
-
-
     username = request.user
 
     valid , message , userelement, projectelement = validUserPjt(username,pid)
@@ -65,7 +64,6 @@ def newTag(request, pid, iderror):
         return HttpResponse('success')
 
 def deleteTag(request, pid, iderror):
-    print 'in deletetag'
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, pid, iderror)
 
     print msg
@@ -119,21 +117,10 @@ def deleteComment(request, pid, iderror):
 
 def errorDetail(request,pid,iderror):
 
-    #Iderror 잘못되었을시 접근 불가
-    try:
-        ErrorsElement = Errors.objects.get(iderror = iderror)
-    except ObjectDoesNotExist:
-        print 'DoesNotExist ErrorsElement'
-        return HttpResponseRedirect('/urqa')
-
-    #프로젝트 권한 없을시 접근 불가
-    #로그인 안되었을시 접근 불가
-    username = request.user
-    valid , message , userelement, projectelement = validUserPjt(username,pid)
+    valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
     if not valid:
+        print message
         return HttpResponseRedirect('/urqa')
-
-    user = AuthUser.objects.get(username = request.user)
 
     #manual_Auto
     isManual = True
@@ -142,7 +129,7 @@ def errorDetail(request,pid,iderror):
     else:
         isManual = True
 
-    instanceElements = Instances.objects.filter(iderror = ErrorsElement)
+    instanceElements = Instances.objects.filter(iderror = ErrorsElement).order_by('-datetime')
     #wifi
     wifi = 0
     wifielements = instanceElements.filter(wifion = 1)
@@ -168,19 +155,32 @@ def errorDetail(request,pid,iderror):
     callstackstrlist = callstackstr.split('\n\t')
     counter = 0
     callstacklist = []
-    compile = re.compile('"/\(.*\)/iU')
-
+    compile = re.compile('\(.*?:[0-9]*?\)')
 
     for linstr in callstackstrlist:
         tmp = {'counter' : 0, 'source' : '', 'value' : ''}
         counter += 1
         tmp['counter'] = counter
-        tmp['value'] = linstr.replace(r'\(.*?\)','')
-        print compile.match(linstr)
-        tmp['source'] = ''
+        tmp['value'] = re.sub('\(.*?:[0-9]*?\)','',linstr)
+        list = compile.findall(linstr)
+        source = ''
+        if len(list) > 0:
+            source = list[0]
+        tmp['source'] = source
         callstacklist.append(tmp)
 
-    print '---------------'
+    ####instance#######
+    instancelist = []
+    for instance in instanceElements:
+        instancetuple = {'datetime' : "", 'osversion' : '','appversion' : '' , 'device' : '', 'country' : '', 'idinstance' : ''}
+        instancetuple['datetime'] = instance.datetime.__format__('%Y.%m.%d - %H:%M:%S')
+        instancetuple['osversion'] = instance.osversion
+        instancetuple['appversion'] = instance.appversion
+        instancetuple['device'] = instance.device
+        instancetuple['country'] = instance.country
+        instancetuple['idinstance'] = instance.idinstance
+        instancelist.append(instancetuple)
+
 
 
 
@@ -204,5 +204,54 @@ def errorDetail(request,pid,iderror):
         'Errorsmemoryusage' : ErrorsElement.totalmemusage / ErrorsElement.numofinstances,
         'tag_list' : taglist,
         'callstack' : callstacklist,
+        'instance_list' : instancelist,
     });
     return HttpResponse(tpl.render(ctx))
+
+def instancedetatil(request, pid, iderror, idinstance):
+
+    #권한 있나 없나 체크
+    valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
+    if not valid:
+        print message
+        return HttpResponseRedirect('/urqa')
+
+    print ' come in'
+    #instance정보
+    instance = Instances.objects.filter(idinstance = int(idinstance)).values()
+    #dict = instance.objects.values()
+    #print dict
+    print instance
+    #single 즉 get일땐 __dict__ filter 즉 복수 일땐 obejcts.values() 이것때문에 한시간 날림
+    return HttpResponse(json.dumps(instance),'application/json')
+
+def log(request, pid, iderror, idinstance):
+    #권한 있나 없나 체크
+    valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
+    if not valid:
+        print message
+        return HttpResponseRedirect('/urqa')
+
+
+def eventpath(request, pid, iderror, idinstance):
+    #권한 있나 없나 체크
+    valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
+    if not valid:
+        print message
+        return HttpResponseRedirect('/urqa')
+
+def author_check_error_page(username,pid,iderror):
+
+    valid , message , userelement, projectelement = validUserPjt(username,pid)
+
+    if not valid:
+        return valid , message , '',''
+
+    try:
+        ErrorsElement = Errors.objects.get(iderror = iderror)
+    except ObjectDoesNotExist:
+        return False, 'DoesNotExist ErrorsElement' , '',''
+
+    return True, 'success' , userelement ,ErrorsElement
+
+
