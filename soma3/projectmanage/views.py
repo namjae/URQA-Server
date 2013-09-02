@@ -355,48 +355,6 @@ def mediapathrequest(request, path):
 
 
 from urqa.models import Osstatistics
-def version_list(request,pid):
-
-
-    week, today = getTimeRange(TimeRange.weekly)
-
-    try:
-        projectElement = Projects.objects.get(apikey = pid)
-    except ObjectDoesNotExist:
-        print 'invalid pid'
-        return HttpResponse('')
-
-    errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
-    valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct().order_by('-appversion')
-    valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
-
-
-
-    osv_list = {}
-    prev_v = ['-1','-1','-1']
-    for e in valid_os:
-        v = e['osversion'].split('.')
-        if v[0] != prev_v[0] or v[1] != prev_v[1]:
-            prev_v = v
-            key = '%s.%s' % (v[0],v[1])
-            if not key in osv_list:
-                osv_list[key] = []
-            osv_list[key].append(e['osversion'])
-
-    appv_list = {}
-    prev_v = ['-1','-1','-1']
-    for e in valid_app:
-        v = e['appversion'].split('.')
-        if v[0] != prev_v[0] or v[1] != prev_v[1]:
-            prev_v = v
-            key = '%s.%s' % (v[0],v[1])
-            if not key in appv_list:
-                appv_list[key] = []
-            appv_list[key].append(e['appversion'])
-
-    list = {'appv_list':appv_list,'osv_list':osv_list}
-    return HttpResponse(json.dumps(list),'application/json')
-
 
 def filter_view(request,pid):
     username = request.user
@@ -421,8 +379,39 @@ def filter_view(request,pid):
     errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
     valid_tag = Tags.objects.filter(iderror__in=errorElements).values('tag').distinct().order_by('tag')
     valid_class = errorElements.values('errorclassname').distinct().order_by('errorclassname')
-#    valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct().order_by('-appversion')
-#    valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
+    valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct().order_by('-appversion')
+    valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
+
+
+    osv_list = []
+    os_idx = -1
+    prev_v = ['-1','-1','-1']
+    for e in valid_os:
+        v = e['osversion'].split('.')
+        if v[0] != prev_v[0] or v[1] != prev_v[1]:
+            prev_v = v
+            os_idx += 1
+            print os_idx
+            osv_list.append({})
+            osv_list[os_idx]['key'] = '%s.%s' % (v[0],v[1])
+            osv_list[os_idx]['value'] = []
+        osv_list[os_idx]['value'].append(e['osversion'])
+    print 'yhc',osv_list
+
+    appv_list = []
+    app_idx = -1
+    prev_v = ['-1','-1','-1']
+    for e in valid_app:
+        v = e['appversion'].split('.')
+        if v[0] != prev_v[0] or v[1] != prev_v[1]:
+            prev_v = v
+            app_idx += 1
+            print app_idx
+            appv_list.append({})
+            appv_list[app_idx]['key'] = '%s.%s' % (v[0],v[1])
+            appv_list[app_idx]['value'] = []
+        appv_list[app_idx]['value'].append(e['appversion'])
+    print 'yhc',appv_list
 
     tag_list = []
     for e in valid_tag:
@@ -433,11 +422,14 @@ def filter_view(request,pid):
         class_list.append(e['errorclassname'])
 
 
+
     ctx = Context({
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
         'projectid' : pid,
         'tag_list' : tag_list,
         'class_list' : class_list,
+        'osv_list' : osv_list,
+        'appv_list' : appv_list,
         'user_name' :user.first_name + ' ' + user.last_name ,
         'user_email': user.email,
         'profile_url' : user.image_path,

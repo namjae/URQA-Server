@@ -29,7 +29,21 @@
     <script type="text/javascript">
         $("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 
+
+        setTimeout(function (){
+            $('.checkbox').click(query_delay);
+            $('.radiobox').click(query_delay);
+            $('.scrollbar').click(query_delay);
+            $('.tags-list').click(query_delay);
+        },500)
+        tID = 0;
+        function query_delay(){
+            if(tID != 0)
+                clearTimeout(tID);
+            tID = setTimeout(query_maker,100)
+        }
         function query_maker(){
+            tID = 0
             console.log(this)
 
             //Rank
@@ -51,14 +65,28 @@
             //Date
             date_idx = $('.scrollbar>ul>li[data-value="true"]').attr('value')
 
+
+            //Tags
             tags = $('.tags-list:not(.classes-list)>ul>li:not(.dropdown)')
             tag_list = []
             for(var i=0;i<tags.length;i++)
                 tag_list.push(tags.eq(i).text())
+
+            //Classes
             classes = $('.classes-list>ul>li:not(.dropdown)')
             class_list = []
             for(var i=0;i<classes.length;i++)
                 class_list.push(classes.eq(i).text())
+
+            osv_list = []
+            osv = $('#osvtr').find('.checkbox[data-value="checked"]:not(.half)')
+            for(var i=0;i<osv.length;i++)
+                osv_list.push(osv.eq(i).children('label').text())
+
+            appv_list = []
+            appv = $('#appvtr').find('.checkbox[data-value="checked"]:not(.half)')
+            for(var i=0;i<appv.length;i++)
+                appv_list.push(appv.eq(i).children('label').text())
 
             $.ajax( {
                  type :'POST'
@@ -70,7 +98,9 @@
                     'status':status_idx,
                     'date':date_idx,
                     'tags':tag_list,
-                    'classes':class_list
+                    'classes':class_list,
+                    'appv':appv_list,
+                    'osv':osv_list
                 })}
                 ,success : function(jsonData) {
                     console.log(jsonData)
@@ -86,50 +116,6 @@
                 }
             });
         }
-
-        $.ajax( {
-        type :'GET'
-        ,asyn :true
-        ,url :'./version_list'
-        ,dataType :"json"
-        ,data:{}
-        ,success : function(jsonData) {
-            osv_list = jsonData['osv_list'];
-            appv_list = jsonData['appv_list'];
-
-            var i = 0
-            for(var key in osv_list)
-            {
-                new_td = $('<td><div class="dropdown multiple simple"><a>' + key + '</a><span></span><div><ul></ul></div>')
-                $('#osvtr').append(new_td)
-                for(var val in osv_list[key])
-                {
-                    new_li = $('<li data-value="true"><a>' + osv_list[key][val] + '</a></li>')
-                    new_td.children().children('div').children('ul').append(new_li)
-                }
-                i++;
-            }
-            for(i=i;i<5;i++)
-                $('#osvtr').append($('<td></td>'))
-            for(var key in appv_list)
-            {
-                new_td = $('<td><div class="dropdown multiple simple"><a>' + key + '</a><span></span><div><ul></ul></div>')
-                $('#appvtr').append(new_td)
-                for(var val in appv_list[key])
-                {
-                    new_li = $('<li data-value="true"><a>' + appv_list[key][val] + '</a></li>')
-                    new_td.children().children('div').children('ul').append(new_li)
-                }
-                i++
-            }
-            for(i=i;i<10;i++)
-                $('#appvtr').append($('<td></td>'));
-
-            dropdown_event();
-
-            query_maker();
-        }
-    });
     </script>
 </head>
 
@@ -329,6 +315,22 @@
 									<input type="hidden" name="os_version[]" data-value="All" value="All" />
 								</div>
 							</td>
+                            {% for e in osv_list %}
+                                <td>
+								<div class="dropdown multiple simple">
+									<a>{{ e.key }}</a>
+									<span></span>
+									<div>
+										 <ul>
+                                            {% for i in e.value %}
+										 	<li data-value="true"><a>{{ i }}</a></li>
+                                            {% endfor %}
+										 </ul>
+									</div>
+									<input type="hidden" name="os_version" />
+								</div>
+							</td>
+                            {% endfor %}
 						</tr>
 
 						<!-- APP Version -->
@@ -341,6 +343,22 @@
 									<input type="hidden" name="app_version[]" data-value="All" value="All" />
 								</div>
 							</td>
+                            {% for e in appv_list %}
+                                <td>
+								<div class="dropdown multiple simple">
+									<a>{{ e.key }}</a>
+									<span></span>
+									<div>
+										 <ul>
+                                            {% for i in e.value %}
+										 	<li data-value="true"><a>{{ i }}</a></li>
+                                            {% endfor %}
+										 </ul>
+									</div>
+									<input type="hidden" name="os_version" />
+								</div>
+							</td>
+                            {% endfor %}
 						</tr>
 
 						<!-- Tag -->

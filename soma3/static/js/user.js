@@ -257,7 +257,7 @@ $("head").styleReady(function(){
 
 	/** Component Start **/
 	// Dropdown(multiple select) component
-	/*$(".dropdown.multiple").ready(function(){
+	$(".dropdown.multiple").ready(function(){
 		$(".dropdown.multiple").each(function(){
 			var me = $(this);
 			var chd = me.children("a");
@@ -282,7 +282,7 @@ $("head").styleReady(function(){
 			});
 			me.children("input").remove();
 		});
-	});*/
+	});
 
 	// Radiobox component
 	$(".radiobox").ready(function()
@@ -360,15 +360,16 @@ $("head").styleReady(function(){
 	});
 
 	// Dropdown component
-	$(".dropdown").ready(function (){
-        itemClickEvent = function(obj) {
-            $(this).parent().children("li[data-value=\"true\"]").attr("data-value", "false");
-            if($(this).attr("data-value") == "true")
-                $(this).attr("data-value", "false");
-            else
-                $(this).attr("data-value", "true");
-            $(this).parent().parent().parent().children("a").html($(this).children("a").html());
-            $(this).parent().parent().parent().children("input").attr("value", $(this).index() + 1);
+	$(".dropdown").ready(function()
+	{
+		itemClickEvent = function(obj) {
+			$(this).parent().children("li[data-value=\"true\"]").attr("data-value", "false");
+			if($(this).attr("data-value") == "true")
+				$(this).attr("data-value", "false");
+			else
+				$(this).attr("data-value", "true");
+			$(this).parent().parent().parent().children("a").html($(this).children("a").html());
+			$(this).parent().parent().parent().children("input").attr("value", $(this).index() + 1);
 
             $(this).parent().parent().hide();
         }
@@ -590,81 +591,3 @@ $("head").styleReady(function(){
 	$("#popup-information > .body").click(function(){ bodyChecker = true; })
 	addWindowResize(resizePopupInformation)();
 });
-
-function dropdown_event(){
-    // Dialog showing
-    showDialog = function(th)
-    {
-        var h = $(th).position().top + 40;
-        for(var i = 0; i < $(th).children("div").children("ul").children().length; i ++)
-        {
-            if($(th).children("div").children("ul").children().eq(i).css("display") == "none") continue;
-            if(h + 36 > $(document).height() ) break;
-            h += 36;
-        }
-        $(th).children("div").width("");
-        $(th).children("div").show();
-        $(th).children("div").width($(th).children("div").width() );
-        $(th).children("div").height(h - $(th).position().top - 40);
-    }
-
-    $(".dropdown.multiple").each(function(){
-			var me = $(this);
-			var chd = me.children("a");
-			var name = chd.html();
-			var codename = me.children("input").attr("name");
-
-			chd.html("<div></div>");
-			chd = chd.children("div");
-			chd.addClass("checkbox").addClass("half");
-			chd.html("<span></span><label>" + name + "</label>");
-
-			chd = me.children("span");
-
-			me.children("div").children("ul").children("li").each(function(){
-				var chd2;
-				var name2 = $(this).children("a").html();
-
-				$(this).html("<div></div>");
-				chd2 = $(this).children("div");
-				chd2.addClass("checkbox");
-				chd2.html("<span></span><label>" + name2 + "</label><input type=\"hidden\" name=\"" + codename + "[]\" data-group=\"" + name + "\" data-value=\"" + name2 + "\" />");
-			});
-			me.children("input").remove();
-		});
-
-    // Initialize
-    $(".multiple").each(function(index){
-        $(this).children("div").children("ul").children("li").attr("data-value", "false");
-        $(this).children("div").children("ul").children("li").eq($(this).children("input").attr("value") - 1).attr("data-value", "true");
-        $(this).children("a").html($(this).children("div").children("ul").children("li").eq($(this).children("input").attr("value") - 1).children("a").html());
-
-        $(this).children("div").css("min-width", $(this).width() + 42);
-    });
-
-    // Mouse over/out event
-    $(".multiple").hover(function() {
-        $(this).attr("data-type", "over");
-        if($(this).hasClass("simple") )
-            showDialog(this);
-    }, function() {
-        $(this).attr("data-type", "");
-        $(this).children("div").hide();
-    });
-
-    // Click event
-    $(".multiple").click(function() {
-        if(!$(this).hasClass("simple") )
-        {
-            if($(this).attr("data-type") != "clicked"){
-                $(this).attr("data-type", "clicked");
-                showDialog(this);
-            }
-            else
-            {
-                $(this).attr("data-type", "");
-                $(this).children("div").hide();
-            }
-        }
-    });
-}
