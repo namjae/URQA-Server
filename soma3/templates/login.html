@@ -9,13 +9,14 @@
 
       {% load static %}
     <script type="text/javascript" src="{% static 'js/lib.js' %}"></script>
-	<script type="text/javascript" src="{% static '/js/lib.js'%}"></script>
-	<script type="text/javascript" src="{% static '/js/hashmap.js'%}"></script>
-	<script type="text/javascript" src="{% static '/js/jquery-2.0.0.min.js'%}"></script>
-	<script type="text/javascript" src="{% static '/js/css-compile.js'%}"></script>
-	<script type="text/javascript" src="{% static '/js/user.js'%}"></script>
+	<script type="text/javascript" src="{% static 'js/lib.js'%}"></script>
+	<script type="text/javascript" src="{% static 'js/hashmap.js'%}"></script>
+	<script type="text/javascript" src="{% static 'js/jquery-2.0.0.min.js'%}"></script>
+	<script type="text/javascript" src="{% static 'js/css-compile.js'%}"></script>
+	<script type="text/javascript" src="{% static 'js/user.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/utility.js'%}"></script>
 
-	<link rel="stylesheet" type="text/css" href="./js/d3/src/nv.d3.css">
+	<link rel="stylesheet" type="text/css" href="{% static '/js/d3/src/nv.d3.css'%}">
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
@@ -28,17 +29,42 @@
 		<div id="popup-container">
 			<div id="popup-memberjoin">
 				<div class="body">
-					<span>User ID</span>
-					<input name="userid" type="input" value="" />
+					<span>User e-mail</span>
+					<input name="userid" id = 'useremail'type="input" value="" />
 					<span>Password</span>
 					<input name="password" type="password" value="" />
 					<span>Password Confirm</span>
 					<input name="password2" type="password" value="" />
-					<span>Full Name</span>
+					<span>Nickname</span>
 					<input name="username" type="input" value="" />
-					<span>Company</span>
-					<input name="company" type="input" value="" />
 					<div class="button purple" data-name="Create an Account" style="width: 210px; height: 39px"></div>
+                    <script>
+                         $(document).ready(function () {
+                            $('#loginbutton').bind('click',function (e){
+                                if($('#useremail').val() == '')
+                                {
+                                    alert('Please Input ID')
+                                    return;
+                                }
+                                else
+                                {
+                                    if(!valid_email($('#useremail')))
+                                        return
+                                }
+                                if($('#password').val() == '')
+                                {
+                                    alert('Please Input Password')
+                                    return;
+                                }
+
+                                var logindata = {'username' : $('#username').val(),'password' : $('#password').val()}
+                                post_to_url('/urqa/user/login',logindata)
+
+                                $('#username').val('')
+                                $('#password').val('')
+                            })
+                        })
+                    </script>
 					<span></span>
 					<div class="button gray" data-name="Connect with your google account" style="width: 210px; height: 26px"></div>
 				</div>
@@ -48,13 +74,51 @@
 			<div class="header">Member Login</div>
 			<div class="content">
 				<span>User ID</span>
-				<input name="userid" type="input" value="" />
+				<input name="username" id ='username' type="input" value="" />
 				<span>Password</span>
-				<input name="password" type="password" value="" />
-				<div class="button purple" data-name="UrQA LOGIN" style="width: 210px; height: 39px"></div>
+				<input name="password" id ='password' type="password" value="" />
+				<div id = 'loginbutton' class="button purple" data-name="UrQA LOGIN" style="width: 210px; height: 39px"></div>
+                    <script>
+                        function post_to_url(path, params) {
+                            var method = "post";
+                            var form = document.createElement("form");
+                            form.setAttribute("method", method);
+                            form.setAttribute("action", path);
+                            $(form).append("{% csrf_token %}");
+                            for(var key in params) {
+                                var hiddenField = document.createElement("input");
+                                hiddenField.setAttribute("type", "hidden");
+                                hiddenField.setAttribute("name", key);
+                                hiddenField.setAttribute("value", params[key]);
+                                form.appendChild(hiddenField);
+                            }
+                            document.body.appendChild(form);
+                            form.submit();
+                        }
+                        $(document).ready(function () {
+                            $('#loginbutton').bind('click',function (e){
+                                if($('#username').val() == '')
+                                {
+                                    alert('Please Input ID')
+                                    return;
+                                }
+                                if($('#password').val() == '')
+                                {
+                                    alert('Please Input Password')
+                                    return;
+                                }
+
+                                var logindata = {'username' : $('#username').val(),'password' : $('#password').val()}
+                                post_to_url('/urqa/user/login',logindata)
+
+                                $('#username').val('')
+                                $('#password').val('')
+                            })
+                        })
+                </script>
 			</div>
 			<div class="footer">
-				<label onclick="showPopupMemberjoin()">Create an Account</label><span></span><label>Forgot Password?</label>
+				<label onclick="showPopupMemberjoin()">Create an Account</label><span></span><label onclick="logout()">Forgot Password?</label>
 			</div>
 		</div>
 		<!--content-container fin-->

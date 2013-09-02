@@ -130,3 +130,48 @@ function getCookie(name) {
     return cookieValue;
 }
 
+///////////////////////////////로그인 로그 아웃///////////////////////////////////
+function logout()
+{
+   $.ajax({
+          type: 'get'
+        , url: '/urqa/user/logout'
+   })
+}
+function login(data)
+{
+    //$.(this)
+    $.ajax({
+          type: 'post'
+        , url: '/urqa/user/login'
+        , data: data
+        , beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+        , success : function (data){
+            alert(data)
+        }
+   })
+}
+
+/////////email 정규표현식/////////////
+
+function valid_email(ele)
+{
+    re=/^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+
+    // 위의 조건을 만족하려면 최소 6자 이상이어야 함.
+    if(ele.value.length<6 || !re.test(ele.value))
+    {
+        alert("메일형식이 맞지 않습니다.n 다시 입력해주세요.n");
+        ele.select();
+        ele.focus();
+        return false;
+    }
+    return true;
+}

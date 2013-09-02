@@ -37,7 +37,7 @@
             $('.scrollbar').click(query_delay);
             $('.tags-list').click(query_delay);
             query_delay()
-        },500)
+        },100)
         tID = 0;
         function query_delay(){
             if(tID != 0)
@@ -105,7 +105,58 @@
                     'osv':osv_list
                 })}
                 ,success : function(jsonData) {
-                    console.log(jsonData)
+                    console.log(jsonData);
+                    $('.content-large>tbody').empty();
+                    for(var i=0;i<jsonData.length;i++)
+                    {
+                        tags = ''
+                        auto_str = ''
+                        if(jsonData[i].auto == 1)   auto_str = '(Auto)';
+                        for(var j=0;j<jsonData[i].tags.length;j++)
+                        {
+                            tags += jsonData[i].tags[j];
+                            if(j < jsonData[i].tags.length-1)
+                                tags += ', ';
+                        }
+                        new_list = $('<tr iderror="'+ jsonData[i].iderror +'">\
+                            <td class="float">\
+                            <img />\
+                            <p>' +
+                            jsonData[i].errorname + '<br>' + jsonData[i].errorclassname + ':' + jsonData[i].linenum +
+                            '</p>\
+                            </td>\
+                            <td><p>' +
+                            tags +
+                            '</p></td>\
+                            <td class="center">' +
+                            jsonData[i].status +
+                            '</td>\
+                            <td class="center">' +
+                            jsonData[i].count +
+                            '</td>\
+                            <td class="center small">' +
+                            jsonData[i].year + '<br>' + jsonData[i].month + '/' + jsonData[i].day +
+                            '</td>\
+                            <td class="center">' +
+                            jsonData[i].es +
+                            '<br>'+
+                            auto_str +
+                            '</td>\
+                            </tr>')
+                        new_list.click(function(){
+                            location.href = './' + $(this).attr('iderror');
+                        });
+                        $('.content-large>tbody').append(new_list)
+                    }
+                    $('.content-large>tbody').append($('<tr class="empty">\
+							<td data-match="true"></td>\
+							<td data-match="true"></td>\
+							<td></td>\
+							<td></td>\
+							<td></td>\
+							<td></td>\
+						</tr>'))
+                    resizeErrorList();
                 }
                 , beforeSend: function(xhr, settings) {
                     var csrftoken = getCookie('csrftoken')
@@ -125,12 +176,12 @@
 	<div id="container">
 		<div id="header-container">
 			<div id="header">
-				<a href="./"><div class="logo"></div></a>
+				<a href="/urqa"><div class="logo"></div></a>
 				<div class="navbar-menu">
 					<ul>
 						<li><a href="../">Insights</a></li>
 						<li><a href="./">Errors</a></li>
-						<li><a>Statistics</a></li>
+						<li><a href='../statistics'>Statistics</a></li>
 						<li><a>Settings</a></li>
 					</ul>
 				</div>
@@ -311,7 +362,6 @@
 								</div>
 							</td>
 							<td></td>
-							<td></td>
 						</tr>
 
 						<!-- OS Version -->
@@ -325,20 +375,23 @@
 								</div>
 							</td>
                             {% for e in osv_list %}
-                                <td>
-								<div class="dropdown multiple simple">
-									<a>{{ e.key }}</a>
-									<span></span>
-									<div>
-										 <ul>
+                            <td>
+                                <div class="dropdown multiple simple">
+                                    <a>{{ e.key }}</a>
+                                    <span></span>
+                                    <div>
+                                         <ul>
                                             {% for i in e.value %}
-										 	<li data-value="true"><a>{{ i }}</a></li>
+                                            <li data-value="true"><a>{{ i }}</a></li>
                                             {% endfor %}
-										 </ul>
-									</div>
-									<input type="hidden" name="os_version" />
-								</div>
-							</td>
+                                         </ul>
+                                    </div>
+                                    <input type="hidden" name="os_version" />
+                                </div>
+                            </td>
+                            {% endfor %}
+                            {% for t in  margin.osv %}
+                                <td></td>
                             {% endfor %}
 						</tr>
 
@@ -353,20 +406,23 @@
 								</div>
 							</td>
                             {% for e in appv_list %}
-                                <td>
-								<div class="dropdown multiple simple">
-									<a>{{ e.key }}</a>
-									<span></span>
-									<div>
-										 <ul>
+                            <td>
+                                <div class="dropdown multiple simple">
+                                    <a>{{ e.key }}</a>
+                                    <span></span>
+                                    <div>
+                                         <ul>
                                             {% for i in e.value %}
-										 	<li data-value="true"><a>{{ i }}</a></li>
+                                            <li data-value="true"><a>{{ i }}</a></li>
                                             {% endfor %}
-										 </ul>
-									</div>
-									<input type="hidden" name="os_version" />
-								</div>
-							</td>
+                                         </ul>
+                                    </div>
+                                    <input type="hidden" name="os_version" />
+                                </div>
+                            </td>
+                            {% endfor %}
+                            {% for t in  margin.appv %}
+                                <td></td>
                             {% endfor %}
 						</tr>
 
@@ -432,6 +488,7 @@
 						<td class="center" style="width: 88px">Error Score</td>
 					</tr></thead>
 					<tbody>
+                        <!--
 						<tr>
 							<td class="float">
 								<img />
@@ -483,7 +540,7 @@
 							<td></td>
 							<td></td>
 							<td></td>
-						</tr>
+						</tr>-->
 					</tbody>
 				</table>
 				<div class="white-area"></div>

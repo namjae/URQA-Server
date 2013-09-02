@@ -71,6 +71,46 @@ function newNotification(title, content, href)
 	$("#popup-notification").show();
 	resizePopupNotification();
 }
+function resizeErrorList()
+{
+    $("table > tbody > tr.empty").each(function(){
+        $(this).css("display", "table-row");
+        $(this).children().each(function(child){
+            if($(this).attr("data-match") != "true")
+                return;
+
+            $(this).parent().parent().children().each(function(){
+                if($(this).parent().hasClass("empty") == true)
+                    return;
+
+                $(this).children().eq(child).children("p").width("1px");
+            });
+
+            var w = $(this).width();
+            var chd = $(this).parent().parent().children().eq(0).children().eq($(this).index()).children(":not(p)");
+            for(var i = 0; i < chd.length; i ++)
+            {
+                if(chd.eq(i).css("float") != "none")
+                    w -= chd.eq(i).width() + 12;
+            }
+
+            $(this).parent().parent().children().each(function(){
+                if($(this).parent().hasClass("empty") == true)
+                    return;
+
+                $(this).children().eq(child).children("p").width(w);
+                //여기 임의로 추가...
+                if( $(this).children().eq(child).children("p").attr('id') == 'chart')
+                {
+                    sankeywidth = w;
+                    if(sankeyloading)
+                        sankeyredraw(sankeydata)
+                }
+            });
+        });
+        $(this).css("display", "none");
+    });
+}
 function resizePopupMemberjoin()
 {
 	if($("#popup-memberjoin") )
@@ -833,45 +873,7 @@ $("head").styleReady(function(){
 	/** Component End **/
 
 	// Auto-resize table
-	addWindowResize(function(){
-		$("table > tbody > tr.empty").each(function(){
-			$(this).css("display", "table-row");
-			$(this).children().each(function(child){
-				if($(this).attr("data-match") != "true")
-					return;
-
-				$(this).parent().parent().children().each(function(){
-					if($(this).parent().hasClass("empty") == true)
-						return;
-
-					$(this).children().eq(child).children("p").width("1px");
-				});
-
-                var w = $(this).width();
-                var chd = $(this).parent().parent().children().eq(0).children().eq($(this).index()).children(":not(p)");
-				for(var i = 0; i < chd.length; i ++)
-				{
-					if(chd.eq(i).css("float") != "none")
-						w -= chd.eq(i).width() + 12;
-				}
-
-				$(this).parent().parent().children().each(function(){
-					if($(this).parent().hasClass("empty") == true)
-						return;
-
-					$(this).children().eq(child).children("p").width(w);
-                    //여기 임의로 추가...
-                    if( $(this).children().eq(child).children("p").attr('id') == 'chart')
-                    {
-                        sankeywidth = w;
-                        if(sankeyloading)
-                            sankeyredraw(sankeydata)
-                    }
-				});
-			});
-			$(this).css("display", "none");
-		});
-	})();
+	addWindowResize(resizeErrorList)();
 
 	// Auto-resize popup-information
 	//$("#popup-information").click(hidePopupInformation);

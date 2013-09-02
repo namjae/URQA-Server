@@ -15,20 +15,16 @@ from urqa.models import Session
 from soma3.settings import STATIC_URL
 
 def index(request):
-#	return HttpResponse('hello world')
-    tpl = loader.get_template('test.html')
-    ctx = Context({});
-    #return HttpResponse(tpl.render(ctx))
 
-    #now = datetime.datetime.now()
-    #now_utc = datetime.datetime.utcnow().replace(tzinfo=utc)
+    #만약 로그인 되어 있다면!!
+   # if request.user.is_authenticated():
+        #return HttpResponseRedirect('/urqa/projects')
 
-    #print now
-    #print now_utc
-    #print timezone.now()
-    #print timezone.make_naive(timezone.now(),datetime.tzinfo)
-    return HttpResponse(str(request.user) + ' ' + str(request.user.is_authenticated()))
 
+    ctx = {
+
+    }
+    return render(request, 'login.html', ctx)
 
 @csrf_exempt
 def adduser(request):

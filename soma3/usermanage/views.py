@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.template import Context, loader
 from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponseRedirect
 
 def logintest(request):
     tpl = loader.get_template('base.html')
@@ -14,11 +15,13 @@ def logintest(request):
     return HttpResponse(tpl.render(ctx))
 
 def registration(request):
-    print request
+    #print request
 
     username = request.POST['username']
     password = request.POST['password']
-    email = request.POST['email']
+    email = username
+
+
 
 
     if User.objects.filter(username__exact=username).exists():
@@ -39,8 +42,8 @@ def delete_req(request):
     return HttpResponse('delete success')
 
 def login_req(request):
-    print request.user
-    print request
+    #print request.user
+    #print request
     username = request.POST['username']
     password = request.POST['password']
 
@@ -52,7 +55,7 @@ def login_req(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            return HttpResponse('success')
+            return HttpResponseRedirect('/urqa/projects')
         else:
             return HttpResponse('disable account')
     else:
@@ -61,5 +64,7 @@ def login_req(request):
 
 def logout_req(request):
     print request.user
-    logout(request)
-    return HttpResponse('logout success')
+    if request.user.is_authenticated():
+        logout(request)
+    print 'logout'
+    return HttpResponseRedirect('/urqa/')

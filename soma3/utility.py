@@ -24,11 +24,13 @@ def getTemplatePath():
     return getProjectPath() + '/templates/'
 
 class RANK:
+    toString = ['Unhandle','Critical','Major','Minor','Native']
     Suspense = -1
     Unhandle = 0
     Critical = 1
     Major    = 2
     Minor    = 3
+    Native   = 4
 
 class TimeRange:
     oneday = 1
@@ -36,6 +38,12 @@ class TimeRange:
     monthly = 30
     threemonthly = 90
 
+class Status:
+    toString = ['New','Open','Ignore','Renew']
+    New = 0
+    Open = 1
+    Ignore = 2
+    Renew = 3
 #weekly, monthly, 3monthly
 def getTimeRange(t):
 

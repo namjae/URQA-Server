@@ -9,6 +9,9 @@ import re
 import json
 import sys
 
+from utility import Status
+from utility import RANK
+
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
@@ -326,12 +329,11 @@ def filter_view(request,pid):
         if v[0] != prev_v[0] or v[1] != prev_v[1]:
             prev_v = v
             os_idx += 1
-            print os_idx
             osv_list.append({})
             osv_list[os_idx]['key'] = '%s.%s' % (v[0],v[1])
             osv_list[os_idx]['value'] = []
         osv_list[os_idx]['value'].append(e['osversion'])
-    print 'yhc',osv_list
+
 
     appv_list = []
     app_idx = -1
@@ -341,12 +343,11 @@ def filter_view(request,pid):
         if v[0] != prev_v[0] or v[1] != prev_v[1]:
             prev_v = v
             app_idx += 1
-            print app_idx
             appv_list.append({})
             appv_list[app_idx]['key'] = '%s.%s' % (v[0],v[1])
             appv_list[app_idx]['value'] = []
         appv_list[app_idx]['value'].append(e['appversion'])
-    print 'yhc',appv_list
+
 
     tag_list = []
     for e in valid_tag:
@@ -356,7 +357,13 @@ def filter_view(request,pid):
     for e in valid_class:
         class_list.append(e['errorclassname'])
 
+    osv_margin = ''
+    for i in range(0,5 - len(osv_list)):
+        osv_margin += ' '
 
+    appv_margin = ''
+    for i in range(0,5 - len(appv_list)):
+        appv_margin += ' '
 
     ctx = Context({
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
@@ -364,6 +371,7 @@ def filter_view(request,pid):
         'tag_list' : tag_list,
         'class_list' : class_list,
         'osv_list' : osv_list,
+        'margin' : {'osv':osv_margin,'appv':appv_margin},
         'appv_list' : appv_list,
         'user_name' :user.first_name + ' ' + user.last_name ,
         'user_email': user.email,
@@ -385,7 +393,6 @@ def error_list(request,pid):
         print 'invalid pid'
         return HttpResponse(json.dumps({"response":"fail"}), 'application/json');
 
-    print request.POST
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
 
     date = int(jsonData['date'])
@@ -394,13 +401,12 @@ def error_list(request,pid):
     tags = jsonData['tags']
     classes = jsonData['classes']
     appversion = jsonData['appv']
-    if appversion[0] == 'All':
+    if appversion and appversion[0] == 'All':
         appversion = []
     osversion = jsonData['osv']
-    if osversion[0] == 'All':
+    if osversion and osversion[0] == 'All':
         osversion = []
 
-    print appversion,osversion
 
     week, today = getTimeRange(date)
     errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status=status,lastdate__range=(week,today)).order_by('-errorweight','rank', '-lastdate')
@@ -414,21 +420,43 @@ def error_list(request,pid):
         if iderror_list:
             errorElements = errorElements.filter(iderror__in=iderror_list)
     if appversion:
-        appvElements = Appstatistics.object.select_related().filter(iderror__in=errorElements,appversion__in=appversion).values('iderror').distinct().order_by('iderror')
+        appvElements = Appstatistics.objects.select_related().filter(iderror__in=errorElements,appversion__in=appversion).values('iderror').distinct().order_by('iderror')
         iderror_list = []
         for e in appvElements:
             iderror_list.append(int(e['iderror']))
         if iderror_list:
             errorElements = errorElements.filter(iderror__in=iderror_list)
     if osversion:
-        osvElements = Osstatistics.object.select_related().filter(iderror__in=errorElements,osversion__in=osversion).values('iderror').distinct().order_by('iderror')
+        osvElements = Osstatistics.objects.select_related().filter(iderror__in=errorElements,osversion__in=osversion).values('iderror').distinct().order_by('iderror')
         iderror_list = []
         for e in osvElements:
             iderror_list.append(int(e['iderror']))
         if iderror_list:
             errorElements = errorElements.filter(iderror__in=iderror_list)
+
     print errorElements
 
 
-    default = {"abc":'dfs'}
-    return HttpResponse(json.dumps(default), 'application/json');
+    result = []
+    for e in errorElements:
+        new_e = {}
+        new_e['iderror'] = e.iderror
+        new_e['rank'] = RANK.toString[e.rank]
+        new_e['status'] = Status.toString[e.status]
+        new_e['errorname'] = e.errorname
+        new_e['errorclassname'] = e.errorclassname
+        new_e['linenum'] = e.linenum
+        new_e['count'] = e.numofinstances
+        new_e['year'] = e.lastdate.year
+        new_e['month'] = e.lastdate.month
+        new_e['day'] = e.lastdate.day
+        new_e['es'] = e.errorweight
+        new_e['auto'] = e.autodetermine
+        new_e['tags'] = []
+        tags = Tags.objects.filter(iderror=e)
+        for t in tags:
+            new_e['tags'].append(t.tag)
+        result.append(new_e)
+        #print new_e
+
+    return HttpResponse(json.dumps(result), 'application/json');

@@ -30,10 +30,13 @@ urlpatterns = patterns('',
     url(r'^urqa/user/login$', 'usermanage.views.login_req'),
     url(r'^urqa/user/logout$', 'usermanage.views.logout_req'),
 
+    #project-list
+    url(r'^urqa/projects$', 'projectmanage.views.dashboard'),
+
     #project manage
     url(r'^urqa/project/registration$', 'projectmanage.views.registration'),
     url(r'^urqa/project/delete$', 'projectmanage.views.delete_req'),
-    url(r'^urqa/project/(?P<pid>\d+)/$', 'projectmanage.views.dashboard'),
+    url(r'^urqa/project/(?P<pid>\d+)/$', 'projectmanage.views.projectdashboard'),
     url(r'^urqa/project/(?P<pid>\d+)/dailyes$', 'projectmanage.views.dailyesgraph'),
     url(r'^urqa/project/(?P<pid>\d+)/typees$', 'projectmanage.views.typeesgraph'),
     #url(r'^urqa/project/(?P<pid>\d+)/errorscorelist$', 'projectmanage.views.errorscorelist'),
@@ -45,7 +48,7 @@ urlpatterns = patterns('',
     #errors
     url(r'^urqa/project/(?P<pid>\d+)/errors/$', 'errors.views.filter_view'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/list$', 'errors.views.error_list'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)$', 'errors.views.errorDetail'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/$', 'errors.views.errorDetail'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)$', 'errors.views.instancedetatil'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/log$', 'errors.views.log'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/instanceeventpath$', 'errors.views.instanceeventpath'),
@@ -54,6 +57,9 @@ urlpatterns = patterns('',
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deleteTag'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/comment/new$', 'errors.views.newComment'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/comment/delete$', 'errors.views.deleteComment'),
+
+    #Statistics
+    url(r'^urqa/project/(?P<pid>\d+)/statistics/$', 'statistics.views.statistics'),
 
     #symbol
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/symbol/list$', 'errors.views.so_list'),
