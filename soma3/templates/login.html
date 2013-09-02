@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" class="login">
+<head>
+	<meta charset="utf-8">
+	
+	<title>UrQA :: Login</title>
+
+	<meta name="viewport" content="width=device-width">
+
+      {% load static %}
+    <script type="text/javascript" src="{% static 'js/lib.js' %}"></script>
+	<script type="text/javascript" src="{% static '/js/lib.js'%}"></script>
+	<script type="text/javascript" src="{% static '/js/hashmap.js'%}"></script>
+	<script type="text/javascript" src="{% static '/js/jquery-2.0.0.min.js'%}"></script>
+	<script type="text/javascript" src="{% static '/js/css-compile.js'%}"></script>
+	<script type="text/javascript" src="{% static '/js/user.js'%}"></script>
+
+	<link rel="stylesheet" type="text/css" href="./js/d3/src/nv.d3.css">
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
+		});
+	</script>
+</head>
+
+<body style="display: none;">
+	<div id="container">
+		<div id="popup-container">
+			<div id="popup-memberjoin">
+				<div class="body">
+					<span>User ID</span>
+					<input name="userid" type="input" value="" />
+					<span>Password</span>
+					<input name="password" type="password" value="" />
+					<span>Password Confirm</span>
+					<input name="password2" type="password" value="" />
+					<span>Full Name</span>
+					<input name="username" type="input" value="" />
+					<span>Company</span>
+					<input name="company" type="input" value="" />
+					<div class="button purple" data-name="Create an Account" style="width: 210px; height: 39px"></div>
+					<span></span>
+					<div class="button gray" data-name="Connect with your google account" style="width: 210px; height: 26px"></div>
+				</div>
+			</div>
+		</div>
+		<div id="loginbox">
+			<div class="header">Member Login</div>
+			<div class="content">
+				<span>User ID</span>
+				<input name="userid" type="input" value="" />
+				<span>Password</span>
+				<input name="password" type="password" value="" />
+				<div class="button purple" data-name="UrQA LOGIN" style="width: 210px; height: 39px"></div>
+			</div>
+			<div class="footer">
+				<label onclick="showPopupMemberjoin()">Create an Account</label><span></span><label>Forgot Password?</label>
+			</div>
+		</div>
+		<!--content-container fin-->
+	</div>
+</body>
+</html>

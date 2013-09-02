@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import utility
+from utility import getTimeRange
+from utility import TimeRange
+
 import re
 import json
 import sys
@@ -16,39 +19,16 @@ from urqa.models import Tags
 from urqa.models import Comments
 from urqa.models import AuthUser
 from urqa.models import Errors
+from urqa.models import Projects
 from urqa.models import Instances
-from urqa.models import Tags
 from urqa.models import Eventpaths
+from urqa.models import Osstatistics
+from urqa.models import Appstatistics
 
 from common import validUserPjt
 from common import validUserPjtError
 
 from client.views import calc_eventpath
-from errors.detailmodule import manual_auto_determine
-
-def filter_view(request,pid):
-    username = request.user
-
-    valid , message , userelement, projectelement = validUserPjt(username,pid)
-
-    if not valid:
-        return HttpResponseRedirect('/urqa')
-
-    user = AuthUser.objects.get(username = request.user)
-
-    tpl = loader.get_template('filter.html')
-    osv_list = [1,1,1,1]
-    appv_list = [1,1,1,1]
-    ctx = Context({
-        'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : pid,
-        'osv_list' : osv_list,
-        'appv_list' : appv_list,
-        'user_name' :user.first_name + ' ' + user.last_name ,
-        'user_email': user.email,
-        'profile_url' : user.image_path,
-    });
-    return HttpResponse(tpl.render(ctx))
 
 
 def newTag(request, pid, iderror):
@@ -307,3 +287,148 @@ def author_check_error_page(username,pid,iderror):
     return True, 'success' , userelement ,ErrorsElement
 
 
+
+
+
+
+def filter_view(request,pid):
+    username = request.user
+
+    valid , message , userelement, projectelement = validUserPjt(username,pid)
+
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    user = AuthUser.objects.get(username = request.user)
+
+    tpl = loader.get_template('filter.html')
+
+    week, today = getTimeRange(TimeRange.weekly)
+
+    try:
+        projectElement = Projects.objects.get(apikey = pid)
+    except ObjectDoesNotExist:
+        print 'invalid pid'
+        return HttpResponse('')
+
+    errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
+    valid_tag = Tags.objects.filter(iderror__in=errorElements).values('tag').distinct().order_by('tag')
+    valid_class = errorElements.values('errorclassname').distinct().order_by('errorclassname')
+    valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct().order_by('-appversion')
+    valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
+
+
+    osv_list = []
+    os_idx = -1
+    prev_v = ['-1','-1','-1']
+    for e in valid_os:
+        v = e['osversion'].split('.')
+        if v[0] != prev_v[0] or v[1] != prev_v[1]:
+            prev_v = v
+            os_idx += 1
+            print os_idx
+            osv_list.append({})
+            osv_list[os_idx]['key'] = '%s.%s' % (v[0],v[1])
+            osv_list[os_idx]['value'] = []
+        osv_list[os_idx]['value'].append(e['osversion'])
+    print 'yhc',osv_list
+
+    appv_list = []
+    app_idx = -1
+    prev_v = ['-1','-1','-1']
+    for e in valid_app:
+        v = e['appversion'].split('.')
+        if v[0] != prev_v[0] or v[1] != prev_v[1]:
+            prev_v = v
+            app_idx += 1
+            print app_idx
+            appv_list.append({})
+            appv_list[app_idx]['key'] = '%s.%s' % (v[0],v[1])
+            appv_list[app_idx]['value'] = []
+        appv_list[app_idx]['value'].append(e['appversion'])
+    print 'yhc',appv_list
+
+    tag_list = []
+    for e in valid_tag:
+        tag_list.append(e['tag'])
+
+    class_list = []
+    for e in valid_class:
+        class_list.append(e['errorclassname'])
+
+
+
+    ctx = Context({
+        'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
+        'projectid' : pid,
+        'tag_list' : tag_list,
+        'class_list' : class_list,
+        'osv_list' : osv_list,
+        'appv_list' : appv_list,
+        'user_name' :user.first_name + ' ' + user.last_name ,
+        'user_email': user.email,
+        'profile_url' : user.image_path,
+    });
+    return HttpResponse(tpl.render(ctx))
+
+
+def error_list(request,pid):
+    username = request.user
+
+    valid , message , userelement, projectelement = validUserPjt(username,pid)
+
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+    try:
+        projectElement = Projects.objects.get(apikey = pid)
+    except ObjectDoesNotExist:
+        print 'invalid pid'
+        return HttpResponse(json.dumps({"response":"fail"}), 'application/json');
+
+    print request.POST
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+
+    date = int(jsonData['date'])
+    status = int(jsonData['status'])
+    rank = jsonData['rank']
+    tags = jsonData['tags']
+    classes = jsonData['classes']
+    appversion = jsonData['appv']
+    if appversion[0] == 'All':
+        appversion = []
+    osversion = jsonData['osv']
+    if osversion[0] == 'All':
+        osversion = []
+
+    print appversion,osversion
+
+    week, today = getTimeRange(date)
+    errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status=status,lastdate__range=(week,today)).order_by('-errorweight','rank', '-lastdate')
+    if classes:
+        errorElements = errorElements.filter(errorclassname__in=classes)
+    if tags:
+        tagElements = Tags.objects.select_related().filter(iderror__in=errorElements,tag__in=tags).values('iderror').distinct().order_by('iderror')
+        iderror_list = []
+        for e in tagElements:
+            iderror_list.append(int(e['iderror']))
+        if iderror_list:
+            errorElements = errorElements.filter(iderror__in=iderror_list)
+    if appversion:
+        appvElements = Appstatistics.object.select_related().filter(iderror__in=errorElements,appversion__in=appversion).values('iderror').distinct().order_by('iderror')
+        iderror_list = []
+        for e in appvElements:
+            iderror_list.append(int(e['iderror']))
+        if iderror_list:
+            errorElements = errorElements.filter(iderror__in=iderror_list)
+    if osversion:
+        osvElements = Osstatistics.object.select_related().filter(iderror__in=errorElements,osversion__in=osversion).values('iderror').distinct().order_by('iderror')
+        iderror_list = []
+        for e in osvElements:
+            iderror_list.append(int(e['iderror']))
+        if iderror_list:
+            errorElements = errorElements.filter(iderror__in=iderror_list)
+    print errorElements
+
+
+    default = {"abc":'dfs'}
+    return HttpResponse(json.dumps(default), 'application/json');

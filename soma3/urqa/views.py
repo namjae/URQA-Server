@@ -6,11 +6,13 @@ import datetime
 from django.utils.timezone import utc
 from django.utils import timezone
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.template import Context, loader
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-
 from urqa.models import Session
+
+from soma3.settings import STATIC_URL
 
 def index(request):
 #	return HttpResponse('hello world')
@@ -59,3 +61,8 @@ def cleanup(request):
     elements.delete()
 
     return HttpResponse('clean up')
+
+
+def mediapathrequest(request, path):
+    return HttpResponseRedirect(STATIC_URL+path)
+

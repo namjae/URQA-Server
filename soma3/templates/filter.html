@@ -20,6 +20,7 @@
 	<script type="text/javascript" src="{% static 'js/raphael/graph/areaGraph.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/css-compile.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/user.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/utility.js' %}"></script>
 
 	<script type="text/javascript">
         var project_id = {{ projectid }};
@@ -35,6 +36,7 @@
             $('.radiobox').click(query_delay);
             $('.scrollbar').click(query_delay);
             $('.tags-list').click(query_delay);
+            query_delay()
         },500)
         tID = 0;
         function query_delay(){
@@ -273,32 +275,39 @@
 						<!-- Status -->
 						<tr id="status_tr">
 							<td>Status</td>
-							<td>
+                            <td>
 								<div class="radiobox">
 									<span data-value="checked"><span></span></span>
+									<label>All</label>
+									<input type="hidden" name="status" value="0" />
+								</div>
+							</td>
+							<td>
+								<div class="radiobox">
+									<span><span></span></span>
 									<label>New</label>
-									<input type="hidden" name="status" value="new" />
+									<input type="hidden" name="status" value="1" />
 								</div>
 							</td>
 							<td>
 								<div class="radiobox">
 									<span><span></span></span>
 									<label>Open</label>
-									<input type="hidden" name="status" value="open" />
+									<input type="hidden" name="status" value="2" />
 								</div>
 							</td>
 							<td>
 								<div class="radiobox">
 									<span><span></span></span>
 									<label>Fixed</label>
-									<input type="hidden" name="status" value="fixed" />
+									<input type="hidden" name="status" value="3" />
 								</div>
 							</td>
 							<td>
 								<div class="radiobox">
 									<span><span></span></span>
 									<label>Ignore</label>
-									<input type="hidden" name="status" value="ignore" />
+									<input type="hidden" name="status" value="4" />
 								</div>
 							</td>
 							<td></td>

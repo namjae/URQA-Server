@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko" class="project-select">
+<head>
+	<meta charset="utf-8">
+	
+	<title>UrQA :: Project Select</title>
+
+	<meta name="viewport" content="width=device-width">
+	
+	<script type="text/javascript" src="./js/lib.js"></script>
+	<script type="text/javascript" src="./js/hashmap.js"></script>
+	<script type="text/javascript" src="./js/jquery-2.0.0.min.js"></script>
+	<script type="text/javascript" src="./js/css-compile.js"></script>
+	<script type="text/javascript" src="./js/user.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="./js/d3/src/nv.d3.css">
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("head").compileCSS("style.css", new Array("theme/dark") );
+		});
+	</script>
+</head>
+
+<body style="display: none;">
+	<div id="container">
+		<div id="popup-container">
+			<div id="popup-createproject">
+				<div class="body">
+					<form onsubmit="return createProject(this);">
+						<span>APP Name</span>
+						<input name="appname" type="input" value="" />
+						<span>APP Category</span>
+						<div class="dropdown">
+							<a>Game</a>
+							<span></span>
+							<div>
+								 <ul>
+								 	<li data-value="true"><a>Game</a></li>
+								 	<li data-value="false"><a>Utility</a></li>
+								 	<li data-value="false"><a>Weather</a></li>
+								 </ul>
+							</div>
+							<input type="hidden" name="app_category" />
+						</div>
+						<span>Stage</span>
+						<div class="dropdown">
+							<a>Test</a>
+							<span></span>
+							<div>
+								 <ul>
+								 	<li data-value="true"><a>Test</a></li>
+								 	<li data-value="false"><a>Release</a></li>
+								 	<li data-value="false"><a>Develope</a></li>
+								 </ul>
+							</div>
+							<input type="hidden" name="stage" />
+						</div>
+						<div class="button purple" data-name="Add Project" style="width: 210px; height: 39px"></div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div id="project-list">
+			<div class="list">
+				<a href="./index.html">
+					<div>
+						<div></div>
+						<span></span>
+						<p class="red"><span>ERROR</span>102,455</p>
+						<label>STANly</label>
+					</div>
+				</a>
+				<a href="./index.html">
+					<div>
+						<div></div>
+						<span></span>
+						<p class="green"><span>ERROR</span>102,455</p>
+						<label>BugSense</label>
+					</div>
+				</a>
+				<a href="./index.html">
+					<div>
+						<div></div>
+						<span></span>
+						<p class="blue"><span>ERROR</span>102,455</p>
+						<label>DynamicWAVE</label>
+					</div>
+				</a>
+			</div>
+			<div class="add" onclick="showPopupCreateProject()"><div></div></div>
+		</div>
+		<!--content-container fin-->
+	</div>
+</body>
+</html>

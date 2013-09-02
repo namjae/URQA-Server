@@ -38,14 +38,13 @@ urlpatterns = patterns('',
     url(r'^urqa/project/(?P<pid>\d+)/typees$', 'projectmanage.views.typeesgraph'),
     #url(r'^urqa/project/(?P<pid>\d+)/errorscorelist$', 'projectmanage.views.errorscorelist'),
     #project manage static
-    (r'(?:.*?/)?(?P<path>(css|font|js|images)/.+)$', 'projectmanage.views.mediapathrequest'),
+    (r'(?:.*?/)?(?P<path>(css|font|js|images)/.+)$', 'urqa.views.mediapathrequest'),
 
 
 
     #errors
-    url(r'^urqa/project/(?P<pid>\d+)/errors/$', 'projectmanage.views.filter_view'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/version_list/$', 'projectmanage.views.version_list'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/list$', 'projectmanage.views.error_list'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/$', 'errors.views.filter_view'),
+    url(r'^urqa/project/(?P<pid>\d+)/errors/list$', 'errors.views.error_list'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)$', 'errors.views.errorDetail'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)$', 'errors.views.instancedetatil'),
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/log$', 'errors.views.log'),

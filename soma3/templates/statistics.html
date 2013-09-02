@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	
+	<title>UrQA :: Statistics</title>
+
+	<meta name="viewport" content="width=device-width">
+	
+	<script type="text/javascript" src="./js/lib.js"></script>
+	<script type="text/javascript" src="./js/hashmap.js"></script>
+	<script type="text/javascript" src="./js/jquery-2.0.0.min.js"></script>
+	<script type="text/javascript" src="./js/raphael/raphael.min.js"></script>
+	<script type="text/javascript" src="./js/raphael/r.raphael.min.js"></script>
+	<script type="text/javascript" src="./js/raphael/r.pie.min.js"></script>
+	<script type="text/javascript" src="./js/raphael/popup.js"></script>
+	<script type="text/javascript" src="./js/raphael/graph/graph.js"></script>
+	<script type="text/javascript" src="./js/d3/lib/d3.v3.js"></script>
+	<script type="text/javascript" src="./js/d3/nv.d3.js"></script>
+	<script type="text/javascript" src="./js/d3/src/tooltip.js"></script>
+	<script type="text/javascript" src="./js/d3/src/models/legend.js"></script>
+	<script type="text/javascript" src="./js/d3/src/models/pie.js"></script>
+	<script type="text/javascript" src="./js/d3/src/models/pieChart.js"></script>
+	<script type="text/javascript" src="./js/d3/src/utils.js"></script>
+	<script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+	<script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
+	<script type="text/javascript" src="./js/css-compile.js"></script>
+	<script type="text/javascript" src="./js/user.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="./js/d3/src/nv.d3.css">
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("head").compileCSS("style.css", new Array("theme/dark") );
+		});
+	</script>
+</head>
+
+<body class="statistics" style="display: none;">
+	<div id="container">
+		<div id="popup-notification">
+			<div data-href="#">
+				<span></span>
+				<label>This is the notification area</label>
+				<p>Check the <i>Notifications</i> section for more information.</p>
+			</div>
+			<div data-href="#">
+				<span></span>
+				<label>Welcome to UrQA</label>
+				<p>UrQA에 오신 것을 환영합니다. 당신의 프로젝트에서 발생하는 <b>다양한 문제</b>를 여기에서 해결할 수 있기를 바랍니다!</p>
+			</div>
+		</div>
+		<div id="header-container">
+			<div id="header">
+				<a href="./"><div class="logo"></div></a>
+				<div class="navbar-menu">
+					<ul>
+						<li><a>Insights</a></li>
+						<li><a>Errors</a></li>
+						<li><a>Statistics</a></li>
+						<li><a>Settings</a></li>
+					</ul>
+				</div>
+				<div class="navbar-profile">
+					<div class="setting"></div>
+					<div class="profile"><img src="http://profile.ak.fbcdn.net/hprofile-ak-ash3/27350_100001314106197_1542605533_q.jpg" alt="profile" /></div>
+					<div id="profile-menu">
+						<div class="inv-triangle"></div>
+						<div class="color shadow">
+							<img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/c207.47.546.546/s160x160/531640_453529518034181_1497539635_n.jpg" alt="profile" />
+							<div class="text">
+								<div class="name">An Jeungwon</div>
+								<div class="user-style">Enterprise Customer</div>
+							</div>
+						</div>
+						<div class="white shadow">
+							<div class="content">
+								<span>
+									<p class="icon" data-name="profile"></p>
+									<p class="text">PROFILE</p>
+								</span>
+								<span>
+									<p class="notification" data="12"></p>
+									<p class="icon" data-name="notification"></p>
+									<p class="text">NOTIFICATION</p>
+								</span>
+								<span>
+									<p class="icon" data-name="logout"></p>
+									<p class="text">LOGOUT</p>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="color-line">
+				<div class="color1"></div>
+				<div class="color2"></div>
+				<div class="color3"></div>
+				<div class="color4"></div>
+			</div>
+		</div>
+		<!--header-container fin-->
+
+		<div id="content-container">
+			<div class="title" data="statistics"></div>
+			<div class="title" data="class"> Error Rate</div>
+			<div id="class-error-count" class="content">
+				<table>
+					<tbody>
+						<tr class="notHover">
+							<td id="cecs"><svg></svg></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="white-area"></div>
+			</div>
+			<div class="title" data="device"> Error Count</div>
+			<div class="content">
+				<table style="margin-top: -10px;">
+					<tbody>
+						<tr class="notHover">
+							<td id="decs"><svg></svg></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="title" data="error">s by Activity</div>
+			<div class="content">
+				<table style="margin-top: -10px;">
+					<tbody>
+						<tr class="notHover">
+							<td id="ebas"><svg></svg></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="title" data="version"> Error Rate</div>
+			<div class="content">
+				<table style="margin-top: -10px;">
+					<tbody>
+						<tr class="notHover">
+							<td id="vers"><svg></svg></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!--content-container fin-->
+
+		<div id="footer-container">Copyright(C) UrQA 2013., Allright reserved.</div>
+		<!--footer-container fin-->
+	</div>
+
+</body>
+</html>

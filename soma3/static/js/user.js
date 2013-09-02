@@ -1,46 +1,261 @@
+var resizeStatusPopupMemberJoin = false,
+	resizeStatusPopupNotification = false,
+	resizeStatusPopupInformation = false,
+	resizeStatusCreateProject = false,
+	resizeStatusLoginBox = false,
+	resizeStatusProjectList = false;
+
+function createProject(obj)
+{
+	var e = obj.elements;
+
+	if(e["appname"].value != "")
+	{
+		hidePopupCreateProject();
+		$("#project-list > .list").append("<a href=\"./index.html?id=" + Math.random(100) + "\"><div><div></div><span></span><p class=\"blue\"><span>ERROR</span>0</p><label>" + e["appname"].value + "</label></div></a>");
+		var chd = $("#project-list > .list > a:nth-last-child(1) > div");
+
+		resizeProjectList();
+
+		chd.css({"margin-top": "-30px", opacity: 0.0});
+		chd.delay(250).animate({
+			"margin-top": 0,
+			opacity: 1.0
+		}, 250, function(){
+			chd.css({"margin-top": 0, opacity: 1.0});
+		});
+	}
+	else
+	{
+		$(e["appname"]).addClass("error");
+	}
+
+	return false;
+}
+function newNotification(title, content, href)
+{
+	$("#popup-notification").append("<div data-href=\"" + href + "\"><span></span><label>" + title + "</label><p>" + content + "</p></div>");
+	var chd = $("#popup-notification > div:nth-last-child(1)");
+	var h = chd.height();
+	chd.css({"padding-top": 0, "padding-bottom": 0, "height": 0} );
+	chd.animate({
+		"padding-top": 14,
+		"padding-bottom": 14,
+		"height": h
+	}, 250, function(){
+		$(this).css({"padding-top": 14, "padding-bottom": 14, "height": h})
+	});
+
+	chd.click(function(){
+		if(bodyChecker_noti == false)
+		{
+			document.location = $(this).attr("data-href");
+		}
+		else
+		{
+			$(this).children("span").hide();
+			$(this).animate({
+				height: 0,
+				"padding-top": 0,
+				"padding-bottom": 0
+			}, 250, function(){
+				$(this).remove();
+				if($("#popup-notification > div").length == 0)
+					$("#popup-notification").hide();
+			});
+		}
+		bodyChecker_noti = false;
+	});
+	chd.children("span").click(function(){ bodyChecker_noti = true; });
+
+	$("#popup-notification").show();
+	resizePopupNotification();
+}
+function resizePopupMemberjoin()
+{
+	if($("#popup-memberjoin") )
+	{
+		var tops = ($(window).height() - $("#popup-memberjoin > .body").height()) / 2;
+		var lefts = ($(window).width() - $("#popup-memberjoin > .body").width()) / 2;
+		if(resizeStatusPopupMemberJoin)
+		{
+			$("#popup-memberjoin > .body").stop(true, true);
+			$("#popup-memberjoin > .body").animate({'top': tops, 'left': lefts}, 250, function() { $(this).css({'top': tops, 'left': lefts}); } );
+		}
+		else
+		{
+			$("#popup-memberjoin > .body").css({'top': tops, 'left': lefts});
+		}
+		resizeStatusPopupMemberJoin = true;
+	}
+}
+function resizePopupNotification()
+{
+	if($("#popup-notification") )
+	{
+		var tops = ($(window).height() - $("#popup-notification").height()) / 2;
+		var lefts = ($(window).width() - $("#popup-notification").width()) / 2;
+		if(resizeStatusPopupNotification)
+		{
+			$("#popup-notification").stop(true, true);
+			$("#popup-notification").animate({'top': tops, 'left': lefts}, 250, function() { $(this).css({'top': tops, 'left': lefts}); } );
+		}
+		else
+		{
+			$("#popup-notification").css({'top': tops, 'left': lefts});
+		}
+		resizeStatusPopupNotification= true;
+	}
+}
 function resizePopupInformation()
 {
-	var tops = ($(window).height() - $("#popup-information > .body").height()) / 2;
-	var lefts = ($(window).width() - $("#popup-information > .body").width()) / 2;
-	$("#popup-information > .body").stop(true, true);
-	$("#popup-information > .body").animate({'top': tops, 'left': lefts}, 250, function() { $(this).css({'top': tops, 'left': lefts}); } );
+	if($("#popup-information") )
+	{
+		var tops = ($(window).height() - $("#popup-information > .body").height()) / 2;
+		var lefts = ($(window).width() - $("#popup-information > .body").width()) / 2;
+		if(resizeStatusPopupInformation)
+		{
+			$("#popup-information > .body").stop(true, true);
+			$("#popup-information > .body").animate({'top': tops, 'left': lefts}, 250, function() { $(this).css({'top': tops, 'left': lefts}); } );
+		}
+		else
+		{
+			$("#popup-information > .body").css({'top': tops, 'left': lefts});
+		}
+		resizeStatusPopupInformation = true;
+	}
 }
 
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+function resizeCreateProject()
+{
+	if($("#popup-createproject") )
+	{
+		var tops = ($(window).height() - $("#popup-createproject > .body").height()) / 2;
+		var lefts = ($(window).width() - $("#popup-createproject > .body").width()) / 2;
+		if(resizeStatusCreateProject)
+		{
+			$("#popup-createproject > .body").stop(true, true);
+			$("#popup-createproject > .body").animate({'top': tops, 'left': lefts}, 250, function() { $(this).css({'top': tops, 'left': lefts}); } );
+		}
+		else
+		{
+			$("#popup-createproject > .body").css({'top': tops, 'left': lefts});
+		}
+		resizeStatusCreateProject = true;
+	}
 }
-
-function sameOrigin(url) {
-    // test that a given url is a same-origin URL
-    // url could be relative or scheme relative or absolute
-    var host = document.location.host; // host + port
-    var protocol = document.location.protocol;
-    var sr_origin = '//' + host;
-    var origin = protocol + sr_origin;
-    // Allow absolute or scheme relative URLs to same origin
-    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-        // or any other URL that isn't scheme relative or absolute i.e relative.
-        !(/^(\/\/|http:|https:).*/.test(url));
+function resizeLoginBox()
+{
+	if($("#loginbox") )
+	{
+		var tops = ($(window).height() - $("#loginbox").height()) / 2;
+		var lefts = ($(window).width() - $("#loginbox").width()) / 2;
+		if(resizeStatusLoginBox)
+		{
+			$("#loginbox").stop(true, true);
+			$("#loginbox").animate({'top': tops, 'left': lefts}, 250, function() { $(this).css({'top': tops, 'left': lefts}); } );
+		}
+		else
+		{
+			$("#loginbox").css({'top': tops, 'left': lefts});
+		}
+		resizeStatusLoginBox = true;
+	}
 }
+function resizeProjectList()
+{
+	if($("#project-list") )
+	{
+		var windowWidth = $(window).width() - 180;
+		var projectWidth = $("#project-list > .list").children().length * 135;
+		var listCount = parseInt(projectWidth / windowWidth) + 1;
+		var windowWidthCount = parseInt(windowWidth / 135);
 
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
+		var toWidth = projectWidth,
+			toHeight = 135;
+		if(listCount > 1)
+		{
+			toWidth = windowWidthCount * 135;
+			toHeight = listCount * 135;
+		}
+
+		var tops = ($(window).height() - toHeight) / 2;
+		var lefts = ($(window).width() - toWidth) / 2;
+		$("#project-list > .list").css({
+			width: windowWidthCount * 135,
+			height: listCount * 135
+		});
+
+		if(resizeStatusProjectList)
+		{
+			$("#project-list > .list").stop(true, true);
+			$("#project-list > .list").animate({'width': toWidth, 'height': toHeight, 'top': tops, 'left': lefts}, 250, function() { $(this).css({'width': toWidth, 'height': toHeight, 'top': tops, 'left': lefts}); } );
+		}
+		else
+		{
+			$("#project-list > .list").css({'width': toWidth, 'height': toHeight, 'top': tops, 'left': lefts});
+		}
+		resizeStatusProjectList = true;
+	}
 }
+function showPopupMemberjoin()
+{
+	var oriW = $("#popup-memberjoin > .body").width();
+	var oriH = $("#popup-memberjoin > .body").height();
 
+	$("#popup-memberjoin > .body > input").each(function(){ $(this)[0].value = ""; });
+
+	$("body").css("overflow", "hidden");
+	$("#popup-memberjoin").css("display", "block");
+
+	$("#popup-container").stop(true, true);
+	$("#popup-container").css({"display": "block", "opacity": 0.0});
+	$("#popup-container").animate({
+		opacity: 1.0,
+	}, 250, function(){
+		$(this).css({"opacity": 1.0});
+	});
+}
+function hidePopupMemberjoin()
+{
+	$("#popup-container").stop(true, true);
+	$("#popup-container").animate({
+		opacity: 0.0,
+	}, 250, function(){
+		$(this).css({"display": "none"});
+		$("body").css("overflow", "");
+		$("#popup-memberjoin").css("display", "none");
+	});
+}
+function showPopupCreateProject()
+{
+	var oriW = $("#popup-createproject > .body").width();
+	var oriH = $("#popup-createproject > .body").height();
+
+	$("#popup-createproject > .body input").each(function(){ $(this).removeClass("error"); $(this)[0].value = ""; });
+
+	$("body").css("overflow", "hidden");
+	$("#popup-createproject").css("display", "block");
+
+	$("#popup-container").stop(true, true);
+	$("#popup-container").css({"display": "block", "opacity": 0.0});
+	$("#popup-container").animate({
+		opacity: 1.0,
+	}, 250, function(){
+		$(this).css({"opacity": 1.0});
+	});
+}
+function hidePopupCreateProject()
+{
+	$("#popup-container").stop(true, true);
+	$("#popup-container").animate({
+		opacity: 0.0,
+	}, 250, function(){
+		$(this).css({"display": "none"});
+		$("body").css("overflow", "");
+		$("#popup-createproject").css("display", "none");
+	});
+}
 function showPopupInformation(w, h, idinstance)
 {
 	var oriW = $("#popup-information > .body").width();
@@ -75,93 +290,6 @@ function showPopupInformation(w, h, idinstance)
     geteventpath(idinstance)
     getlog(idinstance)
 
-}
-//
-function getinstancedata(idinstance)
-{
-    $.ajax({
-      type: 'get'
-    , url: error_id+'/'+ idinstance
-    , beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-            // Send the token to same-origin, relative URLs only.
-            // Send the token only if the method warrants CSRF protection
-            // Using the CSRFToken value acquired earlier
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }}
-    , success : function(data) {
-            $('#osversion').text(data['osversion'])
-            $('#appversion').text(data['appversion'])
-            $('#device').text(data['device'])
-            $('#country').text(data['country'])
-            $('#freememory').text(data['appmemfree'])
-            $('#memoryusage').text(data['appmemtotal'])
-            $('#gps').text(data['gpson'] ? 'true' : 'false')
-            $('#screenorientation').text(data['scrorientation']? 'vetical': 'horizon')
-            $('#bettery').text(data['batterylevel']+ '%')
-            $('#wifi').text(data['wifion'] ? 'true' : 'false')
-            $('#mobile').text(data['mobileon'] ? 'true' : 'false')
-            $('#screensize').text(data['scrwidth'] + ' X ' + data['scrheight'])
-            $('#root').text(data['rooted'] ? 'true':'false')
-            $('#sdkversion').text(data['sdkversion'])
-            $('#locale').text(data['locale'])
-            $('#date').text(data['datetime'])
-            $('#instanceid').text('#'+data['idinstance'])
-        }
-    })
-}
-
-function geteventpath(idinstance)
-{
-      $.ajax({
-      type: 'get'
-    , url: error_id+'/'+ idinstance + '/instanceeventpath'
-    , beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-            // Send the token to same-origin, relative URLs only.
-            // Send the token only if the method warrants CSRF protection
-            // Using the CSRFToken value acquired earlier
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }}
-    , success : function(data) {
-
-              //var printstr = sprintf('<tr><td class="center">%s<br>%s</td> <td>%s</td><td>%s</td></tr>',data['date'],data['time'],data['class'],data['methodline'])
-
-              var stringlist = []
-              for(var i =0; i< data.length ; i++)
-              {
-                var stringbuilder = []
-                stringbuilder.push('<tr><td class="center">',data[i]['date'],'<br>',data[i]['time'],'</td> <td>',data[i]['class'],'</td><td>',data[i]['methodline'],'</td></tr>')
-                stringlist.push(stringbuilder.join(''))
-              }
-              $('#eventpath').html(stringlist.join(''))
-        }
-    })
-}
-function getlog(idinstance)
-{
-     $.ajax({
-      type: 'get'
-    , url: error_id+'/'+ idinstance + '/log'
-    , beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-            // Send the token to same-origin, relative URLs only.
-            // Send the token only if the method warrants CSRF protection
-            // Using the CSRFToken value acquired earlier
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }}
-    , success : function(data) {
-             var stringlist = []
-
-             for(var i = 0 ; i< data.length; i++)
-             {
-                 var stringbuilder = []
-                stringbuilder.push('<tr><td>',i,': ',data[i],'</td></tr>')
-                stringlist.push(stringbuilder.join(''))
-             }
-             $('#log').html(stringlist.join(''))
-        }
-    })
 }
 
 function hidePopupInformation()
@@ -231,17 +359,17 @@ $("head").styleReady(function(){
 	if($("body").hasClass("insight") )
 	{
 		$("#dailyES").ready(function(){
-			Raphael.custom.areaGraph(server_url + project_id + "/dailyes", "#dailyES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
+			Raphael.custom.areaGraph("dailyes", "#dailyES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
 				"color": "#dca763", "lineColor": "#3a3f42", "textColor": "#303335", "autoResize": true });
 		});
 		$("#typeES").ready(function(){
-			Raphael.custom.pieGraph(server_url + project_id + "/typees", "#typeES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
+			Raphael.custom.pieGraph("typees", "#typeES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
 				"lineColor": "#ffffff", "textColor": "#303335", "labelPos": "east", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true });
 		});
 	}
 	if($("body").hasClass("error") )
 	{
-		$("#event-path-parent").ready(function(){
+        	$("#event-path-parent").ready(function(){
 			//Raphael.custom.eventPath("./data3", "#event-path", {"height": 230, "contentWidth": 20, "contentHeight": 20, "textColor": "#303335", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true, "topgutter": 5, "bottomgutter": -10 })
             $.ajax({
                 type: 'get'
@@ -252,6 +380,158 @@ $("head").styleReady(function(){
                         sankeydraw(data)
                    }
                })
+		});
+    }
+
+	if($("body").hasClass("statistics") )
+	{
+		$("#cecs").ready(function(){
+			Raphael.custom.pieGraph("./data2", "#cecs", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
+				"lineColor": "#ffffff", "textColor": "#303335", "labelPos": "east", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true });
+		});
+
+		function exampleData() {
+			return  [ 
+				{
+					key: "Cumulative Return",
+					values: [
+						{ 
+							"label" : "CDS / Options" ,
+							"value" : -29.765957771107
+						} , 
+						{ 
+							"label" : "Cash" , 
+							"value" : 0
+						} , 
+						{ 
+							"label" : "Corporate Bonds" , 
+							"value" : 32.807804682612
+						} , 
+						{ 
+							"label" : "Equity" , 
+							"value" : 196.45946739256
+						} , 
+						{ 
+							"label" : "Index Futures" ,
+							"value" : 0.19434030906893
+						} , 
+						{ 
+							"label" : "Options" , 
+							"value" : -98.079782601442
+						} , 
+						{ 
+							"label" : "Preferred" , 
+							"value" : -13.925743130903
+						} , 
+						{ 
+							"label" : "Not Available" , 
+							"value" : -5.1387322875705
+						}
+					]
+				}
+			];
+		}	
+
+		nv.addGraph(function() {
+			var chart = nv.models.discreteBarChart()
+				.x(function(d) { return d.label })
+				.y(function(d) { return d.value })
+				.color([ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ])
+				.staggerLabels(true)
+				.tooltips(false)
+				.showValues(true);
+
+			d3.select('#decs svg')
+				.datum(exampleData())
+				.transition().duration(500)
+				.call(chart);
+
+			nv.utils.windowResize(chart.update);
+
+			return chart;
+		});
+
+		nv.addGraph(function() {
+			var chart = nv.models.discreteBarChart()
+				.x(function(d) { return d.label })
+				.y(function(d) { return d.value })
+				.color([ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ])
+				.staggerLabels(true)
+				.tooltips(false)
+				.showValues(true);
+
+			d3.select('#ebas svg')
+				.datum(exampleData())
+				.transition().duration(500)
+				.call(chart);
+
+			nv.utils.windowResize(chart.update);
+
+			return chart;
+		});
+		$(function () {
+			$('#vers').highcharts({
+				chart: {
+					type: 'column'
+				},
+				title: {
+					text: 'Version Error Rate'
+				},
+				colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
+				xAxis: {
+					categories: ['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas']
+				},
+				yAxis: {
+					min: 0,
+					title: {
+						text: 'Version Error Rate'
+					},
+					stackLabels: {
+						enabled: true,
+						style: {
+							fontWeight: 'bold',
+							color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+						}
+					}
+				},
+				legend: {
+					align: 'right',
+					x: -70,
+					verticalAlign: 'top',
+					y: 20,
+					floating: true,
+					backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
+					borderColor: '#CCC',
+					borderWidth: 1,
+					shadow: false
+				},
+				tooltip: {
+					formatter: function() {
+						return '<b>'+ this.x +'</b><br/>'+
+							this.series.name +': '+ this.y +'<br/>'+
+							'Total: '+ this.point.stackTotal;
+					}
+				},
+				plotOptions: {
+					column: {
+						stacking: 'normal',
+						dataLabels: {
+							enabled: true,
+							color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+						}
+					}
+				},
+				series: [{
+					name: 'John',
+					data: [5, 3, 4, 7, 2]
+				}, {
+					name: 'Jane',
+					data: [2, 2, 3, 2, 1]
+				}, {
+					name: 'Joe',
+					data: [3, 4, 4, 2, 5]
+				}]
+			});
 		});
 	}
 
@@ -293,8 +573,7 @@ $("head").styleReady(function(){
 		{
 			var me = radiobox_objects.eq(i);
 			me.attr("data-name", me.children("input").attr("name") );
-			//me.attr("data-value", me.children("input").attr("value") );
-            me.attr("data-value", i );
+			me.attr("data-value", me.children("input").attr("value") );
 
 			var group_info = $(".radiobox[data-name=" + me.attr("data-name") + "]");
 			if(group_info.length > 1) me.children("input").remove();
@@ -530,7 +809,16 @@ $("head").styleReady(function(){
 			$(this).parent().parent().children("input").attr("value", $(this).children("a")[0].innerText);
 		});
 	});
-	/** Component End **/
+
+	$(".button").click(function(){
+		var parent = $(this).parent();
+		while(parent.get(0) != null)
+		{
+			if(parent.get(0).tagName == "FORM")
+				parent.submit();
+			parent = parent.parent();
+		}
+	});
 
 	$(".checkbox.red").click(function() {
 		if($(this).attr("data-value") == "checked"){
@@ -542,6 +830,7 @@ $("head").styleReady(function(){
 			$(".checkbox.red[data-value=checked] > input[name=\""+$(this).children("input").attr("name")+"\"]").each(function() { $(this).parent().click(); });
 		}
 	});
+	/** Component End **/
 
 	// Auto-resize table
 	addWindowResize(function(){
@@ -555,7 +844,7 @@ $("head").styleReady(function(){
 					if($(this).parent().hasClass("empty") == true)
 						return;
 
-					$(this).children().eq(child).children("p").width("0px");
+					$(this).children().eq(child).children("p").width("1px");
 				});
 
                 var w = $(this).width();
@@ -586,8 +875,47 @@ $("head").styleReady(function(){
 
 	// Auto-resize popup-information
 	//$("#popup-information").click(hidePopupInformation);
-	var bodyChecker = false;
-	$("#popup-information").click(function(){ if(bodyChecker == false){ hidePopupInformation(); } bodyChecker = false; })
-	$("#popup-information > .body").click(function(){ bodyChecker = true; })
+	var bodyChecker_info = false,
+		bodyChecker_join = false,
+		bodyChecker_addP = false,
+		bodyChecker_noti = false;
+	$("#popup-memberjoin").click(function(){ if(bodyChecker_join == false){ hidePopupMemberjoin(); } bodyChecker_join = false; });
+	$("#popup-information").click(function(){ if(bodyChecker_info == false){ hidePopupInformation(); } bodyChecker_info = false; });
+	$("#popup-createproject").click(function(){ if(bodyChecker_addP == false){ hidePopupCreateProject(); } bodyChecker_addP = false; });
+	$("#popup-memberjoin > .body").click(function(){ bodyChecker_join = true; });
+	$("#popup-information > .body").click(function(){ bodyChecker_info = true; });
+	$("#popup-createproject > .body").click(function(){ bodyChecker_addP = true; });
+
+	$("#popup-notification div").click(function(){
+		if(bodyChecker_noti == false)
+		{
+			document.location = $(this).attr("data-href");
+		}
+		else
+		{
+			$(this).children("span").hide();
+			$(this).animate({
+				height: 0,
+				"padding-top": 0,
+				"padding-bottom": 0
+			}, 250, function(){
+				$(this).remove();
+				if($("#popup-notification > div").length == 0)
+					$("#popup-notification").hide();
+			})
+		}
+		bodyChecker_noti = false;
+	});
+	$("#popup-notification span").click(function(){ bodyChecker_noti = true; });
+
+	if($("#popup-notification > div").length != 0)
+		$("#popup-notification").show();
+
+	addWindowResize(resizePopupMemberjoin)();
+	addWindowResize(resizePopupNotification)();
 	addWindowResize(resizePopupInformation)();
+	addWindowResize(resizeCreateProject)();
+	addWindowResize(resizeLoginBox)();
+	addWindowResize(resizeProjectList)();
 });
+

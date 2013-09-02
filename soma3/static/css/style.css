@@ -75,8 +75,61 @@ a:visited { text-decoration:none; }
 a:hover { text-decoration:none; }
 a:active { text-decoration:none; }
 
-#container { padding: 0; margin: 0; }
+>html.login {
+	width: 100%;
+	height: 100%;
+	background: url("./images/background.jpg") no-repeat;
+	background-size: cover;
+	body {
+		background-color: transparent;
+	}
+}
+>html.project-select {
+	width: 100%;
+	height: 100%;
+	background: url("./images/background-blue.jpg") no-repeat;
+	background-size: cover;
+	body {
+		background-color: transparent;
+	}
+}
 
+#container { padding: 0; margin: 0; }
+#popup-notification {
+	position: fixed;
+	display: none;
+	width: 340px;
+	height: auto;
+	border-radius: 5px;
+	background-color: white;
+	@multi-platform { box-shadow: 0 0 5px rgba(0,0,0,.33); }
+	z-index: 10000;
+	>div {
+		padding: 14px 16px;
+		border-bottom: 1px #c1c7c6 solid;
+		overflow: hidden;
+		cursor: pointer;
+		span {
+			position: absolute;
+			margin-left: 304px;
+			margin-top: -8px;
+			width: 12px;
+			height: 12px;
+			border-radius: 6px;
+		}
+		label {
+			font: 14px "RixGo B";
+			color: @tm-tx-c3;
+		}
+		p {
+			margin-top: 3px;
+			font: 12px "RixGo L";
+			color: @tm-tx-c3;
+		}
+	}
+	div:nth-last-child(1) { border: 0; }
+	div:hover > span { background: @tm-tx-c2 url("./images/x.png") 3px 3px no-repeat; }
+}
 >#popup-container {
 	position: fixed;
 	display: none;
@@ -85,7 +138,7 @@ a:active { text-decoration:none; }
 	width: 100%;
 	height: 100%;
 	z-index: 10000;
-	>#popup-information {
+	>div {
 		display: none;
 		width: 100%;
 		height: 100%;
@@ -96,26 +149,94 @@ a:active { text-decoration:none; }
 		}
 		.body {
 			position: relative;
-			width: 300px;
-			height: 130px;
 			padding: 10px;
 			border-radius: 5px;
 			background-color: white;
-			overflow-y: scroll;
-			.area > span {
-				display: block;
-				font: 14px "RixGo B";
-				color: @tm-tx-c3;
-			}
-			.area > span:not(:nth-child(1)) {
-				margin-top: 15px;
-			}
+		}
+	}
+	>#popup-information > .body {
+		width: 300px;
+		height: 130px;
+		overflow-y: scroll;
+		.area > span {
+			display: block;
+			font: 14px "RixGo B";
+			color: @tm-tx-c3;
+		}
+		.area > span:not(:nth-child(1)) {
+			margin-top: 15px;
+		}
+	}
+	>#popup-memberjoin > .body {
+		width: 210px;
+		height: 390px;
+		span {
+			display: block;
+			font: 12px "RixGo EB";
+			color: @tm-hl-c4;
+			margin-bottom: 2px;
+		}
+		input {
+			width: 186px;
+			margin-bottom: 10px;
+		}
+	}
+	#popup-createproject > .body {
+		width: 210px;
+		height: 226px;
+		span {
+			display: block;
+			font: 12px "RixGo EB";
+			color: @tm-hl-c4;
+			margin-bottom: 2px;
+		}
+		input {
+			width: 186px;
+			margin-bottom: 10px;
+		}
+		div {
+			width: 168px;
 		}
 	}
 }
 
 /** Component Start **/
- >.radiobox {
+input[type="input"],
+input[type="password"] {
+	padding: 10px;
+	font: 14px "RixGo L";
+	border: 2px @tm-dk-c5 solid;
+	color: @tm-tx-c3;
+}
+input[type="input"]:focus,
+input[type="password"]:focus {
+	border: 2px @tm-hl-c4 solid;
+}
+input[type="input"].error,
+input[type="password"].error {
+	border: 2px @tm-hl-c1 solid;
+}
+.button {
+	display: table-cell;
+	border-radius: 3px;
+	text-align: center;
+	vertical-align: middle;
+	background-color: @tm-hl-c3;
+	cursor: pointer;
+}
+.button:hover {
+	background-color: @tm-hl-half-c3;
+}
+.button:before {
+	content: attr(data-name);
+	font: 12px "RixGo B";
+	color: white;
+}
+.button.purple { background-color: @tm-hl-c4; }
+.button.purple:hover { background-color: @tm-hl-half-c4; }
+.button.gray { background-color: @tm-dk-c1; }
+.button.gray:hover { background-color: @tm-dk-half-c1; }
+>.radiobox {
 	cursor: pointer;
 	span {
 		float: left;
@@ -706,6 +827,164 @@ body.error .navbar-menu > ul > li:nth-child(2) > a {
 #color-line .color3 { background-color: @tm-hl-c3; }
 #color-line .color4 { background-color: @tm-hl-c4; }
 
+>#loginbox {
+	position: absolute;
+	width: 240px;
+	height: 268px;
+	border-radius: 12px;
+	background-color: white;
+	@multi-platform { box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.33); }
+
+	div.header {
+		margin-bottom: 14px;
+		padding-top: 17px;
+		height: 37px;
+		@border-top {
+			left-radius: 12px;
+			right-radius: 12px;
+		}
+		font: 16px "RixGo B";
+		text-align: center;
+		background-color: @tm-hl-c4;
+		color: white;
+	}
+	>div.content {
+		margin-left: 17px;
+		span {
+			display: block;
+			font: 12px "RixGo EB";
+			color: @tm-hl-c4;
+			margin-bottom: 2px;
+		}
+		input {
+			width: 186px;
+			margin-bottom: 10px;
+		}
+	}
+	>div.footer {
+		margin-top: 4px;
+		text-align: center;
+		label {
+			font: 11px "RixGo L";
+			cursor: pointer;
+		}
+		span {
+			display: inline-block;
+			width: 6px;
+			height: 6px;
+			border-radius: 3px;
+			background-color: @tm-hl-c4;
+			@margin {
+				left: 6px;
+				right: 6px;
+			}
+		}
+	}
+}
+
+>#project-list {
+	>.list {
+		position: absolute;
+		>a {
+			>div {
+				float: left;
+				display: block;
+				width: 120px;
+				height: 120px;
+				margin-right: 15px;
+				margin-bottom: 15px;
+				border-radius: 10px;
+				background-color: #f1f1f1;
+				cursor: pointer;
+				div {
+					position: absolute;
+					width: 120px;
+					height: 98px;
+					margin-top: 10px;
+					background: url("./images/glass.png") no-repeat;
+				}
+				span {
+					display: block;
+					height: 10px;
+				}
+				>p {
+					display: block;
+					padding-top: 18px;
+					width: 120px;
+					height: 54px;
+					font: 14px "RixGo B";
+					text-align: center;
+					color: white;
+					span {
+						display: block;
+						font-size: 18px;
+					}
+				}
+				label {
+					display: block;
+					margin-top: 6px;
+					width: 120px;
+					font: 14px "RixGo B";
+					color: @tm-tx-c3;
+					text-align: center;
+				}
+				p.red {
+					background-color: @tm-hl-c1;
+				}
+				p.green {
+					background-color: #47d55b;
+				}
+				p.blue {
+					background-color: #42a1d7;
+				}
+				p.purple {
+					background-color: @tm-hl-c4;
+				}
+			}
+			div:hover {
+				background-color: white;
+			}
+		}
+	}
+	>.add {
+		position: absolute;
+		margin-left: -70px;
+		margin-top: -60px;
+		left: 100%;
+		top: 50%;
+		width: 70px;
+		height: 120px;
+		@border {
+			top-left-radius: 10px;
+			bottom-left-radius: 10px;
+		}
+		background-color: rgba(255,255,255,0.2);
+		@multi-platform { transition: all 0.25s ease-in-out; }
+		cursor: pointer;
+		div {
+			width: 32px;
+			height: 32px;
+			@margin {
+				left: 23px;
+				top: 44px;
+			}
+			opacity: 0.5;
+			@multi-platform { transition: all 0.25s ease-in-out; }
+		}
+	}
+	>.add:hover {
+		width: 84px;
+		margin-left: -84px;
+		background-color: rgba(255,255,255,0.4);
+		div {
+			opacity: 0.7;
+		}
+	}
+}
+#container.svg			#project-list > .add > div { background: url("./images/plus.svg") no-repeat; }
+#container				#project-list > .add > div,
+#container.decelerate	#project-list > .add > div { background: url("./images/plus.png") no-repeat; }
+
 >#content-container {
 	@margin{
 		left: 40px;
@@ -873,6 +1152,23 @@ table.content-large {
 	#call-stack > table {
 		margin-top: -10px;
 	}
+	#class-error-count {
+		table {
+			margin-top: 20px;
+		}
+	}
+}
+#cecs svg {
+	height: 300px;
+}
+#decs svg {
+	height: 300px;
+}
+#ebas svg {
+	height: 300px;
+}
+#vers {
+	height: 300px;
 }
 >#content-container #event-path-parent {
 	padding-left: 0;
@@ -897,6 +1193,13 @@ table.content-large {
 						#content-container > .title[data="event-path"]:before { padding-left: 0px; }
 						#content-container > .title[data="call-stack"]:before { padding-left: 0px; }
 						#content-container > .title[data="instance"]:before { padding-left: 0px; }
+#container.svg			#content-container > .title[data="statistics"] { background: url("./images/statistics.svg") no-repeat; }
+#container				#content-container > .title[data="statistics"],
+#container.decelerate	#content-container > .title[data="statistics"] { background: url("./images/statistics.png") no-repeat; }
+						#content-container > .title[data="class"]:before { padding-left: 0px; }
+						#content-container > .title[data="device"]:before { padding-left: 0px; }
+						#content-container > .title[data="error"]:before { padding-left: 0px; }
+						#content-container > .title[data="version"]:before { padding-left: 0px; }
 
 #footer-container {
 	margin-top: 20px;

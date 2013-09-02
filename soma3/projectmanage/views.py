@@ -31,14 +31,10 @@ from urqa.models import Errors
 from urqa.models import Appstatistics
 from urqa.models import Instances
 from urqa.models import Tags
-from soma3.settings import STATIC_ROOT
-from soma3.settings import STATIC_URL
 from utility import getTemplatePath
 from utility import getTimeRange
 from utility import TimeRange
 from utility import RANK
-from common import validUserPjt
-from urqa.views import index
 
 from config import get_config
 
@@ -350,115 +346,3 @@ def errorscorelist(pid):
 
 
 
-def mediapathrequest(request, path):
-    return HttpResponseRedirect(STATIC_URL+path)
-
-
-from urqa.models import Osstatistics
-
-def filter_view(request,pid):
-    username = request.user
-
-    valid , message , userelement, projectelement = validUserPjt(username,pid)
-
-    if not valid:
-        return HttpResponseRedirect('/urqa')
-
-    user = AuthUser.objects.get(username = request.user)
-
-    tpl = loader.get_template('filter.html')
-
-    week, today = getTimeRange(TimeRange.weekly)
-
-    try:
-        projectElement = Projects.objects.get(apikey = pid)
-    except ObjectDoesNotExist:
-        print 'invalid pid'
-        return HttpResponse('')
-
-    errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
-    valid_tag = Tags.objects.filter(iderror__in=errorElements).values('tag').distinct().order_by('tag')
-    valid_class = errorElements.values('errorclassname').distinct().order_by('errorclassname')
-    valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct().order_by('-appversion')
-    valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
-
-
-    osv_list = []
-    os_idx = -1
-    prev_v = ['-1','-1','-1']
-    for e in valid_os:
-        v = e['osversion'].split('.')
-        if v[0] != prev_v[0] or v[1] != prev_v[1]:
-            prev_v = v
-            os_idx += 1
-            print os_idx
-            osv_list.append({})
-            osv_list[os_idx]['key'] = '%s.%s' % (v[0],v[1])
-            osv_list[os_idx]['value'] = []
-        osv_list[os_idx]['value'].append(e['osversion'])
-    print 'yhc',osv_list
-
-    appv_list = []
-    app_idx = -1
-    prev_v = ['-1','-1','-1']
-    for e in valid_app:
-        v = e['appversion'].split('.')
-        if v[0] != prev_v[0] or v[1] != prev_v[1]:
-            prev_v = v
-            app_idx += 1
-            print app_idx
-            appv_list.append({})
-            appv_list[app_idx]['key'] = '%s.%s' % (v[0],v[1])
-            appv_list[app_idx]['value'] = []
-        appv_list[app_idx]['value'].append(e['appversion'])
-    print 'yhc',appv_list
-
-    tag_list = []
-    for e in valid_tag:
-        tag_list.append(e['tag'])
-
-    class_list = []
-    for e in valid_class:
-        class_list.append(e['errorclassname'])
-
-
-
-    ctx = Context({
-        'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : pid,
-        'tag_list' : tag_list,
-        'class_list' : class_list,
-        'osv_list' : osv_list,
-        'appv_list' : appv_list,
-        'user_name' :user.first_name + ' ' + user.last_name ,
-        'user_email': user.email,
-        'profile_url' : user.image_path,
-    });
-    return HttpResponse(tpl.render(ctx))
-
-
-def error_list(request,pid):
-    username = request.user
-
-    valid , message , userelement, projectelement = validUserPjt(username,pid)
-
-    if not valid:
-        return HttpResponseRedirect('/urqa')
-    try:
-        projectElement = Projects.objects.get(apikey = pid)
-    except ObjectDoesNotExist:
-        print 'invalid pid'
-        return HttpResponse(json.dumps({"response":"fail"}), 'application/json');
-
-    print request.POST
-    jsonData = json.loads(request.POST['json'],encoding='utf-8')
-
-    date = int(jsonData['date'])
-    status = int(jsonData['status'])
-    rank = jsonData['rank']
-
-    week, today = getTimeRange(date)
-    errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status=status,lastdate__range=(week,today) ).order_by('-errorweight','rank', '-lastdate')
-    print errorElements
-    default = {"abc":'dfs'}
-    return HttpResponse(json.dumps(default), 'application/json');
