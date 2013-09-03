@@ -3,12 +3,14 @@ from django.conf.urls import patterns, include, url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from soma3 import settings
+from django.views.generic import RedirectView
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
 urlpatterns = patterns('',
     #test page
+    url(r'^$', RedirectView.as_view(url='/urqa/')),
     url(r'^urqa/$', 'urqa.views.index'),
     url(r'^urqa/posttest$', 'urqa.views.posttest'),
     url(r'^urqa/fileuploadtest$', 'urqa.views.fileuploadtest'),
