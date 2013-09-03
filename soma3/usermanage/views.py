@@ -15,21 +15,27 @@ def logintest(request):
     return HttpResponse(tpl.render(ctx))
 
 def registration(request):
-    #print request
+    print request
 
     username = request.POST['username']
     password = request.POST['password']
     email = username
+    first_name = request.POST['usernickname']
 
-
+    print username
+    print password
+    print email
+    print first_name
 
 
     if User.objects.filter(username__exact=username).exists():
-        return HttpResponse('%s already exists' % username)
+        return HttpResponseRedirect('/urqa/')
+        #return HttpResponse('%s already exists' % username)
 
     user = User.objects.create_user(username,email,password)
+    user.first_name = first_name
     user.save()
-    return HttpResponse('success registration')
+    return HttpResponseRedirect('/urqa/')
 
 def delete_req(request):
     try:

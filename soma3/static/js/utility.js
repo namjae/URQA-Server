@@ -161,16 +161,14 @@ function login(data)
 
 /////////email 정규표현식/////////////
 
-function valid_email(ele)
+function valid_email(str)
 {
     re=/^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
 
     // 위의 조건을 만족하려면 최소 6자 이상이어야 함.
-    if(ele.value.length<6 || !re.test(ele.value))
+    if(str.length<6 || !re.test(str))
     {
-        alert("메일형식이 맞지 않습니다.n 다시 입력해주세요.n");
-        ele.select();
-        ele.focus();
+        alert("메일형식이 맞지 않습니다\n 다시 입력해주세요.\n");
         return false;
     }
     return true;

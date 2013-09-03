@@ -192,7 +192,7 @@ def so_upload(request, pid):
                 return HttpResponse('File Uploaded, but it have no debug info')
     return HttpResponse('Failed to Upload File')
 
-def dashboard(request):
+def projects(request):
     ctx = {
 
     }

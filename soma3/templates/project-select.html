@@ -6,17 +6,20 @@
 	<title>UrQA :: Project Select</title>
 
 	<meta name="viewport" content="width=device-width">
-	
-	<script type="text/javascript" src="./js/lib.js"></script>
-	<script type="text/javascript" src="./js/hashmap.js"></script>
-	<script type="text/javascript" src="./js/jquery-2.0.0.min.js"></script>
-	<script type="text/javascript" src="./js/css-compile.js"></script>
-	<script type="text/javascript" src="./js/user.js"></script>
 
-	<link rel="stylesheet" type="text/css" href="./js/d3/src/nv.d3.css">
+    {% load static %}
+
+	<script type="text/javascript" src="{% static 'js/lib.js'%}"></script>
+	<script type="text/javascript" src="{% static 'js/hashmap.js'%}"></script>
+	<script type="text/javascript" src="{% static 'js/jquery-2.0.0.min.js'%}"></script>
+	<script type="text/javascript" src="{% static 'js/css-compile.js'%}"></script>
+	<script type="text/javascript" src="{% static 'js/user.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/utility.js'%}"></script>
+
+	<link rel="stylesheet" type="text/css" href="{% static 'js/d3/src/nv.d3.css'%}">
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$("head").compileCSS("style.css", new Array("theme/dark") );
+			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
 	</script>
 </head>
@@ -62,31 +65,15 @@
 		</div>
 		<div id="project-list">
 			<div class="list">
-				<a href="./index.html">
-					<div>
+					{% for project  in  project_list %}
+                    <div id = '{{ project.id }}'>
 						<div></div>
 						<span></span>
-						<p class="red"><span>ERROR</span>102,455</p>
-						<label>STANly</label>
+						<p class="{{ project.color }}"><span>ERROR</span>{{ project.errorcount }}</p>
+						<label>{{ project.name }}</label>
 					</div>
-				</a>
-				<a href="./index.html">
-					<div>
-						<div></div>
-						<span></span>
-						<p class="green"><span>ERROR</span>102,455</p>
-						<label>BugSense</label>
-					</div>
-				</a>
-				<a href="./index.html">
-					<div>
-						<div></div>
-						<span></span>
-						<p class="blue"><span>ERROR</span>102,455</p>
-						<label>DynamicWAVE</label>
-					</div>
-				</a>
-			</div>
+				    {% endfor %}
+             </div>
 			<div class="add" onclick="showPopupCreateProject()"><div></div></div>
 		</div>
 		<!--content-container fin-->

@@ -31,6 +31,9 @@
 
 	<link rel="stylesheet" type="text/css" href="{% static 'js/d3/src/nv.d3.css' %}">
 	<script type="text/javascript">
+        var project_id = {{ projectid }};
+        var server_url = "{{ ServerURL }}"
+
 		$(document).ready(function(){
 			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
@@ -39,6 +42,7 @@
 
 <body class="statistics" style="display: none;">
 	<div id="container">
+        <!--
 		<div id="popup-notification">
 			<div data-href="#">
 				<span></span>
@@ -50,7 +54,7 @@
 				<label>Welcome to UrQA</label>
 				<p>UrQA에 오신 것을 환영합니다. 당신의 프로젝트에서 발생하는 <b>다양한 문제</b>를 여기에서 해결할 수 있기를 바랍니다!</p>
 			</div>
-		</div>
+		</div>-->
 		<div id="header-container">
 			<div id="header">
 				<a href="/urqa"><div class="logo"></div></a>
@@ -64,14 +68,14 @@
 				</div>
 				<div class="navbar-profile">
 					<div class="setting"></div>
-					<div class="profile"><img src="http://profile.ak.fbcdn.net/hprofile-ak-ash3/27350_100001314106197_1542605533_q.jpg" alt="profile" /></div>
+					<div class="profile"><img src="{{ profile_url }}" alt="profile" /></div>
 					<div id="profile-menu">
 						<div class="inv-triangle"></div>
 						<div class="color shadow">
-							<img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/c207.47.546.546/s160x160/531640_453529518034181_1497539635_n.jpg" alt="profile" />
+							<img src="{{ profile_url }}" alt="profile" />
 							<div class="text">
-								<div class="name">An Jeungwon</div>
-								<div class="user-style">Enterprise Customer</div>
+								<div class="name">{{ user_name }}</div>
+                                <div class="user-style">{{ user_email }}</div>
 							</div>
 						</div>
 						<div class="white shadow">

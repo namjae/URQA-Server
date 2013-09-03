@@ -32,15 +32,15 @@
 					<span>User e-mail</span>
 					<input name="userid" id = 'useremail'type="input" value="" />
 					<span>Password</span>
-					<input name="password" type="password" value="" />
+					<input name="password" id = 'userpassword' type="password" value="" />
 					<span>Password Confirm</span>
-					<input name="password2" type="password" value="" />
+					<input name="password2" id = 'userpasswordconfirm' type="password" value="" />
 					<span>Nickname</span>
-					<input name="username" type="input" value="" />
-					<div class="button purple" data-name="Create an Account" style="width: 210px; height: 39px"></div>
+					<input name="username" id = 'usernickname' type="input" value="" />
+					<div class="button purple" id = 'registration'data-name="Create an Account" style="width: 210px; height: 39px"></div>
                     <script>
                          $(document).ready(function () {
-                            $('#loginbutton').bind('click',function (e){
+                            $('#registration').bind('click',function (e){
                                 if($('#useremail').val() == '')
                                 {
                                     alert('Please Input ID')
@@ -48,17 +48,34 @@
                                 }
                                 else
                                 {
-                                    if(!valid_email($('#useremail')))
+                                    if(!valid_email($('#useremail').val()))
                                         return
                                 }
-                                if($('#password').val() == '')
+
+                                if($('#userpassword').val() == '')
                                 {
                                     alert('Please Input Password')
                                     return;
                                 }
+                                if($('#userpasswordconfirm').val() == '')
+                                {
+                                    alert('Please Input Password Confirm')
+                                    return;
+                                }
 
-                                var logindata = {'username' : $('#username').val(),'password' : $('#password').val()}
-                                post_to_url('/urqa/user/login',logindata)
+                                if($('#userpassword').val() != $('#userpasswordconfirm').val())
+                                {
+                                    alert('Diffrent Password confirm')
+                                    return;
+                                }
+                                if($('#usernickname').val() == '')
+                                {
+                                    alert('input User Nickname')
+                                    return;
+                                }
+
+                                var logindata = {'username' : $('#useremail').val(),'password' : $('#userpassword').val() , 'usernickname' : $('#usernickname').val() }
+                                post_to_url('/urqa/user/registration',logindata)
 
                                 $('#username').val('')
                                 $('#password').val('')

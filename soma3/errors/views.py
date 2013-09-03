@@ -304,8 +304,6 @@ def filter_view(request,pid):
 
     user = AuthUser.objects.get(username = request.user)
 
-    tpl = loader.get_template('filter.html')
-
     week, today = getTimeRange(TimeRange.weekly)
 
     try:
@@ -365,6 +363,7 @@ def filter_view(request,pid):
     for i in range(0,5 - len(appv_list)):
         appv_margin += ' '
 
+    tpl = loader.get_template('filter.html')
     ctx = Context({
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
         'projectid' : pid,

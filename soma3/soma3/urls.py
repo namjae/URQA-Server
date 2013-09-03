@@ -31,7 +31,7 @@ urlpatterns = patterns('',
     url(r'^urqa/user/logout$', 'usermanage.views.logout_req'),
 
     #project-list
-    url(r'^urqa/projects$', 'projectmanage.views.dashboard'),
+    url(r'^urqa/projects$', 'projectmanage.views.projects'),
 
     #project manage
     url(r'^urqa/project/registration$', 'projectmanage.views.registration'),
@@ -60,7 +60,10 @@ urlpatterns = patterns('',
 
     #Statistics
     url(r'^urqa/project/(?P<pid>\d+)/statistics/$', 'statistics.views.statistics'),
-
+    url(r'^urqa/project/(?P<pid>\d+)/statistics/byclass$', 'statistics.views.byclass'),
+    url(r'^urqa/project/(?P<pid>\d+)/statistics/bydevice$', 'statistics.views.bydevice'),
+    url(r'^urqa/project/(?P<pid>\d+)/statistics/byactivity', 'statistics.views.byactivity'),
+    url(r'^urqa/project/(?P<pid>\d+)/statistics/byversion', 'statistics.views.byversion'),
     #symbol
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/symbol/list$', 'errors.views.so_list'),
     url(r'^urqa/project/(?P<pid>\d+)/symbol/upload$', 'projectmanage.views.so_upload'),
