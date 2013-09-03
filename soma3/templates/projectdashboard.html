@@ -111,8 +111,8 @@
 					</tr></thead>
 					<tbody>
                         {% for data in error_list %}
-                        <tr>
-                            <td class="float" onclick = clickevent({{ data.Errorid }})>
+                        <tr onclick = clickevent({{ data.Errorid }})>
+                            <td class="float">
 								<img />
 								<p>{{ data.ErrorName }}<br>{{ data.ErrorClassName }}</p>
 							</td>
@@ -131,6 +131,9 @@
 				</table>
 				<div class="white-area"></div>
 			</div>
+            {% if not error_list %}
+            <div class="noerror_msg">Project has no error.</div>
+            {% endif %}
 		</div>
 		<!--content-container fin-->
 

@@ -1078,6 +1078,9 @@ table.content-large {
 	tbody tr { height: 64px; }
 	tbody img { width: 40px; height: 40px; margin-right: 12px; }
 }
+table.content-large > tbody > tr{
+    cursor: pointer;
+}
 #dashboard-graph > div { height: 160px; }
 #error-list tbody td:nth-child(1) > p { margin-top: 4px; }
 #error-tag-list > .tags-list > ul > span {
@@ -1264,23 +1267,31 @@ blockquote:after {
 #chart {
     height: 300px;
 }
-    .node rect {
-        cursor: move;
-        fill-opacity: 1;
-        shape-rendering: crispEdges;
-    }
-    .node rect:hover {
-        fill-opacity: .2;
-    }
-    .node text {
-        pointer-events: none;
-        text-shadow: 0 1px 0 #fff;
-    }
-    .link {
-        fill: none;
-        stroke: #000;
-        stroke-opacity: .2;
-    }
-    .link:hover {
-        stroke-opacity: .5;
-    }
+.node rect {
+    cursor: move;
+    fill-opacity: 1;
+    shape-rendering: crispEdges;
+}
+.node rect:hover {
+    fill-opacity: .2;
+}
+.node text {
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff;
+}
+.link {
+    fill: none;
+    stroke: #000;
+    stroke-opacity: .2;
+}
+.link:hover {
+    stroke-opacity: .5;
+}
+
+.noerror_msg{
+    margin-top:30px;
+    margin-bottom: 30px;
+    font: 20px "RixGo B";
+    color: @tm-tx-c3;
+    text-align: center;
+}

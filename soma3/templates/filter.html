@@ -43,7 +43,6 @@
         }
         function query_maker(){
             tID = 0
-            console.log(this)
 
             //Rank
             rank_chk = $('#rank_tr>td>div[data-value="checked"]');
@@ -102,8 +101,11 @@
                     'osv':osv_list
                 })}
                 ,success : function(jsonData) {
-                    console.log(jsonData);
                     $('.content-large>tbody').empty();
+                    if(jsonData.length == 0)
+                        $('.noerror_msg').show()
+                    else
+                        $('.noerror_msg').hide()
                     for(var i=0;i<jsonData.length;i++)
                     {
                         tags = ''
@@ -546,6 +548,7 @@
 						</tr>-->
 					</tbody>
 				</table>
+                <div class="noerror_msg" style="display:none">No Errors match your search or error entries are out of the retention window of your plan.</div>
 				<div class="white-area"></div>
 			</div>
 		</div>
