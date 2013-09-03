@@ -27,7 +27,13 @@
         $(document).ready(function(){
             $("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
+
+        function clickevent(id)
+        {
+            location.href = 'errors/' + id
+        }
     </script>
+
 
 </head>
 
@@ -69,7 +75,7 @@
 								</span>
 								<span>
 									<p class="icon" data-name="logout"></p>
-									<p class="text">LOGOUT</p>
+									<p class="text"><a href='/urqa/user/logout'>LOGOUT</a></p>
 								</span>
 							</div>
 						</div>
@@ -104,10 +110,9 @@
 						<td class="center" style="width: 88px">Error Score</td>
 					</tr></thead>
 					<tbody>
-
                         {% for data in error_list %}
                         <tr>
-                            <td class="float">
+                            <td class="float" onclick = clickevent({{ data.Errorid }})>
 								<img />
 								<p>{{ data.ErrorName }}<br>{{ data.ErrorClassName }}</p>
 							</td>
@@ -122,7 +127,6 @@
 							<td data-match="true"></td>
 							<td></td>
 						</tr>
-
 					</tbody>
 				</table>
 				<div class="white-area"></div>

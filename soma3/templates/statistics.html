@@ -199,17 +199,8 @@
                         values:jsonData.chart2
                     }])
 
-                    DrawChart4(jsonData.chart4.categories,jsonData.chart4.data[{
-                        name: 'John',
-                        data: [5, 3, 4, 7, 2]
-                    }, {
-                        name: 'Jane',
-                        data: [2, 2, 3, 2, 1]
-                    }, {
-                        name: 'Joe',
-                        data: [3, 4, 4, 2, 5]
-                    }])
-                }/*
+                    DrawChart4(jsonData.chart4.categories,jsonData.chart4.data)
+                }
                 , beforeSend: function(xhr, settings) {
                     var csrftoken = getCookie('csrftoken')
                     if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
@@ -218,7 +209,7 @@
                         // Using the CSRFToken value acquired earlier
                         xhr.setRequestHeader("X-CSRFToken", csrftoken);
                     }
-                }*/
+                }
             });
 
 
@@ -321,7 +312,7 @@
 								</span>
 								<span>
 									<p class="icon" data-name="logout"></p>
-									<p class="text">LOGOUT</p>
+									<p class="text"><a href='/urqa/user/logout'>LOGOUT</a></p>
 								</span>
 							</div>
 						</div>

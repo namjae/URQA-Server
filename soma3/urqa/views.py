@@ -17,8 +17,8 @@ from soma3.settings import STATIC_URL
 def index(request):
 
     #만약 로그인 되어 있다면!!
-    #if request.user.is_authenticated():
-     #   return HttpResponseRedirect('/urqa/projects')
+    if request.user.is_authenticated():
+       return HttpResponseRedirect('/urqa/projects')
 
 
     ctx = {

@@ -201,14 +201,14 @@
 				</div>
 				<div class="navbar-profile">
 					<div class="setting"></div>
-					<div class="profile"><img src="http://profile.ak.fbcdn.net/hprofile-ak-ash3/27350_100001314106197_1542605533_q.jpg" alt="profile" /></div>
+					<div class="profile"><img src="{{ profile_url }}" alt="profile" /></div>
 					<div id="profile-menu">
 						<div class="inv-triangle"></div>
 						<div class="color shadow">
-							<img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/c207.47.546.546/s160x160/531640_453529518034181_1497539635_n.jpg" alt="profile" />
+							<img src="{{ profile_url }}" alt="profile" />
 							<div class="text">
 								<div class="name">{{ user_name }}</div>
-								<div class="user-style">{{ user_email }}</div>
+                                <div class="user-style">{{ user_email }}</div>
 							</div>
 						</div>
 						<div class="white shadow">
@@ -224,7 +224,7 @@
 								</span>
 								<span>
 									<p class="icon" data-name="logout"></p>
-									<p class="text">LOGOUT</p>
+									<p class="text"><a href='/urqa/user/logout'>LOGOUT</a></p>
 								</span>
 							</div>
 						</div>

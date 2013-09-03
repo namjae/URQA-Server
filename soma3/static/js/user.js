@@ -466,7 +466,7 @@ $("head").styleReady(function(){
 			//Raphael.custom.eventPath("./data3", "#event-path", {"height": 230, "contentWidth": 20, "contentHeight": 20, "textColor": "#303335", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true, "topgutter": 5, "bottomgutter": -10 })
             $.ajax({
                 type: 'get'
-              , url: error_id+'/'+ 'eventpath'
+              , url: 'eventpath'
               , success : function(data) {
                         sankeyloading = true
                         sankeydata = data
@@ -880,7 +880,7 @@ $("head").styleReady(function(){
                     var deletetag = {'tag' : $(this).text()}
                     $.ajax({
                           type: 'post'
-                        , url: error_id+'/tag/delete'
+                        , url: 'tag/delete'
                         , data: deletetag
                         , beforeSend: function(xhr, settings) {
                             if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {

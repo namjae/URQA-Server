@@ -382,7 +382,7 @@ def errorscorelist(pid):
                 stringlength = len(tagString)
                 tagString = tagString[0 : stringlength - 1]
 
-        dicerrordata = {'ErrorName' : error.errorname ,  'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' , 'tags': tagString, 'ErrorScore' : error.errorweight }
+        dicerrordata = {'ErrorName' : error.errorname ,  'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' , 'tags': tagString, 'ErrorScore' : error.errorweight , 'Errorid' : error.iderror}
         jsondata.append(dicerrordata);
 
         #print dicerrordata

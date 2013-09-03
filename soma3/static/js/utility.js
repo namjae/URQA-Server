@@ -11,7 +11,7 @@ function getinstancedata(idinstance)
 {
     $.ajax({
       type: 'get'
-    , url: error_id+'/'+ idinstance
+    , url: idinstance
     , beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
             // Send the token to same-origin, relative URLs only.
@@ -45,7 +45,7 @@ function geteventpath(idinstance)
 {
       $.ajax({
       type: 'get'
-    , url: error_id+'/'+ idinstance + '/instanceeventpath'
+    , url: idinstance + '/instanceeventpath'
     , beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
             // Send the token to same-origin, relative URLs only.
@@ -72,7 +72,7 @@ function getlog(idinstance)
 {
      $.ajax({
       type: 'get'
-    , url: error_id+'/'+ idinstance + '/log'
+    , url: idinstance + '/log'
     , beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
             // Send the token to same-origin, relative URLs only.
@@ -175,12 +175,12 @@ function valid_email(str)
 }
 
 
- function post_to_url(path, params) {
+ function post_to_url(path, params, csrftoken) {
     var method = "post";
     var form = document.createElement("form");
     form.setAttribute("method", method);
     form.setAttribute("action", path);
-    $(form).append("{% csrf_token %}");
+    $(form).append(csrftoken);
     for(var key in params) {
         var hiddenField = document.createElement("input");
         hiddenField.setAttribute("type", "hidden");

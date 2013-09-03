@@ -75,7 +75,7 @@
                                 }
 
                                 var logindata = {'username' : $('#useremail').val(),'password' : $('#userpassword').val() , 'usernickname' : $('#usernickname').val() }
-                                post_to_url('/urqa/user/registration',logindata)
+                                post_to_url('/urqa/user/registration',logindata ,"{% csrf_token %}")
 
                                 $('#username').val('')
                                 $('#password').val('')
@@ -110,7 +110,7 @@
                                 }
 
                                 var logindata = {'username' : $('#username').val(),'password' : $('#password').val()}
-                                post_to_url('/urqa/user/login',logindata)
+                                post_to_url('/urqa/user/login',logindata,"{% csrf_token %}")
 
                                 $('#username').val('')
                                 $('#password').val('')

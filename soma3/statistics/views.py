@@ -41,8 +41,8 @@ def statistics(request,pid):
     });
     return HttpResponse(tpl.render(ctx))
 
-from django.views.decorators.csrf import csrf_exempt
-@csrf_exempt
+
+
 def chartdata(request,pid):
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = jsonData['retention']
@@ -99,12 +99,36 @@ def chartdata(request,pid):
     #Chart4
     categories = []
     ver_data = []
-    instances = Instances.objects.filter(iderror__in=errorElements,datetime__range=(past,today)).order_by('-appversion','-osversion')
+    temp_data = {}
+    instances = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today)).order_by('-appversion','-osversion')
+
+    appv_idx = -1
     for i in instances:
+        print i.appversion, i.osversion
         if not i.appversion in categories:
+            pre_osv = i.osversion
+            appv_idx += 1
             categories.append(i.appversion)
-            ver_data.append({'name':i.appversion,'data':[]})
+        if not i.osversion in temp_data:
+            temp_data[i.osversion] = []
+        while len(temp_data[i.osversion]) <= appv_idx:
+            temp_data[i.osversion].append(0)
+        score = float(i.iderror.errorweight) / i.iderror.numofinstances
+        print score
+        temp_data[i.osversion][appv_idx] += score
+
+    for t in temp_data:
+        idx = 0
+        for e in temp_data[t]:
+            temp_data[t][idx] = round(e,2)
+            idx += 1
+        ver_data.append({'name':t,'data':temp_data[t]})
 
     print categories
+    print ver_data
+
+        #ver_data[appv_idx][]
+    #print categories
     chart4 = {'categories':categories,'data':ver_data}
+    result['chart4'] = chart4
     return HttpResponse(json.dumps(result), 'application/json');
