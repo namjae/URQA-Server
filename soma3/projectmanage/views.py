@@ -1,6 +1,7 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
+
 import os
 import random
 import subprocess
@@ -21,6 +22,8 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
+from django.db.models import Count
+from django.db.models import Sum
 
 from common import validUserPjt
 from urqa.models import AuthUser
@@ -35,6 +38,7 @@ from utility import getTemplatePath
 from utility import getTimeRange
 from utility import TimeRange
 from utility import RANK
+from utility import numbertostrcomma
 
 from config import get_config
 
@@ -57,6 +61,7 @@ def registration(request):
     name = request.POST['name']
     platform = int(request.POST['platform'])
     stage = int(request.POST['stage'])
+    category = request.POST['category']
 
     #project name은 중복을 허용한다.
 
@@ -68,7 +73,7 @@ def registration(request):
     #step3: viwer db에 사용자와 프로젝트를 연결한다.
     Viewer.objects.create(uid=userElement,pid=projectElement)
 
-    return HttpResponse('success registration')
+    return HttpResponse(json.dumps({'success': True , 'prjname' : name , 'apikey' : apikey, 'color' : 'blue'}), 'application/json')
 
 def delete_req(request):
     try:
@@ -193,18 +198,52 @@ def so_upload(request, pid):
     return HttpResponse('Failed to Upload File')
 
 def projects(request):
-    ctx = {
 
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/urqa/')
+
+    #주인인 project들
+    UserElement = AuthUser.objects.get(username = request.user)
+    OwnerProjectElements = Projects.objects.filter(owner_uid = UserElement.id)
+
+    ViewerElements = Viewer.objects.filter(uid = UserElement.id).values('pid')
+    ViewerProjectElements = Projects.objects.filter(pid__in = ViewerElements)
+
+    for owner in OwnerProjectElements:
+        print owner.name
+    print '----------------------------------'
+    for viewer in ViewerProjectElements:
+        print viewer.name
+
+    MergeProjectElements = OwnerProjectElements | ViewerProjectElements
+
+    for merge in MergeProjectElements:
+        print merge.name
+    #print MergeProjectElements
+
+    project_list = []
+    color_list = ['red','green','blue']
+    for idx, project in enumerate(MergeProjectElements):
+        projectdata = {'apikey' : '' , 'color' : '' , 'errorcount': '', 'name' : '' }
+        projectdata['apikey'] = project.apikey
+        projectdata['color'] = color_list[idx% len(color_list)]
+        Errorcounter = Errors.objects.filter(pid = project.pid).aggregate(Sum('numofinstances'))
+        projectdata['errorcount'] =  Errorcounter['numofinstances__sum'] is not None and numbertostrcomma(Errorcounter['numofinstances__sum'])  or 0
+        projectdata['name'] = project.name
+        project_list.append(projectdata)
+
+    ctx = {
+        'project_list' : project_list ,
     }
     return render(request, 'project-select.html', ctx)
 
 def projectdashboard(request, pid):
 
-
-
     username = request.user
 
     valid , message , userelement, projectelement = validUserPjt(username,pid)
+
+    print valid
 
     if not valid:
         return HttpResponseRedirect('/urqa')
@@ -221,6 +260,7 @@ def projectdashboard(request, pid):
         'profile_url' : user.image_path,
         'error_list' : errorscorelist(pid),
     }
+
     return render(request, 'projectdashboard.html', ctx)
 
 def dailyesgraph(request, pid):

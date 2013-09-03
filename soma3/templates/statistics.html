@@ -28,15 +28,245 @@
 	<script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script type="text/javascript" src="{% static 'js/css-compile.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/user.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/utility.js' %}"></script>
 
 	<link rel="stylesheet" type="text/css" href="{% static 'js/d3/src/nv.d3.css' %}">
 	<script type="text/javascript">
         var project_id = {{ projectid }};
         var server_url = "{{ ServerURL }}"
-
+        var my_chart;
 		$(document).ready(function(){
 			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
+
+        function DrawChart1(data){
+            $("#cecs").highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'Class Error Rate'
+                },
+                colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000',
+                            format: '<b>{point.name}</b>: {point.y:f}({point.percentage:.1f}%)'
+                        }
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: 'Class Error Rate',
+                    data: data
+                }]
+            });
+        }
+
+        function DrawChart2(data){
+            nv.addGraph(function() {
+                var chart = nv.models.discreteBarChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .color([ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ])
+                    .staggerLabels(true)
+                    .tooltips(false)
+                    .showValues(true);
+
+                d3.select('#decs svg')
+                    .datum(data)
+                    .transition().duration(500)
+                    .call(chart);
+
+                nv.utils.windowResize(chart.update);
+
+                return chart;
+            });
+        }
+
+        function DrawChart3(data){
+            nv.addGraph(function() {
+                var chart = nv.models.discreteBarChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .color([ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ])
+                    .staggerLabels(true)
+                    .tooltips(false)
+                    .showValues(true);
+
+                d3.select('#ebas svg')
+                    .datum(data)
+                    .transition().duration(500)
+                    .call(chart);
+
+                nv.utils.windowResize(chart.update);
+
+                return chart;
+            });
+        }
+
+        function DrawChart4(categories,data){
+            $(function () {
+                $('#vers').highcharts({
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Version Error Rate'
+                    },
+                    colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
+                    xAxis: {
+                        categories: categories
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: 'Version Error Rate'
+                        },
+                        stackLabels: {
+                            enabled: true,
+                            style: {
+                                fontWeight: 'bold',
+                                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                            }
+                        }
+                    },
+                    legend: {
+                        align: 'right',
+                        x: -70,
+                        verticalAlign: 'top',
+                        y: 20,
+                        floating: true,
+                        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
+                        borderColor: '#CCC',
+                        borderWidth: 1,
+                        shadow: false
+                    },
+                    tooltip: {
+                        formatter: function() {
+                            return '<b>'+ this.x +'</b><br/>'+
+                                this.series.name +': '+ this.y +'<br/>'+
+                                'Total: '+ this.point.stackTotal;
+                        }
+                    },
+                    plotOptions: {
+                        column: {
+                            stacking: 'normal',
+                            dataLabels: {
+                                enabled: true,
+                                color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+                            }
+                        }
+                    },
+                    series: data/*[{
+                        name: 'John',
+                        data: [5, 3, 4, 7, 2]
+                    }, {
+                        name: 'Jane',
+                        data: [2, 2, 3, 2, 1]
+                    }, {
+                        name: 'Joe',
+                        data: [3, 4, 4, 2, 5]
+                    }]*/
+                });
+            });
+        }
+
+        function RedrawCharts(){
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./chartdata'
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':30
+                })}
+                ,success : function(jsonData) {
+                    DrawChart1(jsonData.chart1)
+                    DrawChart2([
+                    {
+                        key: "Device Error Score",
+                        values:jsonData.chart2
+                    }])
+
+                    DrawChart4(jsonData.chart4.categories,jsonData.chart4.data[{
+                        name: 'John',
+                        data: [5, 3, 4, 7, 2]
+                    }, {
+                        name: 'Jane',
+                        data: [2, 2, 3, 2, 1]
+                    }, {
+                        name: 'Joe',
+                        data: [3, 4, 4, 2, 5]
+                    }])
+                }/*
+                , beforeSend: function(xhr, settings) {
+                    var csrftoken = getCookie('csrftoken')
+                    if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                        // Send the token to same-origin, relative URLs only.
+                        // Send the token only if the method warrants CSRF protection
+                        // Using the CSRFToken value acquired earlier
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }*/
+            });
+
+
+/*
+            function exampleData() {
+                return  [
+                    {
+                        key: "Cumulative Return",
+                        values: [
+                            {
+                                "label" : "CDS / Options" ,
+                                "value" : -29.765957771107
+                            } ,
+                            {
+                                "label" : "Cash" ,
+                                "value" : 0
+                            } ,
+                            {
+                                "label" : "Corporate Bonds" ,
+                                "value" : 32.807804682612
+                            } ,
+                            {
+                                "label" : "Equity" ,
+                                "value" : 196.45946739256
+                            } ,
+                            {
+                                "label" : "Index Futures" ,
+                                "value" : 0.19434030906893
+                            } ,
+                            {
+                                "label" : "Options" ,
+                                "value" : -98.079782601442
+                            } ,
+                            {
+                                "label" : "Preferred" ,
+                                "value" : -13.925743130903
+                            } ,
+                            {
+                                "label" : "Not Available" ,
+                                "value" : -5.1387322875705
+                            }
+                        ]
+                    }
+                ];
+            }*/
+        }
+
+        setTimeout(RedrawCharts,200);
 	</script>
 </head>
 
@@ -120,7 +350,7 @@
 				</table>
 				<div class="white-area"></div>
 			</div>
-			<div class="title" data="device"> Error Count</div>
+			<div class="title" data="device"> Error Score</div>
 			<div class="content">
 				<table style="margin-top: -10px;">
 					<tbody>

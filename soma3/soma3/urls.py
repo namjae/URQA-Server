@@ -60,10 +60,8 @@ urlpatterns = patterns('',
 
     #Statistics
     url(r'^urqa/project/(?P<pid>\d+)/statistics/$', 'statistics.views.statistics'),
-    url(r'^urqa/project/(?P<pid>\d+)/statistics/byclass$', 'statistics.views.byclass'),
-    url(r'^urqa/project/(?P<pid>\d+)/statistics/bydevice$', 'statistics.views.bydevice'),
-    url(r'^urqa/project/(?P<pid>\d+)/statistics/byactivity', 'statistics.views.byactivity'),
-    url(r'^urqa/project/(?P<pid>\d+)/statistics/byversion', 'statistics.views.byversion'),
+    url(r'^urqa/project/(?P<pid>\d+)/statistics/chartdata', 'statistics.views.chartdata'),
+
     #symbol
     url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/symbol/list$', 'errors.views.so_list'),
     url(r'^urqa/project/(?P<pid>\d+)/symbol/upload$', 'projectmanage.views.so_upload'),

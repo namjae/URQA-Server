@@ -96,23 +96,7 @@
 				<input name="password" id ='password' type="password" value="" />
 				<div id = 'loginbutton' class="button purple" data-name="UrQA LOGIN" style="width: 210px; height: 39px"></div>
                     <script>
-                        function post_to_url(path, params) {
-                            var method = "post";
-                            var form = document.createElement("form");
-                            form.setAttribute("method", method);
-                            form.setAttribute("action", path);
-                            $(form).append("{% csrf_token %}");
-                            for(var key in params) {
-                                var hiddenField = document.createElement("input");
-                                hiddenField.setAttribute("type", "hidden");
-                                hiddenField.setAttribute("name", key);
-                                hiddenField.setAttribute("value", params[key]);
-                                form.appendChild(hiddenField);
-                            }
-                            document.body.appendChild(form);
-                            form.submit();
-                        }
-                        $(document).ready(function () {
+                       $(document).ready(function () {
                             $('#loginbutton').bind('click',function (e){
                                 if($('#username').val() == '')
                                 {

@@ -37,26 +37,26 @@
 							<a>Game</a>
 							<span></span>
 							<div>
-								 <ul>
+								 <ul id = 'app_category_list'>
 								 	<li data-value="true"><a>Game</a></li>
 								 	<li data-value="false"><a>Utility</a></li>
 								 	<li data-value="false"><a>Weather</a></li>
 								 </ul>
 							</div>
-							<input type="hidden" name="app_category" />
+							<input type="hidden" name="app_category" value = "1" />
 						</div>
 						<span>Stage</span>
 						<div class="dropdown">
 							<a>Test</a>
 							<span></span>
 							<div>
-								 <ul>
+								 <ul id = 'app_stage_list'>
 								 	<li data-value="true"><a>Test</a></li>
 								 	<li data-value="false"><a>Release</a></li>
 								 	<li data-value="false"><a>Develope</a></li>
 								 </ul>
 							</div>
-							<input type="hidden" name="stage" />
+							<input type="hidden" name="stage"  value = "1"  />
 						</div>
 						<div class="button purple" data-name="Add Project" style="width: 210px; height: 39px"></div>
 					</form>
@@ -65,14 +65,16 @@
 		</div>
 		<div id="project-list">
 			<div class="list">
-					{% for project  in  project_list %}
-                    <div id = '{{ project.id }}'>
+				{% for project  in  project_list %}
+                 <a href= "/urqa/project/{{ project.apikey }}">
+                    <div>
 						<div></div>
 						<span></span>
 						<p class="{{ project.color }}"><span>ERROR</span>{{ project.errorcount }}</p>
 						<label>{{ project.name }}</label>
 					</div>
-				    {% endfor %}
+                 </a>
+				 {% endfor %}
              </div>
 			<div class="add" onclick="showPopupCreateProject()"><div></div></div>
 		</div>

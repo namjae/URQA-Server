@@ -1,6 +1,8 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
+import json
+
 from django.template import Context, loader
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -14,6 +16,8 @@ from utility import Status
 
 from urqa.models import AuthUser
 from urqa.models import Errors
+from urqa.models import Devicestatistics
+from urqa.models import Instances
 from urqa.models import Projects
 
 
@@ -37,26 +41,70 @@ def statistics(request,pid):
     });
     return HttpResponse(tpl.render(ctx))
 
-def byclass(request,pid):
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def chartdata(request,pid):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = jsonData['retention']
+
     username = request.user
     valid , message , userElement, projectElement = validUserPjt(username,pid)
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    week, today = getTimeRange(TimeRange.monthly)
+    past, today = getTimeRange(retention)
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open,Status.Renew],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
 
-    errorElement = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open,Status.Renew],lastdate__range=(week,today)).order_by('errorclassname','errorweight')
+    #Chart1
+    chart1 = []
+    pre_class = ''
+    for e in errorElements:
+        if pre_class != e.errorclassname:
+            pre_class = e.errorclassname
+            chart1.append([e.errorclassname, e.errorweight])
+        else:
+            last = len(chart1)
+            chart1[last-1] = [e.errorclassname,chart1[last-1][1] + (e.errorweight)]
 
-    for e in errorElement:
-        print e.iderror, e.status, e.errorclassname, e.errorweight
 
-    return HttpResponse('hello')
+    result = {}
+    result['chart1'] = chart1
 
-def bydevice(request,pid):
-    return True
+    #Chart2
+    chart2 = []
+    temp_data = {}
+    for e in errorElements:
+        devices = Devicestatistics.objects.filter(iderror=e).order_by('devicename')
+        if devices.count() == 0:
+            continue
+        total = 0
+        for d in devices:
+            total += d.count
+            #print d.devicename
+        #print total,e.errorweight
 
-def byactivity(request,pid):
-    return True
+        for d in devices:
+            if not d.devicename in temp_data:
+                temp_data[d.devicename] = e.errorweight * d.count / total
+            else:
+                temp_data[d.devicename] += e.errorweight * d.count / total
+    for e in temp_data:
+        chart2.append({
+            'label': e,
+            'value': temp_data[e],
+        })
 
-def byversion(request,pid):
-    return True
+    result['chart2'] = chart2
+
+    #Chart4
+    categories = []
+    ver_data = []
+    instances = Instances.objects.filter(iderror__in=errorElements,datetime__range=(past,today)).order_by('-appversion','-osversion')
+    for i in instances:
+        if not i.appversion in categories:
+            categories.append(i.appversion)
+            ver_data.append({'name':i.appversion,'data':[]})
+
+    print categories
+    chart4 = {'categories':categories,'data':ver_data}
+    return HttpResponse(json.dumps(result), 'application/json');

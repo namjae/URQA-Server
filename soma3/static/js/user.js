@@ -9,29 +9,82 @@ function createProject(obj)
 {
 	var e = obj.elements;
 
-	if(e["appname"].value != "")
-	{
-		hidePopupCreateProject();
-		$("#project-list > .list").append("<a href=\"./index.html?id=" + Math.random(100) + "\"><div><div></div><span></span><p class=\"blue\"><span>ERROR</span>0</p><label>" + e["appname"].value + "</label></div></a>");
-		var chd = $("#project-list > .list > a:nth-last-child(1) > div");
-
-		resizeProjectList();
-
-		chd.css({"margin-top": "-30px", opacity: 0.0});
-		chd.delay(250).animate({
-			"margin-top": 0,
-			opacity: 1.0
-		}, 250, function(){
-			chd.css({"margin-top": 0, opacity: 1.0});
-		});
-	}
-	else
+	if(e["appname"].value == "")
 	{
 		$(e["appname"]).addClass("error");
+        return false;
 	}
+
+    //추가 ajax
+    var categorylist = $('#app_category_list').find('li').toArray()
+    var categorydata = ''
+    for (var i = 0; i< categorylist.length ; i++)
+    {
+        var category = categorylist[i]
+        if(category.getAttribute('data-value') == 'true'){
+            categorydata  = category.innerText
+            break;
+        }
+
+    }
+
+    var stagelist = $('#app_stage_list').find('li').toArray()
+    var stagedata = ''
+    for (var i = 0; i< stagelist.length ; i++)
+    {
+        var stage = stagelist[i]
+        if(stage.getAttribute('data-value') == 'true'){
+            stagedata  = stage.innerText
+            break;
+        }
+
+    }
+
+    var data = {'name' : '', 'platform' : '' , 'stage' : '' , 'category':''}
+    data['name'] = e["appname"].value
+    data['platform'] = 0
+    data['stage'] = stringstagetoint(stagedata);
+    data['category'] = categorydata
+
+
+     var csrftoken = getCookie('csrftoken')
+     $.ajax({
+      type: 'post'
+    , url: '/urqa/project/registration'
+    , beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+            // Send the token to same-origin, relative URLs only.
+            // Send the token only if the method warrants CSRF protection
+            // Using the CSRFToken value acquired earlier
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }}
+    , data: data
+    , success : function(data) {
+             if(data['success'])
+                successCreateProject(data['prjname'],data['apikey'],data['color'])
+        }
+    })
 
 	return false;
 }
+
+function successCreateProject(prjname,apikey,color)
+{
+    hidePopupCreateProject();
+    $("#project-list > .list").append("<a href=\"/urqa/project/"+ apikey + "\"><div><div></div><span></span><p class=\" "+ color + "\"><span>ERROR</span>0</p><label>" + prjname + "</label></div></a>");
+    var chd = $("#project-list > .list > a:nth-last-child(1) > div");
+
+    resizeProjectList();
+
+    chd.css({"margin-top": "-30px", opacity: 0.0});
+    chd.delay(250).animate({
+        "margin-top": 0,
+        opacity: 1.0
+    }, 250, function(){
+        chd.css({"margin-top": 0, opacity: 1.0});
+    });
+}
+
 function newNotification(title, content, href)
 {
 	$("#popup-notification").append("<div data-href=\"" + href + "\"><span></span><label>" + title + "</label><p>" + content + "</p></div>");
@@ -425,10 +478,53 @@ $("head").styleReady(function(){
 
 	if($("body").hasClass("statistics") )
 	{
-		$("#cecs").ready(function(){
+		/*$("#cecs").ready(function(){
 			Raphael.custom.pieGraph("./data2", "#cecs", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
 				"lineColor": "#ffffff", "textColor": "#303335", "labelPos": "east", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true });
 		});
+       $("#cecs").highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Class Error Rate'
+            },
+            colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000',
+                        connectorColor: '#000000',
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Browser share',
+                data: [
+                    ['Firefox',   45.0],
+                    ['IE',       26.8],
+                    {
+                        name: 'Chrome',
+                        y: 12.8,
+                        sliced: true,
+                        selected: true
+                    },
+                    ['Safari',    8.5],
+                    ['Opera',     6.2],
+                    ['Others',   0.7]
+                ]
+            }]
+        });
 
 		function exampleData() {
 			return  [ 
@@ -573,6 +669,7 @@ $("head").styleReady(function(){
 				}]
 			});
 		});
+		*/
 	}
 
 	/** Component Start **/
