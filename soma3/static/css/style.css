@@ -53,6 +53,7 @@
 
 @variables {
 	header-size: 58px;
+	neck-size: 58px;
 }
 * {
 	margin: 0;
@@ -652,6 +653,20 @@ input[type="password"].error {
 	height: @header-size;
 	background-color: @tm-dk-c2;
 }
+
+#neck-container {
+    margin-top: 60px;
+	width: 100%;
+	height: @(neck-size+2);
+	z-index: 9999;
+}
+
+#neck {
+    width: 100%;
+	height: @neck-size;
+	background-color: @tm-hl-half-c1;
+}
+
 .logo {
 	float: left;
 	width: 230px;
@@ -989,7 +1004,6 @@ body.error .navbar-menu > ul > li:nth-child(2) > a {
 	@margin{
 		left: 40px;
 		right: 40px;
-		top: 80px;
 	}
 	.title:before { 
 		text-transform: capitalize;
