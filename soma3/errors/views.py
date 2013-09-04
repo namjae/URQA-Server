@@ -34,8 +34,8 @@ from common import validUserPjtError
 from client.views import calc_eventpath
 
 
-def newTag(request, pid, iderror):
-    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,pid,iderror)
+def newTag(request, apikey, iderror):
+    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,apikey,iderror)
 
     print msg
     if not result:
@@ -49,8 +49,8 @@ def newTag(request, pid, iderror):
     else:
         return HttpResponse('success')
 
-def deleteTag(request, pid, iderror):
-    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, pid, iderror)
+def deleteTag(request, apikey, iderror):
+    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
 
     print msg
     if not result:
@@ -70,8 +70,8 @@ def deleteTag(request, pid, iderror):
 
 
 
-def newComment(request, pid, iderror):
-    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,pid,iderror)
+def newComment(request, apikey, iderror):
+    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,apikey,iderror)
 
     print msg
     if not result:
@@ -84,8 +84,8 @@ def newComment(request, pid, iderror):
 
     return HttpResponse('success')
 
-def deleteComment(request, pid, iderror):
-    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, pid, iderror)
+def deleteComment(request, apikey, iderror):
+    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
 
     print msg
     if not result:
@@ -101,9 +101,9 @@ def deleteComment(request, pid, iderror):
     return HttpResponse('success')
 
 
-def errorDetail(request,pid,iderror):
+def errorDetail(request,apikey,iderror):
 
-    valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
+    valid , message , user ,ErrorsElement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
@@ -173,7 +173,7 @@ def errorDetail(request,pid,iderror):
     tpl = loader.get_template('details.html')
     ctx = Context({
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : pid,
+        'projectid' : apikey,
         'iderror' : iderror,
         'user_name' :user.first_name + ' ' + user.last_name,
         'user_email': user.email,
@@ -195,10 +195,10 @@ def errorDetail(request,pid,iderror):
     });
     return HttpResponse(tpl.render(ctx))
 
-def instancedetatil(request, pid, iderror, idinstance):
+def instancedetatil(request, apikey, iderror, idinstance):
 
     #권한 있나 없나 체크
-    valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
+    valid , message , user ,ErrorsElement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
@@ -216,9 +216,9 @@ def instancedetatil(request, pid, iderror, idinstance):
     #single 즉 get일땐 __dict__ filter 즉 복수 일땐 obejcts.values() 이것때문에 한시간 날림
     return HttpResponse(result,'application/json')
 
-def log(request, pid, iderror, idinstance):
+def log(request, apikey, iderror, idinstance):
     #권한 있나 없나 체크
-    valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
+    valid , message , user ,ErrorsElement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
@@ -240,9 +240,9 @@ def log(request, pid, iderror, idinstance):
     return HttpResponse(json.dumps(logstringlist),'appliacation/json')
 
 #instanceEventpath
-def instanceeventpath(request, pid, iderror, idinstance):
+def instanceeventpath(request, apikey, iderror, idinstance):
     #권한 있나 없나 체크
-    valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
+    valid , message , user ,ErrorsElement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
@@ -263,9 +263,9 @@ def instanceeventpath(request, pid, iderror, idinstance):
     return HttpResponse(json.dumps(eventpathlist),'application/json')
 
 #eventpath
-def eventpath(request,pid,iderror):
+def eventpath(request,apikey,iderror):
 
-    valid , message , user ,ErrorsElement = author_check_error_page(request.user, pid, iderror)
+    valid , message , user ,ErrorsElement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
@@ -276,9 +276,9 @@ def eventpath(request,pid,iderror):
     return HttpResponse(json.dumps(result),'application/json')
 
 
-def author_check_error_page(username,pid,iderror):
+def author_check_error_page(username,apikey,iderror):
 
-    valid , message , userelement, projectelement = validUserPjt(username,pid)
+    valid , message , userelement, projectelement = validUserPjt(username,apikey)
 
     if not valid:
         return valid , message , '',''
@@ -295,10 +295,10 @@ def author_check_error_page(username,pid,iderror):
 
 
 
-def filter_view(request,pid):
+def filter_view(request,apikey):
     username = request.user
 
-    valid , message , userelement, projectelement = validUserPjt(username,pid)
+    valid , message , userelement, projectelement = validUserPjt(username,apikey)
 
     if not valid:
         return HttpResponseRedirect('/urqa')
@@ -308,7 +308,7 @@ def filter_view(request,pid):
     week, today = getTimeRange(TimeRange.weekly)
 
     try:
-        projectElement = Projects.objects.get(apikey = pid)
+        projectElement = Projects.objects.get(apikey = apikey)
     except ObjectDoesNotExist:
         print 'invalid pid'
         return HttpResponse('')
@@ -367,7 +367,7 @@ def filter_view(request,pid):
     tpl = loader.get_template('filter.html')
     ctx = Context({
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : pid,
+        'projectid' : apikey,
         'tag_list' : tag_list,
         'class_list' : class_list,
         'osv_list' : osv_list,
@@ -380,15 +380,15 @@ def filter_view(request,pid):
     return HttpResponse(tpl.render(ctx))
 
 
-def error_list(request,pid):
+def error_list(request,apikey):
     username = request.user
 
-    valid , message , userelement, projectelement = validUserPjt(username,pid)
+    valid , message , userelement, projectelement = validUserPjt(username,apikey)
 
     if not valid:
         return HttpResponseRedirect('/urqa')
     try:
-        projectElement = Projects.objects.get(apikey = pid)
+        projectElement = Projects.objects.get(apikey = apikey)
     except ObjectDoesNotExist:
         print 'invalid pid'
         return HttpResponse(json.dumps({"response":"fail"}), 'application/json');

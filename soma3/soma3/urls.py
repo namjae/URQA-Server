@@ -37,36 +37,36 @@ urlpatterns = patterns('',
 
     #project manage
     url(r'^urqa/project/registration$', 'projectmanage.views.registration'),
-    url(r'^urqa/project/delete$', 'projectmanage.views.delete_req'),
-    url(r'^urqa/project/(?P<pid>\d+)/$', 'projectmanage.views.projectdashboard'),
-    url(r'^urqa/project/(?P<pid>\d+)/dailyes$', 'projectmanage.views.dailyesgraph'),
-    url(r'^urqa/project/(?P<pid>\d+)/typees$', 'projectmanage.views.typeesgraph'),
-    #url(r'^urqa/project/(?P<pid>\d+)/errorscorelist$', 'projectmanage.views.errorscorelist'),
+    url(r'^urqa/project/(?P<apikey>\d+)/delete$', 'projectmanage.views.delete_req'),
+    url(r'^urqa/project/(?P<apikey>\d+)/$', 'projectmanage.views.projectdashboard'),
+    url(r'^urqa/project/(?P<apikey>\d+)/dailyes$', 'projectmanage.views.dailyesgraph'),
+    url(r'^urqa/project/(?P<apikey>\d+)/typees$', 'projectmanage.views.typeesgraph'),
+    #url(r'^urqa/project/(?P<apikey>\d+)/errorscorelist$', 'projectmanage.views.errorscorelist'),
     #project manage static
     (r'(?:.*?/)?(?P<path>(css|font|js|images)/.+)$', 'urqa.views.mediapathrequest'),
 
 
 
     #errors
-    url(r'^urqa/project/(?P<pid>\d+)/errors/$', 'errors.views.filter_view'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/list$', 'errors.views.error_list'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/$', 'errors.views.errorDetail'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)$', 'errors.views.instancedetatil'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/log$', 'errors.views.log'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/instanceeventpath$', 'errors.views.instanceeventpath'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/eventpath$', 'errors.views.eventpath'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/new$', 'errors.views.newTag'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deleteTag'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/comment/new$', 'errors.views.newComment'),
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/comment/delete$', 'errors.views.deleteComment'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/$', 'errors.views.filter_view'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/list$', 'errors.views.error_list'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/(?P<iderror>\d+)/$', 'errors.views.errorDetail'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)$', 'errors.views.instancedetatil'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/log$', 'errors.views.log'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/instanceeventpath$', 'errors.views.instanceeventpath'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/(?P<iderror>\d+)/eventpath$', 'errors.views.eventpath'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/(?P<iderror>\d+)/tag/new$', 'errors.views.newTag'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deleteTag'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/(?P<iderror>\d+)/comment/new$', 'errors.views.newComment'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/(?P<iderror>\d+)/comment/delete$', 'errors.views.deleteComment'),
 
     #Statistics
-    url(r'^urqa/project/(?P<pid>\d+)/statistics/$', 'statistics.views.statistics'),
-    url(r'^urqa/project/(?P<pid>\d+)/statistics/chartdata', 'statistics.views.chartdata'),
+    url(r'^urqa/project/(?P<apikey>\d+)/statistics/$', 'statistics.views.statistics'),
+    url(r'^urqa/project/(?P<apikey>\d+)/statistics/chartdata', 'statistics.views.chartdata'),
 
     #symbol
-    url(r'^urqa/project/(?P<pid>\d+)/errors/(?P<iderror>\d+)/symbol/list$', 'errors.views.so_list'),
-    url(r'^urqa/project/(?P<pid>\d+)/symbol/upload$', 'projectmanage.views.so_upload'),
+    url(r'^urqa/project/(?P<apikey>\d+)/errors/(?P<iderror>\d+)/symbol/list$', 'errors.views.so_list'),
+    url(r'^urqa/project/(?P<apikey>\d+)/symbol/upload$', 'projectmanage.views.so_upload'),
 
 
 

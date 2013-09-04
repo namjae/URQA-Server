@@ -9,6 +9,13 @@ from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 
+from urqa.models import AuthUser
+from urqa.models import Viewer
+from urqa.models import Projects
+from urqa.models import Comments
+
+import projectmanage.views
+
 def logintest(request):
     tpl = loader.get_template('base.html')
     ctx = Context({})
@@ -35,14 +42,36 @@ def registration(request):
     user = User.objects.create_user(username,email,password)
     user.first_name = first_name
     user.save()
+
+    #default이미지 삽
+    user = AuthUser.objects.get(username = username)
+    user.image_path = './images/user_profiles/noimage.jpg'
+    user.save()
+
     return HttpResponseRedirect('/urqa/')
 
 def delete_req(request):
+
+    print request.user
     try:
-        user = User.objects.get(username__exact=request.user)
+        user = AuthUser.objects.get(username = request.user)
     except ObjectDoesNotExist:
         return HttpResponse('%s not exists' % request.user)
 
+    #Viewerr관계 지우기
+    viewers = Viewer.objects.filter(uid=user)
+    viewers.delete()
+
+    #Comments 지우기
+    comments = Comments.objects.filter(uid=user)
+    comments.delete()
+
+    #Project owner관계 지우기
+    projects = Projects.objects.filter(owner_uid=user)
+    for p in projects:
+        projectmanage.views.delete_req(request,p.apikey)
+
+    user = User.objects.get(username__exact=request.user)
     user.delete()
 
     return HttpResponse('delete success')
@@ -65,7 +94,7 @@ def login_req(request):
         else:
             return HttpResponse('disable account')
     else:
-        return HttpResponse('invalid login')
+        return HttpResponseRedirect('/urqa')
     return HttpResponse('login')
 
 def logout_req(request):

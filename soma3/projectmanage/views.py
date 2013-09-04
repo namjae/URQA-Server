@@ -9,6 +9,7 @@ import json
 import ast
 import datetime
 import time
+import shutil
 
 from django.utils.timezone import utc
 from django.utils import timezone
@@ -32,8 +33,17 @@ from urqa.models import Viewer
 from urqa.models import Sofiles
 from urqa.models import Errors
 from urqa.models import Appstatistics
+from urqa.models import Devicestatistics
+from urqa.models import Osstatistics
+from urqa.models import Countrystatistics
+from urqa.models import Appruncount
 from urqa.models import Instances
 from urqa.models import Tags
+from urqa.models import Comments
+from urqa.models import Session
+from urqa.models import Sessionevent
+from urqa.models import Eventpaths
+
 from utility import getTemplatePath
 from utility import getTimeRange
 from utility import TimeRange
@@ -45,7 +55,7 @@ from config import get_config
 
 def newApikey():
     while True:
-        apikey = "%08d" % random.randint(1,99999999)
+        apikey = "%08X" % random.randint(1,4294967295)
         if not Projects.objects.filter(apikey=apikey).exists():
             break
     return apikey
@@ -75,13 +85,66 @@ def registration(request):
 
     return HttpResponse(json.dumps({'success': True , 'prjname' : name , 'apikey' : apikey, 'color' : 'blue'}), 'application/json')
 
-def delete_req(request):
-    try:
-        user = User.objects.get(username__exact=request.user)
-    except ObjectDoesNotExist:
-        return HttpResponse('%s not exists' % request.user)
+def delete_req(request,apikey):
+    print 'project delete request(APIKEY:%s)' % apikey
 
-    user.delete()
+    try:
+        project = Projects.objects.get(apikey=apikey)
+    except ObjectDoesNotExist:
+        return HttpResponse('%s not exists' % apikey)
+
+    #Viewerr관계 지우기
+    viewers = Viewer.objects.filter(pid=project)
+    viewers.delete()
+
+    #appruncount 삭제
+    Appruncount.objects.filter(pid=project).delete()
+
+    #Session 삭제
+    sessions = Session.objects.filter(pid=project)
+    Sessionevent.objects.filter(idsession__in=sessions).delete()
+    sessions.delete()
+
+    #so & sym files 삭제
+    Sofiles.objects.filter(pid=project).delete()
+    sym_path = get_config('sym_pool_path') + '%s' % project.apikey
+    if os.path.isdir(sym_path):
+        shutil.rmtree(sym_path)
+    so_path = get_config('so_pool_path') + '%s' % project.apikey
+    if os.path.isdir(so_path):
+        shutil.rmtree(so_path)
+
+    #Errors 삭제
+    errors = Errors.objects.filter(pid=project)
+    for e in errors:
+        print e.iderror
+    #Comments 삭제
+    Comments.objects.filter(iderror__in=errors).delete()
+    #statistics 삭제
+    Appstatistics.objects.filter(iderror__in=errors).delete()
+    Osstatistics.objects.filter(iderror__in=errors).delete()
+    Devicestatistics.objects.filter(iderror__in=errors).delete()
+    Countrystatistics.objects.filter(iderror__in=errors).delete()
+    #Tags 삭제
+    Tags.objects.filter(iderror__in=errors).delete()
+    errors.delete()
+
+    #event path삭제
+    Eventpaths.objects.filter(iderror__in=errors).delete()
+
+    #Instaice 삭제
+    instances = Instances.objects.filter(iderror__in=errors)
+    for i in instances:
+        if i.dump_path:
+            os.remove(i.dump_path)
+        if i.log_path:
+            os.remove(i.log_path)
+    instances.delete()
+    #Errors 삭제
+    errors.delete()
+
+    #project 삭제
+    project.delete()
 
     return HttpResponse('delete success')
 
@@ -100,7 +163,7 @@ def so2sym(projectElement, appver, so_path, filename):
     except ObjectDoesNotExist:
         return False
 
-    sym_path = get_config('sym_pool_path') + '/%s' % projectElement.pid
+    sym_path = get_config('sym_pool_path') + '/%s' % projectElement.apikey
     if not os.path.isdir(sym_path):
         os.mkdir(sym_path)
 
@@ -158,11 +221,11 @@ def update_error_callstack(projectElement, appversion):
         print '','',''
     return True
 
-def so_upload(request, pid):
+def so_upload(request, apikey):
 
     appver = request.POST['version']
 
-    result, msg, userElement, projectElement = validUserPjt(request.user, pid)
+    result, msg, userElement, projectElement = validUserPjt(request.user, apikey)
 
     #update_error_callstack(projectElement,appver)
 
@@ -174,7 +237,7 @@ def so_upload(request, pid):
             file = request.FILES['file']
             filename = file._name
 
-            so_path = get_config('so_pool_path') +'/%s' % pid
+            so_path = get_config('so_pool_path') +'/%s' % apikey
             if not os.path.isdir(so_path):
                 os.mkdir(so_path)
 
@@ -237,11 +300,11 @@ def projects(request):
     }
     return render(request, 'project-select.html', ctx)
 
-def projectdashboard(request, pid):
+def projectdashboard(request, apikey):
 
     username = request.user
 
-    valid , message , userelement, projectelement = validUserPjt(username,pid)
+    valid , message , userelement, projectelement = validUserPjt(username,apikey)
 
     print valid
 
@@ -254,16 +317,16 @@ def projectdashboard(request, pid):
     ctx = {
         'templatepath' : getTemplatePath(),
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : pid,
+        'projectid' : apikey,
         'user_name' :user.first_name + ' ' + user.last_name ,
         'user_email': user.email,
         'profile_url' : user.image_path,
-        'error_list' : errorscorelist(pid),
+        'error_list' : errorscorelist(apikey),
     }
 
     return render(request, 'projectdashboard.html', ctx)
 
-def dailyesgraph(request, pid):
+def dailyesgraph(request, apikey):
 
 
     #기본 데이터
@@ -275,7 +338,7 @@ def dailyesgraph(request, pid):
 
     #프로젝트 ID에 맞는 에러들을 가져오기 위함
     try:
-        ProjectElement = Projects.objects.get(apikey= pid)
+        ProjectElement = Projects.objects.get(apikey= apikey)
     except ObjectDoesNotExist:
         print 'invalid pid'
         return HttpResponse(json.dumps(default), 'application/json');
@@ -315,7 +378,7 @@ def dailyesgraph(request, pid):
 
     return HttpResponse(json.dumps(default),'application/json')
 
-def typeesgraph(request, pid):
+def typeesgraph(request, apikey):
 
     timerange = TimeRange.weekly
     week , today = getTimeRange(timerange)
@@ -332,7 +395,7 @@ def typeesgraph(request, pid):
 
     #프로젝트 ID에 맞는 에러들을 가져오기 위함
     try:
-        ProjectElement = Projects.objects.get(apikey= pid)
+        ProjectElement = Projects.objects.get(apikey= apikey)
     except ObjectDoesNotExist:
         print 'invalid pid'
         return HttpResponse(json.dumps(default), 'application/json')
@@ -352,12 +415,12 @@ def typeesgraph(request, pid):
     return HttpResponse(result,'application/json')
 
 #name, file, tag, counter
-def errorscorelist(pid):
+def errorscorelist(apikey):
 
     week, today = getTimeRange(TimeRange.weekly)
 
     try:
-        ProjectElement = Projects.objects.get(apikey = pid)
+        ProjectElement = Projects.objects.get(apikey = apikey)
     except ObjectDoesNotExist:
         print 'invalid pid'
         return HttpResponse('')
@@ -371,8 +434,8 @@ def errorscorelist(pid):
 
 
     for error in ErrorElements:
-        if error.rank == RANK.Suspense:
-            continue
+        #if error.rank == RANK.Suspense:
+            #continue
         TagElements = Tags.objects.filter(iderror = error)
         tagString = '';
         for tag in TagElements:

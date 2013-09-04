@@ -21,10 +21,10 @@ from urqa.models import Instances
 from urqa.models import Projects
 
 
-def statistics(request,pid):
+def statistics(request,apikey):
     username = request.user
 
-    valid , message , userelement, projectelement = validUserPjt(username,pid)
+    valid , message , userelement, projectelement = validUserPjt(username,apikey)
 
     if not valid:
         return HttpResponseRedirect('/urqa')
@@ -34,7 +34,7 @@ def statistics(request,pid):
     tpl = loader.get_template('statistics.html')
     ctx = Context({
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : pid,
+        'projectid' : apikey,
         'user_name' :user.first_name + ' ' + user.last_name ,
         'user_email': user.email,
         'profile_url' : user.image_path,
@@ -43,12 +43,12 @@ def statistics(request,pid):
 
 
 
-def chartdata(request,pid):
+def chartdata(request,apikey):
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = jsonData['retention']
 
     username = request.user
-    valid , message , userElement, projectElement = validUserPjt(username,pid)
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
     if not valid:
         return HttpResponseRedirect('/urqa')
 

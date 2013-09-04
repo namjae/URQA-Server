@@ -183,7 +183,7 @@ a:active { text-decoration:none; }
 		}
 	}
 	#popup-createproject > .body {
-		width: 210px;
+		width: 240px;
 		height: 226px;
 		span {
 			display: block;
@@ -192,11 +192,11 @@ a:active { text-decoration:none; }
 			margin-bottom: 2px;
 		}
 		input {
-			width: 186px;
+			width: 216px;
 			margin-bottom: 10px;
 		}
 		div {
-			width: 168px;
+			width: 198px;
 		}
 	}
 }
