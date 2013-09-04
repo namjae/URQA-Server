@@ -23,7 +23,7 @@
     <script type="text/javascript" src="{% static 'js/utility.js' %}"></script>
 
 	<script type="text/javascript">
-        var project_id = {{ projectid }};
+        var project_id = "{{ projectid }}";
         var server_url = "{{ ServerURL }}"
 
         $("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );

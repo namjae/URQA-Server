@@ -32,7 +32,7 @@
 
 	<link rel="stylesheet" type="text/css" href="{% static 'js/d3/src/nv.d3.css' %}">
 	<script type="text/javascript">
-        var project_id = {{ projectid }};
+        var project_id = "{{ projectid }}";
         var server_url = "{{ ServerURL }}"
         var my_chart;
 		$(document).ready(function(){

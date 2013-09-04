@@ -16,10 +16,6 @@ from urqa.models import Comments
 
 import projectmanage.views
 
-def logintest(request):
-    tpl = loader.get_template('base.html')
-    ctx = Context({})
-    return HttpResponse(tpl.render(ctx))
 
 def registration(request):
     print request
