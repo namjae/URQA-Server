@@ -32,6 +32,8 @@ class RANK:
     Major    = 2
     Minor    = 3
     Native   = 4
+    rankcolor = ['gray','red','blue', 'green' , 'purple']
+    rankcolorbit = ["#cccdc7", "#de6363", "#5a9ccc", "#72c380", "#9d61dd" ]
 
 class TimeRange:
     oneday = 1
@@ -69,3 +71,18 @@ def numbertostrcomma(num) :
     b = b[::-1]
     # 문자열로 합쳐서 결과를 돌려준다.
     return string.join(b, '').replace('-,', '-')
+
+def get_dict_value_matchin_key(dict,value):
+    for _key,_value in dict.items():
+        if _value == value:
+            return _key
+
+    return ''
+
+def get_dict_value_matchin_number(dict,value):
+    count = 0
+    for _key,_value in dict.items():
+        if _value == value:
+            return count
+        count += 1
+    return count

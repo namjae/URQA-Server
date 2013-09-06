@@ -32,15 +32,20 @@ urlpatterns = patterns('',
     url(r'^urqa/user/login$', 'usermanage.views.login_req'),
     url(r'^urqa/user/logout$', 'usermanage.views.logout_req'),
 
+
     #project-list
     url(r'^urqa/projects$', 'projectmanage.views.projects'),
 
     #project manage
     url(r'^urqa/project/registration$', 'projectmanage.views.registration'),
     url(r'^urqa/project/(?P<apikey>.{8})/delete$', 'projectmanage.views.delete_req'),
+    url(r'^urqa/project/(?P<apikey>.{8})/modify$', 'projectmanage.views.modify_req'),
     url(r'^urqa/project/(?P<apikey>.{8})/$', 'projectmanage.views.projectdashboard'),
     url(r'^urqa/project/(?P<apikey>.{8})/dailyes/$', 'projectmanage.views.dailyesgraph'),
     url(r'^urqa/project/(?P<apikey>.{8})/typees/$', 'projectmanage.views.typeesgraph'),
+    url(r'^urqa/project/(?P<apikey>.{8})/typees/color$', 'projectmanage.views.typeescolor'),
+    url(r'^urqa/project/(?P<apikey>.{8})/viewer/registration$', 'projectmanage.views.viewer_registration'),
+    url(r'^urqa/project/(?P<apikey>.{8})/viewer/delete$', 'projectmanage.views.viewer_delete'),
     #url(r'^urqa/project/(?P<apikey>.{8})/errorscorelist$', 'projectmanage.views.errorscorelist'),
     #project manage static
     (r'(?:.*?/)?(?P<path>(css|font|js|images)/.+)$', 'urqa.views.mediapathrequest'),

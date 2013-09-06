@@ -371,3 +371,27 @@ jQuery.fn.compileCSS = function(cssPath, cssFile, varFiles, complate)
 			$.get(cssPath + varFiles[file], loadedVariableFile);
 	});
 }
+
+jQuery.fn.loadVariableFile = function(file)
+{
+	var variables = new HashMap();
+	function loadedVariableFile(color)
+	{
+		var filter = /[{}\s\t:;]+/gi;
+		data = color.split(filter);
+
+		if(data)
+		{
+			for(var i = 1; i < data.length; i += 2)
+				variables.put(data[i-1], data[i]);
+		}
+	}
+	$.ajax({
+        url: file,
+        type: 'get',
+        dataType: 'text',
+        async: false,
+        success: loadedVariableFile
+    });
+	return variables;
+}

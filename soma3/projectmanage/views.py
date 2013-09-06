@@ -10,6 +10,7 @@ import ast
 import datetime
 import time
 import shutil
+import pytz
 
 from django.utils.timezone import utc
 from django.utils import timezone
@@ -25,8 +26,13 @@ from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.db.models import Sum
+from django.db.models import Q
 
 from common import validUserPjt
+from common import getUserProfileDict
+from common import getApikeyDict
+from common import getSettingDict
+
 from urqa.models import AuthUser
 from urqa.models import Projects
 from urqa.models import Viewer
@@ -49,6 +55,8 @@ from utility import getTimeRange
 from utility import TimeRange
 from utility import RANK
 from utility import numbertostrcomma
+from utility import get_dict_value_matchin_key
+from utility import get_dict_value_matchin_number
 
 from config import get_config
 
@@ -68,22 +76,35 @@ def registration(request):
     except ObjectDoesNotExist:
         return HttpResponse('user "%s" not exists' % request.user)
 
+
+    categorydata = json.loads(get_config('app_categories'))
+    platformdata = json.loads(get_config('app_platforms'))
+    stagedata = json.loads(get_config('app_stages'))
+    stagecolordata = json.loads(get_config('app_stages_color'))
+
     name = request.POST['name']
-    platform = int(request.POST['platform'])
-    stage = int(request.POST['stage'])
-    category = request.POST['category']
+    platformtxt = request.POST['platform']
+    stagetxt = request.POST['stage']
+    categorytxt = request.POST['category']
+
+
+    platform = platformdata[platformtxt]
+    stage =  stagedata[stagetxt]
+    category= categorydata[categorytxt]
+    color = stagecolordata[stagetxt]
+
 
     #project name은 중복을 허용한다.
 
     #step2: apikey를 발급받는다. apikeysms 8자리 숫자
     apikey = newApikey()
     print 'new apikey = %s' % apikey
-    projectElement = Projects(owner_uid=userElement,apikey=apikey,name=name,platform=platform,stage=stage)
+    projectElement = Projects(owner_uid=userElement,apikey=apikey,name=name,platform=platform,stage=stage,category=category)
     projectElement.save();
     #step3: viwer db에 사용자와 프로젝트를 연결한다.
     Viewer.objects.create(uid=userElement,pid=projectElement)
 
-    return HttpResponse(json.dumps({'success': True , 'prjname' : name , 'apikey' : apikey, 'color' : 'blue'}), 'application/json')
+    return HttpResponse(json.dumps({'success': True , 'prjname' : name , 'apikey' : apikey, 'color' : color , 'platform' : platformtxt}), 'application/json')
 
 def delete_req(request,apikey):
     print 'project delete request(APIKEY:%s)' % apikey
@@ -147,6 +168,38 @@ def delete_req(request,apikey):
     project.delete()
 
     return HttpResponse('delete success')
+
+def modify_req(request, apikey):
+
+    username = request.user
+
+    valid , message , userelement, projectelement = validUserPjt(username,apikey)
+
+    if not valid:
+        return HttpResponse(json.dupms({'success' : False , 'message' : 'wrong access'}),'application/json')
+
+    #오너가 아니라면 안됨!!
+    if(projectelement.owner_uid.id != userelement.id):
+        return HttpResponse(json.dupms({'success' : False , 'message' : 'Only the owner'}),'application/json')
+
+
+    stagedata = json.loads(get_config('app_stages'))
+    categorydata = json.loads(get_config('app_categories'))
+    platformdata = json.loads(get_config('app_platforms'))
+
+    projectelement.category = categorydata[request.POST['category']]
+    projectelement.stage = stagedata[request.POST['stage']]
+    projectelement.platform = platformdata[request.POST['platform']]
+    projectelement.name = request.POST['projectname']
+
+    #project modify
+    projectelement.save();
+
+    #timezone save
+    userelement.timezone = request.POST['timezone']
+    username.save();
+
+    return HttpResponse(json.dumps({'success' : True , 'message' : 'success modify project'}),'application/json')
 
 def so2sym(projectElement, appver, so_path, filename):
     arg = [get_config('dump_syms_path') ,os.path.join(so_path,filename)]
@@ -272,31 +325,38 @@ def projects(request):
     ViewerElements = Viewer.objects.filter(uid = UserElement.id).values('pid')
     ViewerProjectElements = Projects.objects.filter(pid__in = ViewerElements)
 
-    for owner in OwnerProjectElements:
-        print owner.name
-    print '----------------------------------'
-    for viewer in ViewerProjectElements:
-        print viewer.name
-
     MergeProjectElements = OwnerProjectElements | ViewerProjectElements
 
-    for merge in MergeProjectElements:
-        print merge.name
     #print MergeProjectElements
 
     project_list = []
-    color_list = ['red','green','blue']
+
+    stagedata = json.loads(get_config('app_stages'))
+    stagecolordata = json.loads(get_config('app_stages_color'))
+    platformdata = json.loads(get_config('app_platforms'))
+
     for idx, project in enumerate(MergeProjectElements):
-        projectdata = {'apikey' : '' , 'color' : '' , 'errorcount': '', 'name' : '' }
+        projectdata = {}
         projectdata['apikey'] = project.apikey
-        projectdata['color'] = color_list[idx% len(color_list)]
+        #stage color 구하기
+        stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
+        projectdata['color'] = stagecolordata.get(stagetxt)
+
         Errorcounter = Errors.objects.filter(pid = project.pid).aggregate(Sum('numofinstances'))
         projectdata['errorcount'] =  Errorcounter['numofinstances__sum'] is not None and numbertostrcomma(Errorcounter['numofinstances__sum'])  or 0
         projectdata['name'] = project.name
+        projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
         project_list.append(projectdata)
+
+    categorydata = json.loads(get_config('app_categories'))
+    platformdata = json.loads(get_config('app_platforms'))
+    stagedata = json.loads(get_config('app_stages'))
 
     ctx = {
         'project_list' : project_list ,
+        'app_platformlist' : platformdata.items(),
+        'app_categorylist' : categorydata.items(),
+        'app_stagelist' : stagedata.items()
     }
     return render(request, 'project-select.html', ctx)
 
@@ -311,18 +371,15 @@ def projectdashboard(request, apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    user = AuthUser.objects.get(username = request.user)
+    userdict = getUserProfileDict(userelement)
+    apikeydict = getApikeyDict(apikey)
+    settingdict = getSettingDict(projectelement,userelement)
 
-
-    ctx = {
-        'templatepath' : getTemplatePath(),
-        'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : apikey,
-        'user_name' :user.first_name + ' ' + user.last_name ,
-        'user_email': user.email,
-        'profile_url' : user.image_path,
+    dashboarddicct = {
         'error_list' : errorscorelist(apikey),
     }
+
+    ctx = dict(userdict.items() + apikeydict.items() + settingdict.items() + dashboarddicct.items() )
 
     return render(request, 'projectdashboard.html', ctx)
 
@@ -386,10 +443,11 @@ def typeesgraph(request, apikey):
 
     default = {
         "tags":[
-            {"key":"Unhandler", "value":0},
+            {"key":"Unhandle", "value":0},
             {"key":"Critical", "value":0},
             {"key":"Major", "value":0},
-            {"key":"Minor", "value":0}
+            {"key":"Minor", "value":0},
+            {"key":"Native", "value":0}
             ]
         }
 
@@ -400,18 +458,62 @@ def typeesgraph(request, apikey):
         print 'invalid pid'
         return HttpResponse(json.dumps(default), 'application/json')
 
-    print week
 
-    for i in range(RANK.Unhandle,RANK.Minor+1): # unhandled 부터 minor 까지
+    for i in range(RANK.Unhandle,RANK.Native+1): # unhandled 부터 Native 까지
        ErrorsElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week,today), rank = i) #일주일치 얻어옴
        if len(ErrorsElements) > 0:
            for error in ErrorsElements:
                default['tags'][i]['value'] += error.errorweight
                #print str(i) + ':' +  str(default['tags'][i]['value'])
 
-    result = json.dumps(default)
-    print result
+    popcount = RANK.Unhandle
+    for i in range(RANK.Unhandle,RANK.Native+1):
+        if default['tags'][i - popcount]['value'] == 0:
+            default['tags'].pop(i - popcount)
+            popcount+=1
 
+    result = json.dumps(default)
+
+
+    return HttpResponse(result,'application/json')
+
+def typeescolor(request ,apikey):
+
+    timerange = TimeRange.weekly
+    week , today = getTimeRange(timerange)
+
+
+    default = {
+        "tags":[
+            {"key":"Unhandle", "value":0},
+            {"key":"Critical", "value":0},
+            {"key":"Major", "value":0},
+            {"key":"Minor", "value":0},
+            {"key":"Native", "value":0}
+            ]
+        }
+
+    #프로젝트 ID에 맞는 에러들을 가져오기 위함
+    try:
+        ProjectElement = Projects.objects.get(apikey= apikey)
+    except ObjectDoesNotExist:
+        print 'invalid pid'
+        return HttpResponse(json.dumps(default), 'application/json')
+
+
+    for i in range(RANK.Unhandle,RANK.Native+1): # unhandled 부터 Native 까지
+       ErrorsElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week,today), rank = i) #일주일치 얻어옴
+       if len(ErrorsElements) > 0:
+           for error in ErrorsElements:
+               default['tags'][i]['value'] += error.errorweight
+               #print str(i) + ':' +  str(default['tags'][i]['value'])
+
+    ColorTable = []
+    for i in range(RANK.Unhandle,RANK.Native+1):
+        if default['tags'][i]['value'] != 0:
+            ColorTable.append(RANK.rankcolorbit[i])
+
+    result = json.dumps(ColorTable)
     return HttpResponse(result,'application/json')
 
 #name, file, tag, counter
@@ -445,12 +547,71 @@ def errorscorelist(apikey):
                 stringlength = len(tagString)
                 tagString = tagString[0 : stringlength - 1]
 
-        dicerrordata = {'ErrorName' : error.errorname ,  'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' , 'tags': tagString, 'ErrorScore' : error.errorweight , 'Errorid' : error.iderror}
+        rankcolor = ''
+        if error.rank == -1:
+            rankcolor = 'none'
+        else:
+            rankcolor = RANK.rankcolor[error.rank]
+
+        dicerrordata = {'ErrorName' : error.errorname ,
+                        'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' ,
+                        'tags': tagString,
+                        'ErrorScore' : error.errorweight ,
+                        'Errorid' : error.iderror ,
+                        'Errorrankcolor' : rankcolor}
         jsondata.append(dicerrordata);
 
         #print dicerrordata
+        Viewer.objects.create
 
     return jsondata
 
 
 
+def viewer_registration(request,apikey):
+
+    username = request.user
+
+    valid , message , userelement, projectelement = validUserPjt(username,apikey)
+
+    if not valid:
+        return HttpResponse(json.dumps({'success' : False, 'username' : '' ,'message' : 'Wrong Access' } ),'application/json')
+
+    registusername = request.POST['username']
+
+
+    #존재하지 않으면 fail
+    user = AuthUser.objects.filter(username__exact=registusername)
+    if not user.exists():
+        return HttpResponse(json.dumps({'success' : False, 'username' : '' , 'message' : 'not exists user name' } ),'application/json')
+
+
+    viewerElement = Viewer(uid = user[0], pid = projectelement)
+    viewerElement.save()
+
+    return HttpResponse(json.dumps({'success': True, 'username' : registusername , 'message' : 'success registration'}),'application/json')
+
+def viewer_delete(request,apikey):
+
+    username = request.user
+
+    valid , message , userelement, projectelement = validUserPjt(username,apikey)
+
+    if not valid:
+        return HttpResponse(json.dumps({'success' : False, 'username' : '' } ),'application/json')
+
+    deleteusername = request.POST['username']
+
+    try:
+        deleteuser = AuthUser.objects.get(username = deleteusername)
+    except ObjectDoesNotExist:
+        return HttpResponse(json.dumps({'success' : False, 'username' : '' } ),'application/json')
+
+
+    try:
+        deleteviewtuple = Viewer.objects.get(pid = projectelement.pid , uid = deleteuser.id)
+        deleteviewtuple.delete()
+    except ObjectDoesNotExist:
+        return HttpResponse(json.dumps({'success' : False, 'username' : '' } ),'application/json')
+
+    return HttpResponse(json.dumps({'success' : True, 'username' : deleteusername } ),'application/json')

@@ -99,3 +99,4 @@ def logout_req(request):
         logout(request)
     print 'logout'
     return HttpResponseRedirect('/urqa/')
+

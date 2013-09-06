@@ -50,9 +50,9 @@ Raphael.custom.getAnchors = function(p1x, p1y, p2x, p2y, p3x, p3y) {
 		y2: p2y + dy2
 	};
 }
-Raphael.custom.addRefresh = function(objName, fn, info) {
-	if($(objName) && fn && info)
-		return this.stack.push({"objectName": objName, "update": fn, "info": info, "data": null});
+Raphael.custom.addRefresh = function(objName, update, create, info) {
+	if($(objName) && update && info)
+		return this.stack.push({"objectName": objName, "update": update, "create" : create, "info": info, "data": null});
 	return null;
 }
 Raphael.custom.windowResize = function() {
@@ -66,11 +66,7 @@ Raphael.custom.windowResize = function() {
 			w = $(Raphael.custom.stack[i].objectName).width();
 			h = $(Raphael.custom.stack[i].objectName).height();
 			if(w != info.width || h != info.height)
-			{
-				info.width = w;
-				info.height = h;
-				Raphael.custom.stack[i].update(Raphael.custom.stack[i].objectName, Raphael.custom.stack[i].data, info);
-			}
+				Raphael.custom.stack[i].update(Raphael.custom.stack[i].objectName, Raphael.custom.stack[i].data, info, i);
 		}
 	}
 
@@ -114,13 +110,15 @@ Raphael.custom.pieGraph = function(file, objName, att)
 		info.colorTable				= Raphael.custom.checkAB(att, "colorTable", null);
 		info.lineColor 				= Raphael.custom.checkAB(att, "lineColor", "\"#fff\" ");
 		info.textColor				= Raphael.custom.checkAB(att, "textColor", "\"#000\" ");
+		info.textSize				= Raphael.custom.checkAB(att, "textSize", "\"13px\"");
 		info.autoResize				= Raphael.custom.checkAB(att, "autoResize", "true");
 
 		obj.html("");
 
 		// Grab the data
 		var labels = [],
-			data = [];
+			data = [],
+			colorMap = new HashMap();
 
 		var response = realData;
 		var tags = response.tags;
@@ -128,7 +126,12 @@ Raphael.custom.pieGraph = function(file, objName, att)
 		{
 			labels.push(tags[i].key);
 			data.push(tags[i].value);
+			colorMap.put(tags[i].key, info.colorTable[i]);
 		}
+
+		var sum = 0;
+		for(var i = 0; i < data.length; i ++)
+			sum += data[i];
 
 		var r = Raphael(objName.substring(1), info.width, info.height);
 	    var pie;
@@ -141,11 +144,12 @@ Raphael.custom.pieGraph = function(file, objName, att)
 	    for(i = 0; i < tags.length; i ++)
 	    {
 	    	tObj.eq(2 + i).attr("stroke", info.lineColor);
-	    	pie.series[i].attr("fill", info.colorTable[i % info.colorTable.length]);
+	    	pie.series[i].attr("fill", colorMap.get(pie.covers[i].label[1].attr("text") ) );
 	    	pie.covers[i].label[0].attr("fill", pie.series[i].attr("fill"));
 	    	pie.covers[i].label[0].attr("cy", pie.covers[i].label[0].attr("cy") + 4 * (i - tags.length / 2) );
 	    	pie.covers[i].label[1].attr("y", pie.covers[i].label[1].attr("y") + 4 * (i - tags.length / 2) );
-	    	pie.covers[i].label[1].attr("font-size", "13px");
+	    	pie.covers[i].label[1].attr("font-size", info.textSize);
+	    	pie.covers[i].label[1].attr("text", pie.covers[i].label[1].attr("text") + " (" + (data[i] * 100.0 / sum).toFixed(2) + "%)");
 	    }
 
 	    pie.hover(function () {
@@ -169,7 +173,7 @@ Raphael.custom.pieGraph = function(file, objName, att)
 	    $(objName + "> svg").css("position", "static");
 	}
 
-	var index = this.addRefresh(objName, update, att);
+	var index = this.addRefresh(objName, update, update, att);
 	if(index == null) return null;
 
 	this.dataLoad(file, index);
@@ -225,12 +229,17 @@ Raphael.custom.areaGraph = function(file, objName, att)
 			txt1 = {font: '11px Helvetica, Arial', fill: "#fff"},
 			txt2 = {font: '12px Helvetica, Arial', fill: "#000"},
 			X = (width - leftgutter) / labels.length,
-			max = Math.max.apply(Math, data),
-			Y = (height - bottomgutter - topgutter) / max;
+			min = Math.min.apply(Math, data),
+			max = Math.max.apply(Math, data);
+
+		var sumCount = ((min < 0) ? -min : 0);
+		max += sumCount;
+
+		var Y = (height - bottomgutter - topgutter) / max;
 
 		var r = Raphael(objName.substring(1), width, height);
 
-		r.drawGrid(leftgutter + X * .5 - .5, topgutter - .5, width - leftgutter - X, height - topgutter - bottomgutter, (info.verticalLine ? 10 : 0), (info.horizonLine ? 5 : 0), info.lineColor);
+		var gridLine = r.drawGrid(leftgutter + X * .5 - .5, topgutter - .5, width - leftgutter - X, height - topgutter - bottomgutter - Y * sumCount, (info.verticalLine ? 10 : 0), (info.horizonLine ? 5 : 0), info.lineColor);
 		
 		var path = r.path().attr({stroke: color, "stroke-width": info.lineWidth, "stroke-linejoin": "round"}),
 			bgp = r.path().attr({stroke: "none", opacity: .3, fill: color}),
@@ -248,17 +257,17 @@ Raphael.custom.areaGraph = function(file, objName, att)
 	
 		var p, bgpp;
 		for (var i = 0, ii = labels.length; i < ii; i++) {
-			var y = Math.round(height - bottomgutter - Y * data[i]),
+			var y = Math.round(height - bottomgutter - Y * (data[i] + sumCount) ),
 				x = Math.round(leftgutter + X * (i + .5)),
-				t = r.text(x, height - 6, labels[i]).attr(txt2).attr({fill: info.textColor}).toBack();
+				t = r.text(x, height - topgutter - bottomgutter - Y * sumCount + 12, labels[i]).attr(txt2).attr({fill: info.textColor}).toBack();
 			if (!i) {
 				p = ["M", x, y, "C", x, y];
-				bgpp = ["M", leftgutter + X * .5, height - bottomgutter, "L", x, y, "C", x, y];
+				bgpp = ["M", leftgutter + X * .5, height - topgutter - bottomgutter - Y * sumCount + 4, "L", x, y, "C", x, y];
 			}
 			if (i && i < ii - 1) {
-				var Y0 = Math.round(height - bottomgutter - Y * data[i - 1]),
+				var Y0 = Math.round(height - bottomgutter - Y * (data[i - 1] + sumCount) ),
 					X0 = Math.round(leftgutter + X * (i - .5)),
-					Y2 = Math.round(height - bottomgutter - Y * data[i + 1]),
+					Y2 = Math.round(height - bottomgutter - Y * (data[i + 1] + sumCount) ),
 					X2 = Math.round(leftgutter + X * (i + 1.5));
 				var a = Raphael.custom.getAnchors(X0, Y0, x, y, X2, Y2);
 				p = p.concat([a.x1, a.y1, x, y, a.x2, a.y2]);
@@ -305,18 +314,19 @@ Raphael.custom.areaGraph = function(file, objName, att)
 			dot.attr("opacity", 0);
 		}
 		p = p.concat([x, y, x, y]);
-		bgpp = bgpp.concat([x, y, x, y, "L", x, height - bottomgutter, "z"]);
+		bgpp = bgpp.concat([x, y, x, y, "L", x, height - topgutter - bottomgutter - Y * sumCount + 4, "z"]);
 		path.attr({path: p});
 		bgp.attr({path: bgpp});
 		frame.toFront();
 		label[0].toFront();
 		label[1].toFront();
 		blanket.toFront();
+		gridLine.toFront();
 
 		$(objName + "> svg").css("position", "static");
 	}
 
-	var index = this.addRefresh(objName, update, att);
+	var index = this.addRefresh(objName, update, update, att);
 	if(index == null) return null;
 
 	this.dataLoad(file, index);

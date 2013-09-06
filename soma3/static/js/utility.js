@@ -136,6 +136,9 @@ function logout()
    $.ajax({
           type: 'get'
         , url: '/urqa/user/logout'
+        , success : function(data) {
+           window.location.href = data.redirect
+       }
    })
 }
 function login(data)
@@ -192,14 +195,34 @@ function valid_email(str)
     form.submit();
 }
 
-function stringstagetoint(strstage)
-{
-    if(strstage == 'Test')
-        return 1;
-    else if(strstage == 'Release')
-        return 2;
-    else if(strstage == 'Develope')
-        return 0;
-    else
-        return -1;
+function deleteviewer(obj) {
+    var username = $(obj).parent().parent().children('.float').children('p').html();
+    var data  = {'username' : username}
+
+    var csrftoken = getCookie('csrftoken')
+    $.ajax({
+      type: 'post'
+    , url: '/urqa/project/'+project_id +'/viewer/delete'
+    , beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+            // Send the token to same-origin, relative URLs only.
+            // Send the token only if the method warrants CSRF protection
+            // Using the CSRFToken value acquired earlier
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }}
+    , data: data
+    , success : function(data) {
+            if(data["success"])
+            {
+                 $(".button.red.event").each(function()
+                 {
+                         var username = $(this).parent().parent().children('.float').children('p').html();
+                         if(data['username'] == username)
+                            $(this).parent().parent().remove()
+                 })
+            }
+
+        }
+    })
 }
+

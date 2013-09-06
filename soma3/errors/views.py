@@ -30,8 +30,15 @@ from urqa.models import Appstatistics
 
 from common import validUserPjt
 from common import validUserPjtError
+from common import getUserProfileDict
+from common import getApikeyDict
+from common import getSettingDict
+
+from utility import get_dict_value_matchin_key
+from utility import get_dict_value_matchin_number
 
 from client.views import calc_eventpath
+from config import get_config
 
 
 def newTag(request, apikey, iderror):
@@ -168,16 +175,18 @@ def errorDetail(request,apikey,iderror):
         instancelist.append(instancetuple)
 
 
+    projectelement = Projects.objects.get(apikey = apikey)
+    platformdata = json.loads(get_config('app_platforms'))
+    platformtxt = get_dict_value_matchin_key(platformdata,projectelement.platform)
 
 
-    tpl = loader.get_template('details.html')
-    ctx = Context({
-        'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : apikey,
+
+    userdict = getUserProfileDict(user)
+    apikeydict = getApikeyDict(apikey)
+    settingdict = getSettingDict(projectelement,user)
+
+    detaildict = {
         'iderror' : iderror,
-        'user_name' :user.first_name + ' ' + user.last_name,
-        'user_email': user.email,
-        'profile_url' : user.image_path,
         'ErrorScore' : ErrorsElement.errorweight,
         'isManual' :  isManual,
         'ErrorName' : ErrorsElement.errorname,
@@ -189,10 +198,15 @@ def errorDetail(request,apikey,iderror):
         'Errorsgps' : int(gps/numobins * 100),
         'Errorsmobilenetwork' : int(mobilenetwork/numobins * 100),
         'Errorsmemoryusage' : ErrorsElement.totalmemusage / ErrorsElement.numofinstances,
+        'ErrorRankColor' : RANK.rankcolor[ErrorsElement.rank],
         'tag_list' : taglist,
         'callstack' : callstacklist,
         'instance_list' : instancelist,
-    });
+    }
+    ctxdict  = ctx = dict(userdict.items() + apikeydict.items() + settingdict.items() + detaildict.items() )
+
+    tpl = loader.get_template('details.html')
+    ctx = Context(ctxdict);
     return HttpResponse(tpl.render(ctx))
 
 def instancedetatil(request, apikey, iderror, idinstance):
@@ -272,7 +286,6 @@ def eventpath(request,apikey,iderror):
 
     result = calc_eventpath(ErrorsElement)
 
-    print 'eventpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     return HttpResponse(json.dumps(result),'application/json')
 
 

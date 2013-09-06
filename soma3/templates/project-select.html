@@ -12,6 +12,7 @@
 	<script type="text/javascript" src="{% static 'js/lib.js'%}"></script>
 	<script type="text/javascript" src="{% static 'js/hashmap.js'%}"></script>
 	<script type="text/javascript" src="{% static 'js/jquery-2.0.0.min.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.zclip.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/css-compile.js'%}"></script>
 	<script type="text/javascript" src="{% static 'js/user.js'%}"></script>
     <script type="text/javascript" src="{% static 'js/utility.js'%}"></script>
@@ -32,38 +33,28 @@
 					<form onsubmit="return createProject(this);">
 						<span>APP Name</span>
 						<input name="appname" type="input" value="" />
+						<span>Device</span>
+						<div class="dropdown">
+							<a>Android</a>
+							<span></span>
+							<div>
+								 <ul id = 'app_platform_list'>
+                                 {% for key,value in app_platformlist %}
+								 	<li value="{{ value }}"><a>{{ key }}</a></li>
+								 {% endfor %}
+								 </ul>
+							</div>
+							<input type="hidden" name="device_type" value="1" />
+						</div>
 						<span>APP Category</span>
 						<div class="dropdown">
 							<a>Game</a>
 							<span></span>
 							<div>
 								 <ul id = 'app_category_list'>
-								    <li data-value="true"><a>Game</a></li>
-								 	<li data-value="false"><a>Comics</a></li>
-								 	<li data-value="false"><a>Communications</a></li>
-                                    <li data-value="false"><a>Finance</a></li>
-                                    <li data-value="false"><a>Health & Fitness</a></li>
-                                    <li data-value="false"><a>Medical</a></li>
-                                    <li data-value="false"><a>Lifestyle</a></li>
-                                    <li data-value="false"><a>Media & Video</a></li>
-                                    <li data-value="false"><a>Music & Audio</a></li>
-                                    <li data-value="false"><a>Photography</a></li>
-                                    <li data-value="false"><a>News & Magazines</a></li>
-                                    <li data-value="false"><a>Etc...</a></li>
-                                     <!--
-                                    <li data-value="false"><a>Weather</a></li>
-                                    <li data-value="false"><a>Productivity</a></li>
-                                    <li data-value="false"><a>Business</a></li>
-                                    <li data-value="false"><a>Books & Reference</a></li>
-                                    <li data-value="false"><a>Education</a></li>
-                                    <li data-value="false"><a>Shopping</a></li>
-                                    <li data-value="false"><a>Social</a></li>
-                                    <li data-value="false"><a>Sports</a></li>
-                                    <li data-value="false"><a>Personalization</a></li>
-                                    <li data-value="false"><a>Tools</a></li>
-                                    <li data-value="false"><a>Travel & Local</a></li>
-                                    <li data-value="false"><a>Libraries & Demo</a></li>
-                                    -->
+                                    {% for key,value in app_categorylist %}
+                                        <li value="{{ value }}"><a>{{ key}}</a></li>
+								    {% endfor%}
 								 </ul>
 							</div>
 							<input type="hidden" name="app_category" value = "1" />
@@ -74,9 +65,9 @@
 							<span></span>
 							<div>
 								 <ul id = 'app_stage_list'>
-								 	<li data-value="true"><a>Develop</a></li>
-								 	<li data-value="false"><a>Test</a></li>
-								 	<li data-value="false"><a>Release</a></li>
+                                 {% for key, value in app_stagelist %}
+								 	<li value="{{ value }}"><a>{{ key }}</a></li>
+                                 {% endfor %}
 								 </ul>
 							</div>
 							<input type="hidden" name="stage"  value = "1"  />
@@ -86,18 +77,23 @@
 				</div>
 			</div>
 		</div>
+		<div id="body-header">UrQA - Project Select</div>
+        <a href="/urqa/user/logout">
+        <div id="logout-header"><p>LOGOUT</p></div>
+        </a>
 		<div id="project-list">
 			<div class="list">
-				{% for project  in  project_list %}
-                 <a href= "/urqa/project/{{ project.apikey }}">
-                    <div>
-						<div></div>
-						<span></span>
-						<p class="{{ project.color }}"><span>ERROR</span>{{ project.errorcount }}</p>
-						<label>{{ project.name }}<br>{{ project.apikey }}</label>
-					</div>
-                 </a>
-				 {% endfor %}
+				{% for project in  project_list %}
+                <div>
+                    <a href= "/urqa/project/{{ project.apikey }}">
+                        <div></div>
+                        <div class="{{ project.platform }}"></div>
+                        <span></span>
+                        <p class="{{ project.color }}"><span>ERROR</span>{{ project.errorcount }}</p>
+                    </a>
+                        <label onclick="copyThis(this)">{{ project.name }}<span>{{ project.apikey }}</span></label>
+                </div>
+                {% endfor %}
              </div>
 			<div class="add" onclick="showPopupCreateProject()"><div></div></div>
 		</div>
