@@ -74,7 +74,7 @@
   }
 ]
 
-        document.ready(function(){
+       $(document).ready(function(){
             nv.addGraph(function() {
               var chart = nv.models.pieChart()
                   .x(function(d) { return d.label })
@@ -92,6 +92,12 @@
 
 
     </script>
+    <style>
+        #osver svg {
+        height: 200px;
+        }
+
+    </style>
 </head>
 
 <body class="error" style="display: none;">

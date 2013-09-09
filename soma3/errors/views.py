@@ -113,7 +113,7 @@ def deleteComment(request, apikey, iderror):
         HttpResponse('comment %s not exists' % idcomment)
 
     return HttpResponse('success')
-
+"""
 def os(request,apikey,iderror):
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
 
@@ -143,7 +143,7 @@ def app(request,apikey,iderror):
 def device(request,apikey,iderror):
 
 def country(request,apikey,iderror):
-
+"""
 
 
 def errorDetail(request,apikey,iderror):
