@@ -177,7 +177,7 @@ def errorDetail(request,apikey,iderror):
 
     projectelement = Projects.objects.get(apikey = apikey)
     platformdata = json.loads(get_config('app_platforms'))
-    platformtxt = get_dict_value_matchin_key(platformdata,projectelement.platform)
+    #platformtxt = get_dict_value_matchin_key(platformdata,projectelement.platform)
 
 
 
@@ -203,7 +203,7 @@ def errorDetail(request,apikey,iderror):
         'callstack' : callstacklist,
         'instance_list' : instancelist,
     }
-    ctxdict  = ctx = dict(userdict.items() + apikeydict.items() + settingdict.items() + detaildict.items() )
+    ctxdict  = dict(userdict.items() + apikeydict.items() + settingdict.items() + detaildict.items() )
 
     tpl = loader.get_template('details.html')
     ctx = Context(ctxdict);
@@ -378,18 +378,22 @@ def filter_view(request,apikey):
         appv_margin += ' '
 
     tpl = loader.get_template('filter.html')
-    ctx = Context({
-        'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : apikey,
+    filterdict = {
+        #'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
         'tag_list' : tag_list,
         'class_list' : class_list,
         'osv_list' : osv_list,
         'margin' : {'osv':osv_margin,'appv':appv_margin},
         'appv_list' : appv_list,
-        'user_name' :user.first_name + ' ' + user.last_name ,
-        'user_email': user.email,
-        'profile_url' : user.image_path,
-    });
+    }
+
+    userdict = getUserProfileDict(user)
+    apikeydict = getApikeyDict(apikey)
+    settingdict = getSettingDict(projectelement,user)
+    print userdict
+    ctxdict  = dict(userdict.items() + apikeydict.items() + settingdict.items() + filterdict.items() )
+    ctx = Context(ctxdict);
+
     return HttpResponse(tpl.render(ctx))
 
 

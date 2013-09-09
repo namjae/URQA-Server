@@ -276,6 +276,152 @@
 				<p>UrQA에 오신 것을 환영합니다. 당신의 프로젝트에서 발생하는 <b>다양한 문제</b>를 여기에서 해결할 수 있기를 바랍니다!</p>
 			</div>
 		</div>-->
+
+        <div id="popup-container">
+			<div id="popup-modifyproject">
+				<div class="body">
+					<form onsubmit="return modifiProject(this);">
+						<div class="half">
+							<div>
+								<div class="area">
+									<span>APP Name</span>
+									<input name="appname" type="input" value="{{ project_name }}" />
+									<span>Device</span>
+									<div class="dropdown">
+										<a>Android</a>
+										<span></span>
+										<div>
+											 <ul id = 'platform_list'>
+                                              {% for key,value in app_platformlist %}
+                                                <li value="{{ value }}"><a>{{ key }}</a></li>
+                                             {% endfor %}
+											 </ul>
+										</div>
+										<input type="hidden" name="device_type" value="{{ platform_number }}" />
+									</div>
+									<span>APP Category</span>
+									<div class="dropdown">
+										<a>Game</a>
+										<span></span>
+										<div>
+											 <ul id = 'category_list'>
+                                             {% for key,value in app_categorylist %}
+                                                <li value="{{ value }}"><a>{{ key}}</a></li>
+                                            {% endfor%}
+											 </ul>
+										</div>
+										<input type="hidden" name="app_category" value="{{ category_number }}" />
+									</div>
+									<span>Stage</span>
+									<div class="dropdown">
+										<a>Test</a>
+										<span></span>
+										<div>
+											 <ul id = 'stage_list'>
+                                             {% for key, value in app_stagelist %}
+                                                <li value="{{ value }}"><a>{{ key }}</a></li>
+                                             {% endfor %}
+											 </ul>
+										</div>
+										<input type="hidden" name="stage" value="{{ stage_number }}" />
+									</div>
+								</div>
+							</div>
+							<div>
+								<div class="area">
+									<span>Timezone</span>
+									<div class="dropdown">
+										<a>Android</a>
+										<span></span>
+										<div>
+											 <ul id = 'timezone_list'>
+											 	{% for timezone in timezonelist %}
+											 	<li><a>{{ timezone }}</a></li>
+                                                {% endfor %}
+											 </ul>
+										</div>
+										<input type="hidden" name="device_type" value="{{ timezone_number }}" />
+									</div>
+									<span>Viewer</span>
+									<div class="y-scroll" style="width: 310px; height: 166px;">
+										<div style="width: 285px; margin: auto;">
+											<table id="viewer-list" class="content-small">
+												<thead><tr>
+													<td>Viewer</td>
+                                                    {% if owner_user %}
+													<td style="width: 80px"></td>
+                                                    {% endif %}
+												</tr></thead>
+												<tbody>
+                                                    {% for viewer in project_viewerlist %}
+                                                    <tr>
+														<td class="float"><p>{{ viewer }}</p></td>
+                                                        {% if owner_user %}
+														<td>
+															<div class="button red event" onclick="deleteviewer(this)" data-name="Remove" style="width: 74px; height: 26px; margin: 2px;"></div>
+														</td>
+                                                        {% endif %}
+													</tr>
+                                                    {% endfor %}
+                                                    {% if owner_user %}
+													<tr id = 'addviewer'>
+														<td colspan="2"><input name="userid" type="input" onkeypress="return submitViewer(event, this)" value="" /></td>
+													</tr>
+                                                    {% endif %}
+													<tr class="empty">
+														<td data-match="true"></td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="white-area"></div>
+                        {% if owner_user %}
+						<div style="margin: auto">
+							<div class="button purple" data-name="Modify Project" style="width: 210px; height: 39px"></div>
+							<span></span>
+							<div class="button red event" data-name="Remove Project" data-event="showConfirm()" style="width: 210px; height: 24px"></div>
+						</div>
+                        {% endif %}
+					</form>
+				</div>
+			</div>
+			<div id="warning-alert">
+				<div class="body">
+					<div class="half">
+						<div>
+							<div class="area">
+								<span></span>
+							</div>
+						</div>
+						<div>
+							<div class="area">
+								<p>DELETE PROJECT</p>
+								<p>This action cannot be undone.</p>
+							</div>
+						</div>
+					</div>
+					<div class="white-area"></div>
+					<div class="line"></div>
+					<div class="half">
+						<div>
+							<div class="area">
+								<div class="button white" onclick="confirmCancel()" data-name="CANCEL"></div>
+							</div>
+						</div>
+						<div>
+							<div class="area">
+								<div class="button red" onclick="confirmProcess()" data-name="CONFIRM"></div>
+							</div>
+						</div>
+					</div>
+					<div class="white-area"></div>
+				</div>
+			</div>
+		</div>
 		<div id="header-container">
 			<div id="header">
 				<a href="/urqa"><div class="logo"></div></a>
@@ -284,7 +430,7 @@
 						<li><a href="../">Insights</a></li>
 						<li><a href="../errors">Errors</a></li>
 						<li><a href='./'>Statistics</a></li>
-						<li><a>Settings</a></li>
+						<li><a onclick="showPopupModifyProject();">Settings</a></li>
 					</ul>
 				</div>
 				<div class="navbar-profile">

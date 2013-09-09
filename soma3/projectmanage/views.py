@@ -375,11 +375,11 @@ def projectdashboard(request, apikey):
     apikeydict = getApikeyDict(apikey)
     settingdict = getSettingDict(projectelement,userelement)
 
-    dashboarddicct = {
+    dashboarddict = {
         'error_list' : errorscorelist(apikey),
     }
 
-    ctx = dict(userdict.items() + apikeydict.items() + settingdict.items() + dashboarddicct.items() )
+    ctx = dict(userdict.items() + apikeydict.items() + settingdict.items() + dashboarddict.items() )
 
     return render(request, 'projectdashboard.html', ctx)
 

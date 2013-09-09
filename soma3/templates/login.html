@@ -80,7 +80,7 @@
                                 $('#username').val('')
                                 $('#password').val('')
                             })
-                        })
+                         })
                     </script>
 					<span></span>
 					<div class="button gray" data-name="Connect with your google account" style="width: 210px; height: 26px"></div>
@@ -94,12 +94,11 @@
 				<span>User ID</span>
 				<input name="username" id ='username' type="input" value="" />
 				<span>Password</span>
-				<input name="password" id ='password' type="password" value="" />
+				<input name="password" id ='password' type="password" value="" onkeypress="hitEnterKey();"/>
 				<div id = 'loginbutton' class="button purple" data-name="UrQA LOGIN" style="width: 210px; height: 39px"></div>
                     <script>
-                       $(document).ready(function () {
-                            $('#loginbutton').bind('click',function (e){
-                                if($('#username').val() == '')
+                        function login_req(){
+                            if($('#username').val() == '')
                                 {
                                     alert('Please Input ID')
                                     return;
@@ -115,8 +114,15 @@
 
                                 $('#username').val('')
                                 $('#password').val('')
-                            })
+                        }
+                        $(document).ready(function(){
+                            $('#loginbutton').bind('click',login_req)
                         })
+                        function hitEnterKey(){
+                            if(event.keyCode == 13){
+                                login_req()
+                            }
+                        }
                 </script>
 			</div>
 			<div class="footer">

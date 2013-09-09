@@ -9,6 +9,9 @@ from django.http import HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 
 from common import validUserPjt
+from common import getUserProfileDict
+from common import getApikeyDict
+from common import getSettingDict
 
 from utility import getTimeRange
 from utility import TimeRange
@@ -32,13 +35,17 @@ def statistics(request,apikey):
     user = AuthUser.objects.get(username = request.user)
 
     tpl = loader.get_template('statistics.html')
-    ctx = Context({
+
+    userdict = getUserProfileDict(userelement)
+    apikeydict = getApikeyDict(apikey)
+    settingdict = getSettingDict(projectelement,userelement)
+
+    statisticsdict = {
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
-        'projectid' : apikey,
-        'user_name' :user.first_name + ' ' + user.last_name ,
-        'user_email': user.email,
-        'profile_url' : user.image_path,
-    });
+    }
+
+    ctxdict = dict(userdict.items() + apikeydict.items() + settingdict.items() + statisticsdict.items() )
+    ctx = Context(ctxdict)
     return HttpResponse(tpl.render(ctx))
 
 
