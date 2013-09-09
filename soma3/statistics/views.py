@@ -52,7 +52,7 @@ def statistics(request,apikey):
 
 def chartdata(request,apikey):
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
-    retention = jsonData['retention']
+    retention = int(jsonData['retention'])
 
     username = request.user
     valid , message , userElement, projectElement = validUserPjt(username,apikey)

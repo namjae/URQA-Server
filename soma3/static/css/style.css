@@ -1377,6 +1377,9 @@ table {
 	.float { float: none !important; clear: both; }
 	.float > :nth-child(n) { float: left; }
 }
+.notHover:not(.retention){
+    height: 300px
+}
 table.top { margin-top: 0; }
 table.clickon > tbody > tr { cursor: pointer; }
 table div.dropdown { margin-bottom: -4px; }

@@ -443,11 +443,11 @@
 								<div class="float">
 									<div class="infobox red">
 										<span class="createdate"></span>
-										<label>20130405</label>
+										<label>{{ createdate }}</label>
 									</div>
 									<div class="infobox red">
 										<span class="updatedate"></span>
-										<label>20130408</label>
+										<label>{{ lastdate }}</label>
 									</div>
 									<div class="infobox red">
 										<span class="occur"></span>
@@ -497,12 +497,12 @@
 								<span>TAG</span>
 								<div id="error-tag-list" class="float">
 									<div class="tags-list user-input">
-										<ul>
+										<ul id = 'newtag'>
 											<span></span>
 											{% for tag in tag_list %}
-											    <li>{{ tag }}</li>
+											    <li>{{ tag }}<i></i></li>
                                             {% endfor %}
-											<li class="dropdown">
+											<li class="dropdown" id ='inputtag'>
 												<a>Add More</a>
 												<span></span>
 												<input type="input" />

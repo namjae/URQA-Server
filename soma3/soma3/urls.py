@@ -64,6 +64,7 @@ urlpatterns = patterns('',
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deleteTag'),
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/comment/new$', 'errors.views.newComment'),
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/comment/delete$', 'errors.views.deleteComment'),
+    url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/status$', 'errors.views.changeStatus'),
 
     #Statistics
     url(r'^urqa/project/(?P<apikey>.{8})/statistics/$', 'statistics.views.statistics'),

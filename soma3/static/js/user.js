@@ -1321,28 +1321,25 @@ $("head").styleReady(function(){
             }
                 // Restore event
             restoreEvent = function(obj) {
-                if(!$(this).parent().parent().hasClass("user-input") )
-                {
-                    var dropdown = $(this).parent().children("li:nth-last-child(1)").children("div").children("ul");
-                    dropdown.append("<li data-value=\"false\"><a>" + $(this).html() + "</a></li>");
-                    dropdown.children("li:nth-last-child(1)").click(itemClickEvent).click(addEvent);
-                    $(this).remove();
-                    var csrftoken = getCookie('csrftoken')
-                    var deletetag = {'tag' : $(this).text()}
-                    $.ajax({
-                          type: 'post'
-                        , url: 'tag/delete'
-                        , data: deletetag
-                        , beforeSend: function(xhr, settings) {
-                            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-                                // Send the token to same-origin, relative URLs only.
-                                // Send the token only if the method warrants CSRF protection
-                                // Using the CSRFToken value acquired earlier
-                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                            }
+                var dropdown = $(this).parent().children("li:nth-last-child(1)").children("div").children("ul");
+                dropdown.append("<li data-value=\"false\"><a>" + $(this).html() + "</a></li>");
+                dropdown.children("li:nth-last-child(1)").click(itemClickEvent).click(addEvent);
+                $(this).remove();
+                var csrftoken = getCookie('csrftoken')
+                var deletetag = {'tag' : $(this).text()}
+                $.ajax({
+                      type: 'post'
+                    , url: 'tag/delete'
+                    , data: deletetag
+                    , beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                            // Send the token to same-origin, relative URLs only.
+                            // Send the token only if the method warrants CSRF protection
+                            // Using the CSRFToken value acquired earlier
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
                         }
-                    })
-                }
+                    }
+                })
             }
             // Initialize
             $(".tags-list").each(function(index){
@@ -1367,12 +1364,31 @@ $("head").styleReady(function(){
                     $(this).children("ul").children(".dropdown").children("input").keyup(function(event){
                         if(event.keyCode == 13)
                         {
-                            var newME = $(this).parent().parent().children("li:nth-last-child(1)").before("<li></li>").parent().children("li:nth-last-child(2)");
-                            newME.click(restoreEvent);
-                            newME.html($(this)[0].value);
-                            newME.append("<i></i>");
-                            $(this)[0].value = "";
-                            $(this).parent().attr("data-type", "");
+                            var sendtag = {'tag' : $(this)[0].value }
+                            var csrftoken = getCookie('csrftoken')
+                             $.ajax({
+                              type: 'post'
+                            , url: 'tag/new'
+                            , data:  sendtag
+                            , beforeSend: function(xhr, settings) {
+                                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                                    // Send the token to same-origin, relative URLs only.
+                                    // Send the token only if the method warrants CSRF protection
+                                    // Using the CSRFToken value acquired earlier
+                                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                                }
+                            }
+                            ,success: function(data){
+
+                                 var newME = $('#newtag').children("li:nth-last-child(1)").before("<li></li>").parent().children("li:nth-last-child(2)");
+                                newME.click(restoreEvent);
+                                newME.html($('#inputtag').parent().children('input')[0].value);
+                                newME.append("<i></i>");
+                                $('inputtag').parent().children('input')[0].value = "";
+                                $('#inputtag').attr("data-type", "");
+                            }
+                         })
+
                         }
                         else if(event.keyCode == 27)
                         {
@@ -1637,13 +1653,6 @@ $("head").styleReady(function(){
 });
 
 function adjustErrorListStyle(){
-
-
-
-
-
-
-
     itemClickEvent1 = function(obj) {
         $(this).parent().children("li[data-value=\"true\"]").attr("data-value", "false");
         if($(this).attr("data-value") == "true")
@@ -1654,6 +1663,23 @@ function adjustErrorListStyle(){
         $(this).parent().parent().parent().children("input").attr("value", $(this).index() + 1);
 
         $(this).parent().parent().hide();
+
+        var iderror = $(this).parents().eq(4).attr('iderror')
+        var csrftoken = getCookie('csrftoken')
+        var status = $(this).index()
+        $.ajax({
+              type: 'post'
+            , url: '/urqa/project/'+ project_id +'/errors/' + iderror + '/status'
+            , data: {'status' : status}
+            , beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                    // Send the token to same-origin, relative URLs only.
+                    // Send the token only if the method warrants CSRF protection
+                    // Using the CSRFToken value acquired earlier
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        })
     }
 
     // Dialog showing
@@ -1735,18 +1761,19 @@ function adjustErrorListStyle(){
     }
         // Restore event
     restoreEvent1 = function(obj) {
-        if(!$(this).parent().parent().hasClass("user-input") )
+        if($(this).parent().parent().hasClass("user-input") )
         {
+            var tag = $(this).text();
             var dropdown = $(this).parent().children("li:nth-last-child(1)").children("div").children("ul");
-            dropdown.append("<li data-value=\"false\"><a>" + $(this).html() + "</a></li>");
-            dropdown.children("li:nth-last-child(1)").click(itemClickEvent).click(addEvent1);
+            //dropdown.append("<li data-value=\"false\"><a>" + $(this).html() + "</a></li>");
+            //dropdown.children("li:nth-last-child(1)").click(itemClickEvent1).click(addEvent1);
+            var iderror = $(this).parents().eq(3).attr('iderror')
             $(this).remove();
             var csrftoken = getCookie('csrftoken')
-            var deletetag = {'tag' : $(this).text()}
             $.ajax({
                   type: 'post'
-                , url: 'tag/delete'
-                , data: deletetag
+                , url: '/urqa/project/'+ project_id +'/errors/' + iderror + '/tag/delete'
+                , data: {'tag' : tag}
                 , beforeSend: function(xhr, settings) {
                     if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
                         // Send the token to same-origin, relative URLs only.

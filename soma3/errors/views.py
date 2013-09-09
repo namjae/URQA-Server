@@ -76,7 +76,6 @@ def deleteTag(request, apikey, iderror):
     return HttpResponse('success')
 
 
-
 def newComment(request, apikey, iderror):
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,apikey,iderror)
 
@@ -198,6 +197,8 @@ def errorDetail(request,apikey,iderror):
         'Errorsgps' : int(gps/numobins * 100),
         'Errorsmobilenetwork' : int(mobilenetwork/numobins * 100),
         'Errorsmemoryusage' : ErrorsElement.totalmemusage / ErrorsElement.numofinstances,
+        'createdate' : ErrorsElement.createdate.__format__('%Y%m%d'),
+        'lastdate' : ErrorsElement.lastdate.__format__('%Y%m%d'),
         'ErrorRankColor' : RANK.rankcolor[ErrorsElement.rank],
         'tag_list' : taglist,
         'callstack' : callstacklist,
