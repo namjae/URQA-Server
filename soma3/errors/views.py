@@ -1,16 +1,10 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
-import utility
-from utility import getTimeRange
-from utility import TimeRange
-
 import re
 import json
 import sys
 
-from utility import Status
-from utility import RANK
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -18,8 +12,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import Context, loader
 from django.http import HttpResponseRedirect
 
-from urqa.models import Tags
-from urqa.models import Comments
 from urqa.models import AuthUser
 from urqa.models import Errors
 from urqa.models import Projects
@@ -27,6 +19,8 @@ from urqa.models import Instances
 from urqa.models import Eventpaths
 from urqa.models import Osstatistics
 from urqa.models import Appstatistics
+from urqa.models import Tags
+from urqa.models import Comments
 
 from common import validUserPjt
 from common import validUserPjtError
@@ -34,8 +28,13 @@ from common import getUserProfileDict
 from common import getApikeyDict
 from common import getSettingDict
 
+import utility
+from utility import getTimeRange
+from utility import TimeRange
 from utility import get_dict_value_matchin_key
 from utility import get_dict_value_matchin_number
+from utility import Status
+from utility import RANK
 
 from client.views import calc_eventpath
 from config import get_config
@@ -83,12 +82,26 @@ def newComment(request, apikey, iderror):
     if not result:
         return HttpResponse(msg)
 
-    datetime = utility.getDatetime()
+    time = utility.getDatetime()
 
     comment = request.POST['comment']
-    Comments.objects.create(uid=userElement, iderror=errorElement, datetime=datetime, comment=comment, user=(userElement.first_name + ' ' + userElement.last_name))
+    element = Comments.objects.create(uid=userElement, iderror=errorElement, datetime=time, comment=comment)
 
-    return HttpResponse('success')
+    print element
+    print 'aewfawefawefawef'
+    print element.datetime
+    #print element.datetime.__format__('%Y')
+    print type(element.datetime)
+
+
+
+    dict = {'imgsrc':userElement.image_path, 'name': userElement.last_name + userElement.first_name,
+            'message': comment,
+            'date': '1' }
+
+    print dict
+
+    return HttpResponse(json.dumps(dict), 'application/json')
 
 def deleteComment(request, apikey, iderror):
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
@@ -179,6 +192,22 @@ def errorDetail(request,apikey,iderror):
     #platformtxt = get_dict_value_matchin_key(platformdata,projectelement.platform)
 
 
+    CommentElements = Comments.objects.filter(iderror = iderror).order_by('-datetime')
+    commentlist = []
+    for comment in CommentElements:
+        commenttuple = {}
+        try:
+            commentuser = AuthUser.objects.get(id = comment.uid.id)
+        except ObjectDoesNotExist:
+            continue
+
+        commenttuple['imagesrc'] = commentuser.image_path
+        commenttuple['name'] = commentuser.first_name + ' ' + commentuser.last_name
+        commenttuple['comment'] = comment.comment
+        commenttuple['date'] = comment.datetime.__format__('%Y/%m/%d')
+        commenttuple['ownercomment'] = comment.uid == user and True or False
+        commentlist.append(commenttuple)
+
 
     userdict = getUserProfileDict(user)
     apikeydict = getApikeyDict(apikey)
@@ -203,6 +232,7 @@ def errorDetail(request,apikey,iderror):
         'tag_list' : taglist,
         'callstack' : callstacklist,
         'instance_list' : instancelist,
+        'comment_list' : commentlist,
     }
     ctxdict  = dict(userdict.items() + apikeydict.items() + settingdict.items() + detaildict.items() )
 

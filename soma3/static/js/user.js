@@ -252,12 +252,39 @@ function submitComment(event, obj)
 {
 	if(event.keyCode == 13)
 	{
-		var chd = $(obj).parent().parent().parent().children(":nth-last-child(2)");
-		chd.before("<tr><td class=\"float\"><img src=\"" + $(".navbar-profile > .profile > img").attr("src") + "\" /></td><td class=\"float\"><p>" + $("#profile-menu > .color > .text > .name").html() + "</p><p>" + obj.value + "</p></td><td>" + new Date().format("yyyy/MM/dd") + "</td></tr>");
-		obj.value = "";
-		tableResizing();
+        var data = {'comment' : obj.value }
+        var csrftoken = getCookie('csrftoken')
+        $.ajax({
+              type: 'post'
+            , url: '/urqa/project/'+project_id +'/errors/' + error_id + '/comment/new'
+            , beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                    // Send the token to same-origin, relative URLs only.
+                    // Send the token only if the method warrants CSRF protection
+                    // Using the CSRFToken value acquired earlier
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }}
+            , data: data
+            ,success: function(data){
+                    var chd = $(obj).parent().parent().parent().children(":nth-last-child(2)");
+		            chd.before("<tr><td class=\"float\"><img src=\"" +
+                    $(".navbar-profile > .profile > img").attr("src") +             //imgsrc
+                    "\" /></td><td class=\"float\"><p>" +
+                    $("#profile-menu > .color > .text > .name").html() +            //username
+                    "</p><p>" +
+                    obj.value +                                                         //message
+                    "</p></td><td>" +
+                    new Date().format("yyyy/MM/dd") +                                 //date
+                    "</td></tr>");
+
+                    obj.value = "";
+                    tableResizing();
+            }
+        })
+
 	}
 }
+
 function copyThis(obj)
 {
 	return $(obj).html().replace(/[<][^>]*[>]/gi, "");
@@ -710,11 +737,10 @@ function showPopupInformation(w, h, idinstance)
 	
 	//여기서 팝업창 띄울 놈 얻어옴
 	getinstancedata(idinstance)
-    	geteventpath(idinstance)
-    	getlog(idinstance)
+
 
 }
-function showPopupEventpath(w, h)
+function showPopupEventpath(w, h, idinstance)
 {
 	var oriW = $("#popup-eventpath > .body").width();
 	var oriH = $("#popup-eventpath > .body").height();
@@ -742,8 +768,10 @@ function showPopupEventpath(w, h)
 	}, 250, function(){
 		$(this).css({"opacity": 1.0});
 	});
+    geteventpath(idinstance)
+
 }
-function showPopupLogdata(w, h)
+function showPopupLogdata(w, h, idinstance)
 {
 	var oriW = $("#popup-logdata > .body").width();
 	var oriH = $("#popup-logdata > .body").height();
@@ -771,6 +799,7 @@ function showPopupLogdata(w, h)
 	}, 250, function(){
 		$(this).css({"opacity": 1.0});
 	});
+    getlog(idinstance)
 }
 function showConfirm()
 {
@@ -1379,13 +1408,15 @@ $("head").styleReady(function(){
                                 }
                             }
                             ,success: function(data){
-
-                                 var newME = $('#newtag').children("li:nth-last-child(1)").before("<li></li>").parent().children("li:nth-last-child(2)");
-                                newME.click(restoreEvent);
-                                newME.html($('#inputtag').parent().children('input')[0].value);
-                                newME.append("<i></i>");
-                                $('inputtag').parent().children('input')[0].value = "";
-                                $('#inputtag').attr("data-type", "");
+                                if(data == 'success')
+                                {
+                                     var newME = $('#newtag').children("li:nth-last-child(1)").before("<li></li>").parent().children("li:nth-last-child(2)");
+                                    newME.click(restoreEvent);
+                                    newME.html($('#inputtag').parent().children('.dropdown').children('input')[0].value);
+                                    newME.append("<i></i>");
+                                    $('#inputtag').parent().children('.dropdown').children('input')[0].value = "";
+                                    $('#inputtag').attr("data-type", "");
+                                }
                             }
                          })
 

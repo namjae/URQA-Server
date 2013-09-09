@@ -28,6 +28,11 @@
 
         $("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 
+        function clickevent(id)
+        {
+            location.href = './' + id
+        }
+
         setTimeout(function (){
             $('.checkbox').click(query_delay);
             $('.radiobox').click(query_delay);
@@ -101,7 +106,8 @@
                     'osv':osv_list
                 })}
                 ,success : function(jsonData) {
-                    rank2str = ['red','blue','gray','green','purple']
+                    // unhandled = 0, native = 1, critical = 2, major = 3, minor = 4
+                    rank2str = ['gray','purple','red','blue','green']
                     status2str = ['New','Open','Fixed','Ignore']
                     $('.content-large>tbody').empty();
                     if(jsonData.length == 0)
@@ -117,7 +123,7 @@
                             tags += '<li>' + jsonData[i].tags[j] + '<i></i></li>';
                         new_list = $('<tr iderror="'+ jsonData[i].iderror +'">\
 							<td class="center"><span class="bold">'+jsonData[i].es+'</span><br>'+auto_str+'</td>\
-							<td class="float">\
+							<td class="float" onclick="clickevent('+jsonData[i].iderror+')">\
 								<span class="' + rank2str[jsonData[i].rank] + '"></span>\
 								<p>'+jsonData[i].errorname + '<br>' + jsonData[i].errorclassname + ':' + jsonData[i].linenum+'</p>\
 							</td>\
@@ -402,7 +408,7 @@
 									<p class="text">PROFILE</p>
 								</span>
 								<span>
-									<p class="notification" data="12"></p>
+									<p class="notification" data="0"></p>
 									<p class="icon" data-name="notification"></p>
 									<p class="text">NOTIFICATION</p>
 								</span>

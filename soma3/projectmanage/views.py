@@ -541,12 +541,13 @@ def errorscorelist(apikey):
         TagElements = Tags.objects.filter(iderror = error)
         tagString = '';
         for tag in TagElements:
-            tagString += tag.tag + ','
+            tagString += tag.tag + ', '
             # 마지막 , 제거
-            if len(tagString) > 0:
-                stringlength = len(tagString)
-                tagString = tagString[0 : stringlength - 1]
+        if len(tagString) > 0:
+            stringlength = len(tagString)
+            tagString = tagString[0 : stringlength - 2]
 
+        print tagString
         rankcolor = ''
         if error.rank == -1:
             rankcolor = 'none'

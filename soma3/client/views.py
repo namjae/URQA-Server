@@ -25,6 +25,7 @@ from urqa.models import Appstatistics
 from urqa.models import Osstatistics
 from urqa.models import Devicestatistics
 from urqa.models import Countrystatistics
+from urqa.models import Activitystatistics
 from utility import naive2aware
 
 from config import get_config
@@ -108,6 +109,10 @@ def receive_exception(request):
         if not created:
             e.count += 1
             e.save()
+        e, created = Activitystatistics.objects.get_or_create(iderror=errorElement,activityname=jsonData['lastactivity'],defaults={'count':1})
+        if not created:
+            e.count += 1
+            e.save()
 
     except ObjectDoesNotExist:
         #새로 들어온 에러라면 새로운 에러 생성
@@ -123,7 +128,7 @@ def receive_exception(request):
             linenum = linenum,
             autodetermine = autodetermine,
             rank = int(jsonData['rank']), # unhandled = 0, native = 1, critical = 2, major = 3, minor = 4
-            status = 0, # 0 = new, 1 = open, 2 = ignore, 3 = renew
+            status = 0, # 0 = new, 1 = open, 2 = fixed, 3 = ignore
             createdate = naive2aware(jsonData['datetime']),
             lastdate = naive2aware(jsonData['datetime']),
             numofinstances = 1,
@@ -140,6 +145,7 @@ def receive_exception(request):
         Osstatistics.objects.create(iderror=errorElement,osversion=jsonData['osversion'],count=1)
         Devicestatistics.objects.create(iderror=errorElement,devicename=jsonData['device'],count=1)
         Countrystatistics.objects.create(iderror=errorElement,countryname=jsonData['country'],count=1)
+        Activitystatistics.objects.create(iderror=errorElement,activityname=jsonData['lastactivity'],count=1)
     #step3: 테그 저장
     if jsonData['tag']:
         tagstr = jsonData['tag']
@@ -173,7 +179,8 @@ def receive_exception(request):
         batterylevel = jsonData['batterylevel'],
         availsdcard = jsonData['availsdcard'],
         xdpi = jsonData['xdpi'],
-        ydpi = jsonData['ydpi']
+        ydpi = jsonData['ydpi'],
+        lastactivity = jsonData['lastactivity'],
     )
     # primary key가 Auto-incrementing이기 때문에 save한 후 primary key를 읽을 수 있다.
     instanceElement.save()
@@ -472,6 +479,12 @@ def receive_native_dump(request, idinstance):
         if not created:
             e.count += 1
             e.save()
+        e, created = Activitystatistics.objects.get_or_create(iderror=errorElement,activityname=instanceElement.lastactivity,defaults={'count':1})
+        if not created:
+            e.count += 1
+            e.save()
+
+
 
         errorElement.delete()
         print 'native error %s:%s already exist' % (errorname, errorclassname)
@@ -484,7 +497,7 @@ def receive_native_dump(request, idinstance):
         Osstatistics.objects.create(iderror=errorElement,osversion=instanceElement.osversion,count=1)
         Devicestatistics.objects.create(iderror=errorElement,devicename=instanceElement.device,count=1)
         Countrystatistics.objects.create(iderror=errorElement,countryname=instanceElement.country,count=1)
-
+        Activitystatistics.objects.create(iderror=errorElement,activityname=instanceElement.lastactivity,count=1)
     return HttpResponse('Success')
 
 def calc_eventpath(errorElement):

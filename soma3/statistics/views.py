@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import operator
 
 from django.template import Context, loader
 from django.http import HttpResponse
@@ -20,8 +21,8 @@ from utility import Status
 from urqa.models import AuthUser
 from urqa.models import Errors
 from urqa.models import Devicestatistics
+from urqa.models import Activitystatistics
 from urqa.models import Instances
-from urqa.models import Projects
 
 
 def statistics(request,apikey):
@@ -47,6 +48,7 @@ def statistics(request,apikey):
     ctxdict = dict(userdict.items() + apikeydict.items() + settingdict.items() + statisticsdict.items() )
     ctx = Context(ctxdict)
     return HttpResponse(tpl.render(ctx))
+
 
 
 
@@ -95,13 +97,44 @@ def chartdata(request,apikey):
                 temp_data[d.devicename] = e.errorweight * d.count / total
             else:
                 temp_data[d.devicename] += e.errorweight * d.count / total
-    for e in temp_data:
+    sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
+    for l,v in sorted_dic:
         chart2.append({
-            'label': e,
-            'value': temp_data[e],
+            'label': l,
+            'value': v,
         })
 
     result['chart2'] = chart2
+
+    #Chart3
+    chart3 = []
+    temp_data = {}
+    for e in errorElements:
+        activity = Activitystatistics.objects.filter(iderror=e).order_by('activityname')
+        if devices.count() == 0:
+            continue
+        total = 0
+        for d in activity:
+            print d.activityname
+            total += d.count
+            #print d.devicename
+        #print total,e.errorweight
+
+        for d in activity:
+            if not d.activityname in temp_data:
+                temp_data[d.activityname] = e.errorweight * d.count / total
+            else:
+                temp_data[d.activityname] += e.errorweight * d.count / total
+
+    sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
+    for l,v in sorted_dic:
+        chart3.append({
+            'label': l,
+            'value': v,
+        })
+
+    result['chart3'] = chart3
+
 
     #Chart4
     categories = []
@@ -111,7 +144,6 @@ def chartdata(request,apikey):
 
     appv_idx = -1
     for i in instances:
-        print i.appversion, i.osversion
         if not i.appversion in categories:
             pre_osv = i.osversion
             appv_idx += 1
@@ -121,7 +153,6 @@ def chartdata(request,apikey):
         while len(temp_data[i.osversion]) <= appv_idx:
             temp_data[i.osversion].append(0)
         score = float(i.iderror.errorweight) / i.iderror.numofinstances
-        print score
         temp_data[i.osversion][appv_idx] += score
 
     for t in temp_data:
@@ -131,8 +162,8 @@ def chartdata(request,apikey):
             idx += 1
         ver_data.append({'name':t,'data':temp_data[t]})
 
-    print categories
-    print ver_data
+    #print categories
+    #print ver_data
 
         #ver_data[appv_idx][]
     #print categories

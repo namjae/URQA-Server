@@ -10,6 +10,14 @@ from __future__ import unicode_literals
 
 from django.db import models
 
+class Activitystatistics(models.Model):
+    idactivitystatistics = models.AutoField(primary_key=True)
+    iderror = models.ForeignKey('Errors', db_column='iderror')
+    activityname = models.CharField(max_length=300L)
+    count = models.IntegerField()
+    class Meta:
+        db_table = 'activitystatistics'
+
 class Appruncount(models.Model):
     idappruncount = models.AutoField(primary_key=True)
     pid = models.ForeignKey('Projects', db_column='pid')
@@ -83,7 +91,6 @@ class Comments(models.Model):
     uid = models.ForeignKey(AuthUser, db_column='uid')
     iderror = models.ForeignKey('Errors', db_column='iderror')
     datetime = models.DateTimeField()
-    user = models.CharField(max_length=45L)
     comment = models.CharField(max_length=200L)
     class Meta:
         db_table = 'comments'
@@ -192,6 +199,7 @@ class Instances(models.Model):
     ydpi = models.FloatField(null=True, blank=True)
     callstack = models.TextField(blank=True)
     dump_path = models.CharField(max_length=260L, blank=True)
+    lastactivity = models.CharField(max_length=300L, blank=True)
     class Meta:
         db_table = 'instances'
 

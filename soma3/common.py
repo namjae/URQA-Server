@@ -67,6 +67,10 @@ def getApikeyDict(apikey):
 
 def getSettingDict(projectelement,userelement):
 
+    isowner = False
+    if(projectelement.owner_uid.id == userelement.id):
+        isowner = True
+
     categorydata = json.loads(get_config('app_categories'))
     platformdata = json.loads(get_config('app_platforms'))
     stagedata = json.loads(get_config('app_stages'))
@@ -85,9 +89,7 @@ def getSettingDict(projectelement,userelement):
 
     viewerlist = []
 
-    isowner = False
-    if(projectelement.owner_uid.id == userelement.id):
-        isowner = True
+
 
     ViewerElements = Viewer.objects.select_related().filter(~Q(uid= userelement.id) ,pid = projectelement.pid)
     for v in ViewerElements:
