@@ -101,6 +101,8 @@
                     'osv':osv_list
                 })}
                 ,success : function(jsonData) {
+                    rank2str = ['red','blue','gray','green','purple']
+                    status2str = ['New','Open','Fixed','Ignore']
                     $('.content-large>tbody').empty();
                     if(jsonData.length == 0)
                         $('.noerror_msg').show()
@@ -108,25 +110,82 @@
                         $('.noerror_msg').hide()
                     for(var i=0;i<jsonData.length;i++)
                     {
+                        auto_str = ''
+                        if(jsonData[i].auto == 1)   auto_str = '(Auto)';
+                        tags = ''
+                        for(var j=0;j<jsonData[i].tags.length;j++)
+                            tags += '<li>' + jsonData[i].tags[j] + '<i></i></li>';
+                        new_list = $('<tr iderror="'+ jsonData[i].iderror +'">\
+							<td class="center"><span class="bold">'+jsonData[i].es+'</span><br>'+auto_str+'</td>\
+							<td class="float">\
+								<span class="' + rank2str[jsonData[i].rank] + '"></span>\
+								<p>'+jsonData[i].errorname + '<br>' + jsonData[i].errorclassname + ':' + jsonData[i].linenum+'</p>\
+							</td>\
+							<td><p>\
+								<div class="updated-tags tags-list user-input">\
+									<ul>'+
+										tags
+										+'<li class="updated-dropdown dropdown">\
+											<a>Add Tags</a>\
+											<span></span>\
+											<input type="input" />\
+										</li>\
+									</ul>\
+									<input type="hidden" name="tag'+i+'" />\
+								</div>\
+							</p></td>\
+							<td class="center">\
+								<div class="updated-dropdown dropdown">\
+									<a style="width: 18px">'+status2str[jsonData[i].status]+'</a>\
+									<span></span>\
+									<div>\
+										 <ul>\
+										 	<li><a>New</a></li>\
+										 	<li><a>Open</a></li>\
+										 	<li><a>Fixed</a></li>\
+										 	<li><a>Ignore</a></li>\
+										 </ul>\
+									</div>\
+									<input type="hidden" name="status'+i+'" value="'+jsonData[i].status+'" />\
+								</div>\
+							</td>\
+							<td class="center">'+jsonData[i].count+'</td>\
+							<td class="center small">'+jsonData[i].year+'<br>'+jsonData[i].month+'/'+jsonData[i].day+'</td>\
+						</tr>')
+                        $('.content-large>tbody').append(new_list);
+                        /*
                         tags = ''
                         auto_str = ''
                         if(jsonData[i].auto == 1)   auto_str = '(Auto)';
                         for(var j=0;j<jsonData[i].tags.length;j++)
                         {
-                            tags += jsonData[i].tags[j];
-                            if(j < jsonData[i].tags.length-1)
-                                tags += ', ';
+                            tags += '<li>' + jsonData[i].tags[j] + '<i></i></li>';
+                            //if(j < jsonData[i].tags.length-1)
+                            //    tags += ', ';
                         }
+                        tags += '<li class="dropdown">\
+                                    <a>Add More</a>\
+									<span></span>\
+									<input type="input" />\
+								</li>'
                         new_list = $('<tr iderror="'+ jsonData[i].iderror +'">\
+                            <td class="center">' +
+                            jsonData[i].es +
+                            '<br>'+
+                            auto_str +
+                            '</td>\
                             <td class="float">\
-                            <img />\
+                            <span class="' + rank2str[Number(jsonData[i].rank)] + '"></span>\
                             <p>' +
                             jsonData[i].errorname + '<br>' + jsonData[i].errorclassname + ':' + jsonData[i].linenum +
                             '</p>\
                             </td>\
-                            <td><p>' +
+                            <td><p>\
+                            <div class="tags-list user-input">\
+                            <ul>' +
                             tags +
-                            '</p></td>\
+                            '</ul>\
+                            </p></td>\
                             <td class="center">' +
                             jsonData[i].status +
                             '</td>\
@@ -136,16 +195,11 @@
                             <td class="center small">' +
                             jsonData[i].year + '<br>' + jsonData[i].month + '/' + jsonData[i].day +
                             '</td>\
-                            <td class="center">' +
-                            jsonData[i].es +
-                            '<br>'+
-                            auto_str +
-                            '</td>\
                             </tr>')
                         new_list.click(function(){
                             location.href = './' + $(this).attr('iderror');
                         });
-                        $('.content-large>tbody').append(new_list)
+                        $('.content-large>tbody').append(new_list)*/
                     }
                     $('.content-large>tbody').append($('<tr class="empty">\
 							<td data-match="true"></td>\
@@ -156,6 +210,7 @@
 							<td></td>\
 						</tr>'))
                     tableResizing();
+                    adjustErrorListStyle();
                 }
                 , beforeSend: function(xhr, settings) {
                     var csrftoken = getCookie('csrftoken')
@@ -330,7 +385,6 @@
 					</ul>
 				</div>
 				<div class="navbar-profile">
-					<div class="setting"></div>
 					<div class="profile"><img src="{{ profile_url }}" alt="profile" /></div>
 					<div id="profile-menu">
 						<div class="inv-triangle"></div>
@@ -371,7 +425,7 @@
 		<!--header-container fin-->
 
 		<div id="content-container">
-			<div class="title" data="errors"></div>
+			<div class="title" data="errors"><span> {{ project_name }}({{ project_platform }})</span></div>
 			<div id="errors_filter" class="content">
 				<table class="small top">
 					<thead><tr>
@@ -628,14 +682,14 @@
 				<div class="white-area"></div>
 			</div>
 			<div id="error-list" class="content">
-				<table class="content-large top">
+				<table class="content-large sort top">
 					<thead><tr>
-						<td>Error Name</td>
-						<td style="width: 16%">Tags</td>
-						<td class="center" style="width: 8%">Status</td>
-						<td class="center" style="width: 8%">Occur</td>
-						<td class="center" style="width: 8%">Date</td>
-						<td class="center" style="width: 88px">Error Score</td>
+						<td class="center asc" style="width: 88px">ES<span></span></td>
+						<td>Error Name<span></span></td>
+						<td style="width: 16%">Tags<span></span></td>
+						<td class="center" style="width: 88px">Status<span></span></td>
+						<td class="center" style="width: 8%">Occur<span></span></td>
+						<td class="center" style="width: 8%">Date<span></span></td>
 					</tr></thead>
 					<tbody>
                         <!--
@@ -694,6 +748,28 @@
 					</tbody>
 				</table>
                 <div class="noerror_msg" style="display:none">No Errors match your search or error entries are out of the retention window of your plan.</div>
+				<div id="popup-info">
+					<div id="popup-tri"></div>
+					<div id="popup-body">
+						<div id="popup-title">Basic Rule</div>
+					</div>
+				</div>
+				<div class="page-changer">
+					<ul>
+						<li class="dont">&lt;&lt;</li>
+						<li class="select">01</li>
+						<li>02</li>
+						<li>03</li>
+						<li>04</li>
+						<li>05</li>
+						<li>06</li>
+						<li>07</li>
+						<li>08</li>
+						<li>09</li>
+						<li>10</li>
+						<li>&gt;&gt;</li>
+					</ul>
+				</div>
 				<div class="white-area"></div>
 			</div>
 		</div>

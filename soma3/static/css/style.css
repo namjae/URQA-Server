@@ -812,6 +812,7 @@ input[type="password"].error {
 #container.svg			.tags-list > ul > li > i { background: @tm-tx-c2 url("./images/x.svg") 3px 3px no-repeat; }
 #container				.tags-list > ul > li > i,
 #container.decelerate	.tags-list > ul > li > i { background: @tm-tx-c2 url("./images/x.png") 3px 3px no-repeat; }
+
 .tags-list.user-input {
 	input {
 		display: none;

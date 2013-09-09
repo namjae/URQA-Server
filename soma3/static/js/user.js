@@ -74,7 +74,7 @@ function modifiProject(obj)
     var data = { "projectname" : projectname , "platform" : platform, "category" : category, "stage" : stage, "timezone" : timezone }
 
     var csrftoken = getCookie('csrftoken')
-     $.ajax({
+    $.ajax({
       type: 'post'
     , url: '/urqa/project/'+ project_id +'/modify'
     , beforeSend: function(xhr, settings) {
@@ -1241,21 +1241,21 @@ $("head").styleReady(function(){
             $(this).parent().parent().hide();
         }
 
-	// Dialog showing
-	showDialog = function(th)
-	{
-		var h = oriH = $(th).offset().top + $(th).outerHeight() - $(window).scrollTop();
-		for(var i = 0; i < $(th).children("div").children("ul").children().length; i ++)
-		{
-			if($(th).children("div").children("ul").children().eq(i).css("display") == "none") continue;
-			if(h + 36 > window.innerHeight) break;
-			h += 36;
-		}
-		$(th).children("div").width("");
-		$(th).children("div").show();
-		$(th).children("div").width($(th).children("div").width() );
-		$(th).children("div").height(h - oriH);
-	}
+        // Dialog showing
+        showDialog = function(th)
+        {
+            var h = oriH = $(th).offset().top + $(th).outerHeight() - $(window).scrollTop();
+            for(var i = 0; i < $(th).children("div").children("ul").children().length; i ++)
+            {
+                if($(th).children("div").children("ul").children().eq(i).css("display") == "none") continue;
+                if(h + 36 > window.innerHeight) break;
+                h += 36;
+            }
+            $(th).children("div").width("");
+            $(th).children("div").show();
+            $(th).children("div").width($(th).children("div").width() );
+            $(th).children("div").height(h - oriH);
+        }
 
         // Initialize
         $(".dropdown").each(function(index){
@@ -1305,23 +1305,23 @@ $("head").styleReady(function(){
                     obj.append("<input type=\"hidden\" name=\"" + name + "[]\" value=\"" + obj.html() + "\" />");
             }
 
-		// Add event
-		addEvent = function(obj) {
-			if($(this).css("display") != "none")
-			{
-				var newME = $(this).parent().parent().parent().parent().children("li:nth-last-child(1)").before("<li></li>").parent().children("li:nth-last-child(2)");
-				newME.click(restoreEvent);
-				addHiddenInput(newME, $(this).parent().parent().attr("data-name") );
-				newME.html($(this).parent().parent().parent().children("a").html());
-				newME.append("<i></i>");
+            // Add event
+            addEvent = function(obj) {
+                if($(this).css("display") != "none")
+                {
+                    var newME = $(this).parent().parent().parent().parent().children("li:nth-last-child(1)").before("<li></li>").parent().children("li:nth-last-child(2)");
+                    newME.click(restoreEvent);
+                    addHiddenInput(newME, $(this).parent().parent().attr("data-name") );
+                    newME.html($(this).parent().parent().parent().children("a").html());
+                    newME.append("<i></i>");
 
-				$(this).parent().parent().parent().children("a").html("Add More")
-                    $(this).css("display", "none");
+                    $(this).parent().parent().parent().children("a").html("Add More")
+                        $(this).css("display", "none");
                 }
             }
-            // Restore event
+                // Restore event
             restoreEvent = function(obj) {
-		if(!$(this).parent().parent().hasClass("user-input") )
+                if(!$(this).parent().parent().hasClass("user-input") )
                 {
                     var dropdown = $(this).parent().children("li:nth-last-child(1)").children("div").children("ul");
                     dropdown.append("<li data-value=\"false\"><a>" + $(this).html() + "</a></li>");
@@ -1343,50 +1343,49 @@ $("head").styleReady(function(){
                         }
                     })
                 }
-
             }
-			// Initialize
-			$(".tags-list").each(function(index){
-				var child = $(this).children("ul").children("li");
-				$(this).attr("data-name", $(this).children("input[type=hidden]").attr("name") );
-				$(this).children("input[type=hidden]").remove();
-				for(var i = 0; i < child.length; i ++)
-				{
-					if(!child.eq(i).hasClass("dropdown") )
-					{
-						addHiddenInput(child.eq(i), $(this).attr("data-name") );
-						child.eq(i).click(restoreEvent);
-					}
-				}
+            // Initialize
+            $(".tags-list").each(function(index){
+                var child = $(this).children("ul").children("li");
+                $(this).attr("data-name", $(this).children("input[type=hidden]").attr("name") );
+                $(this).children("input[type=hidden]").remove();
+                for(var i = 0; i < child.length; i ++)
+                {
+                    if(!child.eq(i).hasClass("dropdown") )
+                    {
+                        addHiddenInput(child.eq(i), $(this).attr("data-name") );
+                        child.eq(i).click(restoreEvent);
+                    }
+                }
 
-				if($(this).hasClass("user-input") )
-				{
-					$(this).children("ul").children(".dropdown").off("click mouseenter mouseleave").click(function(){
-						$(this).attr("data-type", "clicked");
-						$(this).children("input").focus();
-					});
-					$(this).children("ul").children(".dropdown").children("input").keyup(function(event){
-						if(event.keyCode == 13)
-						{
-							var newME = $(this).parent().parent().children("li:nth-last-child(1)").before("<li></li>").parent().children("li:nth-last-child(2)");
-							newME.click(restoreEvent);
-							newME.html($(this)[0].value);
-							newME.append("<i></i>");
-							$(this)[0].value = "";
-							$(this).parent().attr("data-type", "");
-						}
-						else if(event.keyCode == 27)
-						{
-							$(this).parent().attr("data-type", "");
-						}
-					});
-				}
-				else
-				{
-					$(".tags-list .dropdown > div").css("min-width", parseInt($(".tags-list .dropdown > div").css("min-width") ) - 26);
-					$(".tags-list .dropdown > div li").click(addEvent);
-				}
-			});
+                if($(this).hasClass("user-input") )
+                {
+                    $(this).children("ul").children(".dropdown").off("click mouseenter mouseleave").click(function(){
+                        $(this).attr("data-type", "clicked");
+                        $(this).children("input").focus();
+                    });
+                    $(this).children("ul").children(".dropdown").children("input").keyup(function(event){
+                        if(event.keyCode == 13)
+                        {
+                            var newME = $(this).parent().parent().children("li:nth-last-child(1)").before("<li></li>").parent().children("li:nth-last-child(2)");
+                            newME.click(restoreEvent);
+                            newME.html($(this)[0].value);
+                            newME.append("<i></i>");
+                            $(this)[0].value = "";
+                            $(this).parent().attr("data-type", "");
+                        }
+                        else if(event.keyCode == 27)
+                        {
+                            $(this).parent().attr("data-type", "");
+                        }
+                    });
+                }
+                else
+                {
+                    $(".tags-list .dropdown > div").css("min-width", parseInt($(".tags-list .dropdown > div").css("min-width") ) - 26);
+                    $(".tags-list .dropdown > div li").click(addEvent);
+                }
+            });
 		});
 	});
 
@@ -1478,7 +1477,7 @@ $("head").styleReady(function(){
 	popup_hide = function() {
 		$("#popup-info").stop(true, true);
 		$("#popup-info").animate({
-			opacity: 0.0,
+			opacity: 0.0
 		}, 250, function(){
 			$(this).css("display", "none");
 		});
@@ -1637,3 +1636,233 @@ $("head").styleReady(function(){
 	addWindowResize(resizeConfirm)();
 });
 
+function adjustErrorListStyle(){
+
+
+
+
+
+
+
+    itemClickEvent1 = function(obj) {
+        $(this).parent().children("li[data-value=\"true\"]").attr("data-value", "false");
+        if($(this).attr("data-value") == "true")
+            $(this).attr("data-value", "false");
+        else
+            $(this).attr("data-value", "true");
+        $(this).parent().parent().parent().children("a").html($(this).children("a").html());
+        $(this).parent().parent().parent().children("input").attr("value", $(this).index() + 1);
+
+        $(this).parent().parent().hide();
+    }
+
+    // Dialog showing
+    showDialog1 = function(th)
+    {
+        var h = oriH = $(th).offset().top + $(th).outerHeight() - $(window).scrollTop();
+        for(var i = 0; i < $(th).children("div").children("ul").children().length; i ++)
+        {
+            if($(th).children("div").children("ul").children().eq(i).css("display") == "none") continue;
+            if(h + 36 > window.innerHeight) break;
+            h += 36;
+        }
+        $(th).children("div").width("");
+        $(th).children("div").show();
+        $(th).children("div").width($(th).children("div").width() );
+        $(th).children("div").height(h - oriH);
+    }
+
+    // Initialize
+    $(".updated-dropdown").each(function(index){
+        if($(this).parent().parent().hasClass('updated-tags'))  return;
+        $(this).children("div").children("ul").children("li").attr("data-value", "false");
+        $(this).children("div").children("ul").children("li").eq($(this).children("input").attr("value")).attr("data-value", "true");
+        $(this).children("a").html($(this).children("div").children("ul").children("li").eq($(this).children("input").attr("value")).children("a").html());
+
+        $(this).children("div").css("min-width", $(this).width() + 42);
+    });
+
+    // Mouse over/out event
+    $(".updated-dropdown").hover(function() {
+        $(this).attr("data-type", "over");
+        if($(this).hasClass("simple") )
+            showDialog1(this);
+    }, function() {
+        $(this).attr("data-type", "");
+        $(this).children("div").hide();
+    });
+
+    // Click event
+    $(".updated-dropdown").click(function() {
+        if(!$(this).hasClass("simple") )
+        {
+            if($(this).attr("data-type") != "clicked"){
+                $(this).attr("data-type", "clicked");
+                showDialog1(this);
+            }
+            else
+            {
+                $(this).attr("data-type", "");
+                $(this).children("div").hide();
+            }
+        }
+    });
+    // Click to Dropdown component's item event
+    $(".updated-dropdown:not(.multiple)").each(function(){
+        $(this).children("div").children("ul").children("li").click(itemClickEvent1);
+    });
+
+
+
+
+
+
+
+
+    //Add event
+    addEvent1 = function(obj) {
+        if($(this).css("display") != "none")
+        {
+            var newME = $(this).parent().parent().parent().parent().children("li:nth-last-child(1)").before("<li></li>").parent().children("li:nth-last-child(2)");
+            newME.click(restoreEvent1);
+            addHiddenInput(newME, $(this).parent().parent().attr("data-name") );
+            newME.html($(this).parent().parent().parent().children("a").html());
+            newME.append("<i></i>");
+
+            $(this).parent().parent().parent().children("a").html("Add Tag")
+                $(this).css("display", "none");
+        }
+    }
+        // Restore event
+    restoreEvent1 = function(obj) {
+        if(!$(this).parent().parent().hasClass("user-input") )
+        {
+            var dropdown = $(this).parent().children("li:nth-last-child(1)").children("div").children("ul");
+            dropdown.append("<li data-value=\"false\"><a>" + $(this).html() + "</a></li>");
+            dropdown.children("li:nth-last-child(1)").click(itemClickEvent).click(addEvent1);
+            $(this).remove();
+            var csrftoken = getCookie('csrftoken')
+            var deletetag = {'tag' : $(this).text()}
+            $.ajax({
+                  type: 'post'
+                , url: 'tag/delete'
+                , data: deletetag
+                , beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                        // Send the token to same-origin, relative URLs only.
+                        // Send the token only if the method warrants CSRF protection
+                        // Using the CSRFToken value acquired earlier
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            })
+        }
+    }
+    // Initialize
+    $(".updated-tags").each(function(index){
+        var child = $(this).children("ul").children("li");
+        $(this).attr("data-name", $(this).children("input[type=hidden]").attr("name") );
+        $(this).children("input[type=hidden]").remove();
+        for(var i = 0; i < child.length; i ++)
+        {
+            if(!child.eq(i).hasClass("updated-dropdown") )
+            {
+                addHiddenInput(child.eq(i), $(this).attr("data-name") );
+                child.eq(i).click(restoreEvent1);
+            }
+        }
+
+        if($(this).hasClass("user-input") )
+        {
+            $(this).children("ul").children(".updated-dropdown").off("click mouseenter mouseleave").click(function(){
+                $(this).attr("data-type", "clicked");
+                $(this).children("input").focus();
+            });
+            $(this).children("ul").children(".updated-dropdown").children("input").keyup(function(event){
+                if(event.keyCode == 13)
+                {
+                    if($(this)[0].value.length == 0)
+                    {
+                        $(this).parent().attr("data-type", "");
+                        return;
+                    }
+                    var this_save = this;
+                    var csrftoken = getCookie('csrftoken')
+                    var iderror = $(this).parents().eq(4).attr('iderror')
+                    $.ajax({
+                      type: 'post'
+                    , url: '/urqa/project/'+ project_id +'/errors/' + iderror + '/tag/new'
+                    , beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                            // Send the token to same-origin, relative URLs only.
+                            // Send the token only if the method warrants CSRF protection
+                            // Using the CSRFToken value acquired earlier
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }}
+                    , data: {'tag':$(this)[0].value}
+                    , success : function(data) {
+                            if(data == 'success')
+                            {
+                                var newME = $(this_save).parent().parent().children("li:nth-last-child(1)").before("<li></li>").parent().children("li:nth-last-child(2)");
+                                newME.click(restoreEvent1);
+                                newME.html($(this_save)[0].value);
+                                newME.append("<i></i>");
+                                $(this_save)[0].value = "";
+                                $(this_save).parent().attr("data-type", "");
+                            }
+                            else
+                                $(this_save).parent().attr("data-type", "");
+                        }
+                    })
+                }
+                else if(event.keyCode == 27)
+                {
+                    $(this).parent().attr("data-type", "");
+                }
+            });
+        }
+    });
+
+    popup_hide = function() {
+		$("#popup-info").stop(true, true);
+		$("#popup-info").animate({
+			opacity: 0.0
+		}, 250, function(){
+			$(this).css("display", "none");
+		});
+	};
+	popup_show = function(obj) {
+		$("#popup-info").stop(true, true);
+		$("#popup-info").css({"display": "block"});
+		$("#popup-info").animate({ opacity: 0.9 }, 250, function() {} );
+		if(obj)
+		{
+			$("#popup-info").css("top", obj.position().top + 20);
+			$("#popup-info").css("left", obj.position().left - 116);
+		}
+	};
+
+	if($("#popup-title") )
+	{
+		$("#popup-info").hover(function(){popup_show();}, popup_hide);
+		$("table.content-large tbody .float > span.red").hover(function() {
+			$("#popup-title").html("Critical");
+			popup_show($(this));
+		},popup_hide);
+
+		$("table.content-large tbody .float > span.blue").hover(function() {
+			$("#popup-title").html("Major");
+			popup_show($(this));
+		},popup_hide);
+
+		$("table.content-large tbody .float > span.green").hover(function() {
+			$("#popup-title").html("Minor");
+			popup_show($(this));
+		},popup_hide);
+
+		$("table.content-large tbody .float > span.gray").hover(function() {
+			$("#popup-title").html("Unhandler");
+			popup_show($(this));
+		},popup_hide);
+	}
+}

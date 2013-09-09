@@ -458,15 +458,15 @@ def error_list(request,apikey):
     for e in errorElements:
         new_e = {}
         new_e['iderror'] = e.iderror
-        new_e['rank'] = RANK.toString[e.rank]
-        new_e['status'] = Status.toString[e.status]
+        new_e['rank'] = e.rank
+        new_e['status'] = e.status#Status.toString[e.status]
         new_e['errorname'] = e.errorname
         new_e['errorclassname'] = e.errorclassname
         new_e['linenum'] = e.linenum
         new_e['count'] = e.numofinstances
         new_e['year'] = e.lastdate.year
-        new_e['month'] = e.lastdate.month
-        new_e['day'] = e.lastdate.day
+        new_e['month'] = '%02d' % e.lastdate.month
+        new_e['day'] = '%02d' % e.lastdate.day
         new_e['es'] = e.errorweight
         new_e['auto'] = e.autodetermine
         new_e['tags'] = []
