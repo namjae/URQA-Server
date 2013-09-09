@@ -64,6 +64,12 @@ urlpatterns = patterns('',
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deleteTag'),
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/comment/new$', 'errors.views.newComment'),
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/comment/delete$', 'errors.views.deleteComment'),
+
+    url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/os$', 'errors.views.os'),
+    url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/app$', 'errors.views.app'),
+    url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/device$', 'errors.views.device'),
+    url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/country$', 'errors.views.country'),
+
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/status$', 'errors.views.changeStatus'),
 
     #Statistics

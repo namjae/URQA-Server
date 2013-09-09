@@ -29,6 +29,7 @@ from common import getApikeyDict
 from common import getSettingDict
 
 import utility
+from utility import naive2aware
 from utility import getTimeRange
 from utility import TimeRange
 from utility import get_dict_value_matchin_key
@@ -82,22 +83,16 @@ def newComment(request, apikey, iderror):
     if not result:
         return HttpResponse(msg)
 
-    time = utility.getDatetime()
+    time = utility.getUTCDatetime()
+    datetime = naive2aware(time)
 
     comment = request.POST['comment']
     element = Comments.objects.create(uid=userElement, iderror=errorElement, datetime=time, comment=comment)
 
-    print element
-    print 'aewfawefawefawef'
-    print element.datetime
-    #print element.datetime.__format__('%Y')
-    print type(element.datetime)
-
-
-
     dict = {'imgsrc':userElement.image_path, 'name': userElement.last_name + userElement.first_name,
             'message': comment,
-            'date': '1' }
+            'date': datetime.__format__('%Y/%d/%m'),
+            'id' : comment.idcomment}
 
     print dict
 
@@ -118,6 +113,37 @@ def deleteComment(request, apikey, iderror):
         HttpResponse('comment %s not exists' % idcomment)
 
     return HttpResponse('success')
+
+def os(request,apikey,iderror):
+    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
+
+    print msg
+    if not result:
+        return HttpResponse(msg)
+
+    data =  [{
+        'key': "adfawe Return",
+        'values': [
+          {
+            "label": "One",
+            "value" : 29.765957771107
+          }
+        ]
+    }]
+
+    InstanceElements = Instances.obejcts.filter(iderror=iderror)
+
+    for Instance in InstanceElements:
+        dict = {}
+        Instances.appversion
+
+
+def app(request,apikey,iderror):
+
+def device(request,apikey,iderror):
+
+def country(request,apikey,iderror):
+
 
 
 def errorDetail(request,apikey,iderror):
@@ -192,7 +218,7 @@ def errorDetail(request,apikey,iderror):
     #platformtxt = get_dict_value_matchin_key(platformdata,projectelement.platform)
 
 
-    CommentElements = Comments.objects.filter(iderror = iderror).order_by('-datetime')
+    CommentElements = Comments.objects.filter(iderror = iderror).order_by('datetime')
     commentlist = []
     for comment in CommentElements:
         commenttuple = {}
@@ -206,6 +232,7 @@ def errorDetail(request,apikey,iderror):
         commenttuple['comment'] = comment.comment
         commenttuple['date'] = comment.datetime.__format__('%Y/%m/%d')
         commenttuple['ownercomment'] = comment.uid == user and True or False
+        commenttuple['id'] = comment.idcomment
         commentlist.append(commenttuple)
 
 

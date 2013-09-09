@@ -7,6 +7,11 @@ import string
 
 from django.utils.timezone import utc
 
+def getUTCDatetime():
+    now = datetime.datetime.utcnow()
+    return '%04d-%02d-%02d %02d:%02d:%02d' % (now.year, now.month, now.day,now.hour, now.minute, now.second)
+
+
 def getDatetime():
     now = time.localtime()
     return '%04d-%02d-%02d %02d:%02d:%02d' % (now.tm_year, now.tm_mon, now.tm_mday,

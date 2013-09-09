@@ -268,14 +268,15 @@ function submitComment(event, obj)
             ,success: function(data){
                     var chd = $(obj).parent().parent().parent().children(":nth-last-child(2)");
 		            chd.before("<tr><td class=\"float\"><img src=\"" +
-                    $(".navbar-profile > .profile > img").attr("src") +             //imgsrc
+                    data['imgsrc'] +             //imgsrc
                     "\" /></td><td class=\"float\"><p>" +
-                    $("#profile-menu > .color > .text > .name").html() +            //username
+                    data['name'] +            //username
                     "</p><p>" +
-                    obj.value +                                                         //message
+                    data['message'] +                                                         //message
                     "</p></td><td>" +
-                    new Date().format("yyyy/MM/dd") +                                 //date
-                    "</td></tr>");
+                    data['date'] +                                 //date
+                    "</td>" +'<div class="button red" onclick="commentdelete(obj,'+data['id']+')" data-name="Remove" style="width: 74px; height: 26px; margin: 2px;"></div>'
+                     +"</tr>");
 
                     obj.value = "";
                     tableResizing();
@@ -283,6 +284,33 @@ function submitComment(event, obj)
         })
 
 	}
+}
+
+function commentdelete(obj,commentid)
+{
+    var data = {'idcomment' : commentid }
+    var csrftoken = getCookie('csrftoken')
+    $.ajax({
+          type: 'post'
+        , url: '/urqa/project/'+project_id +'/errors/' + error_id + '/comment/delete'
+        , beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }}
+        , data: data
+        ,success: function(data){
+                if(data == 'success')
+                {
+                    $(obj).parent().parent().remove()
+                    tableResizing();
+                }
+                //obj.value = "";
+
+        }
+    })
 }
 
 function copyThis(obj)

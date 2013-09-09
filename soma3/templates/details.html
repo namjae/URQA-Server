@@ -23,9 +23,7 @@
     <script type="text/javascript" src="{% static 'js/d3.tip.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/sankey.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/utility.js' %}"></script>
-	<script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
-	<script type="text/javascript" src="http://code.highcharts.com/highcharts-more.js"></script>
-	<script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script type="text/javascript" src="{% static 'js/nv.d3.min.js' %}"></script>
 
 	<script type="text/javascript">
       var error_id = {{ iderror }};
@@ -35,6 +33,65 @@
 			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
 	</script>
+    <script>
+        var data =[
+  {
+    key: "adfawe Return",
+    values: [
+      {
+        "label": "One",
+        "value" : 29.765957771107
+      } ,
+      {
+        "label": "Two",
+        "value" : 0
+      } ,
+      {
+        "label": "Three",
+        "value" : 32.807804682612
+      } ,
+      {
+        "label": "Four",
+        "value" : 196.45946739256
+      } ,
+      {
+        "label": "Five",
+        "value" : 0.19434030906893
+      } ,
+      {
+        "label": "Six",
+        "value" : 98.079782601442
+      } ,
+      {
+        "label": "Seven",
+        "value" : 13.925743130903
+      } ,
+      {
+        "label": "Eight",
+        "value" : 5.1387322875705
+      }
+    ]
+  }
+]
+
+        document.ready(function(){
+            nv.addGraph(function() {
+              var chart = nv.models.pieChart()
+                  .x(function(d) { return d.label })
+                  .y(function(d) { return d.value })
+                  .showLabels(true);
+
+                d3.select("#osver svg")
+                    .datum(data)
+                  .transition().duration(1200)
+                    .call(chart);
+
+              return chart;
+            });
+        })
+
+
+    </script>
 </head>
 
 <body class="error" style="display: none;">
@@ -663,11 +720,12 @@
 							</td>
 							<td class="float"><p>{{ comment.name }}</p><p>{{ comment.comment }}</p></td>
 							<td>{{ comment.date }}</td>
-                            {% if comment.ownercomment %}
 							<td>
-								<div class="button red" data-name="Remove" style="width: 74px; height: 26px; margin: 2px;"></div>
+                                {% if comment.ownercomment %}
+								<div class="button red" onclick="commentdelete(this,{{ comment.id }})" data-name="Remove" style="width: 74px; height: 26px; margin: 2px;"></div>
+                                {% endif %}
 							</td>
-                            {% endif %}
+
 						</tr>
                         {% endfor %}
 						<tr id = 'inputcomment'>

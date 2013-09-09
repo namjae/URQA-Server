@@ -27,7 +27,7 @@ from urqa.models import Devicestatistics
 from urqa.models import Countrystatistics
 from urqa.models import Activitystatistics
 from utility import naive2aware
-
+from utility import getUTCDatetime
 from config import get_config
 
 @csrf_exempt
@@ -607,3 +607,23 @@ def calc_eventpath(errorElement):
         result['links'].append({'source':sid,'target':tid,'value':link_table[link]})
     print json.dumps(result)
     return result
+
+def calc_errorscore(errorElement):
+    print naive2aware(getUTCDatetime())
+    print errorElement.lastdate
+    d = naive2aware(getUTCDatetime()) - errorElement.lastdate
+
+    print d
+    print d.days, d.seconds, d.microseconds
+
+    runcounts = Appruncount.objects.filter(pid=errorElement.pid)
+    errorcounts = Appstatistics.objects.filter(iderror=errorElement)
+
+    tlb = []
+    for r in runcounts:
+        for e in errorcounts:
+            if r.appversion == e.appversion:
+                tlb.append({'appversion':r.appversion,'runcount':r.runcount,'errcount':e.count})
+                break;
+    print 'calc_errorscore',tlb
+    return

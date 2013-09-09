@@ -59,32 +59,64 @@
 							<div>
 								<div class="area">
 									<span>APP Name</span>
-									<input name="appname" type="input" value="{{ project_name }}" />
+                                    {% if owner_user %}
+									    <input name="appname" type="input" value="{{ project_name }}" />
+                                    {% else %}
+                                        <table id="viewer-list" class="content-small">
+                                            <tbody><tr>
+                                                <td>{{ project_name }}</td>
+                                            </tr></tbody>
+                                        </table>
+                                        <!--<div class="dropdown simple">
+                                        <a>{{ project_name }}</a>
+                                        <span></span>
+                                        </div>-->
+                                    {% endif %}
 									<span>Device</span>
 									<div class="dropdown">
 										<a>Android</a>
 										<span></span>
 										<div>
-											 <ul id = 'platform_list'>
-                                              {% for key,value in app_platformlist %}
-                                                <li value="{{ value }}"><a>{{ key }}</a></li>
-                                             {% endfor %}
-											 </ul>
+											<ul id = 'platform_list'>
+                                            {% for key,value in app_platformlist %}
+                                                {% if owner_user %}
+                                                    <li value="{{ value }}"><a>{{ key }}</a></li>
+                                                {% else %}
+                                                    {% if forloop.counter == platform_number %}
+                                                        <li value="{{ value }}"><a>{{ key }}</a></li>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+											</ul>
 										</div>
+										{% if owner_user %}
 										<input type="hidden" name="device_type" value="{{ platform_number }}" />
+                                        {% else %}
+                                        <input type="hidden" name="device_type" value="0" />
+                                        {% endif %}
 									</div>
 									<span>APP Category</span>
 									<div class="dropdown">
 										<a>Game</a>
 										<span></span>
 										<div>
-											 <ul id = 'category_list'>
-                                             {% for key,value in app_categorylist %}
-                                                <li value="{{ value }}"><a>{{ key}}</a></li>
-                                            {% endfor%}
-											 </ul>
+											<ul id = 'category_list'>
+                                            {% for key,value in app_categorylist %}
+                                                {% if owner_user %}
+                                                    <li value="{{ value }}"><a>{{ key }}</a></li>
+                                                {% else %}
+                                                    {% if forloop.counter == category_number %}
+                                                        <li value="{{ value }}"><a>{{ key }}</a></li>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+											</ul>
 										</div>
+										{% if owner_user %}
 										<input type="hidden" name="app_category" value="{{ category_number }}" />
+                                        {% else %}
+                                        <input type="hidden" name="app_category" value="0" />
+                                        {% endif %}
 									</div>
 									<span>Stage</span>
 									<div class="dropdown">
@@ -92,12 +124,22 @@
 										<span></span>
 										<div>
 											 <ul id = 'stage_list'>
-                                             {% for key, value in app_stagelist %}
-                                                <li value="{{ value }}"><a>{{ key }}</a></li>
-                                             {% endfor %}
+                                             {% for key,value in app_stagelist %}
+                                                {% if owner_user %}
+                                                    <li value="{{ value }}"><a>{{ key }}</a></li>
+                                                {% else %}
+                                                    {% if forloop.counter == stage_number %}
+                                                        <li value="{{ value }}"><a>{{ key }}</a></li>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
 											 </ul>
 										</div>
+										{% if owner_user %}
 										<input type="hidden" name="stage" value="{{ stage_number }}" />
+                                        {% else %}
+                                        <input type="hidden" name="stage" value="0" />
+                                        {% endif %}
 									</div>
 								</div>
 							</div>
@@ -109,12 +151,22 @@
 										<span></span>
 										<div>
 											 <ul id = 'timezone_list'>
-											 	{% for timezone in timezonelist %}
-											 	<li><a>{{ timezone }}</a></li>
+                                                {% for timezone in timezonelist %}
+                                                    {% if owner_user %}
+                                                        <li><a>{{ timezone }}</a></li>
+                                                    {% else %}
+                                                        {% if forloop.counter == timezone_number %}
+                                                            <li><a>{{ timezone }}</a></li>
+                                                        {% endif %}
+                                                    {% endif %}
                                                 {% endfor %}
 											 </ul>
 										</div>
+                                        {% if owner_user %}
 										<input type="hidden" name="device_type" value="{{ timezone_number }}" />
+                                        {% else %}
+                                        <input type="hidden" name="device_type" value="0" />
+                                        {% endif %}
 									</div>
 									<span>Viewer</span>
 									<div class="y-scroll" style="width: 310px; height: 166px;">
