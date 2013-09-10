@@ -58,6 +58,7 @@ from utility import numbertostrcomma
 from utility import get_dict_value_matchin_key
 #from utility import get_dict_value_matchin_number
 from utility import Status
+from utility import toTimezone
 from config import get_config
 
 
@@ -413,8 +414,10 @@ def dailyesgraph(request, apikey):
         value = {'key' : 0 , 'value' : 0}
         tmpdate = datetime.timedelta(days  = i-(timerange-1) )
         tmpdate = today + tmpdate
-        value['key'] = tmpdate.__format__('%m / %d')
+        #timezone 적용
+        adtimezone = toTimezone(tmpdate,ProjectElement.timezone)
 
+        value['key'] = adtimezone.__format__('%m / %d')
 
         ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open] ,lastdate__year = tmpdate.year , lastdate__month = tmpdate.month , lastdate__day = tmpdate.day)
         errorweight = 0

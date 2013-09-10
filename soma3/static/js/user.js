@@ -273,7 +273,7 @@ function submitComment(event, obj)
                     data['name'] +            //username
                     "</p><p>" +
                     data['message'] +                                                         //message
-                    "</p></td><td>" +
+                    "</p></td><td class=\"center\">" +
                     data['date'] +                                 //date
                     "</td><td>" +'<div class="button red" onclick="commentdelete(this,'+data['id']+')" data-name="Remove" style="width: 74px; height: 26px; margin: 2px;"></div>'
                      +"</td></tr>")
@@ -1551,6 +1551,12 @@ $("head").styleReady(function(){
                     $(this).children("ul").children(".dropdown").children("input").keyup(function(event){
                         if(event.keyCode == 13)
                         {
+                            if($(this)[0].value == '')
+                            {
+                                $('#inputtag').parent().children('.dropdown').children('input')[0].value = "";
+                                $('#inputtag').attr("data-type", "");
+                                return;
+                            }
                             var sendtag = {'tag' : $(this)[0].value }
                             var csrftoken = getCookie('csrftoken')
                              $.ajax({

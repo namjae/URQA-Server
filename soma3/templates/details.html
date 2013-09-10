@@ -477,7 +477,11 @@
 					<tbody>
 						<tr class="notHover">
 							<td style="width: 120px">
+                            {% if ErrorRankColor != 'Nothing' %}
 								<div class="thumbnail large {{ ErrorRankColor }}"></div>
+                            {% else %}
+                                <div style="width: 120px; height: 120px;"><div style="position:relative; top : 50%"><center><H4>Undecided</H4></center></div></div>
+                            {% endif %}
 								<div class="center">
                                      {% if isManual %}
                                         <span class="bold">Manual</span>&nbsp;Auto
@@ -643,7 +647,11 @@
 			</div>
 			<div class="title" data="call-stack"></div>
 			<div class="table-button">
+                {% if isNative %}
 				<div class="button black" onclick="showPopupSymbolUpload()" data-name="Upload Symbol"></div>
+                {% else %}
+                <div style="width: 100px; height: 25px"></div>
+                {% endif %}
 			</div>
 			<div id="call-stack" class="content">
 				<table class="small">
@@ -715,7 +723,7 @@
 								<img src="{{ comment.imagesrc }}" />
 							</td>
 							<td class="float"><p>{{ comment.name }}</p><p>{{ comment.comment }}</p></td>
-							<td>{{ comment.date }}</td>
+							<td class="center">{{ comment.date }}<br>{{ comment.time }}</td>
 							<td>
                                 {% if comment.ownercomment %}
 								<div class="button red" onclick="commentdelete(this,{{ comment.id }})" data-name="Remove" style="width: 74px; height: 26px; margin: 2px;"></div>

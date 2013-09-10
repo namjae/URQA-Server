@@ -1271,6 +1271,9 @@ html.login #body-header {
 #container				#project-list > .add > div,
 #container.decelerate	#project-list > .add > div { background: url("./images/plus.png") no-repeat; }
 
+#content-container > .android { background-image: url("./images/android-icon.png"); }
+#content-container > .iphone  { background-image: url("./images/iphone-icon.png"); }
+
 >#content-container {
 	@margin{
 		left: 40px;
@@ -1626,7 +1629,27 @@ table.content-small {
 		margin-top: -10px;
 	}
 	#call-stack > table {
-		margin-top: -10px;
+        margin-top: -10px;
+
+        tbody {
+		tr:nth-child(n) { background: white; }
+		tr:not(.notHover):hover { background-color: @tm-hl-half-c2; }
+		td {
+			font: 14px "RixGo L";
+			color: @tm-tx-c3;
+			vertical-align: middle;
+			@padding {
+				left: 12px;
+			}
+			p {
+				width: 0px;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+		}
+		.empty { display: none; }
+	    }
 	}
 	#class-error-count {
 		table {

@@ -2,10 +2,15 @@
 
 import time
 import datetime
+from dateutil import tz
 import os
 import string
 
 from django.utils.timezone import utc
+
+def toTimezone(utc,to_zone):
+    return utc.astimezone(tz.gettz(to_zone))
+
 
 def getUTCDatetime():
     now = datetime.datetime.utcnow()

@@ -309,9 +309,9 @@ var g_link
 function sankeydraw(data)
 {
     var margin = {
-        top : 1,
+        top : 0,
         right : 1,
-        bottom : 30,
+        bottom : 70,
         left : 1
             },
             width = sankeywidth - margin.left - margin.right,
@@ -330,7 +330,7 @@ function sankeydraw(data)
 
     var sankey = d3.sankey()
             .nodeWidth(20)
-            .nodePadding(60)
+            .nodePadding(30)
             .size([width, height]);
 
     var path = sankey.link();
@@ -361,8 +361,6 @@ function sankeydraw(data)
                 return b.dy - a.dy;
             })
             .call(link_tip);
-    link.on('mouseover', link_tip.show)
-        .on('mouseout', link_tip.hide)
         /*.attr('y', function(d) {
                 return y(d)
             })
@@ -376,7 +374,10 @@ function sankeydraw(data)
 
     rect_tip = d3.tip()
             .html(function(d) {
-                return d.name + format(d.value);
+                var name = d.name.split(':')
+                return '<center>' + name[1] +"</center><br>" +
+                        '<center>' + name[2] +"</center><br>" +
+                        '<center>' + name[3]; + "</center>"
             })
             .attr('class', 'd3-tip')
             .direction('s')
@@ -423,25 +424,7 @@ function sankeydraw(data)
                 return d.name + "\n" + format(d.value);
             });*/
 
-    node.append("text")
-            .attr("x", -6)
-            .attr("y", function(d) {
-                return d.dy / 2;
-            }
-    )
-            .attr("dy", ".35em")
-            .attr("text-anchor", "end")
-            .attr("transform", null)
-            .text(function(d) {
-                return d.name;
-            }
-    )
-            .filter(function(d) {
-                return d.x < width / 2;
-            }
-    )
-            .attr("x", 6 + sankey.nodeWidth())
-            .attr("text-anchor", "start");
+
 
     g_sankey = sankey
     g_link = link

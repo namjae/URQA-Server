@@ -196,21 +196,15 @@
             var rank_list=[];
             for(var i=0;i<rank_chk.length;i++)
             {
-                if(Number(rank_chk.eq(0).attr('value')) == 4)
+                if(Number(rank_chk.eq(0).attr('value')) == 5)
                 {
-                    rank_list.push(0);
-                    rank_list.push(1);
-                    rank_list.push(2);
-                    rank_list.push(3);
+                    rank_list.push(0,1,2,3,4);
                 }
                 else rank_list.push(Number(rank_chk.eq(i).attr('value')))
             }
             if(rank_chk.length == 0)
             {
-                rank_list.push(0);
-                rank_list.push(1);
-                rank_list.push(2);
-                rank_list.push(3);
+                rank_list.push(0,1,2,3,4);
             }
             //Status
             status_idx = $('#status_tr>td>div>span[data-value="checked"]').parent().attr('data-value');
@@ -551,7 +545,7 @@
 						<tr id="rank_tr">
 							<td>Rank</td>
 							<td>
-								<div class="checkbox red" value="4">
+								<div class="checkbox red" value="5">
 									<span></span>
 									<label>All</label>
 									<input type="hidden" name="rank[]" data-value="All" value="All" />
@@ -565,28 +559,28 @@
 								</div>
 							</td>
                             <td>
-								<div class="checkbox" value="1">
+								<div class="checkbox" value="4">
 									<span></span>
 									<label>Native</label>
 									<input type="hidden" name="rank[]" data-value="Unhalded" />
 								</div>
 							</td>
 							<td>
-								<div class="checkbox" value="2">
+								<div class="checkbox" value="1">
 									<span></span>
 									<label>Critical</label>
 									<input type="hidden" name="rank[]" data-value="Critical" />
 								</div>
 							</td>
 							<td>
-								<div class="checkbox" value="3">
+								<div class="checkbox" value="2">
 									<span></span>
 									<label>Major</label>
 									<input type="hidden" name="rank[]" data-value="Major" />
 								</div>
 							</td>
 							<td>
-								<div class="checkbox" value="4">
+								<div class="checkbox" value="3">
 									<span></span>
 									<label>Minor</label>
 									<input type="hidden" name="rank[]" data-value="Minor" />

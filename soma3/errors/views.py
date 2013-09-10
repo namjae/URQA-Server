@@ -36,10 +36,8 @@ import utility
 from utility import naive2aware
 from utility import getTimeRange
 from utility import TimeRange
-from utility import get_dict_value_matchin_key
-from utility import get_dict_value_matchin_number
-from utility import Status
 from utility import RANK
+from utility import toTimezone
 
 from client.views import calc_eventpath
 from config import get_config
@@ -91,11 +89,13 @@ def newComment(request, apikey, iderror):
     datetime = naive2aware(time)
 
     comment = request.POST['comment']
-    element = Comments.objects.create(uid=userElement, iderror=errorElement, datetime=time, comment=comment)
+    element = Comments.objects.create(uid=userElement, iderror=errorElement, datetime=datetime, comment=comment)
 
+    adtimezone = toTimezone(datetime,projectElement.timezone)
+    print 'newcommand',adtimezone,datetime
     dict = {'imgsrc':userElement.image_path, 'name': userElement.last_name + userElement.first_name,
             'message': comment,
-            'date': datetime.__format__('%Y/%d/%m'),
+            'date': adtimezone.__format__('%Y.%m.%d<br>%H:%M:%S'),
             'id' : element.idcomment}
 
     print dict
@@ -271,7 +271,7 @@ def country(request,apikey,iderror):
 
 def errorDetail(request,apikey,iderror):
 
-    valid , message , user ,ErrorsElement = author_check_error_page(request.user, apikey, iderror)
+    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
@@ -306,7 +306,10 @@ def errorDetail(request,apikey,iderror):
 
     ###callstack###
     callstackstr = ErrorsElement.callstack
-    callstackstrlist = callstackstr.split('\n\t')
+    if(RANK.Native == ErrorsElement.rank):
+        callstackstrlist = callstackstr.split('\n')
+    else:
+        callstackstrlist = callstackstr.split('\n\t')
     counter = 0
     callstacklist = []
     compile = re.compile('\(.*?:[0-9]*?\)')
@@ -327,7 +330,8 @@ def errorDetail(request,apikey,iderror):
     instancelist = []
     for instance in instanceElements:
         instancetuple = {'datetime' : "", 'osversion' : '','appversion' : '' , 'device' : '', 'country' : '', 'idinstance' : ''}
-        instancetuple['datetime'] = instance.datetime.__format__('%Y.%m.%d - %H:%M:%S')
+        adtimezone = toTimezone(instance.datetime,projectelement.timezone)
+        instancetuple['datetime'] = adtimezone.__format__('%Y.%m.%d - %H:%M:%S')
         instancetuple['osversion'] = instance.osversion
         instancetuple['appversion'] = instance.appversion
         instancetuple['device'] = instance.device
@@ -336,7 +340,7 @@ def errorDetail(request,apikey,iderror):
         instancelist.append(instancetuple)
 
 
-    projectelement = Projects.objects.get(apikey = apikey)
+    #projectelement = Projects.objects.get(apikey = apikey)
     platformdata = json.loads(get_config('app_platforms'))
     #platformtxt = get_dict_value_matchin_key(platformdata,projectelement.platform)
 
@@ -349,11 +353,13 @@ def errorDetail(request,apikey,iderror):
             commentuser = AuthUser.objects.get(id = comment.uid.id)
         except ObjectDoesNotExist:
             continue
-
+        adtimezone = toTimezone(comment.datetime,projectelement.timezone)
+        print 'here',adtimezone,comment.datetime
         commenttuple['imagesrc'] = commentuser.image_path
         commenttuple['name'] = commentuser.first_name + ' ' + commentuser.last_name
         commenttuple['comment'] = comment.comment
-        commenttuple['date'] = comment.datetime.__format__('%Y/%m/%d')
+        commenttuple['date'] = adtimezone.__format__('%Y.%m.%d')
+        commenttuple['time'] = adtimezone.__format__('%H:%M:%S')
         commenttuple['ownercomment'] = comment.uid == user and True or False
         commenttuple['id'] = comment.idcomment
         commentlist.append(commenttuple)
@@ -363,6 +369,8 @@ def errorDetail(request,apikey,iderror):
     apikeydict = getApikeyDict(apikey)
     settingdict = getSettingDict(projectelement,user)
 
+    adtimezone_first = toTimezone(ErrorsElement.createdate,projectelement.timezone)
+    adtimezone_last = toTimezone(ErrorsElement.lastdate,projectelement.timezone)
     detaildict = {
         'iderror' : iderror,
         'ErrorScore' : ErrorsElement.errorweight,
@@ -377,9 +385,10 @@ def errorDetail(request,apikey,iderror):
         'ErrorStatus' : ErrorsElement.status + 1,
         'Errorsmobilenetwork' : int(mobilenetwork/numobins * 100),
         'Errorsmemoryusage' : ErrorsElement.totalmemusage / ErrorsElement.numofinstances,
-        'createdate' : ErrorsElement.createdate.__format__('%Y%m%d'),
-        'lastdate' : ErrorsElement.lastdate.__format__('%Y%m%d'),
-        'ErrorRankColor' : RANK.rankcolor[ErrorsElement.rank],
+        'createdate' : adtimezone_first.__format__('%Y.%m.%d'),
+        'lastdate' : adtimezone_last.__format__('%Y.%m.%d'),
+        'ErrorRankColor' : ErrorsElement.rank == RANK.Suspense and 'Nothing' or RANK.rankcolor[ErrorsElement.rank],
+        'isNative' : ErrorsElement.rank == RANK.Native ,
         'tag_list' : taglist,
         'callstack' : callstacklist,
         'instance_list' : instancelist,
@@ -395,7 +404,7 @@ def errorDetail(request,apikey,iderror):
 def instancedetatil(request, apikey, iderror, idinstance):
 
     #권한 있나 없나 체크
-    valid , message , user ,ErrorsElement = author_check_error_page(request.user, apikey, iderror)
+    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
@@ -407,7 +416,8 @@ def instancedetatil(request, apikey, iderror, idinstance):
 
     key_to_remove = 'datetime'
     dict = {key : value for key, value in instance[0].items() if key != key_to_remove}
-    dict['datetime'] = instance[0]['datetime'].__format__('%Y.%m.%d - %H:%M:%S')
+    adtimezone = toTimezone(instance[0]['datetime'],projectelement.timezone)
+    dict['datetime'] = adtimezone.__format__('%Y.%m.%d - %H:%M:%S')
     result = json.dumps(dict)
 
     #single 즉 get일땐 __dict__ filter 즉 복수 일땐 obejcts.values() 이것때문에 한시간 날림
@@ -415,7 +425,7 @@ def instancedetatil(request, apikey, iderror, idinstance):
 
 def log(request, apikey, iderror, idinstance):
     #권한 있나 없나 체크
-    valid , message , user ,ErrorsElement = author_check_error_page(request.user, apikey, iderror)
+    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
@@ -439,7 +449,7 @@ def log(request, apikey, iderror, idinstance):
 #instanceEventpath
 def instanceeventpath(request, apikey, iderror, idinstance):
     #권한 있나 없나 체크
-    valid , message , user ,ErrorsElement = author_check_error_page(request.user, apikey, iderror)
+    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
@@ -450,9 +460,10 @@ def instanceeventpath(request, apikey, iderror, idinstance):
 
     eventpathlist = []
     for eventpath in EventPathElements:
+        adtimezone = toTimezone(eventpath.datetime,projectelement.timezone)
         eventpathttuple = {'date' : '' , 'time' : '', 'class' : '', 'methodline' : ''}
-        eventpathttuple['date'] =eventpath.datetime.__format__('%Y.%m.%d')
-        eventpathttuple['time'] =eventpath.datetime.__format__('%H:%M:%S')
+        eventpathttuple['date'] =adtimezone.__format__('%Y.%m.%d')
+        eventpathttuple['time'] =adtimezone.__format__('%H:%M:%S')
         eventpathttuple['class'] = eventpath.classname
         eventpathttuple['methodline'] = str(eventpath.methodname) + ':' + str(eventpath.linenum)
         eventpathlist.append(eventpathttuple)
@@ -462,7 +473,7 @@ def instanceeventpath(request, apikey, iderror, idinstance):
 #eventpath
 def eventpath(request,apikey,iderror):
 
-    valid , message , user ,ErrorsElement = author_check_error_page(request.user, apikey, iderror)
+    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
@@ -484,7 +495,7 @@ def author_check_error_page(username,apikey,iderror):
     except ObjectDoesNotExist:
         return False, 'DoesNotExist ErrorsElement' , '',''
 
-    return True, 'success' , userelement ,ErrorsElement
+    return True, 'success' , userelement ,ErrorsElement, projectelement
 
 
 
@@ -611,7 +622,7 @@ def error_list(request,apikey):
 
     week, today = getTimeRange(date)
     errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status__in=status,lastdate__range=(week,today)).order_by('-errorweight','rank', '-lastdate')
-    #print '1',errorElements
+    print '1',errorElements
     #print classes
     if classes:
         errorElements = errorElements.filter(errorclassname__in=classes)
@@ -643,8 +654,11 @@ def error_list(request,apikey):
     print errorElements
 
 
+
     result = []
     for e in errorElements:
+        adtimezone = toTimezone(e.lastdate,projectelement.timezone)
+        print adtimezone
         new_e = {}
         new_e['iderror'] = e.iderror
         new_e['rank'] = RANK.rankcolor[e.rank]
@@ -653,9 +667,9 @@ def error_list(request,apikey):
         new_e['errorclassname'] = e.errorclassname
         new_e['linenum'] = e.linenum
         new_e['count'] = e.numofinstances
-        new_e['year'] = e.lastdate.year
-        new_e['month'] = '%02d' % e.lastdate.month
-        new_e['day'] = '%02d' % e.lastdate.day
+        new_e['year'] = adtimezone.year
+        new_e['month'] = '%02d' % adtimezone.month
+        new_e['day'] = '%02d' % adtimezone.day
         new_e['es'] = e.errorweight
         new_e['auto'] = e.autodetermine
         new_e['tags'] = []

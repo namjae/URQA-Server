@@ -127,7 +127,7 @@ def receive_exception(request):
             errorclassname = errorclassname,
             linenum = linenum,
             autodetermine = autodetermine,
-            rank = int(jsonData['rank']), # unhandled = 0, native = 1, critical = 2, major = 3, minor = 4
+            rank = int(jsonData['rank']), # Undesided = -1, unhandled = 0, critical = 1, major = 2, minor = 3, native = 4
             status = 0, # 0 = new, 1 = open, 2 = fixed, 3 = ignore
             createdate = naive2aware(jsonData['datetime']),
             lastdate = naive2aware(jsonData['datetime']),
@@ -290,8 +290,8 @@ def receive_native(request):
         errorclassname = 'native',
         linenum = 0,
         autodetermine = autodetermine,
-        rank = int(jsonData['rank']),
-        #status = 0, # 0 = new, 1 = open, 2 = ignore, 3 = renew
+        rank = int(jsonData['rank']), # Undesided = -1, unhandled = 0, critical = 1, major = 2, minor = 3, native = 4
+        status = 0, # 0 = new, 1 = open, 2 = ignore, 3 = renew
         createdate = naive2aware(jsonData['datetime']),
         lastdate = naive2aware(jsonData['datetime']),
         numofinstances = 1,
@@ -409,6 +409,7 @@ def receive_native_dump(request, idinstance):
         'libutils.so',
         'libbinder.so',
         'libjavacore.so',
+        'librs_jni.so',
     ]
     libs = []
     stderr_split = stderr.splitlines()
