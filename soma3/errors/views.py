@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import Context, loader
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 
 from urqa.models import AuthUser
 from urqa.models import Errors
@@ -23,6 +24,7 @@ from urqa.models import Osstatistics
 from urqa.models import Appstatistics
 from urqa.models import Tags
 from urqa.models import Comments
+from urqa.models import Sofiles
 
 from common import validUserPjt
 from common import validUserPjtError
@@ -94,7 +96,7 @@ def newComment(request, apikey, iderror):
     dict = {'imgsrc':userElement.image_path, 'name': userElement.last_name + userElement.first_name,
             'message': comment,
             'date': datetime.__format__('%Y/%d/%m'),
-            'id' : comment.idcomment}
+            'id' : element.idcomment}
 
     print dict
 
@@ -372,6 +374,7 @@ def errorDetail(request,apikey,iderror):
         'Errorstatus' : ErrorsElement.status,
         'Errorswifi' : int(wifi/numobins * 100),
         'Errorsgps' : int(gps/numobins * 100),
+        'ErrorStatus' : ErrorsElement.status + 1,
         'Errorsmobilenetwork' : int(mobilenetwork/numobins * 100),
         'Errorsmemoryusage' : ErrorsElement.totalmemusage / ErrorsElement.numofinstances,
         'createdate' : ErrorsElement.createdate.__format__('%Y%m%d'),
@@ -381,12 +384,13 @@ def errorDetail(request,apikey,iderror):
         'callstack' : callstacklist,
         'instance_list' : instancelist,
         'comment_list' : commentlist,
+        'so_file_list' : Sofiles.objects.filter(pid = projectelement)
     }
     ctxdict  = dict(userdict.items() + apikeydict.items() + settingdict.items() + detaildict.items() )
 
     tpl = loader.get_template('details.html')
-    ctx = Context(ctxdict);
-    return HttpResponse(tpl.render(ctx))
+    #ctx = Context(ctxdict);
+    return render(request,'details.html',ctxdict)
 
 def instancedetatil(request, apikey, iderror, idinstance):
 
@@ -674,3 +678,8 @@ def chstatus(request,apikey,iderror):
     errorElement.status = status;
     errorElement.save()
     return HttpResponse('success');
+
+
+#def so_list(request,apikey,iderror):
+
+

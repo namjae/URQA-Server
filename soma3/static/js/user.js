@@ -266,8 +266,8 @@ function submitComment(event, obj)
                 }}
             , data: data
             ,success: function(data){
-                    var chd = $(obj).parent().parent().parent().children(":nth-last-child(2)");
-		            chd.before("<tr><td class=\"float\"><img src=\"" +
+                    var chd = $(obj).parent().parent()
+                    var comment = $("<tr><td class=\"float\"><img src=\"" +
                     data['imgsrc'] +             //imgsrc
                     "\" /></td><td class=\"float\"><p>" +
                     data['name'] +            //username
@@ -275,8 +275,9 @@ function submitComment(event, obj)
                     data['message'] +                                                         //message
                     "</p></td><td>" +
                     data['date'] +                                 //date
-                    "</td>" +'<div class="button red" onclick="commentdelete(obj,'+data['id']+')" data-name="Remove" style="width: 74px; height: 26px; margin: 2px;"></div>'
-                     +"</tr>");
+                    "</td><td>" +'<div class="button red" onclick="commentdelete(this,'+data['id']+')" data-name="Remove" style="width: 74px; height: 26px; margin: 2px;"></div>'
+                     +"</td></tr>")
+		            chd.before(comment);
 
                     obj.value = "";
                     tableResizing();
@@ -938,6 +939,12 @@ $(document).ready(function()
 	$("#profile-menu").hover(profileShow, profileHide);
 });
 
+
+function so_file_submit()
+{
+    $("#symbolUpload").hide();
+    $("#symbolUploading").show();
+}
 
 // Stylesheet is load-complate
 $("head").styleReady(function(){
@@ -1664,14 +1671,35 @@ $("head").styleReady(function(){
 	/** Component End **/
 
 	$("#symbolUploading").hide();
-	$("#symbolUpload").submit(function(event){
-		$("#symbolUpload").hide();
-		$("#symbolUploading").show();
-	});
+    /*
+    $("#symbolUpload").ajaxForm({
+            success : function(data){
+                alert(data);
+            $("#symbolUpload").show();
+            $("#symbolUploading").hide();
+            }
+        }
+    );
+    */
+
+    $("#symbolUpload").submit(function(event) {
+        var $form = $(this);
+        var action = $form.attr('action')
+        var formData = $form.formSerialize()
+
+        $.post(action, formData, function(data) {
+            alert(data);
+            $("#symbolUpload").show();
+            $("#symbolUploading").hide();
+        });
+        return false;
+    }
+    );
+
 	$("#uploadTrg").load(function(){
-		alert("The symbol-file is uploaded!");
-		$("#symbolUpload").show();
-		$("#symbolUploading").hide();
+		//alert("The symbol-file is uploaded!");
+        $("#symbolUpload").show();
+        $("#symbolUploading").hide();
 	});
 
 	popup_hide = function() {
@@ -1863,6 +1891,10 @@ function adjustErrorListStyle(){
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
                 }
             }
+            , success : function(data){
+                //pageChange(page_num)
+                query_maker(1);
+            }
         })
     }
 
@@ -1921,7 +1953,6 @@ function adjustErrorListStyle(){
     $(".updated-dropdown:not(.multiple)").each(function(){
         $(this).children("div").children("ul").children("li").click(itemClickEvent1);
     });
-
 
 
 

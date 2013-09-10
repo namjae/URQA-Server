@@ -341,7 +341,7 @@ function sankeydraw(data)
 
     link_tip = d3.tip()
             .html(function(d) {
-                return d.source.name + " -> " + d.target.name + format(d.value);
+                return d.source.name + "<br>" + d.target.name + "<br>" + "<center> count : "+ format(d.value) +"</center>";
             })
             .direction('s')
             .attr('class', 'd3-tip')

@@ -191,14 +191,10 @@ def modify_req(request, apikey):
     projectelement.stage = stagedata[request.POST['stage']]
     projectelement.platform = platformdata[request.POST['platform']]
     projectelement.name = request.POST['projectname']
+    projectelement.timezone = request.POST['timezone']
 
     #project modify
     projectelement.save();
-
-    #timezone save
-    userelement.timezone = request.POST['timezone']
-    username.save();
-
     return HttpResponse(json.dumps({'success' : True , 'message' : 'success modify project'}),'application/json')
 
 def so2sym(projectElement, appver, so_path, filename):
@@ -285,6 +281,8 @@ def so_upload(request, apikey):
     if not result:
         return HttpResponse(msg)
 
+    print request
+
     if request.method == 'POST':
         if 'file' in request.FILES:
             file = request.FILES['file']
@@ -307,10 +305,14 @@ def so_upload(request, apikey):
             if success_flag:
                 #정상적으로 so파일이 업로드되었기 때문에 error들의 callstack 정보를 갱신한다.
                 update_error_callstack(projectElement,appver)
+                print 'File Uploaded, and Valid so file'
                 return HttpResponse('File Uploaded, and Valid so file')
             else:
                 os.remove(os.path.join(so_path, filename))
+                print 'File Uploaded, but it have no debug info'
                 return HttpResponse('File Uploaded, but it have no debug info')
+
+    print 'Failed to Upload File'
     return HttpResponse('Failed to Upload File')
 
 def projects(request):
@@ -414,7 +416,7 @@ def dailyesgraph(request, apikey):
         value['key'] = tmpdate.__format__('%m / %d')
 
 
-        ErrorsElements = Errors.objects.filter(pid = ProjectElement , lastdate__year = tmpdate.year , lastdate__month = tmpdate.month , lastdate__day = tmpdate.day)
+        ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open] ,lastdate__year = tmpdate.year , lastdate__month = tmpdate.month , lastdate__day = tmpdate.day)
         errorweight = 0
         if len(ErrorsElements) > 0:
             for error in ErrorsElements:
@@ -460,7 +462,7 @@ def typeesgraph(request, apikey):
 
 
     for i in range(RANK.Unhandle,RANK.Native+1): # unhandled 부터 Native 까지
-       ErrorsElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week,today), rank = i) #일주일치 얻어옴
+       ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open], lastdate__range = (week,today), rank = i) #일주일치 얻어옴
        if len(ErrorsElements) > 0:
            for error in ErrorsElements:
                default['tags'][i]['value'] += error.errorweight
@@ -502,7 +504,7 @@ def typeescolor(request ,apikey):
 
 
     for i in range(RANK.Unhandle,RANK.Native+1): # unhandled 부터 Native 까지
-       ErrorsElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week,today), rank = i) #일주일치 얻어옴
+       ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open] ,lastdate__range = (week,today), rank = i) #일주일치 얻어옴
        if len(ErrorsElements) > 0:
            for error in ErrorsElements:
                default['tags'][i]['value'] += error.errorweight

@@ -83,7 +83,7 @@ def getSettingDict(projectelement,userelement):
 
     count = 0
     for zone in pytz.common_timezones:
-        if( zone == userelement.timezone):
+        if( zone == projectelement.timezone):
             break;
         count += 1
 

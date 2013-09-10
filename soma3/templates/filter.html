@@ -52,6 +52,7 @@
         }
         function pageChange(page_num)
         {
+            status2str = ['New','Open','Fixed','Ignore'];
             list_count = listData.length
             $('.page-changer>ul').children('.dont').removeClass('dont')
             if(page_num == 1)
@@ -187,7 +188,7 @@
                 clearTimeout(tID);
             tID = setTimeout(query_maker,100)
         }
-        function query_maker(){
+        function query_maker(reload){
             tID = 0
 
             //Rank
@@ -203,6 +204,13 @@
                     rank_list.push(3);
                 }
                 else rank_list.push(Number(rank_chk.eq(i).attr('value')))
+            }
+            if(rank_chk.length == 0)
+            {
+                rank_list.push(0);
+                rank_list.push(1);
+                rank_list.push(2);
+                rank_list.push(3);
             }
             //Status
             status_idx = $('#status_tr>td>div>span[data-value="checked"]').parent().attr('data-value');
@@ -251,14 +259,15 @@
                 })}
                 ,success : function(jsonData) {
                     // unhandled = 0, critical = 1, major = 2, minor = 3, native = 4
-                    status2str = ['New','Open','Fixed','Ignore']
                     if(jsonData.length == 0)
-                        $('.noerror_msg').show()
+                        $('.noerror_msg').show();
                     else
-                        $('.noerror_msg').hide()
-                    listData = jsonData
-                    initPageChanger()
-                    pageChange(page_num)
+                        $('.noerror_msg').hide();
+                    listData = jsonData;
+                    if(reload == undefined)
+                        initPageChanger();
+                    sort_list();
+                    pageChange(page_num);
                 }
                 , beforeSend: function(xhr, settings) {
                     var csrftoken = getCookie('csrftoken')

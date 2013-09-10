@@ -67,7 +67,6 @@ class AuthUser(models.Model):
     is_staff = models.IntegerField()
     is_active = models.IntegerField()
     date_joined = models.DateTimeField()
-    timezone = models.CharField(max_length=45L, blank=True)
     image_path = models.CharField(max_length=260L, blank=True)
     class Meta:
         db_table = 'auth_user'
@@ -219,6 +218,7 @@ class Projects(models.Model):
     stage = models.IntegerField()
     owner_uid = models.ForeignKey(AuthUser, db_column='owner_uid')
     category = models.IntegerField(null=True, blank=True)
+    timezone = models.CharField(max_length=45L, blank=True)
     class Meta:
         db_table = 'projects'
 

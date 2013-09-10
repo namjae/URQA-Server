@@ -38,6 +38,52 @@
       var server_url = "{{ ServerURL }}"
 	  $(document).ready(function(){
 			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
+
+          /*
+           var options = {
+                success: function(data)
+                {
+                     alert(data);
+                    $("#symbolUpload").show();
+                    $("#symbolUploading").hide();
+
+                },
+                error: function()
+                {
+                }
+            };
+           $("#symbolUpload").ajaxForm(options)
+            */
+           // Click to Dropdown component's item event
+            $(".updated-dropdown:not(.multiple)").each(function(){
+                $(this).children("div").children("ul").children("li").click(function(obj) {
+                $(this).parent().children("li[data-value=\"true\"]").attr("data-value", "false");
+                if($(this).attr("data-value") == "true")
+                    $(this).attr("data-value", "false");
+                else
+                    $(this).attr("data-value", "true");
+                $(this).parent().parent().parent().children("a").html($(this).children("a").html());
+                $(this).parent().parent().parent().children("input").attr("value", $(this).index() + 1);
+
+                $(this).parent().parent().hide();
+
+                var csrftoken = getCookie('csrftoken')
+                var status = $(this).index()
+                $.ajax({
+                      type: 'post'
+                    , url: 'status'
+                    , data: {'status' : status}
+                    , beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                            // Send the token to same-origin, relative URLs only.
+                            // Send the token only if the method warrants CSRF protection
+                            // Using the CSRFToken value acquired earlier
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    }
+                })
+                });
+            });
 		});
 	</script>
 
@@ -309,11 +355,18 @@
 			<div id="popup-uploadsymbol">
 				<div class="body mini">
 					<span>Upload Symbol</span>
-					<iframe id="uploadTrg" name="uploadTrg" width="0" height="0" frameborder="0" scrolling="yes"></iframe>
-					<form id="symbolUpload" action="upload.php" method="post" enctype="multipart/form-data" target="uploadTrg">
-						<table class="small" style="margin-top: 5px">
+					<!--<iframe id="uploadTrg" name="uploadTrg" width="0" height="0" frameborder="0" scrolling="yes"></iframe>-->
+					<form id="symbolUpload" action="/urqa/project/{{ projectid }}/symbol/upload" method="post" enctype="multipart/form-data" onsubmit="so_file_submit()">
+                        {% csrf_token %}
+                        <table class="small" style="margin-top: 5px">
 							<tbody><tr>
-								<td class="center" style="width: 74px;">Select File</td>
+                                <td>
+                                    App Version
+                                </td>
+								<td>
+                                    <input type="text" name="version" value=""  style="width: 50px;"/>
+                                </td>
+                                <td class="center" style="width: 70px;">Select File</td>
 								<td><input type="file" name="file" style="width: 100%;"></td>
 								<td style="width: 100px"><div class="button purple" data-name="Upload" style="width: 96px; height: 25px"></div></td>
 							</tr></tbody>
@@ -339,24 +392,14 @@
 									<td style="width: 74px">Uploaded</td>
 								</tr></thead>
 								<tbody>
+                                    {% for sofile in so_file_list %}
 									<tr>
-										<td class="center">1.0</td>
-										<td class="float"><p>Libc.so</p></td>
-										<td class="float"><p>DA6C7B84CDD0390047452A4A78F310D30</p></td>
-										<td class="center">O</td>
+										<td class="center">{{ sofile.appversion }}</td>
+										<td class="float"><p>{{ sofile.filename }}</p></td>
+										<td class="float"><p>{{ sofile.versionkey }}</p></td>
 									</tr>
-									<tr>
-										<td class="center">2.0</td>
-										<td class="float"><p>Libc.so</p></td>
-										<td class="float"><p>DA6C7B84CDD0390047452A4A78F310D30</p></td>
-										<td class="center">O</td>
-									</tr>
-									<tr>
-										<td class="center">3.3</td>
-										<td class="float"><p>Libsourcec.so</p></td>
-										<td class="float"><p>DA6C7B84CDD0390047452A4A78F310D30</p></td>
-										<td class="center">X</td>
-									</tr>
+                                    {% endfor %}
+
 									<tr class="empty">
 										<td></td>
 										<td data-match="true"></td>
@@ -466,7 +509,7 @@
 									<div class="infobox red">
 										<span class="status"></span>
 										<label>
-											<div class="dropdown">
+											<div class="updated-dropdown dropdown"">
 												<a>Ignore</a>
 												<span></span>
 												<div>
@@ -477,7 +520,7 @@
 													 	<li><a>Ignore</a></li>
 													 </ul>
 												</div>
-												<input type="hidden" name="status1" value="4" />
+												<input type="hidden" name="status1" value="{{ ErrorStatus }}" />
 											</div>
 										</label>
 									</div>

@@ -2,16 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ec873a1f-b3f8-44a8-9287-ce9edc874831" name="Default" comment="">
+      <change type="DELETED" beforePath="Y:\urqa\develop\URQA-Server\soma3\templates\details(origin).html" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/adjdbmodel.sh" afterPath="$PROJECT_DIR$/soma3/adjdbmodel.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/common.py" afterPath="$PROJECT_DIR$/soma3/common.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/templates/details.html" afterPath="$PROJECT_DIR$/soma3/templates/details.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/templates/filter.html" afterPath="$PROJECT_DIR$/soma3/templates/filter.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/manage.py" afterPath="$PROJECT_DIR$/soma3/manage.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/urqa/models.py" afterPath="$PROJECT_DIR$/soma3/urqa/models.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/runserver_jeong.sh" afterPath="$PROJECT_DIR$/soma3/runserver_jeong.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/runserver_yang.sh" afterPath="$PROJECT_DIR$/soma3/runserver_yang.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/soma3/urls.py" afterPath="$PROJECT_DIR$/soma3/soma3/urls.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/static/js/sankey.js" afterPath="$PROJECT_DIR$/soma3/static/js/sankey.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/static/js/user.js" afterPath="$PROJECT_DIR$/soma3/static/js/user.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/utility.py" afterPath="$PROJECT_DIR$/soma3/utility.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/client/views.py" afterPath="$PROJECT_DIR$/soma3/client/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/errors/views.py" afterPath="$PROJECT_DIR$/soma3/errors/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/projectmanage/views.py" afterPath="$PROJECT_DIR$/soma3/projectmanage/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -19,16 +20,17 @@
     <ignored path="URQA-Server.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378785751528" ignored="false" />
-    <file path="/views.py" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378793310880" ignored="false" />
+    <file path="/views.py" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378813601528" ignored="false" />
     <file path="/project-select.html" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378384995630" ignored="false" />
     <file path="/utility.js" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378402268501" ignored="false" />
     <file path="/utility.py" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378388211239" ignored="false" />
-    <file path="/user.js" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378792328452" ignored="false" />
+    <file path="/user.js" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378811632033" ignored="false" />
     <file path="/projectdashboard.html" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378450485037" ignored="false" />
     <file path="/urls.py" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378738638515" ignored="false" />
-    <file path="/details.html" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378790041535" ignored="false" />
+    <file path="/details.html" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378807177255" ignored="false" />
     <file path="/details(origin).html" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378453431872" ignored="false" />
     <file path="/common.py" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378455305041" ignored="false" />
+    <file path="/sankey.js" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378794062266" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +53,45 @@
       <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/projectmanage/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="451" column="9" selection-start="14723" selection-end="14723" vertical-scroll-proportion="0.0">
+            <state line="194" column="0" selection-start="6118" selection-end="6118" vertical-scroll-proportion="-20.84">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="common.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/soma3/common.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="89" column="19" selection-start="2923" selection-end="2923" vertical-scroll-proportion="0.9100851">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/soma3/urqa/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="49" column="0" selection-start="1199" selection-end="1199" vertical-scroll-proportion="-17.96">
+              <folding>
+                <element signature="e#51#62#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="login.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/soma3/templates/login.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="112" column="43" selection-start="5144" selection-end="5155" vertical-scroll-proportion="-16.392857">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/soma3/usermanage/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="29" column="15" selection-start="779" selection-end="779" vertical-scroll-proportion="26.12">
               <folding />
             </state>
           </provider>
@@ -60,17 +100,10 @@
       <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/errors/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="41" column="39" selection-start="1136" selection-end="1150" vertical-scroll-proportion="-10.96">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/soma3/client/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="607" column="29" selection-start="22518" selection-end="22518" vertical-scroll-proportion="0.74848115">
-              <folding />
+            <state line="98" column="26" selection-start="2897" selection-end="2897" vertical-scroll-proportion="-20.84">
+              <folding>
+                <element signature="e#51#60#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -78,9 +111,54 @@
       <file leaf-file-name="details.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/templates/details.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="561" column="21" selection-start="20837" selection-end="20837" vertical-scroll-proportion="-5.3584905">
+            <state line="722" column="33" selection-start="27048" selection-end="27324" vertical-scroll-proportion="-225.96227">
               <folding>
-                <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#3;n#div#2;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#1;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#td#1;n#tr#0;n#tbody#0;n#table#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#div#0;n#div#2;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#2;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#div#0;n#div#3;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#3;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#1;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#3;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#div#0;n#div#4;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#4;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#td#1;n#tr#0;n#tbody#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#2;n#tr#0;n#tbody#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#td#3;n#tr#0;n#tbody#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#4;n#tr#0;n#tbody#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#td#4;n#tr#0;n#tbody#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#form#1;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#tbody#0;n#table#0;n#form#1;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#1;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#1;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#1;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#3;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#1;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#2;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#4;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#div#0;n#div#1;n#div#4;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#div#0;n#div#2;n#div#4;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#div#0;n#div#3;n#div#4;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#div#7;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#10;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#2;n#tr#0;n#thead#0;n#table#0;n#div#10;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#1;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#2;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#4;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#5;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#6;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#1;n#tr#0;n#thead#0;n#table#0;n#div#13;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#2;n#tr#0;n#thead#0;n#table#0;n#div#13;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#tbody#0;n#table#0;n#div#13;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#td#3;n#tr#0;n#tbody#0;n#table#0;n#div#13;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#td#0;n#tr#1;n#tbody#0;n#table#0;n#div#13;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -89,7 +167,7 @@
       <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/urqa/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="154" column="15" selection-start="5776" selection-end="5778" vertical-scroll-proportion="-10.96">
+            <state line="248" column="15" selection-start="10094" selection-end="10094" vertical-scroll-proportion="-16.28">
               <folding />
             </state>
           </provider>
@@ -98,16 +176,7 @@
       <file leaf-file-name="user.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/static/js/user.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1070" column="23" selection-start="34631" selection-end="34631" vertical-scroll-proportion="-30.12">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="sankey.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/soma3/static/js/sankey.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="308" column="24" selection-start="9086" selection-end="9090" vertical-scroll-proportion="75.0">
+            <state line="44" column="42" selection-start="1060" selection-end="1060" vertical-scroll-proportion="9.72">
               <folding />
             </state>
           </provider>
@@ -116,25 +185,7 @@
       <file leaf-file-name="utility.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/static/js/utility.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="218" column="13" selection-start="7848" selection-end="7848" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="projectdashboard.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/soma3/templates/projectdashboard.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="259" column="25" selection-start="11153" selection-end="11153" vertical-scroll-proportion="-20.071428">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="urls.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/soma3/soma3/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="97" selection-start="4247" selection-end="4247" vertical-scroll-proportion="0.0">
+            <state line="193" column="36" selection-start="6967" selection-end="6967" vertical-scroll-proportion="-18.56">
               <folding />
             </state>
           </provider>
@@ -158,22 +209,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/soma3/static/js/lib.js" />
-        <option value="$PROJECT_DIR$/soma3/urqa/views.py" />
         <option value="$PROJECT_DIR$/soma3/templates/project-select.html" />
         <option value="$PROJECT_DIR$/soma3/utility.py" />
         <option value="$PROJECT_DIR$/soma3/usermanage/views.py" />
         <option value="$PROJECT_DIR$/soma3/static/js/utility.js" />
         <option value="$PROJECT_DIR$/soma3/templates/projectdashboard.html" />
         <option value="$PROJECT_DIR$/soma3/templates/details(origin).html" />
-        <option value="$PROJECT_DIR$/soma3/projectmanage/views.py" />
-        <option value="$PROJECT_DIR$/soma3/common.py" />
         <option value="$PROJECT_DIR$/soma3/urqa/models.py" />
         <option value="$PROJECT_DIR$/soma3/soma3/urls.py" />
-        <option value="$PROJECT_DIR$/soma3/templates/details.html" />
-        <option value="$PROJECT_DIR$/soma3/errors/views.py" />
-        <option value="$PROJECT_DIR$/soma3/static/js/user.js" />
         <option value="$PROJECT_DIR$/soma3/client/views.py" />
+        <option value="$PROJECT_DIR$/soma3/static/js/sankey.js" />
+        <option value="$PROJECT_DIR$/soma3/soma3/settings.py" />
+        <option value="$PROJECT_DIR$/soma3/errors/views.py" />
+        <option value="$PROJECT_DIR$/soma3/templates/details.html" />
+        <option value="$PROJECT_DIR$/soma3/static/js/user.js" />
+        <option value="$PROJECT_DIR$/soma3/projectmanage/views.py" />
+        <option value="$PROJECT_DIR$/soma3/common.py" />
       </list>
     </option>
   </component>
@@ -423,6 +474,28 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="static" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="URQA-Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="URQA-Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="soma3" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="soma3" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -646,114 +719,165 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/soma3/urqa/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="22" selection-start="1044" selection-end="1044" vertical-scroll-proportion="0.50060755" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/usermanage/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="64" column="24" selection-start="1687" selection-end="1687" vertical-scroll-proportion="0.4906367">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/templates/details(origin).html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="348" column="73" selection-start="11529" selection-end="11547" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/utility.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="18" selection-start="121" selection-end="135" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/static/js/css-compile.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="15" selection-start="32" selection-end="32" vertical-scroll-proportion="0.02240566">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/projectmanage/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="451" column="9" selection-start="14723" selection-end="14723" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/templates/projectdashboard.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="259" column="25" selection-start="11153" selection-end="11153" vertical-scroll-proportion="-20.071428">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/soma3/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="97" selection-start="4247" selection-end="4247" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/static/js/nv.d3.js">
+    <entry file="file://$PROJECT_DIR$/soma3/templates/alert.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/static/js/utility.js">
+    <entry file="file://$PROJECT_DIR$/soma3/soma3/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="218" column="13" selection-start="7848" selection-end="7848" vertical-scroll-proportion="0.0">
+        <state line="89" column="68" selection-start="5123" selection-end="5123" vertical-scroll-proportion="-23.04">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/templates/details.html">
+    <entry file="file://$PROJECT_DIR$/soma3/templates/fileupload.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="561" column="21" selection-start="20837" selection-end="20837" vertical-scroll-proportion="-5.3584905">
-          <folding>
-            <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#3;n#div#2;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/urqa/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="154" column="15" selection-start="5776" selection-end="5778" vertical-scroll-proportion="-10.96">
+        <state line="10" column="12" selection-start="423" selection-end="439" vertical-scroll-proportion="0.23170732">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/static/js/user.js">
+    <entry file="file://$PROJECT_DIR$/soma3/static/css/style.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1070" column="23" selection-start="34631" selection-end="34631" vertical-scroll-proportion="-30.12">
+        <state line="1687" column="112" selection-start="40811" selection-end="40817" vertical-scroll-proportion="0.37910086">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/soma3/static/js/sankey.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="308" column="24" selection-start="9086" selection-end="9090" vertical-scroll-proportion="75.0">
+        <state line="349" column="31" selection-start="10392" selection-end="10392" vertical-scroll-proportion="-20.0">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/soma3/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="115" column="0" selection-start="4105" selection-end="4105" vertical-scroll-proportion="-21.6">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/templates/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="112" column="43" selection-start="5144" selection-end="5155" vertical-scroll-proportion="-16.392857">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/templates/details.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="722" column="33" selection-start="27048" selection-end="27324" vertical-scroll-proportion="-225.96227">
+          <folding>
+            <element signature="n#style#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#1;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#td#1;n#tr#0;n#tbody#0;n#table#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#2;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#div#0;n#div#2;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#2;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#div#0;n#div#3;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#3;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#1;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#3;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#div#0;n#div#4;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#4;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#td#1;n#tr#0;n#tbody#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#2;n#tr#0;n#tbody#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#td#3;n#tr#0;n#tbody#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#4;n#tr#0;n#tbody#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#td#4;n#tr#0;n#tbody#0;n#table#0;n#form#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#form#1;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#tbody#0;n#table#0;n#form#1;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#1;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#1;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#1;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#3;n#tr#0;n#thead#0;n#table#0;n#div#0;n#div#1;n#div#0;n#div#5;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#2;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#4;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#div#0;n#div#1;n#div#4;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#div#0;n#div#2;n#div#4;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#div#0;n#div#3;n#div#4;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#table#0;n#div#7;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#10;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#2;n#tr#0;n#thead#0;n#table#0;n#div#10;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#1;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#2;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#4;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#5;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#6;n#tr#0;n#thead#0;n#table#0;n#div#12;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#1;n#tr#0;n#thead#0;n#table#0;n#div#13;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#2;n#tr#0;n#thead#0;n#table#0;n#div#13;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#tbody#0;n#table#0;n#div#13;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#td#3;n#tr#0;n#tbody#0;n#table#0;n#div#13;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#td#0;n#tr#1;n#tbody#0;n#table#0;n#div#13;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/soma3/errors/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="39" selection-start="1136" selection-end="1150" vertical-scroll-proportion="-10.96">
+        <state line="98" column="26" selection-start="2897" selection-end="2897" vertical-scroll-proportion="-20.84">
+          <folding>
+            <element signature="e#51#60#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/urqa/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="248" column="15" selection-start="10094" selection-end="10094" vertical-scroll-proportion="-16.28">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/client/views.py">
+    <entry file="file://$PROJECT_DIR$/soma3/urqa/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="607" column="29" selection-start="22518" selection-end="22518" vertical-scroll-proportion="0.74848115">
+        <state line="49" column="0" selection-start="1199" selection-end="1199" vertical-scroll-proportion="-17.96">
+          <folding>
+            <element signature="e#51#62#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/usermanage/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="15" selection-start="779" selection-end="779" vertical-scroll-proportion="26.12">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/static/js/utility.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="193" column="36" selection-start="6967" selection-end="6967" vertical-scroll-proportion="-18.56">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/static/js/user.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="44" column="42" selection-start="1060" selection-end="1060" vertical-scroll-proportion="9.72">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/projectmanage/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="194" column="0" selection-start="6118" selection-end="6118" vertical-scroll-proportion="-20.84">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/common.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="89" column="19" selection-start="2923" selection-end="2923" vertical-scroll-proportion="0.9100851">
           <folding />
         </state>
       </provider>
