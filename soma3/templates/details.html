@@ -653,7 +653,11 @@
                 <div style="width: 100px; height: 25px"></div>
                 {% endif %}
 			</div>
-			<div id="call-stack" class="content">
+            {% if isNative %}
+			    <div id="call-stack-native" class="content">
+            {% else %}
+                <div id="call-stack" class="content">
+            {% endif %}
 				<table class="small">
 					<thead><tr>
 						<td class="center" style="width: 60px">Number</td>

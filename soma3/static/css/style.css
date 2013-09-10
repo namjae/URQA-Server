@@ -50,6 +50,11 @@
 	url("./font/RixGo L.svg") format("svg");
 }
 
+@font-face {
+	font-family: "Fixedsys500c";
+	src: url("./font/Fixedsys500c.ttf") format("truetype"),
+}
+
 
 @variables {
 	header-size: 58px;
@@ -1628,20 +1633,23 @@ table.content-small {
 	#instance > table {
 		margin-top: -10px;
 	}
-	#call-stack > table {
+    #call-stack > table {
         margin-top: -10px;
-
+    }
+	#call-stack-native > table {
+        margin-top: -10px;
         tbody {
 		tr:nth-child(n) { background: white; }
 		tr:not(.notHover):hover { background-color: @tm-hl-half-c2; }
 		td {
-			font: 14px "RixGo L";
+			font: 14px "Fixedsys500c";
 			color: @tm-tx-c3;
 			vertical-align: middle;
 			@padding {
 				left: 12px;
 			}
 			p {
+                font: 14px "Fixedsys500c";
 				width: 0px;
 				text-overflow: ellipsis;
 				white-space: nowrap;

@@ -308,6 +308,8 @@ var g_link
 
 function sankeydraw(data)
 {
+    if(data.nodes.length == 0)
+        return;
     var margin = {
         top : 0,
         right : 1,
@@ -360,7 +362,7 @@ function sankeydraw(data)
             .sort(function(a, b) {
                 return b.dy - a.dy;
             })
-            .call(link_tip);
+            //.call(link_tip);
         /*.attr('y', function(d) {
                 return y(d)
             })
@@ -374,6 +376,8 @@ function sankeydraw(data)
 
     rect_tip = d3.tip()
             .html(function(d) {
+                if(d == null)
+                    return ''
                 var name = d.name.split(':')
                 return '<center>' + name[1] +"</center><br>" +
                         '<center>' + name[2] +"</center><br>" +
