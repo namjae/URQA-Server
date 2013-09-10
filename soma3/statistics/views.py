@@ -62,7 +62,7 @@ def chartdata(request,apikey):
         return HttpResponseRedirect('/urqa')
 
     past, today = getTimeRange(retention)
-    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open,Status.Renew],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
 
     #Chart1
     chart1 = []

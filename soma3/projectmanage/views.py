@@ -50,14 +50,14 @@ from urqa.models import Session
 from urqa.models import Sessionevent
 from urqa.models import Eventpaths
 
-from utility import getTemplatePath
+#from utility import getTemplatePath
 from utility import getTimeRange
 from utility import TimeRange
 from utility import RANK
 from utility import numbertostrcomma
 from utility import get_dict_value_matchin_key
-from utility import get_dict_value_matchin_number
-
+#from utility import get_dict_value_matchin_number
+from utility import Status
 from config import get_config
 
 
@@ -529,10 +529,9 @@ def errorscorelist(apikey):
 
     #print today
 
-    ErrorElements = Errors.objects.filter(pid = ProjectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
+    ErrorElements = Errors.objects.filter(pid = ProjectElement , status__in=[Status.New,Status.Open],lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
 
-    jsondata = [
-    ]
+    jsondata = []
 
 
     for error in ErrorElements:
@@ -555,7 +554,8 @@ def errorscorelist(apikey):
             rankcolor = RANK.rankcolor[error.rank]
 
         dicerrordata = {'ErrorName' : error.errorname ,
-                        'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' ,
+                        #'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' ,
+                        'ErrorClassName' : error.errorclassname + ':' + error.linenum,
                         'tags': tagString,
                         'ErrorScore' : error.errorweight ,
                         'Errorid' : error.iderror ,

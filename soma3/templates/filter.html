@@ -24,13 +24,154 @@
 
 	<script type="text/javascript">
         var project_id = "{{ projectid }}";
-        var server_url = "{{ ServerURL }}"
-
+        var server_url = "{{ ServerURL }}";
+        var page_num = 1;
+        var list_per_page = 5;
+        var listData;
+        var list_count;
         $("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
+
 
         function clickevent(id)
         {
             location.href = './' + id
+        }
+        function initPageChanger()
+        {
+            list_count = listData.length
+            page_num = 1; //page_number초기화
+            $('.page-changer>ul').empty()
+            if(list_count / list_per_page > 1)
+            {
+                $('.page-changer>ul').append($('<li class="dont" onclick="pageChange(1);">&lt;&lt;</li>'))
+                for(var i=0;i<Math.ceil(list_count/list_per_page);i++)
+                    $('.page-changer>ul').append($('<li onclick="pageChange('+Number(i+1)+');">'+ i +'</li>'))
+                $('.page-changer>ul').append($('<li onclick="pageChange('+Math.ceil(list_count/list_per_page)+');">&gt;&gt;</li>'))
+                $('.page-changer>ul').children('li').eq(page_num).addClass('select')
+            }
+        }
+        function pageChange(page_num)
+        {
+            list_count = listData.length
+            $('.page-changer>ul').children('.dont').removeClass('dont')
+            if(page_num == 1)
+                $('.page-changer>ul').children('li').eq(0).addClass('dont')
+            else if(page_num == Math.ceil(list_count/list_per_page))
+                $('.page-changer>ul').children('li').eq(page_num+1).addClass('dont')
+            $('.page-changer>ul').children('.select').removeClass('select')
+            $('.page-changer>ul').children('li').eq(page_num).addClass('select')
+            $('.content-large>tbody').empty();
+            page_num = Number(page_num)
+
+            for(var i=((page_num-1)*list_per_page);i<(page_num*list_per_page);i++)
+            {
+                if(i >= listData.length) break;
+                auto_str = ''
+                if(listData[i].auto == 1)   auto_str = '(Auto)';
+                tags = ''
+                for(var j=0;j<listData[i].tags.length;j++)
+                    tags += '<li>' + listData[i].tags[j] + '<i></i></li>';
+                new_list = $('<tr iderror="'+ listData[i].iderror +'">\
+                    <td class="center"><span class="bold">'+listData[i].es+'</span><br>'+auto_str+'</td>\
+                    <td class="float" onclick="clickevent('+listData[i].iderror+')">\
+                        <span class="' + listData[i].rank + '"></span>\
+                        <p>'+listData[i].errorname + '<br>' + listData[i].errorclassname + ':' + listData[i].linenum+'</p>\
+                    </td>\
+                    <td><p>\
+                        <div class="updated-tags tags-list user-input">\
+                            <ul>'+
+                                tags
+                                +'<li class="updated-dropdown dropdown">\
+                                    <a>Add Tags</a>\
+                                    <span></span>\
+                                    <input type="input" />\
+                                </li>\
+                            </ul>\
+                            <input type="hidden" name="tag'+i+'" />\
+                        </div>\
+                    </p></td>\
+                    <td class="center">\
+                        <div class="updated-dropdown dropdown">\
+                            <a style="width: 18px">'+status2str[listData[i].status]+'</a>\
+                            <span></span>\
+                            <div>\
+                                 <ul>\
+                                    <li><a>New</a></li>\
+                                    <li><a>Open</a></li>\
+                                    <li><a>Fixed</a></li>\
+                                    <li><a>Ignore</a></li>\
+                                 </ul>\
+                            </div>\
+                            <input type="hidden" name="status'+i+'" value="'+listData[i].status+'" />\
+                        </div>\
+                    </td>\
+                    <td class="center">'+listData[i].count+'</td>\
+                    <td class="center small">'+listData[i].year+'<br>'+listData[i].month+'/'+listData[i].day+'</td>\
+                </tr>')
+                $('.content-large>tbody').append(new_list);
+            }
+            $('.content-large>tbody').append($('<tr class="empty">\
+                    <td data-match="true"></td>\
+                    <td data-match="true"></td>\
+                    <td></td>\
+                    <td></td>\
+                    <td></td>\
+                    <td></td>\
+                </tr>'))
+            tableResizing();
+            adjustErrorListStyle();
+        }
+
+        var asc;
+        function sort_by_score(a1,a2)
+        {
+            if(asc == 0)    return a1.es<a2.es;
+            else            return a1.es>a2.es;
+        }
+        function sort_by_name(a1,a2)
+        {
+            if(asc == 0)    return a1.errorname<a2.errorname;
+            else            return a1.errorname>a2.errorname;
+        }
+        function sort_by_status(a1,a2)
+        {
+            if(asc == 0)    return a1.status<a2.status;
+            else            return a1.status>a2.status;
+        }
+        function sort_by_occur(a1,a2)
+        {
+            if(asc == 0)    return a1.count<a2.count;
+            else            return a1.count>a2.count;
+        }
+        function sort_by_date(a1,a2)
+        {
+            var dt1 = new Date(a1.year,a1.month,a1.day);
+            var dt2 = new Date(a2.year,a2.month,a2.day);
+            if(asc == 0)    return dt1<dt2;
+            else            return dt1>dt2;
+        }
+        function sort_list()
+        {
+            asc = -1
+            ch = $('table.sort > thead > tr > td.sortable')
+            for(var i=0;i<ch.length;i++)
+            {
+                if(ch.eq(i).hasClass('asc'))    asc = 1;
+                if(ch.eq(i).hasClass('desc'))   asc = 0;
+                if(asc != -1)
+                {
+                    switch(i)
+                    {
+                        case 0: listData.sort(sort_by_score);   break;
+                        case 1: listData.sort(sort_by_name);   break;
+                        case 2: listData.sort(sort_by_status);   break;
+                        case 3: listData.sort(sort_by_occur);   break;
+                        case 4: listData.sort(sort_by_date);   break;
+                    }
+                    break;
+                }
+            }
+            pageChange(page_num)
         }
 
         setTimeout(function (){
@@ -73,8 +214,11 @@
             tags = $('.tags-list:not(.classes-list)>ul>li:not(.dropdown)')
             tag_list = []
             for(var i=0;i<tags.length;i++)
+            {
+                if(tags.eq(i).parent().parent().hasClass('updated-tags'))
+                    continue;
                 tag_list.push(tags.eq(i).text())
-
+            }
             //Classes
             classes = $('.classes-list>ul>li:not(.dropdown)')
             class_list = []
@@ -106,117 +250,15 @@
                     'osv':osv_list
                 })}
                 ,success : function(jsonData) {
-                    // unhandled = 0, native = 1, critical = 2, major = 3, minor = 4
-                    rank2str = ['gray','purple','red','blue','green']
+                    // unhandled = 0, critical = 1, major = 2, minor = 3, native = 4
                     status2str = ['New','Open','Fixed','Ignore']
-                    $('.content-large>tbody').empty();
                     if(jsonData.length == 0)
                         $('.noerror_msg').show()
                     else
                         $('.noerror_msg').hide()
-                    for(var i=0;i<jsonData.length;i++)
-                    {
-                        auto_str = ''
-                        if(jsonData[i].auto == 1)   auto_str = '(Auto)';
-                        tags = ''
-                        for(var j=0;j<jsonData[i].tags.length;j++)
-                            tags += '<li>' + jsonData[i].tags[j] + '<i></i></li>';
-                        new_list = $('<tr iderror="'+ jsonData[i].iderror +'">\
-							<td class="center"><span class="bold">'+jsonData[i].es+'</span><br>'+auto_str+'</td>\
-							<td class="float" onclick="clickevent('+jsonData[i].iderror+')">\
-								<span class="' + rank2str[jsonData[i].rank] + '"></span>\
-								<p>'+jsonData[i].errorname + '<br>' + jsonData[i].errorclassname + ':' + jsonData[i].linenum+'</p>\
-							</td>\
-							<td><p>\
-								<div class="updated-tags tags-list user-input">\
-									<ul>'+
-										tags
-										+'<li class="updated-dropdown dropdown">\
-											<a>Add Tags</a>\
-											<span></span>\
-											<input type="input" />\
-										</li>\
-									</ul>\
-									<input type="hidden" name="tag'+i+'" />\
-								</div>\
-							</p></td>\
-							<td class="center">\
-								<div class="updated-dropdown dropdown">\
-									<a style="width: 18px">'+status2str[jsonData[i].status]+'</a>\
-									<span></span>\
-									<div>\
-										 <ul>\
-										 	<li><a>New</a></li>\
-										 	<li><a>Open</a></li>\
-										 	<li><a>Fixed</a></li>\
-										 	<li><a>Ignore</a></li>\
-										 </ul>\
-									</div>\
-									<input type="hidden" name="status'+i+'" value="'+jsonData[i].status+'" />\
-								</div>\
-							</td>\
-							<td class="center">'+jsonData[i].count+'</td>\
-							<td class="center small">'+jsonData[i].year+'<br>'+jsonData[i].month+'/'+jsonData[i].day+'</td>\
-						</tr>')
-                        $('.content-large>tbody').append(new_list);
-                        /*
-                        tags = ''
-                        auto_str = ''
-                        if(jsonData[i].auto == 1)   auto_str = '(Auto)';
-                        for(var j=0;j<jsonData[i].tags.length;j++)
-                        {
-                            tags += '<li>' + jsonData[i].tags[j] + '<i></i></li>';
-                            //if(j < jsonData[i].tags.length-1)
-                            //    tags += ', ';
-                        }
-                        tags += '<li class="dropdown">\
-                                    <a>Add More</a>\
-									<span></span>\
-									<input type="input" />\
-								</li>'
-                        new_list = $('<tr iderror="'+ jsonData[i].iderror +'">\
-                            <td class="center">' +
-                            jsonData[i].es +
-                            '<br>'+
-                            auto_str +
-                            '</td>\
-                            <td class="float">\
-                            <span class="' + rank2str[Number(jsonData[i].rank)] + '"></span>\
-                            <p>' +
-                            jsonData[i].errorname + '<br>' + jsonData[i].errorclassname + ':' + jsonData[i].linenum +
-                            '</p>\
-                            </td>\
-                            <td><p>\
-                            <div class="tags-list user-input">\
-                            <ul>' +
-                            tags +
-                            '</ul>\
-                            </p></td>\
-                            <td class="center">' +
-                            jsonData[i].status +
-                            '</td>\
-                            <td class="center">' +
-                            jsonData[i].count +
-                            '</td>\
-                            <td class="center small">' +
-                            jsonData[i].year + '<br>' + jsonData[i].month + '/' + jsonData[i].day +
-                            '</td>\
-                            </tr>')
-                        new_list.click(function(){
-                            location.href = './' + $(this).attr('iderror');
-                        });
-                        $('.content-large>tbody').append(new_list)*/
-                    }
-                    $('.content-large>tbody').append($('<tr class="empty">\
-							<td data-match="true"></td>\
-							<td data-match="true"></td>\
-							<td></td>\
-							<td></td>\
-							<td></td>\
-							<td></td>\
-						</tr>'))
-                    tableResizing();
-                    adjustErrorListStyle();
+                    listData = jsonData
+                    initPageChanger()
+                    pageChange(page_num)
                 }
                 , beforeSend: function(xhr, settings) {
                     var csrftoken = getCookie('csrftoken')
@@ -742,12 +784,12 @@
 			<div id="error-list" class="content">
 				<table class="content-large sort top">
 					<thead><tr>
-						<td class="center asc" style="width: 88px">ES<span></span></td>
-						<td>Error Name<span></span></td>
+						<td class="sortable center desc" style="width: 88px">ES<span></span></td>
+						<td class="sortable">Error Name<span></span></td>
 						<td style="width: 16%">Tags<span></span></td>
-						<td class="center" style="width: 88px">Status<span></span></td>
-						<td class="center" style="width: 8%">Occur<span></span></td>
-						<td class="center" style="width: 8%">Date<span></span></td>
+						<td class="sortable center" style="width: 88px">Status<span></span></td>
+						<td class="sortable center" style="width: 8%">Occur<span></span></td>
+						<td class="sortable center" style="width: 8%">Date<span></span></td>
 					</tr></thead>
 					<tbody>
                         <!--
@@ -813,7 +855,7 @@
 					</div>
 				</div>
 				<div class="page-changer">
-					<ul>
+					<ul><!--
 						<li class="dont">&lt;&lt;</li>
 						<li class="select">01</li>
 						<li>02</li>
@@ -825,7 +867,7 @@
 						<li>08</li>
 						<li>09</li>
 						<li>10</li>
-						<li>&gt;&gt;</li>
+						<li>&gt;&gt;</li>-->
 					</ul>
 				</div>
 				<div class="white-area"></div>

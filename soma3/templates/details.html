@@ -8,7 +8,7 @@
 	<meta name="viewport" content="width=device-width">
     {% load static %}
 
-    <script type="text/javascript" src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js?2.9.1"></script>
 	<script type="text/javascript" src="{% static 'js/lib.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/hashmap.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/jquery-2.0.0.min.js' %}"></script>
@@ -23,7 +23,14 @@
     <script type="text/javascript" src="{% static 'js/d3.tip.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/sankey.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/utility.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/nv.d3.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'js/nv.d3.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/utils.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/models/pie.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/models/legend.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/models/pieChart.js' %}"></script>
+
+    <link href="{% static 'css/nv.d3.css' %}" rel="stylesheet" type="text/css">
 
 	<script type="text/javascript">
       var error_id = {{ iderror }};
@@ -33,72 +40,8 @@
 			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
 	</script>
-    <script>
-        var data =[
-  {
-    key: "adfawe Return",
-    values: [
-      {
-        "label": "One",
-        "value" : 29.765957771107
-      } ,
-      {
-        "label": "Two",
-        "value" : 0
-      } ,
-      {
-        "label": "Three",
-        "value" : 32.807804682612
-      } ,
-      {
-        "label": "Four",
-        "value" : 196.45946739256
-      } ,
-      {
-        "label": "Five",
-        "value" : 0.19434030906893
-      } ,
-      {
-        "label": "Six",
-        "value" : 98.079782601442
-      } ,
-      {
-        "label": "Seven",
-        "value" : 13.925743130903
-      } ,
-      {
-        "label": "Eight",
-        "value" : 5.1387322875705
-      }
-    ]
-  }
-]
 
-       $(document).ready(function(){
-            nv.addGraph(function() {
-              var chart = nv.models.pieChart()
-                  .x(function(d) { return d.label })
-                  .y(function(d) { return d.value })
-                  .showLabels(true);
-
-                d3.select("#osver svg")
-                    .datum(data)
-                  .transition().duration(1200)
-                    .call(chart);
-
-              return chart;
-            });
-        })
-
-
-    </script>
-    <style>
-        #osver svg {
-        height: 200px;
-        }
-
-    </style>
-</head>
+ </head>
 
 <body class="error" style="display: none;">
 	<div id="container">
@@ -595,6 +538,7 @@
 				<div>
 					<div class="area">
 						<table style="margin-top: -10px;">
+                            <thead><tr><td>OS Version</td></tr></thead>
 							<tbody>
 								<tr class="notHover">
 									<td id="osver"><svg></svg></td>
@@ -606,6 +550,7 @@
 				<div>
 					<div class="area">
 						<table style="margin-top: -10px;">
+                            <thead><tr><td>APP Version</td></tr></thead>
 							<tbody>
 								<tr class="notHover">
 									<td id="appver"><svg></svg></td>
@@ -618,6 +563,7 @@
 					<div class="area">
 						<table style="margin-top: -10px;">
 							<tbody>
+                             <thead><tr><td>Device</td></tr></thead>
 								<tr class="notHover">
 									<td id="dever"><svg></svg></td>
 								</tr>
@@ -628,6 +574,7 @@
 				<div>
 					<div class="area">
 						<table style="margin-top: -10px;">
+                            <thead><tr><td>Country</td></tr></thead>
 							<tbody>
 								<tr class="notHover">
 									<td id="counver"><svg></svg></td>

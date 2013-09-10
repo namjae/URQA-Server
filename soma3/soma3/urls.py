@@ -70,7 +70,7 @@ urlpatterns = patterns('',
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/device$', 'errors.views.device'),
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/country$', 'errors.views.country'),
 
-    url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/status$', 'errors.views.changeStatus'),
+    url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/status$', 'errors.views.chstatus'),
 
     #Statistics
     url(r'^urqa/project/(?P<apikey>.{8})/statistics/$', 'statistics.views.statistics'),

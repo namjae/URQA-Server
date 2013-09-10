@@ -605,7 +605,7 @@ def calc_eventpath(errorElement):
         sid = int(key[0])
         tid = int(key[1])
         result['links'].append({'source':sid,'target':tid,'value':link_table[link]})
-    print json.dumps(result)
+    #print json.dumps(result)
     return result
 
 def calc_errorscore(errorElement):

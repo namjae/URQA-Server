@@ -942,7 +942,7 @@ $(document).ready(function()
 // Stylesheet is load-complate
 $("head").styleReady(function(){
 	$("body").css("display", "block");
-	
+
 	if($("html").hasClass("project-select") )
 	{
 		copyToClipboard("#project-list > .list > div > label > span", copyThis);
@@ -970,18 +970,141 @@ $("head").styleReady(function(){
 	}
 	if($("body").hasClass("error") )
 	{
-        	$("#event-path-parent").ready(function(){
-			//Raphael.custom.eventPath("./data3", "#event-path", {"height": 230, "contentWidth": 20, "contentHeight": 20, "textColor": "#303335", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true, "topgutter": 5, "bottomgutter": -10 })
+        $("#event-path-parent").ready(function(){
+        //Raphael.custom.eventPath("./data3", "#event-path", {"height": 230, "contentWidth": 20, "contentHeight": 20, "textColor": "#303335", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true, "topgutter": 5, "bottomgutter": -10 })
+        $.ajax({
+            type: 'get'
+          , url: 'eventpath'
+          , success : function(data) {
+                    sankeyloading = true
+                    sankeydata = data
+                    sankeydraw(data)
+               }
+           })
+        });
+        //osversion
+        $("#osver svg").ready(function() {
             $.ajax({
                 type: 'get'
-              , url: 'eventpath'
-              , success : function(data) {
-                        sankeyloading = true
-                        sankeydata = data
-                        sankeydraw(data)
-                   }
-               })
-		});
+                , url: 'os'
+                , success : function(data) {
+                    nv.addGraph(function() {
+
+                    var height = 300
+                    var chart = nv.models.pieChart()
+                                .x(function(d) { return d.label })
+                                .y(function(d) { return d.value })
+                                .color(d3.scale.category10().range())
+                                .height(height)
+
+                    chart.pie.pieLabelsOutside(false).labelType("percent");
+
+                    d3.select("#osver svg")
+                            .datum(data)
+                            .transition().duration(1200)
+                            .attr('height', height)
+                            .call(chart);
+
+                    nv.utils.windowResize(chart.update);
+
+                    return chart;
+                    });
+                }
+            })
+        })
+        //appversion
+        $("#appver svg").ready(function() {
+            $.ajax({
+                type: 'get'
+                , url: 'app'
+                , success : function(data) {
+                    nv.addGraph(function() {
+
+                    var height = 300
+                    var chart = nv.models.pieChart()
+                                .x(function(d) { return d.label })
+                                .y(function(d) { return d.value })
+                                .color(d3.scale.category10().range())
+                                .height(height)
+
+                    chart.pie.pieLabelsOutside(false).labelType("percent");
+
+                    d3.select("#appver svg")
+                            .datum(data)
+                            .transition().duration(1200)
+                            .attr('height', height)
+                            .call(chart);
+
+                    nv.utils.windowResize(chart.update);
+
+                    return chart;
+                    });
+                }
+            })
+        })
+        //device
+        $("#dever svg").ready(function() {
+            $.ajax({
+                type: 'get'
+                , url: 'device'
+                , success : function(data) {
+                    nv.addGraph(function() {
+
+                    var height = 300
+                    var chart = nv.models.pieChart()
+                                .x(function(d) { return d.label })
+                                .y(function(d) { return d.value })
+                                .color(d3.scale.category10().range())
+                                .height(height)
+
+                    chart.pie.pieLabelsOutside(false).labelType("percent");
+
+                    d3.select("#dever svg")
+                            .datum(data)
+                            .transition().duration(1200)
+                            .attr('height', height)
+                            .call(chart);
+
+                    nv.utils.windowResize(chart.update);
+
+                    return chart;
+                    });
+                }
+            })
+        })
+        //country
+        $("#counver svg").ready(function() {
+            $.ajax({
+                type: 'get'
+                , url: 'country'
+                , success : function(data) {
+                    nv.addGraph(function() {
+
+                    var height = 300
+                    var chart = nv.models.pieChart()
+                                .x(function(d) { return d.label })
+                                .y(function(d) { return d.value })
+                                .color(d3.scale.category10().range())
+                                .height(height)
+
+                    chart.pie.pieLabelsOutside(false).labelType("percent");
+
+                    d3.select("#counver svg")
+                            .datum(data)
+                            .transition().duration(1200)
+                            .attr('height', height)
+                            .call(chart);
+
+                    nv.utils.windowResize(chart.update);
+
+                    return chart;
+                    });
+                }
+            })
+        })
+
+
+
     }
 
   	if($("body").hasClass("statistics") )
@@ -1523,7 +1646,8 @@ $("head").styleReady(function(){
 			$(".checkbox.red[data-value=checked] > input[name=\""+$(this).children("input").attr("name")+"\"]").each(function() { $(this).parent().click(); });
 		}
 	});
-	$("table.sort > thead > tr > td").click(function(){
+
+	$("table.sort > thead > tr > td.sortable").click(function(){
 		if($(this).hasClass("asc") )
 		{
 			$(this).parent().children().removeClass("asc desc");
@@ -1534,6 +1658,7 @@ $("head").styleReady(function(){
 			$(this).parent().children().removeClass("asc desc");
 			$(this).removeClass("desc").addClass("asc");
 		}
+        sort_list();
 	});
 
 	/** Component End **/

@@ -4,6 +4,8 @@
 import re
 import json
 import sys
+import operator
+from collections import OrderedDict
 
 
 from django.http import HttpResponse
@@ -113,7 +115,7 @@ def deleteComment(request, apikey, iderror):
         HttpResponse('comment %s not exists' % idcomment)
 
     return HttpResponse('success')
-"""
+
 def os(request,apikey,iderror):
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
 
@@ -121,29 +123,148 @@ def os(request,apikey,iderror):
     if not result:
         return HttpResponse(msg)
 
-    data =  [{
-        'key': "adfawe Return",
-        'values': [
-          {
-            "label": "One",
-            "value" : 29.765957771107
-          }
-        ]
-    }]
+    data = []
+    InstanceElements = Instances.objects.filter(iderror=iderror)
 
-    InstanceElements = Instances.obejcts.filter(iderror=iderror)
-
+    dict = {}
     for Instance in InstanceElements:
-        dict = {}
-        Instances.appversion
+        if Instance.osversion in dict:
+            dict[Instance.osversion] += 1
+        else:
+            dict[Instance.osversion] = 1
+
+    sortdict = OrderedDict(sorted(dict.iteritems(), key=lambda dict: dict[1], reverse=True))
+
+
+    counter = 0
+    others = 0
+    for key,value in sortdict.items():
+        counter += 1
+        if counter <= 5:
+            tuple = {'label' : key, 'value' : value}
+            data.append(tuple)
+        else:
+            others += 1
+
+    if len(sortdict) > 5:
+        tuple = {'label' : 'Ohters' , 'value' : others}
+        data.append(tuple)
+
+
+    return HttpResponse(json.dumps(data),'application/json')
+
 
 
 def app(request,apikey,iderror):
+    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
+
+    print msg
+    if not result:
+        return HttpResponse(msg)
+
+    data = []
+    InstanceElements = Instances.objects.filter(iderror=iderror)
+
+    dict = {}
+    for Instance in InstanceElements:
+        if Instance.appversion in dict:
+            dict[Instance.appversion] += 1
+        else:
+            dict[Instance.appversion] = 1
+
+    sortdict = OrderedDict(sorted(dict.iteritems(), key=lambda dict: dict[1], reverse=True))
+
+
+    counter = 0
+    others = 0
+    for key,value in sortdict.items():
+        counter += 1
+        if counter <= 5:
+            tuple = {'label' : key, 'value' : value}
+            data.append(tuple)
+        else:
+            others += 1
+
+    if len(sortdict) > 5:
+        tuple = {'label' : 'Ohters' , 'value' : others}
+        data.append(tuple)
+
+
+    return HttpResponse(json.dumps(data),'application/json')
 
 def device(request,apikey,iderror):
+    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
+
+    print msg
+    if not result:
+        return HttpResponse(msg)
+
+    data = []
+    InstanceElements = Instances.objects.filter(iderror=iderror)
+
+    dict = {}
+    for Instance in InstanceElements:
+        if Instance.device in dict:
+            dict[Instance.device] += 1
+        else:
+            dict[Instance.device] = 1
+
+    sortdict = OrderedDict(sorted(dict.iteritems(), key=lambda dict: dict[1], reverse=True))
+
+
+    counter = 0
+    others = 0
+    for key,value in sortdict.items():
+        counter += 1
+        if counter <= 5:
+            tuple = {'label' : key, 'value' : value}
+            data.append(tuple)
+        else:
+            others += 1
+
+    if len(sortdict) > 5:
+        tuple = {'label' : 'Ohters' , 'value' : others}
+        data.append(tuple)
+
+
+    return HttpResponse(json.dumps(data),'application/json')
 
 def country(request,apikey,iderror):
-"""
+    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
+
+    print msg
+    if not result:
+        return HttpResponse(msg)
+
+    data = []
+    InstanceElements = Instances.objects.filter(iderror=iderror)
+
+    dict = {}
+    for Instance in InstanceElements:
+        if Instance.country in dict:
+            dict[Instance.country] += 1
+        else:
+            dict[Instance.country] = 1
+
+    sortdict = OrderedDict(sorted(dict.iteritems(), key=lambda dict: dict[1], reverse=True))
+
+
+    counter = 0
+    others = 0
+    for key,value in sortdict.items():
+        counter += 1
+        if counter <= 5:
+            tuple = {'label' : key, 'value' : value}
+            data.append(tuple)
+        else:
+            others += 1
+
+    if len(sortdict) > 5:
+        tuple = {'label' : 'Ohters' , 'value' : others}
+        data.append(tuple)
+
+
+    return HttpResponse(json.dumps(data),'application/json')
 
 
 def errorDetail(request,apikey,iderror):
@@ -471,7 +592,8 @@ def error_list(request,apikey):
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
 
     date = int(jsonData['date'])
-    status = int(jsonData['status'])
+    _status = [[0,1,2,3],[0],[1],[2],[3]]
+    status = _status[int(jsonData['status'])]
     rank = jsonData['rank']
     tags = jsonData['tags']
     classes = jsonData['classes']
@@ -484,16 +606,20 @@ def error_list(request,apikey):
 
 
     week, today = getTimeRange(date)
-    errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status=status,lastdate__range=(week,today)).order_by('-errorweight','rank', '-lastdate')
+    errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status__in=status,lastdate__range=(week,today)).order_by('-errorweight','rank', '-lastdate')
+    #print '1',errorElements
+    #print classes
     if classes:
         errorElements = errorElements.filter(errorclassname__in=classes)
+    #print tags
     if tags:
         tagElements = Tags.objects.select_related().filter(iderror__in=errorElements,tag__in=tags).values('iderror').distinct().order_by('iderror')
+        print tagElements
         iderror_list = []
         for e in tagElements:
             iderror_list.append(int(e['iderror']))
-        if iderror_list:
-            errorElements = errorElements.filter(iderror__in=iderror_list)
+        errorElements = errorElements.filter(iderror__in=iderror_list)
+    #print appversion
     if appversion:
         appvElements = Appstatistics.objects.select_related().filter(iderror__in=errorElements,appversion__in=appversion).values('iderror').distinct().order_by('iderror')
         iderror_list = []
@@ -501,6 +627,7 @@ def error_list(request,apikey):
             iderror_list.append(int(e['iderror']))
         if iderror_list:
             errorElements = errorElements.filter(iderror__in=iderror_list)
+    #print osversion
     if osversion:
         osvElements = Osstatistics.objects.select_related().filter(iderror__in=errorElements,osversion__in=osversion).values('iderror').distinct().order_by('iderror')
         iderror_list = []
@@ -516,7 +643,7 @@ def error_list(request,apikey):
     for e in errorElements:
         new_e = {}
         new_e['iderror'] = e.iderror
-        new_e['rank'] = e.rank
+        new_e['rank'] = RANK.rankcolor[e.rank]
         new_e['status'] = e.status#Status.toString[e.status]
         new_e['errorname'] = e.errorname
         new_e['errorclassname'] = e.errorclassname
@@ -535,3 +662,15 @@ def error_list(request,apikey):
         #print new_e
 
     return HttpResponse(json.dumps(result), 'application/json');
+
+def chstatus(request,apikey,iderror):
+    result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,apikey,iderror)
+
+    print msg
+    if not result:
+        return HttpResponse(msg)
+    status = request.POST['status']
+    print 'y',status
+    errorElement.status = status;
+    errorElement.save()
+    return HttpResponse('success');

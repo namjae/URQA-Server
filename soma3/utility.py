@@ -47,11 +47,11 @@ class TimeRange:
     threemonthly = 90
 
 class Status:
-    toString = ['New','Open','Ignore','Renew']
+    toString = ['New','Open','Fixed','Ignore']
     New = 0
     Open = 1
-    Ignore = 2
-    Renew = 3
+    Fixed = 2
+    Ignore = 3
 #weekly, monthly, 3monthly
 def getTimeRange(t):
 

@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ec873a1f-b3f8-44a8-9287-ce9edc874831" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/soma3/static/js/nv.d3.min.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/adjdbmodel.sh" afterPath="$PROJECT_DIR$/soma3/adjdbmodel.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/templates/details.html" afterPath="$PROJECT_DIR$/soma3/templates/details.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/templates/filter.html" afterPath="$PROJECT_DIR$/soma3/templates/filter.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/manage.py" afterPath="$PROJECT_DIR$/soma3/manage.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/templates/projectdashboard.html" afterPath="$PROJECT_DIR$/soma3/templates/projectdashboard.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/runserver_jeong.sh" afterPath="$PROJECT_DIR$/soma3/runserver_jeong.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/runserver_yang.sh" afterPath="$PROJECT_DIR$/soma3/runserver_yang.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/soma3/urls.py" afterPath="$PROJECT_DIR$/soma3/soma3/urls.py" />
@@ -15,19 +13,20 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/utility.py" afterPath="$PROJECT_DIR$/soma3/utility.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/client/views.py" afterPath="$PROJECT_DIR$/soma3/client/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/errors/views.py" afterPath="$PROJECT_DIR$/soma3/errors/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/soma3/projectmanage/views.py" afterPath="$PROJECT_DIR$/soma3/projectmanage/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="URQA-Server.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378721301057" ignored="false" />
-    <file path="/views.py" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378739078607" ignored="false" />
+    <file path="/Dummy.txt" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378785751528" ignored="false" />
+    <file path="/views.py" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378793310880" ignored="false" />
     <file path="/project-select.html" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378384995630" ignored="false" />
     <file path="/utility.js" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378402268501" ignored="false" />
     <file path="/utility.py" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378388211239" ignored="false" />
-    <file path="/user.js" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378737273540" ignored="false" />
+    <file path="/user.js" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378792328452" ignored="false" />
     <file path="/projectdashboard.html" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378450485037" ignored="false" />
     <file path="/urls.py" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378738638515" ignored="false" />
-    <file path="/details.html" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378739409677" ignored="false" />
+    <file path="/details.html" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378790041535" ignored="false" />
     <file path="/details(origin).html" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378453431872" ignored="false" />
     <file path="/common.py" changelist="ec873a1f-b3f8-44a8-9287-ce9edc874831" time="1378455305041" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -52,10 +51,8 @@
       <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/projectmanage/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="451" column="9" selection-start="14436" selection-end="14695" vertical-scroll-proportion="-19.32">
-              <folding>
-                <element signature="e#52#61#0" expanded="true" />
-              </folding>
+            <state line="451" column="9" selection-start="14723" selection-end="14723" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -63,31 +60,28 @@
       <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/errors/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="119" column="13" selection-start="3527" selection-end="3527" vertical-scroll-proportion="-45.6">
-              <folding>
-                <element signature="e#51#60#0" expanded="true" />
-              </folding>
+            <state line="41" column="39" selection-start="1136" selection-end="1150" vertical-scroll-proportion="-10.96">
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="details.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/soma3/client/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="607" column="29" selection-start="22518" selection-end="22518" vertical-scroll-proportion="0.74848115">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="details.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/templates/details.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="18" selection-start="2512" selection-end="2512" vertical-scroll-proportion="0.4902439">
+            <state line="561" column="21" selection-start="20837" selection-end="20837" vertical-scroll-proportion="-5.3584905">
               <folding>
-                <element signature="n#style#0;n#td#0;n#tr#0;n#tbody#0;n#table#0;n#div#12;n#div#2;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#td#3;n#tr#0;n#tbody#0;n#table#0;n#div#12;n#div#2;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#3;n#div#2;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="details(origin).html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/soma3/templates/details(origin).html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="348" column="73" selection-start="11529" selection-end="11547" vertical-scroll-proportion="-4.6415095">
-              <folding />
             </state>
           </provider>
         </entry>
@@ -95,7 +89,7 @@
       <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/urqa/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="171" column="15" selection-start="6479" selection-end="6488" vertical-scroll-proportion="-4.12">
+            <state line="154" column="15" selection-start="5776" selection-end="5778" vertical-scroll-proportion="-10.96">
               <folding />
             </state>
           </provider>
@@ -104,7 +98,25 @@
       <file leaf-file-name="user.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/static/js/user.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="306" column="53" selection-start="11101" selection-end="11101" vertical-scroll-proportion="0.0">
+            <state line="1070" column="23" selection-start="34631" selection-end="34631" vertical-scroll-proportion="-30.12">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="sankey.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/soma3/static/js/sankey.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="308" column="24" selection-start="9086" selection-end="9090" vertical-scroll-proportion="75.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="utility.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/soma3/static/js/utility.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="218" column="13" selection-start="7848" selection-end="7848" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -113,7 +125,7 @@
       <file leaf-file-name="projectdashboard.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/templates/projectdashboard.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="314" column="50" selection-start="12989" selection-end="12989" vertical-scroll-proportion="-67.17857">
+            <state line="259" column="25" selection-start="11153" selection-end="11153" vertical-scroll-proportion="-20.071428">
               <folding />
             </state>
           </provider>
@@ -122,19 +134,8 @@
       <file leaf-file-name="urls.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/soma3/soma3/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="97" selection-start="4346" selection-end="4346" vertical-scroll-proportion="-28.44">
+            <state line="69" column="97" selection-start="4247" selection-end="4247" vertical-scroll-proportion="0.0">
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="utility.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/soma3/utility.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="18" selection-start="121" selection-end="135" vertical-scroll-proportion="-6.04">
-              <folding>
-                <element signature="e#25#36#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -157,7 +158,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/soma3/templates/login.html" />
         <option value="$PROJECT_DIR$/soma3/static/js/lib.js" />
         <option value="$PROJECT_DIR$/soma3/urqa/views.py" />
         <option value="$PROJECT_DIR$/soma3/templates/project-select.html" />
@@ -169,10 +169,11 @@
         <option value="$PROJECT_DIR$/soma3/projectmanage/views.py" />
         <option value="$PROJECT_DIR$/soma3/common.py" />
         <option value="$PROJECT_DIR$/soma3/urqa/models.py" />
-        <option value="$PROJECT_DIR$/soma3/static/js/user.js" />
         <option value="$PROJECT_DIR$/soma3/soma3/urls.py" />
-        <option value="$PROJECT_DIR$/soma3/errors/views.py" />
         <option value="$PROJECT_DIR$/soma3/templates/details.html" />
+        <option value="$PROJECT_DIR$/soma3/errors/views.py" />
+        <option value="$PROJECT_DIR$/soma3/static/js/user.js" />
+        <option value="$PROJECT_DIR$/soma3/client/views.py" />
       </list>
     </option>
   </component>
@@ -208,7 +209,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -483,6 +483,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -490,8 +491,8 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="options.lastSelected" value="com.jetbrains.python.templateLanguages.TemplateLanguageModulesConfigurable" />
     <property name="FullScreen" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -560,14 +561,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1696" height="1036" extended-state="0" />
+    <frame x="-8" y="-8" width="1696" height="1036" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1615667" sideWeight="0.67085713" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16340269" sideWeight="0.67085713" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
@@ -645,42 +646,9 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/soma3/static/js/lib.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="23" selection-start="408" selection-end="408" vertical-scroll-proportion="-12.16" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/client/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="377" column="51" selection-start="13215" selection-end="13215" vertical-scroll-proportion="-13.24" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/templates/project-select.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="45" selection-start="2312" selection-end="2451" vertical-scroll-proportion="-13.264151">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/static/js/utility.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="225" column="6" selection-start="7019" selection-end="8114" vertical-scroll-proportion="-28.36">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/common.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="15" selection-start="1886" selection-end="1938" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/soma3/urqa/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="22" selection-start="1044" selection-end="1044" vertical-scroll-proportion="0.50060755">
-          <folding />
-        </state>
+        <state line="42" column="22" selection-start="1044" selection-end="1044" vertical-scroll-proportion="0.50060755" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/soma3/usermanage/views.py">
@@ -692,73 +660,101 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/soma3/templates/details(origin).html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="348" column="73" selection-start="11529" selection-end="11547" vertical-scroll-proportion="-4.6415095">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/static/js/user.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="306" column="53" selection-start="11101" selection-end="11101" vertical-scroll-proportion="0.0">
+        <state line="348" column="73" selection-start="11529" selection-end="11547" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/soma3/utility.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="18" selection-start="121" selection-end="135" vertical-scroll-proportion="-6.04">
-          <folding>
-            <element signature="e#25#36#0" expanded="true" />
-          </folding>
+        <state line="9" column="18" selection-start="121" selection-end="135" vertical-scroll-proportion="0.0">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/soma3/urls.py">
+    <entry file="file://$PROJECT_DIR$/soma3/static/js/css-compile.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="97" selection-start="4346" selection-end="4346" vertical-scroll-proportion="-28.44">
+        <state line="1" column="15" selection-start="32" selection-end="32" vertical-scroll-proportion="0.02240566">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/soma3/projectmanage/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="451" column="9" selection-start="14436" selection-end="14695" vertical-scroll-proportion="-19.32">
-          <folding>
-            <element signature="e#52#61#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/urqa/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="171" column="15" selection-start="6479" selection-end="6488" vertical-scroll-proportion="-4.12">
+        <state line="451" column="9" selection-start="14723" selection-end="14723" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/soma3/templates/projectdashboard.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="314" column="50" selection-start="12989" selection-end="12989" vertical-scroll-proportion="-67.17857">
+        <state line="259" column="25" selection-start="11153" selection-end="11153" vertical-scroll-proportion="-20.071428">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/soma3/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="69" column="97" selection-start="4247" selection-end="4247" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/static/js/nv.d3.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/static/js/utility.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="218" column="13" selection-start="7848" selection-end="7848" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/templates/details.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="561" column="21" selection-start="20837" selection-end="20837" vertical-scroll-proportion="-5.3584905">
+          <folding>
+            <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#3;n#div#2;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/urqa/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="154" column="15" selection-start="5776" selection-end="5778" vertical-scroll-proportion="-10.96">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/static/js/user.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1070" column="23" selection-start="34631" selection-end="34631" vertical-scroll-proportion="-30.12">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/soma3/static/js/sankey.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="308" column="24" selection-start="9086" selection-end="9090" vertical-scroll-proportion="75.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/soma3/errors/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="119" column="13" selection-start="3527" selection-end="3527" vertical-scroll-proportion="-45.6">
-          <folding>
-            <element signature="e#51#60#0" expanded="true" />
-          </folding>
+        <state line="41" column="39" selection-start="1136" selection-end="1150" vertical-scroll-proportion="-10.96">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/soma3/templates/details.html">
+    <entry file="file://$PROJECT_DIR$/soma3/client/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="18" selection-start="2512" selection-end="2512" vertical-scroll-proportion="0.4902439">
-          <folding>
-            <element signature="n#style#0;n#td#0;n#tr#0;n#tbody#0;n#table#0;n#div#12;n#div#2;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#td#3;n#tr#0;n#tbody#0;n#table#0;n#div#12;n#div#2;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
+        <state line="607" column="29" selection-start="22518" selection-end="22518" vertical-scroll-proportion="0.74848115">
+          <folding />
         </state>
       </provider>
     </entry>
