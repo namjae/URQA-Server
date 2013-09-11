@@ -210,6 +210,17 @@ Raphael.custom.areaGraph = function(file, objName, att)
 			data = [];
 
 		var response = realData;
+        //datachecker
+        var allzerochecker = true;
+        for(var i = 0; i <realData['tags'].length; i++)
+        {
+            if(realData['tags'][i]['value'] != 0)
+                allzerochecker = false
+        }
+        //모든 데이터가 0이면 안그림 ㅋㅋ
+        if(allzerochecker)
+            return
+
 		var tags = response.tags;
 		for(var i = 0; i < tags.length; i ++)
 		{

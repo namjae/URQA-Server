@@ -939,12 +939,12 @@ $(document).ready(function()
 	$("#profile-menu").hover(profileShow, profileHide);
 });
 
-
+/*
 function so_file_submit()
 {
     $("#symbolUpload").hide();
     $("#symbolUploading").show();
-}
+}*/
 
 // Stylesheet is load-complate
 $("head").styleReady(function(){
@@ -1676,7 +1676,7 @@ $("head").styleReady(function(){
 
 	/** Component End **/
 
-	$("#symbolUploading").hide();
+	/*$("#symbolUploading").hide();*/
     /*
     $("#symbolUpload").ajaxForm({
             success : function(data){
@@ -1688,25 +1688,26 @@ $("head").styleReady(function(){
     );
     */
 
-    $("#symbolUpload").submit(function(event) {
+    /*$("#symbolUpload").submit(function(event) {
         var $form = $(this);
         var action = $form.attr('action')
-        var formData = $form.formSerialize()
-
+        var formData = $form.serialize()
+        $form.ajaxForm(function(result){
+            alert(result);
+        });
         $.post(action, formData, function(data) {
             alert(data);
             $("#symbolUpload").show();
             $("#symbolUploading").hide();
         });
         return false;
-    }
-    );
-
+    });*/
+    /*
 	$("#uploadTrg").load(function(){
 		//alert("The symbol-file is uploaded!");
         $("#symbolUpload").show();
         $("#symbolUploading").hide();
-	});
+	});*/
 
 	popup_hide = function() {
 		$("#popup-info").stop(true, true);

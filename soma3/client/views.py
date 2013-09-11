@@ -29,6 +29,13 @@ from urqa.models import Activitystatistics
 from utility import naive2aware
 from utility import getUTCDatetime
 from config import get_config
+from utility import RANK
+
+
+#삭제요망
+from common import validUserPjtError
+
+
 
 @csrf_exempt
 def connect(request):
@@ -114,6 +121,9 @@ def receive_exception(request):
             e.count += 1
             e.save()
 
+        #에러 스코어 계산
+        calc_errorScore(errorElement)
+
     except ObjectDoesNotExist:
         #새로 들어온 에러라면 새로운 에러 생성
         if int(jsonData['rank']) == -1:
@@ -146,6 +156,8 @@ def receive_exception(request):
         Devicestatistics.objects.create(iderror=errorElement,devicename=jsonData['device'],count=1)
         Countrystatistics.objects.create(iderror=errorElement,countryname=jsonData['country'],count=1)
         Activitystatistics.objects.create(iderror=errorElement,activityname=jsonData['lastactivity'],count=1)
+        #error score 계산
+        calc_errorScore(errorElement)
     #step3: 테그 저장
     if jsonData['tag']:
         tagstr = jsonData['tag']
@@ -410,6 +422,7 @@ def receive_native_dump(request, idinstance):
         'libbinder.so',
         'libjavacore.so',
         'librs_jni.so',
+        'linker',
     ]
     libs = []
     stderr_split = stderr.splitlines()
@@ -427,7 +440,7 @@ def receive_native_dump(request, idinstance):
 
     #DB저장하기
     for lib in libs:
-        sofileElement, created = Sofiles.objects.get_or_create(pid=projectElement, appversion=instanceElement.appversion, versionkey=lib[1], filename=lib[0],defaults={'uploaded':0})
+        sofileElement, created = Sofiles.objects.get_or_create(pid=projectElement, appversion=instanceElement.appversion, versionkey=lib[1], filename=lib[0],defaults={'uploaded':'X'})
         if created:
             print 'new version key : ', lib[1], lib[0]
         else:
@@ -488,6 +501,8 @@ def receive_native_dump(request, idinstance):
 
 
         errorElement.delete()
+        #errorscore 계산
+        calc_errorScore(errorElement_exist)
         print 'native error %s:%s already exist' % (errorname, errorclassname)
     except ObjectDoesNotExist:
         errorElement.errorname = errorname
@@ -499,6 +514,8 @@ def receive_native_dump(request, idinstance):
         Devicestatistics.objects.create(iderror=errorElement,devicename=instanceElement.device,count=1)
         Countrystatistics.objects.create(iderror=errorElement,countryname=instanceElement.country,count=1)
         Activitystatistics.objects.create(iderror=errorElement,activityname=instanceElement.lastactivity,count=1)
+        #errorscore 계산
+        calc_errorScore(errorElement)
     return HttpResponse('Success')
 
 def calc_eventpath(errorElement):
@@ -609,16 +626,34 @@ def calc_eventpath(errorElement):
     #print json.dumps(result)
     return result
 
-def calc_errorscore(errorElement):
-    print naive2aware(getUTCDatetime())
-    print errorElement.lastdate
+def calc_errorScore(errorElement):
+
+    erscore_parameter = json.loads(get_config('error_score_parameter'))
+
+    date_er_score = 0.0
+    quantity_er_score = 0.0
+    rank_er_score = 0.0
+
+    #date 계산 k1
+    #print naive2aware(getUTCDatetime())
+    #print errorElement.lastdate
     d = naive2aware(getUTCDatetime()) - errorElement.lastdate
 
-    print d
-    print d.days, d.seconds, d.microseconds
+    #print d
+    #print d.days, d.seconds, d.microseconds
+    #print erscore_parameter['retention']
+    #print float(erscore_parameter['retention'])
 
-    runcounts = Appruncount.objects.filter(pid=errorElement.pid)
-    errorcounts = Appstatistics.objects.filter(iderror=errorElement)
+    date_er_score = ((erscore_parameter['retention'])/ (erscore_parameter['retention'] + float(d.days) )) * erscore_parameter['date_constant']
+    #print 'bunmo : '+ str((erscore_parameter['retention'] + d.days))
+    #print 'daily delta : ' +str(d.days)
+    #print 'bunja: ' + str(erscore_parameter['retention'])
+    #print 'date cal : ' + str(date_er_score)
+
+
+    #quantity 계산 k2
+    runcounts = Appruncount.objects.filter(pid=errorElement.pid)     #전체 앱버전별 실행수
+    errorcounts = Appstatistics.objects.filter(iderror=errorElement) #1개 에러에 대한 앱버전별 실행수
 
     tlb = []
     for r in runcounts:
@@ -626,5 +661,47 @@ def calc_errorscore(errorElement):
             if r.appversion == e.appversion:
                 tlb.append({'appversion':r.appversion,'runcount':r.runcount,'errcount':e.count})
                 break;
-    print 'calc_errorscore',tlb
-    return
+
+        #print 'calc_errorscore',tlb
+
+    wholeErrorCounter = 0.0
+    errorCounter = 0.0
+    for version_statics in tlb:
+        wholeErrorCounter += version_statics['runcount']
+        errorCounter += version_statics['errcount']
+
+    quantity_er_score = errorCounter/wholeErrorCounter
+    #print 'whole : ' + str(wholeErrorCounter)
+    #print 'errorcount : ' + str(errorCounter)
+    #print 'quantity cal : ' + str(quantity_er_score)
+
+    #rank 계산 k3
+    rank_er_score = 0
+    rank_er_score = rank_to_constant(errorElement.rank) * erscore_parameter['rank_ratio_constant']
+    #print 'RANK : ' + RANK.toString[errorElement.rank]
+    #print 'rank cal : ' + str(rank_er_score)
+
+    #최종 ErrorScore 계산
+    error_Score = (date_er_score + quantity_er_score + rank_er_score) * erscore_parameter['constant']
+    #print 'last Error Score : ' + str(error_Score)
+
+    #디비에 저장
+    errorElement.errorweight = error_Score
+    errorElement.save()
+
+def rank_to_constant(int):
+
+    erscore_parameter = json.loads(get_config('error_score_parameter'))
+
+    if int == RANK.Native:
+        return erscore_parameter['na']
+    elif int == RANK.Unhandle:
+        return erscore_parameter['un']
+    elif int == RANK.Critical:
+        return erscore_parameter['cr']
+    elif int == RANK.Major:
+        return erscore_parameter['ma']
+    elif int == RANK.Minor:
+        return erscore_parameter['mi']
+    else:
+        return 'fail'

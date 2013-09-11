@@ -12,6 +12,7 @@
 	<script type="text/javascript" src="{% static 'js/lib.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/hashmap.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/jquery-2.0.0.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.form.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/raphael/raphael.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/raphael/r.raphael.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/raphael/r.pie.min.js' %}"></script>
@@ -33,27 +34,13 @@
     <link href="{% static 'css/nv.d3.css' %}" rel="stylesheet" type="text/css">
 
 	<script type="text/javascript">
-      var error_id = {{ iderror }};
-      var project_id = "{{ projectid }}";
-      var server_url = "{{ ServerURL }}"
-	  $(document).ready(function(){
-			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
+        var error_id = {{ iderror }};
+        var project_id = "{{ projectid }}";
+        var server_url = "{{ ServerURL }}"
+        $(document).ready(function(){
+            $("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 
-          /*
-           var options = {
-                success: function(data)
-                {
-                     alert(data);
-                    $("#symbolUpload").show();
-                    $("#symbolUploading").hide();
 
-                },
-                error: function()
-                {
-                }
-            };
-           $("#symbolUpload").ajaxForm(options)
-            */
            // Click to Dropdown component's item event
             $(".updated-dropdown:not(.multiple)").each(function(){
                 $(this).children("div").children("ul").children("li").click(function(obj) {
@@ -356,27 +343,54 @@
 				<div class="body mini">
 					<span>Upload Symbol</span>
 					<!--<iframe id="uploadTrg" name="uploadTrg" width="0" height="0" frameborder="0" scrolling="yes"></iframe>-->
-					<form id="symbolUpload" action="/urqa/project/{{ projectid }}/symbol/upload" method="post" enctype="multipart/form-data" onsubmit="so_file_submit()">
+					<form id="symbolUpload" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <table class="small" style="margin-top: 5px">
 							<tbody><tr>
-                                <td>
-                                    App Version
-                                </td>
-								<td>
-                                    <input type="text" name="version" value=""  style="width: 50px;"/>
-                                </td>
                                 <td class="center" style="width: 70px;">Select File</td>
-								<td><input type="file" name="file" style="width: 100%;"></td>
+								<td><input type="file" name="file" id="file" style="width: 100%;"></td>
 								<td style="width: 100px"><div class="button purple" data-name="Upload" style="width: 96px; height: 25px"></div></td>
 							</tr></tbody>
 						</table>
 					</form>
+                    <script>
+                        $(document).ready(function(){
+                            $("#symbolUpload").submit(function(event) {
+                                var $form = $('#symbolUpload');
+                                var $data = $($form).serialize();
+
+                                $("#symbolUploading").find('td').text('Symbol-file Uploading...');
+                                $form.ajaxSubmit({
+                                    url : '/urqa/project/{{ projectid }}/symbol/upload',
+                                    type : 'post',
+                                    data : $data,
+                                    //dataType : 'html',
+                                    success : function (result){
+                                        $("#symbolUploading").find('td').text(result.msg)
+                                        if(result.vkey != undefined)
+                                        {
+                                            tlb = $('td[name=vkey]')
+                                            for(var i=0;i<tlb.length;i++)
+                                            {
+                                                if(tlb.eq(i).text() != result.vkey) continue
+                                                tlb.eq(i).parent().children('td').eq(3).children('p').text('O');
+                                            }
+                                        }
+                                        return false
+                                    },
+                                    error : function(a,b,c){
+                                        alert('Server Error')
+                                    }
+                                })
+                                return false
+                            });
+                        });
+                    </script>
 					<form id="symbolUploading">
 						<table class="small" style="margin-top: 5px">
 							<tbody><tr>
-								<td class="center" style="width: 74px;">Select File</td>
-								<td>Symbol-file Uploading...</td>
+								<td class="center" style="width: 100%;">Upload symbole files.</td>
+								<!--<td>Symbol-file Uploading...</td>-->
 							</tr></tbody>
 						</table>
 					</form>
@@ -387,7 +401,7 @@
 							<table class="content-small">
 								<thead><tr>
 									<td style="width: 84px">APP Version</td>
-									<td style="width: 90px">Symbol</td>
+									<td style="width: 130px">Symbol</td>
 									<td>Version Key</td>
 									<td style="width: 74px">Uploaded</td>
 								</tr></thead>
@@ -396,7 +410,8 @@
 									<tr>
 										<td class="center">{{ sofile.appversion }}</td>
 										<td class="float"><p>{{ sofile.filename }}</p></td>
-										<td class="float"><p>{{ sofile.versionkey }}</p></td>
+										<td class="float" name='vkey'><p>{{ sofile.versionkey }}</p></td>
+                                        <td class="center"><p style="width: 74px">{{ sofile.uploaded }}</p></td>
 									</tr>
                                     {% endfor %}
 

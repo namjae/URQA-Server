@@ -11,6 +11,7 @@ import datetime
 import time
 import shutil
 import pytz
+#from goto import goto, label
 
 from django.utils.timezone import utc
 from django.utils import timezone
@@ -205,19 +206,23 @@ def so2sym(projectElement, appver, so_path, filename):
 
     if stderr.find('no debugging') != -1:
         print stderr
-        return False
+        return False, 0
 
     vkey =  stdout.splitlines(False)[0].split()[3]
     try:
         sofileElement = Sofiles.objects.get(pid=projectElement, appversion=appver, versionkey=vkey)
     except ObjectDoesNotExist:
-        return False
+        return False, 0
 
     sym_path = get_config('sym_pool_path') + '/%s' % projectElement.apikey
     if not os.path.isdir(sym_path):
         os.mkdir(sym_path)
 
     sym_path = sym_path + '/%s' % appver
+    if not os.path.isdir(sym_path):
+        os.mkdir(sym_path)
+
+    sym_path = sym_path + '/%s' % sofileElement.filename
     if not os.path.isdir(sym_path):
         os.mkdir(sym_path)
 
@@ -231,27 +236,30 @@ def so2sym(projectElement, appver, so_path, filename):
     fp.close()
 
     #sofile이 업로드되었음을 알림
-    sofileElement.uploaded = 1
+    sofileElement.uploaded = 'O'
     sofileElement.save()
-    return True
+    return True, vkey
 
 def update_error_callstack(projectElement, appversion):
-
-    errorElements = Errors.objects.filter(pid=projectElement)
+    #print 'update_error_callstack'
+    errorElements = Errors.objects.filter(pid=projectElement,rank=RANK.Native)
     for errorElement in errorElements:
         if not Appstatistics.objects.filter(iderror=errorElement,appversion=appversion).exists():
             continue
+        #print 'err',errorElement.errorname,errorElement.errorclassname
         instanceElements = Instances.objects.filter(iderror=errorElement,appversion=appversion)
         if not instanceElements.exists():
             continue
         instanceElement = instanceElements[0]
-        sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.pid))
+        print instanceElement.iderror
+        sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.apikey))
         sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
         arg = [get_config('minidump_stackwalk_path') , instanceElement.dump_path, sym_pool_path]
+        print arg
         fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = fd_popen.communicate()
 
-        #print stdout
+        #print 'yhc_stdout',stdout
         cs_flag = 0
         stdout_split = stdout.splitlines()
         for line in stdout_split:
@@ -259,7 +267,7 @@ def update_error_callstack(projectElement, appversion):
                 callstack = line + '\n'
                 cs_flag = cs_flag + 1
             elif cs_flag:
-                if line.find('Thread') != -1 or cs_flag > 40:
+                if line.find('Thread') != -1 or cs_flag >= 40:
                     break;
                 callstack += line + '\n'
                 cs_flag = cs_flag + 1
@@ -267,13 +275,39 @@ def update_error_callstack(projectElement, appversion):
         errorElement.save()
         print errorElement.errorname
         print errorElement.errorclassname
-        print callstack
-        print '','',''
+        #print callstack
+        #print '','',''
     return True
 
-def so_upload(request, apikey):
+def extractinfo(projectElement,temp_path,temp_fname):
+    print projectElement,temp_path,temp_fname
 
-    appver = request.POST['version']
+    arg = [get_config('dump_syms_path') ,os.path.join(temp_path,temp_fname)]
+    fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (stdout, stderr) = fd_popen.communicate()
+
+    if stderr.find('no debugging') != -1:
+        print stderr
+        return False, '0', '0', 'No debug info'
+
+    vkey =  stdout.splitlines(False)[0].split()[3]
+    print 'uploaded version key = ',vkey
+
+    try:
+        sofile = Sofiles.objects.get(pid=projectElement,versionkey=vkey)
+    except ObjectDoesNotExist:
+        print 'invalid sofile'
+        return False, '0', '0', 'Invalid sofile'
+
+    return True, sofile.appversion, sofile.filename, 'Success'
+
+def so_upload(request, apikey):
+    #print request
+    print apikey
+
+    #appver = request.POST['version']
+
+    #print 'appversion',appver
 
     result, msg, userElement, projectElement = validUserPjt(request.user, apikey)
 
@@ -281,40 +315,68 @@ def so_upload(request, apikey):
 
     if not result:
         return HttpResponse(msg)
+    print request.method
+    print request.FILES
+    print request.POST
 
-    print request
+    retdat = {'result':-1,'msg':'Failed to Upload File'}
 
     if request.method == 'POST':
         if 'file' in request.FILES:
             file = request.FILES['file']
-            filename = file._name
+            temp_fname = file._name
 
-            so_path = get_config('so_pool_path') +'/%s' % apikey
-            if not os.path.isdir(so_path):
-                os.mkdir(so_path)
+            temp_path = get_config('so_pool_path') +'/%s' % apikey
+            if not os.path.isdir(temp_path):
+                os.mkdir(temp_path)
 
-            so_path = so_path + '/%s' % appver
-            if not os.path.isdir(so_path):
-                os.mkdir(so_path)
+            temp_path = temp_path + '/temp'# % appver
+            if not os.path.isdir(temp_path):
+                os.mkdir(temp_path)
 
-            fp = open(os.path.join(so_path,filename) , 'wb')
+            fp = open(os.path.join(temp_path,temp_fname) , 'wb')
             for chunk in file.chunks():
                 fp.write(chunk)
             fp.close()
 
-            success_flag = so2sym(projectElement, appver, so_path, filename)
+            flag, appver, so_fname, msg = extractinfo(projectElement,temp_path,temp_fname)
+            if flag:
+                print appver, so_fname
+            else:
+                os.remove(os.path.join(temp_path, temp_fname))
+                retdat = {'result':-1,'msg':msg}
+                print 'so_upload',retdat['result'], retdat['msg']
+                return HttpResponse(json.dumps(retdat), 'application/json');
+            #if 1:
+            #    return HttpResponse('Failed to Upload File')
+
+            so_path = get_config('so_pool_path') +'/%s' % apikey
+            if not os.path.isdir(so_path):
+                os.mkdir(so_path)
+            so_path = so_path + '/%s' % appver
+            if not os.path.isdir(so_path):
+                os.mkdir(so_path)
+            print so_path
+            os.rename(os.path.join(temp_path,temp_fname),os.path.join(so_path,so_fname))
+
+            #file move
+            success_flag,vkey = so2sym(projectElement, appver, so_path, so_fname)
+            print 'success_flag',success_flag
+
+            os.remove(os.path.join(so_path, so_fname))#사용한 sofile 삭제, sym파일만 추출하면 so파일은 삭제해도 됨
             if success_flag:
                 #정상적으로 so파일이 업로드되었기 때문에 error들의 callstack 정보를 갱신한다.
                 update_error_callstack(projectElement,appver)
-                print 'File Uploaded, and Valid so file'
-                return HttpResponse('File Uploaded, and Valid so file')
+                retdat = {'result':0,'msg':'File successfully Uploaded, and Valid so file','vkey':vkey}
+                print 'so_upload',retdat['result'], retdat['msg']
+                return HttpResponse(json.dumps(retdat), 'application/json');
             else:
-                os.remove(os.path.join(so_path, filename))
-                print 'File Uploaded, but it have no debug info'
-                return HttpResponse('File Uploaded, but it have no debug info')
+                retdat = {'result':-1,'msg':'Error, this file have no debug info'}
+                print 'so_upload',retdat['result'], retdat['msg']
+                return HttpResponse(json.dumps(retdat), 'application/json');
 
-    print 'Failed to Upload File'
-    return HttpResponse('Failed to Upload File')
+    print 'so_upload',retdat['result'], retdat['msg']
+    return HttpResponse(json.dumps(retdat), 'application/json');
 
 def projects(request):
 
@@ -345,8 +407,8 @@ def projects(request):
         stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
         projectdata['color'] = stagecolordata.get(stagetxt)
 
-        Errorcounter = Errors.objects.filter(pid = project.pid).aggregate(Sum('numofinstances'))
-        projectdata['errorcount'] =  Errorcounter['numofinstances__sum'] is not None and numbertostrcomma(Errorcounter['numofinstances__sum'])  or 0
+        Errorcounter = Errors.objects.filter(pid = project.pid).aggregate(Sum('errorweight'))
+        projectdata['errorcount'] =  Errorcounter['errorweight__sum'] is not None and numbertostrcomma(Errorcounter['errorweight__sum'])  or 0
         projectdata['name'] = project.name
         projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
         project_list.append(projectdata)
