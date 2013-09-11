@@ -52,7 +52,12 @@
 
 @font-face {
 	font-family: "Fixedsys500c";
-	src: url("./font/Fixedsys500c.ttf") format("truetype"),
+    font-style: normal;
+	font-weight: normal;
+    src: url("./font/Fixedsys500c.eot");
+	src: url("./font/Fixedsys500c.eot?#iefix") format("embedded-opentype"),
+    url("./font/Fixedsys500c.woff") format("woff"),
+	url("./font/Fixedsys500c.ttf") format("truetype");
 }
 
 
@@ -1649,7 +1654,7 @@ table.content-small {
 				left: 12px;
 			}
 			p {
-                font: 14px "Fixedsys500c";
+                font: 16px "Fixedsys500c";
 				width: 0px;
 				text-overflow: ellipsis;
 				white-space: nowrap;
