@@ -617,6 +617,9 @@ def calc_errorScore(errorElement):
 
     #디비에 저장
     errorElement.errorweight = error_Score
+    errorElement.gain1 = float(date_er_score)
+    errorElement.gain2 = float(quantity_er_score)
+
     errorElement.save()
 
 def rank_to_constant(int):

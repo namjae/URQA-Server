@@ -145,7 +145,6 @@ def chartdata(request,apikey):
     appv_idx = -1
     for i in instances:
         if not i.appversion in categories:
-            pre_osv = i.osversion
             appv_idx += 1
             categories.append(i.appversion)
         if not i.osversion in temp_data:

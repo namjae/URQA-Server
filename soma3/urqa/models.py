@@ -152,6 +152,8 @@ class Errors(models.Model):
     gpson = models.IntegerField()
     mobileon = models.IntegerField()
     totalmemusage = models.IntegerField()
+    gain1 = models.FloatField(null=True, blank=True)
+    gain2 = models.FloatField(null=True, blank=True)
     class Meta:
         db_table = 'errors'
 

@@ -975,7 +975,267 @@ $("head").styleReady(function(){
                })
 		});
 	}
-	if($("body").hasClass("error") )
+    if($("body").hasClass("error") )
+    {
+        page_num = 1;
+        list_per_page = 5;
+        listData = [];
+        list_count = 0;
+        pre_query={};
+
+
+
+        clickevent = function(id)
+        {
+            location.href = './' + id
+        }
+        function initPageChanger()
+        {
+            list_count = listData.length
+            page_num = 1; //page_number초기화
+            $('.page-changer>ul').empty()
+            if(list_count / list_per_page > 1)
+            {
+                $('.page-changer>ul').append($('<li class="dont" onclick="pageChange(1);">&lt;&lt;</li>'))
+                for(var i=0;i<Math.ceil(list_count/list_per_page);i++)
+                    $('.page-changer>ul').append($('<li onclick="pageChange('+Number(i+1)+');">'+ i +'</li>'))
+                $('.page-changer>ul').append($('<li onclick="pageChange('+Math.ceil(list_count/list_per_page)+');">&gt;&gt;</li>'))
+                $('.page-changer>ul').children('li').eq(page_num).addClass('select')
+            }
+        }
+        pageChange = function(p_num)
+        {
+            page_num = p_num
+            status2str = ['New','Open','Fixed','Ignore'];
+            list_count = listData.length
+            $('.page-changer>ul').children('.dont').removeClass('dont')
+            if(p_num == 1)
+                $('.page-changer>ul').children('li').eq(0).addClass('dont')
+            else if(p_num == Math.ceil(list_count/list_per_page))
+                $('.page-changer>ul').children('li').eq(p_num+1).addClass('dont')
+            $('.page-changer>ul').children('.select').removeClass('select')
+            $('.page-changer>ul').children('li').eq(p_num).addClass('select')
+            $('.content-large>tbody').empty();
+            p_num = Number(p_num)
+
+            for(var i=((p_num-1)*list_per_page);i<(p_num*list_per_page);i++)
+            {
+                if(i >= listData.length) break;
+                auto_str = ''
+                if(listData[i].auto == 1)   auto_str = '(Auto)';
+                tags = ''
+                for(var j=0;j<listData[i].tags.length;j++)
+                    tags += '<li>' + listData[i].tags[j] + '<i></i></li>';
+                new_list = $('<tr iderror="'+ listData[i].iderror +'">\
+                    <td class="center"><span class="bold">'+listData[i].es+'</span><br>'+auto_str+'</td>\
+                    <td class="float" onclick="clickevent('+listData[i].iderror+')">\
+                        <span class="' + listData[i].rank + '"></span>\
+                        <p>'+listData[i].errorname + '<br>' + listData[i].errorclassname + ':' + listData[i].linenum+'</p>\
+                    </td>\
+                    <td><p>\
+                        <div class="updated-tags tags-list user-input">\
+                            <ul>'+
+                                tags
+                                +'<li class="updated-dropdown dropdown">\
+                                    <a>Add Tags</a>\
+                                    <span></span>\
+                                    <input type="input" />\
+                                </li>\
+                            </ul>\
+                            <input type="hidden" name="tag'+i+'" />\
+                        </div>\
+                    </p></td>\
+                    <td class="center">\
+                        <div class="updated-dropdown dropdown">\
+                            <a style="width: 18px">'+status2str[listData[i].status]+'</a>\
+                            <span></span>\
+                            <div>\
+                                 <ul>\
+                                    <li><a>New</a></li>\
+                                    <li><a>Open</a></li>\
+                                    <li><a>Fixed</a></li>\
+                                    <li><a>Ignore</a></li>\
+                                 </ul>\
+                            </div>\
+                            <input type="hidden" name="status'+i+'" value="'+listData[i].status+'" />\
+                        </div>\
+                    </td>\
+                    <td class="center">'+listData[i].count+'</td>\
+                    <td class="center small">'+listData[i].year+'<br>'+listData[i].month+'/'+listData[i].day+'</td>\
+                </tr>')
+                $('.content-large>tbody').append(new_list);
+            }
+            $('.content-large>tbody').append($('<tr class="empty">\
+                    <td data-match="true"></td>\
+                    <td data-match="true"></td>\
+                    <td></td>\
+                    <td></td>\
+                    <td></td>\
+                    <td></td>\
+                </tr>'))
+            tableResizing();
+            adjustErrorListStyle();
+        }
+
+        var asc;
+        function sort_by_score(a1,a2)
+        {
+            if(asc == 0)    return (a1.es>a2.es)?-1:1;
+            else            return (a1.es<a2.es)?-1:1;
+        }
+        function sort_by_name(a1,a2)
+        {
+            if(asc == 0)    return (a1.errorname>a2.errorname)?-1:1;
+            else            return (a1.errorname<a2.errorname)?-1:1;
+        }
+        function sort_by_status(a1,a2)
+        {
+            if(asc == 0)    return (a1.status>a2.status)?-1:1;
+            else            return (a1.status<a2.status)?-1:1;
+        }
+        function sort_by_occur(a1,a2)
+        {
+            if(asc == 0)    return (a1.count>a2.count)?-1:1;
+            else            return (a1.count<a2.count)?-1:1;
+        }
+        function sort_by_date(a1,a2)
+        {
+            var dt1 = new Date(a1.year,a1.month,a1.day);
+            var dt2 = new Date(a2.year,a2.month,a2.day);
+            if(asc == 0)    return (dt1>dt2)?-1:1;
+            else            return (dt1<dt2)?-1:1;
+        }
+        function sort_list()
+        {
+            asc = -1
+            ch = $('table.sort > thead > tr > td.sortable')
+            for(var i=0;i<ch.length;i++)
+            {
+                if(ch.eq(i).hasClass('asc'))    asc = 1;
+                if(ch.eq(i).hasClass('desc'))   asc = 0;
+                if(asc != -1)
+                {
+                    switch(i)
+                    {
+                        case 0: listData.sort(sort_by_score);   break;
+                        case 1: listData.sort(sort_by_name);   break;
+                        case 2: listData.sort(sort_by_status);   break;
+                        case 3: listData.sort(sort_by_occur);   break;
+                        case 4: listData.sort(sort_by_date);   break;
+                    }
+                    break;
+                }
+            }
+            pageChange(page_num)
+        }
+
+        $('.checkbox').click(query_delay);
+        $('.radiobox').click(query_delay);
+        $('.scrollbar').click(query_delay);
+        $('.tags-list').click(query_delay);
+        tID = 0;
+        query_delay()
+
+        function query_delay(){
+            if(tID != 0)
+                clearTimeout(tID);
+            tID = setTimeout(query_maker,100)
+        }
+        function query_maker(reload){
+            if(reload == undefined)
+            {
+                query = {}
+                tID = 0
+
+                //Rank
+                rank_chk = $('#rank_tr>td>div[data-value="checked"]');
+                var rank_list=[];
+                for(var i=0;i<rank_chk.length;i++)
+                {
+                    if(Number(rank_chk.eq(0).attr('value')) == 5)
+                    {
+                        rank_list.push(0,1,2,3,4);
+                    }
+                    else rank_list.push(Number(rank_chk.eq(i).attr('value')))
+                }
+                if(rank_chk.length == 0)
+                {
+                    rank_list.push(0,1,2,3,4);
+                }
+                //Status
+                status_idx = $('#status_tr>td>div>span[data-value="checked"]').parent().attr('data-value');
+                //Date
+                date_idx = $('.scrollbar>ul>li[data-value="true"]').attr('value')
+
+
+                //Tags
+                tags = $('.tags-list:not(.classes-list)>ul>li:not(.dropdown)')
+                tag_list = []
+                for(var i=0;i<tags.length;i++)
+                {
+                    if(tags.eq(i).parent().parent().hasClass('updated-tags'))
+                        continue;
+                    tag_list.push(tags.eq(i).text())
+                }
+                //Classes
+                classes = $('.classes-list>ul>li:not(.dropdown)')
+                class_list = []
+                for(var i=0;i<classes.length;i++)
+                    class_list.push(classes.eq(i).text())
+
+                osv_list = []
+                osv = $('#osvtr').find('.checkbox[data-value="checked"]:not(.half)')
+                for(var i=0;i<osv.length;i++)
+                    osv_list.push(osv.eq(i).children('label').text())
+
+                appv_list = []
+                appv = $('#appvtr').find('.checkbox[data-value="checked"]:not(.half)')
+                for(var i=0;i<appv.length;i++)
+                    appv_list.push(appv.eq(i).children('label').text())
+
+                query['rank']=rank_list;
+                query['status']=status_idx;
+                query['date']=date_idx;
+                query['tags']=tag_list;
+                query['classes']=class_list;
+                query['appv']=appv_list;
+                query['osv']=osv_list;
+                if(JSON.stringify(pre_query) == JSON.stringify(query))  return;
+                pre_query = query;
+            }
+            else
+                query = pre_query;
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./list'
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify(query)}
+                ,success : function(jsonData) {
+                    // unhandled = 0, critical = 1, major = 2, minor = 3, native = 4
+                    if(jsonData.length == 0)
+                        $('.noerror_msg').show();
+                    else
+                        $('.noerror_msg').hide();
+                    listData = jsonData;
+                    if(reload == undefined)
+                        initPageChanger();
+                    sort_list();
+                    pageChange(page_num);
+                }
+                , beforeSend: function(xhr, settings) {
+                    var csrftoken = getCookie('csrftoken')
+                    if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                        // Send the token to same-origin, relative URLs only.
+                        // Send the token only if the method warrants CSRF protection
+                        // Using the CSRFToken value acquired earlier
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+        }
+    }
+	if($("body").hasClass("details") )
 	{
         $("#event-path-parent").ready(function(){
         //Raphael.custom.eventPath("./data3", "#event-path", {"height": 230, "contentWidth": 20, "contentHeight": 20, "textColor": "#303335", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true, "topgutter": 5, "bottomgutter": -10 })
@@ -1116,198 +1376,195 @@ $("head").styleReady(function(){
 
   	if($("body").hasClass("statistics") )
 	{
-		/*$("#cecs").ready(function(){
-			Raphael.custom.pieGraph("./data2", "#cecs", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
-				"lineColor": "#ffffff", "textColor": "#303335", "labelPos": "east", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true });
-		});
-       $("#cecs").highcharts({
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false
-            },
-            title: {
-                text: 'Class Error Rate'
-            },
-            colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: true,
-                        color: '#000000',
-                        connectorColor: '#000000',
-                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+        $('.scrollbar').click(function(){
+            var retention = $('.scrollbar>ul>li[data-value="true"]').attr('value')
+            RedrawCharts(retention)
+        });
+        function DrawChart1(data){
+            $('.notHover').eq(1).empty().append($('<td id="cecs"><svg></svg></td>'))
+            $("#cecs").highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'Class Error Rate'
+                },
+                colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000',
+                            format: '<b>{point.name}</b>: {point.y:f}({point.percentage:.1f}%)'
+                        }
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: 'Class Error Rate',
+                    data: data
+                }]
+            });
+        }
+
+        function DrawChart2(data){
+            $('.notHover').eq(2).empty().append($('<td id="decs"><svg></svg></td>'))
+            nv.addGraph(function() {
+                var chart = nv.models.discreteBarChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .color([ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ])
+                    .staggerLabels(true)
+                    .tooltips(false)
+                    .showValues(true);
+
+                d3.select('#decs svg')
+                    .datum(data)
+                    .transition().duration(500)
+                    .call(chart);
+
+                nv.utils.windowResize(chart.update);
+
+                return chart;
+            });
+        }
+
+        function DrawChart3(data){
+            $('.notHover').eq(3).empty().append($('<td id="ebas"><svg></svg></td>'))
+            nv.addGraph(function() {
+                var chart = nv.models.discreteBarChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .color([ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ])
+                    .staggerLabels(true)
+                    .tooltips(false)
+                    .showValues(true);
+
+                d3.select('#ebas svg')
+                    .datum(data)
+                    .transition().duration(500)
+                    .call(chart);
+
+                nv.utils.windowResize(chart.update);
+
+                return chart;
+            });
+        }
+
+        function DrawChart4(categories,data){
+            $(function () {
+                $('#vers').highcharts({
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Version Error Rate'
+                    },
+                    colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
+                    xAxis: {
+                        categories: categories
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: 'Version Error Rate'
+                        },
+                        stackLabels: {
+                            enabled: true,
+                            style: {
+                                fontWeight: 'bold',
+                                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                            }
+                        }
+                    },
+                    legend: {
+                        align: 'right',
+                        x: -70,
+                        verticalAlign: 'top',
+                        y: 20,
+                        floating: true,
+                        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
+                        borderColor: '#CCC',
+                        borderWidth: 1,
+                        shadow: false
+                    },
+                    tooltip: {
+                        formatter: function() {
+                            return '<b>'+ this.x +'</b><br/>'+
+                                this.series.name +': '+ this.y +'<br/>'+
+                                'Total: '+ this.point.stackTotal;
+                        }
+                    },
+                    plotOptions: {
+                        column: {
+                            stacking: 'normal',
+                            dataLabels: {
+                                enabled: true,
+                                color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+                            }
+                        }
+                    },
+                    series: data/*[{
+                        name: 'John',
+                        data: [5, 3, 4, 7, 2]
+                    }, {
+                        name: 'Jane',
+                        data: [2, 2, 3, 2, 1]
+                    }, {
+                        name: 'Joe',
+                        data: [3, 4, 4, 2, 5]
+                    }]*/
+                });
+            });
+        }
+        pre_retention = 1
+        function RedrawCharts(retention){
+            if(pre_retention == retention)
+                return;
+            pre_retention = retention
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./chartdata'
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':retention
+                })}
+                ,success : function(jsonData) {
+                    DrawChart1(jsonData.chart1)
+                    DrawChart2([
+                    {
+                        key: "Error Score by Device",
+                        values:jsonData.chart2
+                    }])
+                    DrawChart3([
+                    {
+                        key: "Error Score by Activity",
+                        values:jsonData.chart3
+                    }])
+
+                    DrawChart4(jsonData.chart4.categories,jsonData.chart4.data)
+                }
+                , beforeSend: function(xhr, settings) {
+                    var csrftoken = getCookie('csrftoken')
+                    if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                        // Send the token to same-origin, relative URLs only.
+                        // Send the token only if the method warrants CSRF protection
+                        // Using the CSRFToken value acquired earlier
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
                     }
                 }
-            },
-            series: [{
-                type: 'pie',
-                name: 'Browser share',
-                data: [
-                    ['Firefox',   45.0],
-                    ['IE',       26.8],
-                    {
-                        name: 'Chrome',
-                        y: 12.8,
-                        sliced: true,
-                        selected: true
-                    },
-                    ['Safari',    8.5],
-                    ['Opera',     6.2],
-                    ['Others',   0.7]
-                ]
-            }]
-        });
-
-		function exampleData() {
-			return  [ 
-				{
-					key: "Cumulative Return",
-					values: [
-						{ 
-							"label" : "CDS / Options" ,
-							"value" : -29.765957771107
-						} , 
-						{ 
-							"label" : "Cash" , 
-							"value" : 0
-						} , 
-						{ 
-							"label" : "Corporate Bonds" , 
-							"value" : 32.807804682612
-						} , 
-						{ 
-							"label" : "Equity" , 
-							"value" : 196.45946739256
-						} , 
-						{ 
-							"label" : "Index Futures" ,
-							"value" : 0.19434030906893
-						} , 
-						{ 
-							"label" : "Options" , 
-							"value" : -98.079782601442
-						} , 
-						{ 
-							"label" : "Preferred" , 
-							"value" : -13.925743130903
-						} , 
-						{ 
-							"label" : "Not Available" , 
-							"value" : -5.1387322875705
-						}
-					]
-				}
-			];
-		}	
-
-		nv.addGraph(function() {
-			var chart = nv.models.discreteBarChart()
-				.x(function(d) { return d.label })
-				.y(function(d) { return d.value })
-				.color([ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ])
-				.staggerLabels(true)
-				.tooltips(false)
-				.showValues(true);
-
-			d3.select('#decs svg')
-				.datum(exampleData())
-				.transition().duration(500)
-				.call(chart);
-
-			nv.utils.windowResize(chart.update);
-
-			return chart;
-		});
-
-		nv.addGraph(function() {
-			var chart = nv.models.discreteBarChart()
-				.x(function(d) { return d.label })
-				.y(function(d) { return d.value })
-				.color([ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ])
-				.staggerLabels(true)
-				.tooltips(false)
-				.showValues(true);
-
-			d3.select('#ebas svg')
-				.datum(exampleData())
-				.transition().duration(500)
-				.call(chart);
-
-			nv.utils.windowResize(chart.update);
-
-			return chart;
-		});
-		$(function () {
-			$('#vers').highcharts({
-				chart: {
-					type: 'column'
-				},
-				title: {
-					text: 'Version Error Rate'
-				},
-				colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
-				xAxis: {
-					categories: ['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas']
-				},
-				yAxis: {
-					min: 0,
-					title: {
-						text: 'Version Error Rate'
-					},
-					stackLabels: {
-						enabled: true,
-						style: {
-							fontWeight: 'bold',
-							color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
-						}
-					}
-				},
-				legend: {
-					align: 'right',
-					x: -70,
-					verticalAlign: 'top',
-					y: 20,
-					floating: true,
-					backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
-					borderColor: '#CCC',
-					borderWidth: 1,
-					shadow: false
-				},
-				tooltip: {
-					formatter: function() {
-						return '<b>'+ this.x +'</b><br/>'+
-							this.series.name +': '+ this.y +'<br/>'+
-							'Total: '+ this.point.stackTotal;
-					}
-				},
-				plotOptions: {
-					column: {
-						stacking: 'normal',
-						dataLabels: {
-							enabled: true,
-							color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
-						}
-					}
-				},
-				series: [{
-					name: 'John',
-					data: [5, 3, 4, 7, 2]
-				}, {
-					name: 'Jane',
-					data: [2, 2, 3, 2, 1]
-				}, {
-					name: 'Joe',
-					data: [3, 4, 4, 2, 5]
-				}]
-			});
-		});
-		*/
+            });
+        }
+        RedrawCharts(7);
 	}
 
 	/** Component Start **/
@@ -1756,6 +2013,25 @@ $("head").styleReady(function(){
 			$("#popup-title").html("Native");
 			popup_show($(this));
 		},popup_hide);
+
+        $("table.content-large tbody .float > span.quantitydisable").hover(function() {
+			$("#popup-title").html("Q disable");
+			popup_show($(this));
+		},popup_hide);
+
+        $("table.content-large tbody .float > span.quantityensable").hover(function() {
+			$("#popup-title").html("Q Ensable");
+			popup_show($(this));
+		},popup_hide);
+
+        $("table.content-large tbody .float > span.newdisable").hover(function() {
+			$("#popup-title").html("New Disable");
+			popup_show($(this));
+		},popup_hide);
+        $("table.content-large tbody .float > span.newenable").hover(function() {
+			$("#popup-title").html("New Ensable");
+			popup_show($(this));
+		},popup_hide);
 	}
 	if($("#critical-information") )
 	{
@@ -1875,6 +2151,8 @@ $("head").styleReady(function(){
 	addWindowResize(resizeLoginBox)();
 	addWindowResize(resizeProjectList)();
 	addWindowResize(resizeConfirm)();
+
+    if(typeof postStyleReady != 'undefined')  postStyleReady();
 });
 
 function adjustErrorListStyle(){

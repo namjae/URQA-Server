@@ -441,8 +441,11 @@ def projectdashboard(request, apikey):
     apikeydict = getApikeyDict(apikey)
     settingdict = getSettingDict(projectelement,userelement)
 
+    listdict = errorscorelist(apikey)
+
     dashboarddict = {
-        'error_list' : errorscorelist(apikey),
+        'error_list' : listdict,
+        'total_error_counter' :  len(listdict)
     }
 
     ctx = dict(userdict.items() + apikeydict.items() + settingdict.items() + dashboarddict.items() )
@@ -480,15 +483,17 @@ def dailyesgraph(request, apikey):
         #timezone 적용
         adtimezone = toTimezone(tmpdate,ProjectElement.timezone)
 
+
         value['key'] = adtimezone.__format__('%m / %d')
 
-        ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open] ,lastdate__year = tmpdate.year , lastdate__month = tmpdate.month , lastdate__day = tmpdate.day)
+        ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open] ,lastdate__year = adtimezone.year , lastdate__month = adtimezone.month , lastdate__day = adtimezone.day)
         errorweight = 0
         if len(ErrorsElements) > 0:
             for error in ErrorsElements:
                 if error.rank == RANK.Suspense:
                     continue
                 errorweight += error.errorweight
+
             value['value'] = errorweight
 
             if maxvalue < errorweight:  #maxvalue!
@@ -508,7 +513,6 @@ def typeesgraph(request, apikey):
     timerange = TimeRange.weekly
     week , today = getTimeRange(timerange)
 
-
     default = {
         "tags":[
             {"key":"Unhandle", "value":0},
@@ -526,9 +530,11 @@ def typeesgraph(request, apikey):
         print 'invalid pid'
         return HttpResponse(json.dumps(default), 'application/json')
 
+    weektimezone = toTimezone(week,ProjectElement.timezone)
+    todaytimezone = toTimezone(today,ProjectElement.timezone)
 
     for i in range(RANK.Unhandle,RANK.Native+1): # unhandled 부터 Native 까지
-       ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open], lastdate__range = (week,today), rank = i) #일주일치 얻어옴
+       ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open], lastdate__range = (weektimezone,todaytimezone), rank = i) #일주일치 얻어옴
        if len(ErrorsElements) > 0:
            for error in ErrorsElements:
                default['tags'][i]['value'] += error.errorweight
@@ -613,13 +619,17 @@ def errorscorelist(apikey):
         else:
             rankcolor = RANK.rankcolor[error.rank]
 
-        dicerrordata = {'ErrorName' : error.errorname ,
-                        #'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' ,
-                        'ErrorClassName' : error.errorclassname + ':' + error.linenum,
-                        'tags': TagElements,
-                        'ErrorScore' : error.errorweight ,
-                        'Errorid' : error.iderror ,
-                        'Errorrankcolor' : rankcolor}
+        dicerrordata = {
+            'ErrorName' : error.errorname ,
+            #'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' ,
+            'ErrorClassName' : error.errorclassname + ':' + error.linenum,
+            'tags': TagElements,
+            'ErrorScore' : error.errorweight ,
+            'Errorid' : error.iderror ,
+            'Errorrankcolor' : rankcolor,
+            'ErrorDateFactor' : error.gain1,
+            'ErrorQuantityFactor' : error.gain2
+        }
         jsondata.append(dicerrordata);
 
         #print dicerrordata

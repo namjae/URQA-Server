@@ -806,3 +806,86 @@ def chstatus(request,apikey,iderror):
 #def so_list(request,apikey,iderror):
 
 
+def appv_ratio(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+    depth = int(jsonData['depth'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    past, today = getTimeRange(retention)
+    errorElements = Errors.objects.filter(pid=projectElement,lastdate__range=(past,today))
+
+    #Chart4
+    data = {'appv':{},'osv':{}}
+    instances = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today)).order_by('-appversion')
+
+    for i in instances:
+        key = i.appversion
+        if not key in data['appv']:
+            data['appv'][key] = 1
+        else:
+            data['appv'][key] += 1
+    print data['appv']
+
+    instances.order_by('-osversion')
+    for i in instances:
+        k = i.osversion.split('.')
+        key = k[0]+'.'+k[1];
+        if not key in data['osv']:
+            print key
+            data['osv'][key] = 1
+        else:
+            data['osv'][key] += 1
+    print data['osv']
+
+    max_count = 5
+    appv_data = sorted(data['appv'].iteritems(), key=operator.itemgetter(1), reverse=True)
+
+    while len(appv_data) > max_count:
+        appv_data[max_count-1] = ('Others',appv_data[max_count-1][1] + appv_data[max_count][1])
+        appv_data.pop(max_count)
+
+    osv_data = sorted(data['osv'].iteritems(), key=operator.itemgetter(1), reverse=True)
+    while len(osv_data) > max_count:
+        osv_data[max_count-1] = ('Others',osv_data[max_count-1][1] + osv_data[max_count][1])
+        osv_data.pop(max_count)
+    print osv_data
+
+
+    return HttpResponse(json.dumps({'total':instances.count(),'appv':appv_data,'osv':osv_data}), 'application/json');
+
+    """
+    keys = []
+        idx = -1
+        for i in instances:
+            k = i.appversion.split('.')
+            key = k[0]+'.'+k[1]
+            if not key in keys:
+                idx += 1
+                keys.append(key)
+                data['appv'].append({'key':key,'value':1})
+            else:
+                data['appv'][idx]['value'] += 1
+        print data['appv']
+
+        instances.order_by('-osversion')
+        keys = []
+        idx = -1
+        for i in instances:
+            k = i.osversion.split('.')
+            key = k[0]+'.'+k[1];
+            if not key in keys:
+                idx += 1
+                keys.append(key)
+                data['osv'].append({'key':key,'value':1})
+            else:
+                data['osv'][idx]['value'] += 1
+        print data['osv']
+    """
+def osv_ratio(request,apikey):
+
+    return

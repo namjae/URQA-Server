@@ -55,6 +55,8 @@ urlpatterns = patterns('',
     #errors
     url(r'^urqa/project/(?P<apikey>.{8})/errors/$', 'errors.views.filter_view'),
     url(r'^urqa/project/(?P<apikey>.{8})/errors/list$', 'errors.views.error_list'),
+    url(r'^urqa/project/(?P<apikey>.{8})/errors/appv_ratio$', 'errors.views.appv_ratio'),
+    url(r'^urqa/project/(?P<apikey>.{8})/errors/osv_ratio$', 'errors.views.osv_ratio'),
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/$', 'errors.views.errorDetail'),
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)$', 'errors.views.instancedetatil'),
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/log$', 'errors.views.log'),

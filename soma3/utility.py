@@ -66,7 +66,6 @@ def getTimeRange(t):
     datedelta = datetime.timedelta(days =  -(t - 1))
 
     past = today + datedelta
-    past = past.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 
     return past, today
 

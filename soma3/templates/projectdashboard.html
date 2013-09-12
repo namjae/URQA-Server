@@ -33,6 +33,157 @@
             location.href = 'errors/' + id
         }
     </script>
+    <script>
+        var in_page_counter = 10
+        var page_counter = 5
+        var total_error_counter = {{ total_error_counter }}
+        var page_counter_dan = 0
+        var licomponent = []
+        var errorlist_container
+        var left
+        var right
+
+        $('.page-changer').ready(function() {
+            pagechangerInit(total_error_counter)
+
+        })
+
+        function pagechangerInit(counter){
+            var pagecounter = Math.ceil(counter/in_page_counter)
+            var pagestring = ""
+            for(var i = 2 ; i <= pagecounter; i++)
+            {
+                if( i > page_counter)
+                    break;
+                pagestring += "<li>"+ i +"</li>"
+
+            }
+            var donestring = 'class = "dont"'
+            if(pagecounter > page_counter )
+                donestring = ''
+
+            $('.page-changer').html('\
+            <ul> \
+                <li class="dont">&lt;&lt;</li> \
+                <li class="select">1</li> \ ' +
+                pagestring +
+                '<li ' + donestring + '>&gt;&gt;</li> \
+            </ul>  \
+            ')
+
+            errorlist_container = $('.content-large>tbody').children()
+            var tmplicomponent = $('.page-changer > ul').children()
+            for(var i = 0 ; i< tmplicomponent.size(); i++)
+            {
+                if(i == 0)
+                {
+                    left = tmplicomponent[i]
+                    tmplicomponent[i].onclick =left_click
+                }
+                else if(i == tmplicomponent.size() -1)
+                {
+                    right = tmplicomponent[i]
+                    tmplicomponent[i].onclick = right_click
+                }
+                else
+                {
+                    licomponent.push(tmplicomponent[i])
+                    tmplicomponent[i].onclick =number_click
+                }
+            }
+            numberclick(1)
+        }
+
+        function numberclick(count){
+             var page = in_page_counter*(count - 1)
+
+            for(var i = 0; i< errorlist_container.size(); i++)
+            {
+                errorlist_container[i].style.display = 'none'
+            }
+
+            for(var i = page; i< page+in_page_counter ; i++)
+            {
+                if(i >= errorlist_container.size())
+                    break;
+                errorlist_container[i].style.display = ''
+
+            }
+
+        }
+
+        function number_click(){
+            var count = $(this).html()
+            for(var i = 0 ; i<licomponent.length; i++)
+                licomponent[i].className = ''
+            $(this).attr('class','select')
+            numberclick(count)
+        }
+        function left_click(){
+            if(page_counter_dan -1 == -1)
+                return
+
+              var count = 0
+             for( var i = (page_counter_dan-1) * page_counter +1 ; i < (page_counter_dan) * page_counter +1; i++)
+            {
+                if(count >= page_counter)
+                    break;
+                licomponent[count].innerText = i;
+                licomponent[count].style.display = ''
+                licomponent[count].setAttribute('class','')
+                count++;
+            }
+
+            right.className = ''
+
+            if(page_counter_dan - 1 != 0)
+                left.className = ''
+            else
+                left.className = 'dont'
+
+            licomponent[page_counter-1].setAttribute('class','select')
+            numberclick((page_counter_dan) * page_counter)
+
+            page_counter_dan -= 1
+        }
+        function right_click(){
+            if((page_counter_dan+1) * page_counter * in_page_counter >=  total_error_counter)
+                return
+
+
+            var remainerror = total_error_counter -  (page_counter_dan+1) * page_counter * in_page_counter
+
+            var remainpage = Math.ceil(remainerror / in_page_counter)
+
+            var count = 0
+            for(var i = 0 ; i< page_counter; i++)
+            {
+                licomponent[i].style.display = 'none'
+                 licomponent[i].setAttribute('class','')
+            }
+
+            for( var i = (page_counter_dan+1) * page_counter +1 ; i < (page_counter_dan+1) * page_counter +1 + remainpage ; i++)
+            {
+                if(count >= page_counter)
+                    break;
+                licomponent[count].innerText = i;
+                licomponent[count].style.display = ''
+                count++;
+            }
+
+            if(remainpage - page_counter <= 0)
+                right.className = 'dont'
+            else
+                right.className = ''
+
+            left.className = ''
+
+            licomponent[0].setAttribute('class','select')
+            numberclick((page_counter_dan+1) * page_counter +1)
+
+            page_counter_dan += 1
+        }
+    </script>
 
 </head>
 
@@ -321,16 +472,30 @@
                 <div id="recommand-msg">We recommend that you fix the bug first on this list </div>
 				<table class="content-large">
 					<thead><tr>
-					<td class="center" style="width: 88px">Error Score</td>
-						<td>Error Name</td>
-						<td style="width: 30%">Tags</td>
+					    <td class="center" style="width: 88px">Score</td>
+                        <td class="center" style="width: 111px">Rank</td>
+						<td>Name</td>
+						<td style="width: 20%">Tags</td>
 					</tr></thead>
 					<tbody>
                         {% for data in error_list %}
                         <tr onclick = clickevent({{ data.Errorid }})>
                             <td class="center bold">{{ data.ErrorScore }}</td>
                             <td class="float">
-								<span class="{{ data.Errorrankcolor }}"></span>
+                                    <span class="{{ data.Errorrankcolor }}"></span>
+                                {% if data.ErrorQuantityFactor > 0.5 %}
+                                    <span class = "quantityensable"></span>
+                                {% else %}
+                                    <span class = "quantitydisable"></span>
+                                {% endif %}
+
+                                {% if data.ErrorDateFactor > 0.5 %}
+                                    <span class = "newenable"></span>
+                                {% else %}
+                                    <span class = "newdisable"></span>
+                                {% endif %}
+                            </td>
+                            <td class="float">
 								<p>{{ data.ErrorName }}<br>{{ data.ErrorClassName }}</p>
 							</td>
 							<td>
@@ -365,22 +530,9 @@
             {% if not error_list %}
             <div class="noerror_msg">Project has no error.</div>
             {% endif %}
-            <div class="page-changer">
-					<ul>
-						<li class="dont">&lt;&lt;</li>
-						<li class="select">01</li>
-						<li>02</li>
-						<li>03</li>
-						<li>04</li>
-						<li>05</li>
-						<li>06</li>
-						<li>07</li>
-						<li>08</li>
-						<li>09</li>
-						<li>10</li>
-						<li>&gt;&gt;</li>
-					</ul>
-				</div>
+            {% if error_list %}
+            <div class="page-changer"></div>
+            {% endif %}
 				<div class="white-area"></div>
 		</div>
 		<!--content-container fin-->

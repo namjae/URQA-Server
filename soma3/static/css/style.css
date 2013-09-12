@@ -1413,7 +1413,7 @@ table {
 	width: 100%;
 	/*margin-top: 40px;*/
 	border-collapse: collapse;
-	@multi-platform { box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.27); }
+	@multi-platform { box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.27); }
 
 	tr { height: 40px; }
 	thead {
@@ -1485,12 +1485,28 @@ table.content-large {
 	>tbody .float {
 		span {
 			margin-top: 2px;
-			margin-right: 12px;
+            margin-right: 5px;
 			width: 28px;
 			height: 28px;
 			color: white;
-			/*border-radius: 14px;*/
+			border-radius: 2px;
 		}
+        p{
+            width : 100%;
+        }
+        span.quantitydisable{
+             background-image: url("./images/quantity_mini.png");
+        }
+        span.quantityensable{
+             background-image: url("./images/quantity_mini_d.png");
+        }
+        span.newdisable{
+             background-image: url("./images/clock_mini.png");
+        }
+        span.newenable{
+             background-image: url("./images/clock_mini_d.png");
+        }
+
 		span.red {
             background-color: @indicators-color1;
             background-image: url("./images/critical-body.svg");
@@ -1940,4 +1956,35 @@ blockquote:after {
 #recommand-msg{
     margin-top: 30px;
     font: 18px "RixGo B";
+}
+
+
+table > tbody > tr > td > div.version-panel{
+    height: 32px;
+    .version-content{
+        height: 22px;
+        background-color: @tm-hl-c1;
+        border-radius: 5px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        float: left;
+        > label{
+            float: left;
+            width: 100%;
+            margin-top: 4px;
+            font: 14px 'RixGo L';
+            color: #fff;
+            text-align: center;
+        }
+    }
+    .version-content[data-value="checked"]{
+        background-color: #fff;
+    }
+    .separator{
+        height: 22px;
+        width: 1%;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        float: left;
+    }
 }
