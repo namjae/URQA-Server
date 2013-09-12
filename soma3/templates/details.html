@@ -343,7 +343,7 @@
 				<div class="body mini">
 					<span>Upload Symbol</span>
 					<!--<iframe id="uploadTrg" name="uploadTrg" width="0" height="0" frameborder="0" scrolling="yes"></iframe>-->
-					<form id="symbolUpload" method="post" enctype="multipart/form-data">
+					<form id="symbolUpload" action="/urqa/project/{{ projectid }}/symbol/upload"method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <table class="small" style="margin-top: 5px">
 							<tbody><tr>
@@ -354,37 +354,6 @@
 						</table>
 					</form>
                     <script>
-                        $(document).ready(function(){
-                            $("#symbolUpload").submit(function(event) {
-                                var $form = $('#symbolUpload');
-                                var $data = $($form).serialize();
-
-                                $("#symbolUploading").find('td').text('Symbol-file Uploading...');
-                                $form.ajaxSubmit({
-                                    url : '/urqa/project/{{ projectid }}/symbol/upload',
-                                    type : 'post',
-                                    data : $data,
-                                    //dataType : 'html',
-                                    success : function (result){
-                                        $("#symbolUploading").find('td').text(result.msg)
-                                        if(result.vkey != undefined)
-                                        {
-                                            tlb = $('td[name=vkey]')
-                                            for(var i=0;i<tlb.length;i++)
-                                            {
-                                                if(tlb.eq(i).text() != result.vkey) continue
-                                                tlb.eq(i).parent().children('td').eq(3).children('p').text('O');
-                                            }
-                                        }
-                                        return false
-                                    },
-                                    error : function(a,b,c){
-                                        alert('Server Error')
-                                    }
-                                })
-                                return false
-                            });
-                        });
                     </script>
 					<form id="symbolUploading">
 						<table class="small" style="margin-top: 5px">
@@ -521,10 +490,10 @@
 										<span class="occur"></span>
 										<label>{{ Errornumofinstances }}</label>
 									</div>
-									<div class="infobox red">
+									<!--<div class="infobox red">
 										<span class="reappear"></span>
 										<label>{{ Errorrecur }}%</label>
-									</div>
+									</div>-->
 									<div class="infobox red">
 										<span class="status"></span>
 										<label>
@@ -715,11 +684,11 @@
 					<tbody>
                         {% for instance in instance_list %}
 						<tr>
-							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">2013.07.13</td>
-							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">4.2.1</td>
-							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">1.0</td>
-							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">SHV-E250S</td>
-							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">KR</td>
+							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">{{ instance.date }}<br>{{ instance.time }}</td>
+							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">{{ instance.osversion }}</td>
+							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">{{ instance.appversion }}</td>
+							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">{{ instance.device }}</td>
+							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">{{ instance.country }}</td>
 							<td class="center" onclick="showPopupEventpath(400, 400, {{ instance.idinstance }});">View</td>
 							<td class="center" onclick="showPopupLogdata(800, 400,{{ instance.idinstance }});">View</td>
 						</tr>

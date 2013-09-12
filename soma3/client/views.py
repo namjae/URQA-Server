@@ -214,7 +214,7 @@ def receive_exception(request):
             datetime = naive2aware(event['datetime']),
             classname = event['classname'],
             methodname = event['methodname'],
-            linenum = int(event['linenum']),
+            linenum = event['linenum'],
             depth = depth
         )
         depth += 1
@@ -266,7 +266,7 @@ def receive_eventpath(request):
                                     datetime=naive2aware(event['datetime']),
                                     classname=event['classname'],
                                     methodname=event['methodname'],
-                                    linenum=int(event['linenum']))
+                                    linenum=event['linenum'])
 
     return HttpResponse('success')
 
@@ -371,13 +371,29 @@ def receive_native(request):
             datetime = naive2aware(event['datetime']),
             classname = event['classname'],
             methodname = event['methodname'],
-            linenum = int(event['linenum']),
+            linenum = event['linenum'],
             depth = depth,
         )
         depth += 1
 
 
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
+
+
+class Ignore_clib:
+    list = [
+        'libdvm.so',
+        'libc.so',
+        'libcutils.so',
+        'app_process',
+        'libandroid_runtime.so',
+        'libutils.so',
+        'libbinder.so',
+        'libjavacore.so',
+        'librs_jni.so',
+        'linker',
+    ]
+
 
 @csrf_exempt
 def receive_native_dump(request, idinstance):
@@ -404,33 +420,22 @@ def receive_native_dump(request, idinstance):
     instanceElement.dump_path = dump_path
     instanceElement.save()
 
-    #step4: dmp파일 분석
-    sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.pid))
-    sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
-    arg = [get_config('minidump_stackwalk_path') , dump_path, sym_pool_path]
+    #step4: dmp파일 분석(with nosym)
+    #sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.apikey))
+    #sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
+    #arg = [get_config('minidump_stackwalk_path') , dump_path, sym_pool_path]
+    arg = [get_config('minidump_stackwalk_path') , dump_path]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
     #so library 추출
-    ignore_clib = [
-        'libdvm.so',
-        'libc.so',
-        'libcutils.so',
-        'app_process',
-        'libandroid_runtime.so',
-        'libutils.so',
-        'libbinder.so',
-        'libjavacore.so',
-        'librs_jni.so',
-        'linker',
-    ]
     libs = []
     stderr_split = stderr.splitlines()
     for line in stderr_split:
         if line.find('Couldn\'t load symbols') == -1: #magic keyword
             continue
         lib = line[line.find('for: ')+5:].split('|')
-        if lib[1] == '000000000000000000000000000000000' or lib[0] in ignore_clib:
+        if lib[1] == '000000000000000000000000000000000' or lib[0] in Ignore_clib.list:
             continue
         #print lib[1] + ' ' + lib[0]
         libs.append(lib)
@@ -446,27 +451,59 @@ def receive_native_dump(request, idinstance):
         else:
             print 'version key:', lib[1], lib[0], 'already exists'
 
-    #print stdout
+    #ErrorName, ErrorClassname, linenum 추출하기
     cs_flag = 0
+    errorname = ''
+    errorclassname = ''
+    linenum = ''
     stdout_split = stdout.splitlines()
     for line in stdout_split:
         if line.find('Crash reason:') != -1:
             errorname = line.split()[2]
-        if line.find('Crash address:') != -1:
-            errorclassname = line.split()[2]
+        if cs_flag:
+            if line.find('Thread') != -1 or errorclassname:
+                break
+            #errorclassname 찾기
+            for lib in libs:
+                flag = line.find(lib[0])
+                if flag == -1:
+                    continue
+                separator = line.find(' + ')
+                if separator != -1:
+                    errorclassname = line[flag:separator]
+                    linenum = line[separator+3:]
+                else:
+                    errorclassname = line[flag:]
+                    linenum = 0
+                break
         if line.find('(crashed)') != -1:
-            callstack = line + '\n'
-            cs_flag = cs_flag + 1
-        elif cs_flag:
-            if line.find('Thread') != -1 or cs_flag > 40:
+            cs_flag = 1
+
+    #dmp파일 분석(with sym)
+    sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.apikey))
+    sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
+    arg = [get_config('minidump_stackwalk_path') , dump_path, sym_pool_path]
+    fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (stdout, stderr) = fd_popen.communicate()
+
+    cs_count = 0
+    callstack = ''
+    stdout_split = stdout.splitlines()
+    for line in stdout_split:
+        if line.find('(crashed)') != -1:
+            callstack = line
+            cs_count = cs_count + 1
+        elif cs_count:
+            if line.find('Thread') != -1 or cs_count > 40:
                 break;
-            callstack += line + '\n'
-            cs_flag = cs_flag + 1
+            callstack += '\n'
+            callstack += line
+            cs_count = cs_count + 1
 
     #print callstack
 
     try:
-        errorElement_exist = Errors.objects.get(pid=projectElement, errorname=errorname, errorclassname=errorclassname)
+        errorElement_exist = Errors.objects.get(pid=projectElement, errorname=errorname, errorclassname=errorclassname, linenum=linenum)
         errorElement_exist.lastdate = errorElement.lastdate
         errorElement_exist.numofinstances += 1
         errorElement_exist.wifion += errorElement.wifion
@@ -508,6 +545,7 @@ def receive_native_dump(request, idinstance):
         errorElement.errorname = errorname
         errorElement.errorclassname = errorclassname
         errorElement.callstack = callstack
+        errorElement.linenum = linenum
         errorElement.save()
         Appstatistics.objects.create(iderror=errorElement,appversion=instanceElement.appversion,count=1)
         Osstatistics.objects.create(iderror=errorElement,osversion=instanceElement.osversion,count=1)
@@ -517,114 +555,6 @@ def receive_native_dump(request, idinstance):
         #errorscore 계산
         calc_errorScore(errorElement)
     return HttpResponse('Success')
-
-def calc_eventpath(errorElement):
-
-
-    #node들 추출하기
-#    eventHashs = []
-    instance_limit_count = 10 #최근 몇개의 Instance의 이벤트패스만 표시할지 결정
-    depth_max = 10 # event path 최대 깊이
-    depth_count = 6 # Depth몇개 표현할지 정함
-
-
-    ins_count_limit = max(1, errorElement.numofinstances - instance_limit_count)
-
-    id_count = 0
-    k2i_table = {}
-    i2k_table = {}
-    link_table = {}
-
-    depth = 10
-    while depth > (depth_max - depth_count):
-        eventHash = {}
-        #최근 인스턴스를 우선적으로 비교하기위해 -idinstance를 사용함
-        eventElements = Eventpaths.objects.filter(iderror=errorElement,depth=depth,ins_count__gt=ins_count_limit).order_by('-idinstance')
-        limit_count = 0
-        for event in eventElements:
-            key = str(depth) + ':' + event.classname + ':' + event.methodname + ':' + str(event.linenum)
-            #key = str(depth) + ':' + str(event.linenum)
-            if not key in eventHash:
-                eventHash[key] = 1
-            else:
-                eventHash[key] += 1
-            limit_count += 1
-            if limit_count == instance_limit_count:
-                break;
-        sorted_list = sorted(eventHash, key=eventHash.get, reverse=True)
-
-        #이벤트가 5개를 초과하면 5번째를 Others로 변경함
-        other_count = 0
-        if len(sorted_list) > 5:
-            while len(sorted_list) > 4:
-                key = sorted_list[4]
-                other_count += eventHash[key]
-                del(eventHash[key])
-                sorted_list.pop(4)
-            eventHash[str(depth) + ':' + 'Others'] = other_count
-            sorted_list.append(str(depth) + ':' + 'Others')
-        #print sorted_list
-        #print len(sorted_list)
-
-        #id 발급하기
-        for key in sorted_list:
-            k2i_table[key] = id_count
-            i2k_table[id_count] = key
-            id_count += 1
-
-        depth -= 1
-
-    #test라서 idinstance__lte=159쿼리를 날림
-    #instanceElements = Instances.objects.filter(iderror=errorElement,idinstance__lte=159).order_by('-idinstance')
-    instanceElements = Instances.objects.filter(iderror=errorElement,ins_count__gt=ins_count_limit).order_by('-idinstance')
-
-    limit_count = 0
-    for instanceElement in instanceElements:
-        #print instanceElement.idinstance
-        eventElements = Eventpaths.objects.filter(iderror=errorElement,idinstance=instanceElement).order_by('-depth')
-
-        length = len(eventElements)
-        for i in range(0,depth_count-1):
-            #print i
-            source_key = str(eventElements[i].depth) + ':' + eventElements[i].classname + ':' + eventElements[i].methodname + ':' + str(eventElements[i].linenum)
-            #source_key = str(eventElements[i].depth) + ':' + str(eventElements[i].linenum)
-            if not source_key in k2i_table:
-                source_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
-            else:
-                source_id = k2i_table[source_key]
-            target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum)
-            #target_key = str(eventElements[i+1].depth) + ':' + str(eventElements[i+1].linenum)
-            if not target_key in k2i_table:
-                target_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
-            else:
-                target_id = k2i_table[target_key]
-
-            link_key = '%d>%d' % (source_id, target_id)
-            if link_key in link_table:
-                link_table[link_key] += 1
-            else:
-                link_table[link_key] = 1
-            #print source_key, target_key, source_id, target_id
-
-        limit_count += 1
-        if limit_count == instance_limit_count:
-            break
-
-    #print i2k_table
-    #print link_table
-
-    result = {}
-    result['nodes'] = []
-    for id in i2k_table:
-        result['nodes'].append({'name':i2k_table[id]})
-    result['links'] = []
-    for link in link_table:
-        key = link.split('>')
-        sid = int(key[0])
-        tid = int(key[1])
-        result['links'].append({'source':sid,'target':tid,'value':link_table[link]})
-    #print json.dumps(result)
-    return result
 
 def calc_errorScore(errorElement):
 

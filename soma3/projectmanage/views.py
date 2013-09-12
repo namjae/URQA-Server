@@ -250,6 +250,7 @@ def update_error_callstack(projectElement, appversion):
         instanceElements = Instances.objects.filter(iderror=errorElement,appversion=appversion)
         if not instanceElements.exists():
             continue
+        #error중에 첫번째 인스턴스의 콜스텍만 사용함
         instanceElement = instanceElements[0]
         print instanceElement.iderror
         sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.apikey))
@@ -407,7 +408,7 @@ def projects(request):
         stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
         projectdata['color'] = stagecolordata.get(stagetxt)
 
-        Errorcounter = Errors.objects.filter(pid = project.pid).aggregate(Sum('errorweight'))
+        Errorcounter = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open]).aggregate(Sum('errorweight'))
         projectdata['errorcount'] =  Errorcounter['errorweight__sum'] is not None and numbertostrcomma(Errorcounter['errorweight__sum'])  or 0
         projectdata['name'] = project.name
         projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
@@ -605,15 +606,7 @@ def errorscorelist(apikey):
         #if error.rank == RANK.Suspense:
             #continue
         TagElements = Tags.objects.filter(iderror = error)
-        tagString = '';
-        for tag in TagElements:
-            tagString += tag.tag + ', '
-            # 마지막 , 제거
-        if len(tagString) > 0:
-            stringlength = len(tagString)
-            tagString = tagString[0 : stringlength - 2]
 
-        print tagString
         rankcolor = ''
         if error.rank == -1:
             rankcolor = 'none'
@@ -623,7 +616,7 @@ def errorscorelist(apikey):
         dicerrordata = {'ErrorName' : error.errorname ,
                         #'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' ,
                         'ErrorClassName' : error.errorclassname + ':' + error.linenum,
-                        'tags': tagString,
+                        'tags': TagElements,
                         'ErrorScore' : error.errorweight ,
                         'Errorid' : error.iderror ,
                         'Errorrankcolor' : rankcolor}

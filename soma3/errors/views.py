@@ -330,7 +330,8 @@ def errorDetail(request,apikey,iderror):
     for instance in instanceElements:
         instancetuple = {'datetime' : "", 'osversion' : '','appversion' : '' , 'device' : '', 'country' : '', 'idinstance' : ''}
         adtimezone = toTimezone(instance.datetime,projectelement.timezone)
-        instancetuple['datetime'] = adtimezone.__format__('%Y.%m.%d - %H:%M:%S')
+        instancetuple['date'] = adtimezone.__format__('%Y.%m.%d')
+        instancetuple['time'] = adtimezone.__format__('%H:%M:%S')
         instancetuple['osversion'] = instance.osversion
         instancetuple['appversion'] = instance.appversion
         instancetuple['device'] = instance.device
@@ -730,7 +731,7 @@ def error_list(request,apikey):
 
     week, today = getTimeRange(date)
     errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status__in=status,lastdate__range=(week,today)).order_by('-errorweight','rank', '-lastdate')
-    print '1',errorElements
+    #print '1',errorElements
     #print classes
     if classes:
         errorElements = errorElements.filter(errorclassname__in=classes)
@@ -759,14 +760,14 @@ def error_list(request,apikey):
         if iderror_list:
             errorElements = errorElements.filter(iderror__in=iderror_list)
 
-    print errorElements
+    #print errorElements
 
 
 
     result = []
     for e in errorElements:
         adtimezone = toTimezone(e.lastdate,projectelement.timezone)
-        print adtimezone
+        #print adtimezone
         new_e = {}
         new_e['iderror'] = e.iderror
         new_e['rank'] = RANK.rankcolor[e.rank]

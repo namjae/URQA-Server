@@ -1502,7 +1502,7 @@ $("head").styleReady(function(){
                     newME.html($(this).parent().parent().parent().children("a").html());
                     newME.append("<i></i>");
 
-                    $(this).parent().parent().parent().children("a").html("Add More")
+                    $(this).parent().parent().parent().children("a").html("Select")
                         $(this).css("display", "none");
                 }
             }
@@ -1511,22 +1511,25 @@ $("head").styleReady(function(){
                 var dropdown = $(this).parent().children("li:nth-last-child(1)").children("div").children("ul");
                 dropdown.append("<li data-value=\"false\"><a>" + $(this).html() + "</a></li>");
                 dropdown.children("li:nth-last-child(1)").click(itemClickEvent).click(addEvent);
-                $(this).remove();
-                var csrftoken = getCookie('csrftoken')
-                var deletetag = {'tag' : $(this).text()}
-                $.ajax({
-                      type: 'post'
-                    , url: 'tag/delete'
-                    , data: deletetag
-                    , beforeSend: function(xhr, settings) {
-                        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-                            // Send the token to same-origin, relative URLs only.
-                            // Send the token only if the method warrants CSRF protection
-                            // Using the CSRFToken value acquired earlier
-                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                if($(this).parent().parent().hasClass('user-input'))
+                {
+                    var csrftoken = getCookie('csrftoken')
+                    var deletetag = {'tag' : $(this).text()}
+                    $.ajax({
+                          type: 'post'
+                        , url: 'tag/delete'
+                        , data: deletetag
+                        , beforeSend: function(xhr, settings) {
+                            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                                // Send the token to same-origin, relative URLs only.
+                                // Send the token only if the method warrants CSRF protection
+                                // Using the CSRFToken value acquired earlier
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            }
                         }
-                    }
-                })
+                    })
+                }
+                $(this).remove();
             }
             // Initialize
             $(".tags-list").each(function(index){
@@ -1676,38 +1679,36 @@ $("head").styleReady(function(){
 
 	/** Component End **/
 
-	/*$("#symbolUploading").hide();*/
-    /*
-    $("#symbolUpload").ajaxForm({
-            success : function(data){
-                alert(data);
-            $("#symbolUpload").show();
-            $("#symbolUploading").hide();
-            }
-        }
-    );
-    */
+	$("#symbolUpload").submit(function(event) {
+        var $form = $('#symbolUpload');
+        var action = $form.attr("action");
+        var $data = $($form).serialize();
 
-    /*$("#symbolUpload").submit(function(event) {
-        var $form = $(this);
-        var action = $form.attr('action')
-        var formData = $form.serialize()
-        $form.ajaxForm(function(result){
-            alert(result);
-        });
-        $.post(action, formData, function(data) {
-            alert(data);
-            $("#symbolUpload").show();
-            $("#symbolUploading").hide();
-        });
-        return false;
-    });*/
-    /*
-	$("#uploadTrg").load(function(){
-		//alert("The symbol-file is uploaded!");
-        $("#symbolUpload").show();
-        $("#symbolUploading").hide();
-	});*/
+        $("#symbolUploading").find('td').text('Symbol-file Uploading...');
+        $form.ajaxSubmit({
+            url : action,
+            type : 'post',
+            data : $data,
+            //dataType : 'html',
+            success : function (result){
+                $("#symbolUploading").find('td').text(result.msg)
+                if(result.vkey != undefined)
+                {
+                    tlb = $('td[name=vkey]')
+                    for(var i=0;i<tlb.length;i++)
+                    {
+                        if(tlb.eq(i).text() != result.vkey) continue
+                        tlb.eq(i).parent().children('td').eq(3).children('p').text('O');
+                    }
+                }
+                return false;
+            },
+            error : function(a,b,c){
+                alert('Server Error');
+            }
+        })
+        return false
+    });
 
 	popup_hide = function() {
 		$("#popup-info").stop(true, true);
@@ -1748,6 +1749,11 @@ $("head").styleReady(function(){
 
 		$("table.content-large tbody .float > span.gray").hover(function() {
 			$("#popup-title").html("Unhandler");
+			popup_show($(this));
+		},popup_hide);
+
+        $("table.content-large tbody .float > span.purple").hover(function() {
+			$("#popup-title").html("Native");
 			popup_show($(this));
 		},popup_hide);
 	}
@@ -2110,8 +2116,14 @@ function adjustErrorListStyle(){
 		},popup_hide);
 
 		$("table.content-large tbody .float > span.gray").hover(function() {
-			$("#popup-title").html("Unhandler");
+			$("#popup-title").html("Unhandle");
 			popup_show($(this));
 		},popup_hide);
+
+        $("table.content-large tbody .float > span.purple").hover(function() {
+			$("#popup-title").html("Native");
+			popup_show($(this));
+		},popup_hide);
+
 	}
 }

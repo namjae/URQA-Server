@@ -260,6 +260,7 @@
 					</ul>
 				</div>
 				<div class="navbar-profile">
+                    <div class="projectname"><div class="name">{{ project_name }} <br> ({{ project_platform }})</div></div>
 					<div class="profile"><img src="{{ profile_url }}" alt="profile" /></div>
 					<div id="profile-menu">
 						<div class="inv-triangle"></div>
@@ -302,7 +303,7 @@
             <div id="neck"></div>
         </div>-->
 		<div id="content-container">
-			<div class="title" data="dashboard"><span> {{ project_name }}({{ project_platform }})</span></div>
+			<div class="title" data="dashboard"></div>
 			<div id="dashboard-graph" class="content half">
 				<div>
 					<div class="title" data="daily"> Error Score</div>
@@ -333,7 +334,15 @@
 								<p>{{ data.ErrorName }}<br>{{ data.ErrorClassName }}</p>
 							</td>
 							<td>
-								<p>{{ data.tags }}</p>
+								<p>
+                                    <div class="disable-tags-list">
+                                    <ul>
+                                        {% for tag in data.tags %}
+                                        <li>{{ tag.tag }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    </div>
+                                </p>
 							</td>
 
                         </tr>
@@ -356,6 +365,23 @@
             {% if not error_list %}
             <div class="noerror_msg">Project has no error.</div>
             {% endif %}
+            <div class="page-changer">
+					<ul>
+						<li class="dont">&lt;&lt;</li>
+						<li class="select">01</li>
+						<li>02</li>
+						<li>03</li>
+						<li>04</li>
+						<li>05</li>
+						<li>06</li>
+						<li>07</li>
+						<li>08</li>
+						<li>09</li>
+						<li>10</li>
+						<li>&gt;&gt;</li>
+					</ul>
+				</div>
+				<div class="white-area"></div>
 		</div>
 		<!--content-container fin-->
 

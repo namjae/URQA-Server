@@ -43,7 +43,7 @@ class RANK:
     Minor    = 3
     Native   = 4
     rankcolor = ['gray','red','blue', 'green' , 'purple']
-    rankcolorbit = ["#cccdc7", "#de6363", "#5a9ccc", "#72c380", "#9d61dd" ]
+    rankcolorbit = ["#9f9f9f", "#de6363", "#5a9ccc", "#72c380", "#9d61dd" ]
 
 class TimeRange:
     oneday = 1

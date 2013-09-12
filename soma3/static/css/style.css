@@ -738,6 +738,57 @@ input[type="password"].error {
 		a { right: 0; }
 	}
 }
+
+>.disable-tags-list {
+	ul, ol, li {
+		display: block;
+		margin: 0;
+		padding: 0;
+	}
+	ol, ul {
+		list-style: none;
+	}
+	>ul {
+		@margin {
+			top: 8px;
+			right: 12px;
+		}
+		line-height: 24px;
+		>li {
+			float: left;
+			display: block;
+			border: 0;
+			font: 12px "RixGo L";
+			text-align: center;
+			color: white;
+			outline: none;
+			margin: 0 8px 8px 0;
+			vertical-align: top;
+			background: @tm-hl-c3;
+			@padding {
+				top: 5px !important;
+				left: 7px !important;
+				right: 7px !important;
+				bottom: 5px !important;
+			}
+			@multi-platform {
+				border-radius: 2px;
+				box-sizing: content-box;
+			}
+			cursor: pointer;
+			i {
+				position: absolute;
+				display: none;
+				margin-top: -20px;
+				margin-left: -10px;
+				width: 12px;
+				height: 12px;
+				border-radius: 6px;
+			}
+		}
+	}
+}
+
 >.tags-list {
 	ul, ol, li {
 		display: block;
@@ -861,10 +912,13 @@ input[type="password"].error {
 	width: 24px;
 	height: 24px;
 }
+
 .left { text-align: left; }
 .right { text-align: right; }
 .center { text-align: center; }
 .bold { font-family: "RixGo B"; }
+
+
 /** Component End **/
 
 #header-container {
@@ -933,7 +987,6 @@ body.statistics .navbar-menu > ul > li:nth-child(3) > a {
 #header .navbar-profile {
 	overflow: hidden;
 	float: right;
-	width: 44px;
 	height: @(header-size - 12);
 	margin: 6px 0px;
 	margin-right: 10px;
@@ -941,8 +994,20 @@ body.statistics .navbar-menu > ul > li:nth-child(3) > a {
 
 	@multi-platform { border-radius: 3px; }
 }
-.navbar-profile > div {
-	float: left;
+.navbar-profile > .projectname {
+    float: left;
+    height: 100%;
+    font: 700 13px "Helvetica"; color: white;
+    text-align: center;
+    display:table;
+}
+.projectname >.name{
+    display:table-cell;
+    text-align:center;
+    vertical-align:middle;
+}
+#header > .navbar-profile > .profile{
+    float: right;
 	width: 44px;
 	height: @(header-size - 12);
 
@@ -953,16 +1018,14 @@ body.statistics .navbar-menu > ul > li:nth-child(3) > a {
 			timing-function: ease-in-out;
 		}
 	}
+    background-color: @tm-hl-c4;
 }
-#header > .navbar-profile > .setting { cursor: pointer; }
-#header > .navbar-profile > .setting:hover,
-#header > .navbar-profile > .setting:focus { background-color: @tm-dk-c1; }
-#header > .navbar-profile > .profile { background-color: @tm-hl-c4; }
 #header > .navbar-profile > .profile > img {
 	width: 44px;
 	height: @(header-size - 12);
 	@multi-platform { @border { top-right-radius: 3px; bottom-right-radius: 3px; } transition: opacity 0.1s ease-in-out; }
 }
+
 >#profile-menu
 {
 	position: absolute;
@@ -1000,7 +1063,7 @@ body.statistics .navbar-menu > ul > li:nth-child(3) > a {
 			width: 56px;
 			height: 56px;
 			@multi-platform { border-radius: 56px; }
-			border: 4px @tm-dk-c2 solid;
+			border: 4px @tm-dk-c2 solid
 			overflow: hidden;
 		}
 		.text { float: left; margin-top: 26px; }
@@ -1368,7 +1431,21 @@ table {
 		tr:nth-child(2n+1) { background: white; }
 		tr:nth-child(2n) { background: @table-even-cell; }
 		tr:not(.notHover):hover { background-color: @tm-hl-half-c2; }
-		td {
+		td:nth-child(1){
+			font: 18px "RixGo L";
+			color: @tm-tx-c3;
+			vertical-align: middle;
+			@padding {
+				left: 12px;
+			}
+			p {
+				width: 0px;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+		}
+        td{
 			font: 14px "RixGo L";
 			color: @tm-tx-c3;
 			vertical-align: middle;
@@ -1412,13 +1489,33 @@ table.content-large {
 			width: 28px;
 			height: 28px;
 			color: white;
-			border-radius: 14px;
+			/*border-radius: 14px;*/
 		}
-		span.red { background-color: @indicators-color1; }
-		span.blue { background-color: @indicators-color2; }
-		span.green { background-color: @indicators-color3; }
-		span.purple { background-color: @indicators-color5; }
-		span.gray { background-color: @indicators-color4; }
+		span.red {
+            background-color: @indicators-color1;
+            background-image: url("./images/critical-body.svg");
+            background-size: 100%;
+        }
+		span.blue {
+            background-color: @indicators-color2;
+            background-image: url("./images/major-body.svg");
+            background-size: 100%;
+        }
+		span.green {
+            background-color: @indicators-color3;
+            background-image: url("./images/minor-body.svg");
+            background-size: 100%;
+        }
+		span.purple {
+            background-color: @indicators-color5;
+            background-image: url("./images/native-body.svg");
+            background-size: 100%;
+        }
+		span.gray {
+            background-color: @indicators-color4;
+            background-image: url("./images/unhandle-body.png");
+            background-size: 100%;
+        }
 	}
 }
 table.content-small {
