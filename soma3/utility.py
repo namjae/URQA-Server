@@ -26,6 +26,11 @@ def naive2aware(time_str):
     naivetime = datetime.datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
     return naivetime.replace(tzinfo=utc)
 
+def getUTCawaredate():
+    now = datetime.datetime.utcnow()
+    time_str = '%04d-%02d-%02d'  % (now.year, now.month, now.day)
+    naivetime = datetime.datetime.strptime(time_str, "%Y-%m-%d")
+    return naivetime.replace(tzinfo=utc)
 
 def getProjectPath():
     project_path = os.path.realpath(os.path.dirname(__file__))

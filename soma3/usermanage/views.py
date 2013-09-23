@@ -18,10 +18,10 @@ import projectmanage.views
 
 
 def registration(request):
-    print request
+    #print request
 
     username = request.POST['username']
-    password = request.POST['password']
+    #password = request.POST['password']
     email = username
     first_name = request.POST['usernickname']
 

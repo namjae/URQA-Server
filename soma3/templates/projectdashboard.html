@@ -457,7 +457,7 @@
 			<div class="title" data="dashboard"></div>
 			<div id="dashboard-graph" class="content half">
 				<div>
-					<div class="title" data="daily"> Error Score</div>
+					<div class="title" data="daily"> Errors</div>
 					<div id="dailyES" class="area"></div>
 					<div class="white-area"></div>
 				</div>
@@ -472,29 +472,18 @@
                 <div id="recommand-msg">We recommend that you fix the bug first on this list </div>
 				<table class="content-large">
 					<thead><tr>
-					    <td class="center" style="width: 88px">Score</td>
-                        <td class="center" style="width: 111px">Rank</td>
+                        <td class="center" style="width: 44px">Rank</td>
+					    <td class="center" style="width: 50px">Count</td>
 						<td>Name</td>
 						<td style="width: 20%">Tags</td>
 					</tr></thead>
 					<tbody>
                         {% for data in error_list %}
                         <tr onclick = clickevent({{ data.Errorid }})>
-                            <td class="center bold">{{ data.ErrorScore }}</td>
                             <td class="float">
-                                    <span class="{{ data.Errorrankcolor }}"></span>
-                                {% if data.ErrorQuantityFactor > 0.5 %}
-                                    <span class = "quantityensable"></span>
-                                {% else %}
-                                    <span class = "quantitydisable"></span>
-                                {% endif %}
-
-                                {% if data.ErrorDateFactor > 0.5 %}
-                                    <span class = "newenable"></span>
-                                {% else %}
-                                    <span class = "newdisable"></span>
-                                {% endif %}
+                                <span class="{{ data.Errorrankcolor }}"></span>
                             </td>
+                            <td class="center bold">{{ data.ErrorCount }}</td>
                             <td class="float">
 								<p>{{ data.ErrorName }}<br>{{ data.ErrorClassName }}</p>
 							</td>

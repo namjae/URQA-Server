@@ -26,10 +26,12 @@ from urqa.models import Osstatistics
 from urqa.models import Devicestatistics
 from urqa.models import Countrystatistics
 from urqa.models import Activitystatistics
+from urqa.models import Instancecount
 from utility import naive2aware
 from utility import getUTCDatetime
-from config import get_config
+from utility import getUTCawaredate
 from utility import RANK
+from config import get_config
 
 
 #삭제요망
@@ -57,7 +59,7 @@ def connect(request):
     print 'new idsession: %d' % idsession
 
     #step3: app version별 누적카운트 증가하기
-    appruncountElement, created = Appruncount.objects.get_or_create(pid=projectElement,appversion=appversion,defaults={'runcount':1})
+    appruncountElement, created = Appruncount.objects.get_or_create(pid=projectElement,appversion=appversion,defaults={'runcount':1},date=getUTCawaredate())
     if created == False:
         appruncountElement.runcount += 1
         appruncountElement.save()
@@ -161,7 +163,7 @@ def receive_exception(request):
     #step3: 테그 저장
     if jsonData['tag']:
         tagstr = jsonData['tag']
-        tagElement, created = Tags.objects.get_or_create(iderror=errorElement,tag=tagstr)
+        tagElement, created = Tags.objects.get_or_create(iderror=errorElement,pid=projectElement,tag=tagstr)
 
     #step4: 인스턴스 생성하기
 
@@ -221,6 +223,12 @@ def receive_exception(request):
 
     #calc_eventpath(errorElement)
 
+
+    #Instance Count증가하기
+    countElement, created = Instancecount.objects.get_or_create(pid=projectElement,date=getUTCawaredate(),defaults={'count':'1'})
+    if not created:
+        countElement.count += 1
+        countElement.save()
 
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
 
@@ -320,8 +328,7 @@ def receive_native(request):
     #step3: 테그 저장
     tagstr = jsonData['tag']
     if tagstr:
-        tagElement, created = Tags.object.get_or_create(iderror=errorElement,tag=tagstr)
-
+        tagElement, created = Tags.objects.get_or_create(iderror=errorElement,pid=projectElement,tag=tagstr)
     #step4: 인스턴스 생성하기
 
     instanceElement = Instances(
@@ -376,6 +383,12 @@ def receive_native(request):
         )
         depth -= 1
 
+
+    #Instance Count증가하기
+    countElement, created = Instancecount.objects.get_or_create(pid=projectElement,date=getUTCawaredate(),defaults={'count':'1'})
+    if not created:
+        countElement.count += 1
+        countElement.save()
 
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
 

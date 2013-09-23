@@ -21,6 +21,7 @@ class Activitystatistics(models.Model):
 class Appruncount(models.Model):
     idappruncount = models.AutoField(primary_key=True)
     pid = models.ForeignKey('Projects', db_column='pid')
+    date = models.DateField(null=True, blank=True)
     appversion = models.CharField(max_length=45L, blank=True)
     runcount = models.BigIntegerField(null=True, blank=True)
     class Meta:
@@ -170,6 +171,14 @@ class Eventpaths(models.Model):
     class Meta:
         db_table = 'eventpaths'
 
+class Instancecount(models.Model):
+    idinstancecount = models.AutoField(primary_key=True)
+    pid = models.ForeignKey('Projects', db_column='pid')
+    date = models.DateField()
+    count = models.CharField(max_length=45L)
+    class Meta:
+        db_table = 'instancecount'
+
 class Instances(models.Model):
     idinstance = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
@@ -255,7 +264,7 @@ class Tags(models.Model):
     idtag = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
     tag = models.CharField(max_length=45L)
-    pid = models.ForeignKey(Projects, null=True, db_column='pid', blank=True)
+    pid = models.ForeignKey(Projects, db_column='pid')
     class Meta:
         db_table = 'tags'
 

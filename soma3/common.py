@@ -121,6 +121,16 @@ def getSettingDict(projectelement,userelement):
     }
     return dict
 
+def ErrorRate_for_color(sectiondict,errorrate):
+    colorstring = ''
+    sectiondict = OrderedDict(sorted(sectiondict.items(), key=lambda t: t[1]))
+
+    for key,value in sectiondict.items():
+        if errorrate >= value:
+            colorstring = key
+
+    return colorstring
+
 def Avg_ER_Score_for_color(sectiondict, avgscore):
     colorstring = ''
     sectiondict = OrderedDict(sorted(sectiondict.items(), key=lambda t: t[1]))

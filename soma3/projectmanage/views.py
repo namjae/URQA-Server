@@ -35,6 +35,7 @@ from common import getUserProfileDict
 from common import getApikeyDict
 from common import getSettingDict
 from common import Avg_ER_Score_for_color
+from common import ErrorRate_for_color
 
 from urqa.models import AuthUser
 from urqa.models import Projects
@@ -401,9 +402,11 @@ def projects(request):
 
     stagedata = json.loads(get_config('app_stages'))
     #stagecolordata = json.loads(get_config('app_stages_color'))
-    avgcolordata = json.loads(get_config('avg_error_score_color'))
+    #avgcolordata = json.loads(get_config('avg_error_score_color'))
+    countcolordata = json.loads(get_config('error_rate_color'))
     platformdata = json.loads(get_config('app_platforms'))
 
+    week, today = getTimeRange(TimeRange.weekly)#최근 7일이내것만 표시
 
     for idx, project in enumerate(MergeProjectElements):
         projectdata = {}
@@ -412,13 +415,23 @@ def projects(request):
         stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
         #projectdata['color'] = stagecolordata.get(stagetxt)
 
-        Errorcounter = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open]).aggregate(Avg('errorweight'))
-        Erroravg = Errorcounter['errorweight__avg'] is not None and Errorcounter['errorweight__avg']  or 0
-        Erroravg = int(Erroravg)
-        projectdata['erroravg'] =  numbertostrcomma(Erroravg)
-        print Erroravg
+
+        errorElements = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open])
+        instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range = (week, today)).count()
+        apprunCount = Appruncount.objects.filter(pid=project.pid,date__range = (week, today)).aggregate(apprunCount=Sum('runcount'))['apprunCount']
+        print instanceCount
+        print '(week, today)',project.pid,(week, today)
+        print Appruncount.objects.filter(pid=project.pid,date__gte = week)
+        print apprunCount
+        projectdata['count'] =  instanceCount
+        if not apprunCount:
+            errorRate = 0
+        else:
+            errorRate = int(instanceCount * 100.0 / apprunCount)
+
+        print 'errorRate', project.pid, errorRate
         #Avg ErrorScore에 대한 컬러
-        projectdata['color'] = Avg_ER_Score_for_color( avgcolordata , Erroravg )
+        projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
         print projectdata['color']
 
         projectdata['name'] = project.name
@@ -640,7 +653,7 @@ def errorscorelist(apikey):
             #'ErrorClassName' : error.errorclassname + '(' + error.linenum + ')' ,
             'ErrorClassName' : error.errorclassname + ':' + error.linenum,
             'tags': TagElements,
-            'ErrorScore' : error.errorweight ,
+            'ErrorCount' : error.numofinstances,
             'Errorid' : error.iderror ,
             'Errorrankcolor' : rankcolor,
             'ErrorDateFactor' : error.gain1,
