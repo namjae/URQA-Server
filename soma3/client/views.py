@@ -26,7 +26,7 @@ from urqa.models import Osstatistics
 from urqa.models import Devicestatistics
 from urqa.models import Countrystatistics
 from urqa.models import Activitystatistics
-from urqa.models import Instancecount
+
 from utility import naive2aware
 from utility import getUTCDatetime
 from utility import getUTCawaredate
@@ -222,14 +222,6 @@ def receive_exception(request):
         depth -= 1
 
     #calc_eventpath(errorElement)
-
-
-    #Instance Count증가하기
-    countElement, created = Instancecount.objects.get_or_create(pid=projectElement,date=getUTCawaredate(),defaults={'count':'1'})
-    if not created:
-        countElement.count += 1
-        countElement.save()
-
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
 
 @csrf_exempt
@@ -357,7 +349,8 @@ def receive_native(request):
         batterylevel = jsonData['batterylevel'],
         availsdcard = jsonData['availsdcard'],
         xdpi = jsonData['xdpi'],
-        ydpi = jsonData['ydpi']
+        ydpi = jsonData['ydpi'],
+        lastactivity = jsonData['lastactivity'],
     )
     # primary key가 Auto-incrementing이기 때문에 save한 후 primary key를 읽을 수 있다.
     instanceElement.save()
@@ -382,14 +375,6 @@ def receive_native(request):
             depth = depth,
         )
         depth -= 1
-
-
-    #Instance Count증가하기
-    countElement, created = Instancecount.objects.get_or_create(pid=projectElement,date=getUTCawaredate(),defaults={'count':'1'})
-    if not created:
-        countElement.count += 1
-        countElement.save()
-
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
 
 

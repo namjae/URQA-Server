@@ -171,14 +171,6 @@ class Eventpaths(models.Model):
     class Meta:
         db_table = 'eventpaths'
 
-class Instancecount(models.Model):
-    idinstancecount = models.AutoField(primary_key=True)
-    pid = models.ForeignKey('Projects', db_column='pid')
-    date = models.DateField()
-    count = models.CharField(max_length=45L)
-    class Meta:
-        db_table = 'instancecount'
-
 class Instances(models.Model):
     idinstance = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')

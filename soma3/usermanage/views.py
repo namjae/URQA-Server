@@ -21,12 +21,12 @@ def registration(request):
     #print request
 
     username = request.POST['username']
-    #password = request.POST['password']
+    password = request.POST['password']
     email = username
     first_name = request.POST['usernickname']
 
     print username
-    print password
+    #print password
     print email
     print first_name
 

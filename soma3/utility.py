@@ -48,7 +48,7 @@ class RANK:
     Minor    = 3
     Native   = 4
     rankcolor = ['gray','red','blue', 'green' , 'purple']
-    rankcolorbit = ["#9f9f9f", "#de6363", "#5a9ccc", "#72c380", "#9d61dd" ]
+    rankcolorbit = ["#dd2323", "#de6363", "#5a9ccc", "#72c380", "#9d61dd" ]
 
 class TimeRange:
     oneday = 1
@@ -69,9 +69,10 @@ def getTimeRange(t):
     #today = today.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 
     datedelta = datetime.timedelta(days =  -(t - 1))
+    #datedelta = datetime.timedelta(days =  -t)
 
     past = today + datedelta
-
+    #past.replace(hour=0,minute=0,second=0,microsecond=0)
     return past, today
 
 def numbertostrcomma(num) :

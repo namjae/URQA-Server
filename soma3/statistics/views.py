@@ -63,17 +63,19 @@ def chartdata(request,apikey):
 
     past, today = getTimeRange(retention)
     errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-
+    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
     #Chart1
     chart1 = []
     pre_class = ''
+    print 'past',past
     for e in errorElements:
+        instanceCount = Instances.objects.filter(iderror=e,datetime__gte=past).count()
         if pre_class != e.errorclassname:
             pre_class = e.errorclassname
-            chart1.append([e.errorclassname, e.errorweight])
+            chart1.append([e.errorclassname, instanceCount])
         else:
             last = len(chart1)
-            chart1[last-1] = [e.errorclassname,chart1[last-1][1] + (e.errorweight)]
+            chart1[last-1] = [e.errorclassname,chart1[last-1][1] + (instanceCount)]
 
 
     result = {}
@@ -82,6 +84,27 @@ def chartdata(request,apikey):
     #Chart2
     chart2 = []
     temp_data = {}
+    activities = []
+    instances = instanceElements.order_by('device')
+    for i in instances:
+        if i.device:
+            device = i.device
+        else:
+            device = "Unknown"
+        if not device in activities:
+            activities.append(device)
+            temp_data[device] = 1
+        else:
+            temp_data[device] += 1
+    sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
+    for l,v in sorted_dic:
+        chart2.append({
+            'label': l,
+            'value': v,
+        })
+    result['chart2'] = chart2
+    """chart2 = []
+    temp_data = {}
     for e in errorElements:
         devices = Devicestatistics.objects.filter(iderror=e).order_by('devicename')
         if devices.count() == 0:
@@ -89,8 +112,6 @@ def chartdata(request,apikey):
         total = 0
         for d in devices:
             total += d.count
-            #print d.devicename
-        #print total,e.errorweight
 
         for d in devices:
             if not d.devicename in temp_data:
@@ -104,11 +125,31 @@ def chartdata(request,apikey):
             'value': v,
         })
 
-    result['chart2'] = chart2
+    result['chart2'] = chart2"""
 
     #Chart3
     chart3 = []
     temp_data = {}
+    activities = []
+    instances = instanceElements.order_by('lastactivity')
+    for i in instances:
+        if i.lastactivity:
+            lastactivity = i.lastactivity
+        else:
+            lastactivity = "Unknown"
+        if not lastactivity in activities:
+            activities.append(lastactivity)
+            temp_data[lastactivity] = 1
+        else:
+            temp_data[lastactivity] += 1
+    sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
+    for l,v in sorted_dic:
+        chart3.append({
+            'label': l,
+            'value': v,
+        })
+    result['chart3'] = chart3
+    """temp_data = {}
     for e in errorElements:
         activity = Activitystatistics.objects.filter(iderror=e).order_by('activityname')
         if devices.count() == 0:
@@ -132,15 +173,14 @@ def chartdata(request,apikey):
             'label': l,
             'value': v,
         })
-
-    result['chart3'] = chart3
+    """
 
 
     #Chart4
     categories = []
     ver_data = []
     temp_data = {}
-    instances = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today)).order_by('-appversion','-osversion')
+    instances = instanceElements.order_by('-appversion','-osversion')
 
     appv_idx = -1
     for i in instances:
@@ -151,13 +191,13 @@ def chartdata(request,apikey):
             temp_data[i.osversion] = []
         while len(temp_data[i.osversion]) <= appv_idx:
             temp_data[i.osversion].append(0)
-        score = float(i.iderror.errorweight) / i.iderror.numofinstances
-        temp_data[i.osversion][appv_idx] += score
+        #score = float(i.iderror.errorweight) / i.iderror.numofinstances
+        temp_data[i.osversion][appv_idx] += 1#score
 
     for t in temp_data:
         idx = 0
         for e in temp_data[t]:
-            temp_data[t][idx] = round(e,2)
+            temp_data[t][idx] = e#round(e,2)
             idx += 1
         ver_data.append({'name':t,'data':temp_data[t]})
 

@@ -427,7 +427,7 @@ function tableResizing()
 }
 function resizeConfirm()
 {
-	if($("#warning-alert") )
+	if($("#warning-alert").length )
 	{
 		var tops = ($(window).height() - $("#warning-alert > .body").height()) / 2;
 		var lefts = ($(window).width() - $("#warning-alert > .body").width()) / 2;
@@ -445,7 +445,7 @@ function resizeConfirm()
 }
 function resizePopupMemberjoin()
 {
-	if($("#popup-memberjoin") )
+	if($("#popup-memberjoin").length )
 	{
 		var tops = ($(window).height() - $("#popup-memberjoin > .body").height()) / 2;
 		var lefts = ($(window).width() - $("#popup-memberjoin > .body").width()) / 2;
@@ -463,7 +463,7 @@ function resizePopupMemberjoin()
 }
 function resizePopupNotification()
 {
-	if($("#popup-notification") )
+	if($("#popup-notification").length )
 	{
 		var tops = ($(window).height() - $("#popup-notification").height()) / 2;
 		var lefts = ($(window).width() - $("#popup-notification").width()) / 2;
@@ -481,7 +481,7 @@ function resizePopupNotification()
 }
 function resizePopupInformation()
 {
-	if($("#popup-information") )
+	if($("#popup-information").length )
 	{
 		var tops = ($(window).height() - $("#popup-information > .body").height()) / 2;
 		var lefts = ($(window).width() - $("#popup-information > .body").width()) / 2;
@@ -499,7 +499,7 @@ function resizePopupInformation()
 }
 function resizePopupEventpath()
 {
-	if($("#popup-eventpath") )
+	if($("#popup-eventpath").length )
 	{
 		var tops = ($(window).height() - $("#popup-eventpath > .body").height()) / 2;
 		var lefts = ($(window).width() - $("#popup-eventpath > .body").width()) / 2;
@@ -517,7 +517,7 @@ function resizePopupEventpath()
 }
 function resizePopupLogdata()
 {
-	if($("#popup-logdata") )
+	if($("#popup-logdata").length )
 	{
 		var tops = ($(window).height() - $("#popup-logdata > .body").height()) / 2;
 		var lefts = ($(window).width() - $("#popup-logdata > .body").width()) / 2;
@@ -527,7 +527,7 @@ function resizePopupLogdata()
 }
 function resizeModifyProject()
 {
-	if($("#popup-modifyproject") )
+	if($("#popup-modifyproject").length )
 	{
 		var tops = ($(window).height() - $("#popup-modifyproject > .body").height()) / 2;
 		var lefts = ($(window).width() - $("#popup-modifyproject > .body").width()) / 2;
@@ -545,7 +545,7 @@ function resizeModifyProject()
 }
 function resizeCreateProject()
 {
-	if($("#popup-createproject") )
+	if($("#popup-createproject").length )
 	{
 		var tops = ($(window).height() - $("#popup-createproject > .body").height()) / 2;
 		var lefts = ($(window).width() - $("#popup-createproject > .body").width()) / 2;
@@ -563,7 +563,7 @@ function resizeCreateProject()
 }
 function resizePopupSymbolUpload()
 {
-	if($("#popup-uploadsymbol") )
+	if($("#popup-uploadsymbol").length )
 	{
 		var tops = ($(window).height() - $("#popup-uploadsymbol > .body").height()) / 2;
 		var lefts = ($(window).width() - $("#popup-uploadsymbol > .body").width()) / 2;
@@ -581,7 +581,7 @@ function resizePopupSymbolUpload()
 }
 function resizeLoginBox()
 {
-	if($("#loginbox") )
+	if($("#loginbox").length )
 	{
 		var tops = ($(window).height() - $("#loginbox").height()) / 2;
 		var lefts = ($(window).width() - $("#loginbox").width()) / 2;
@@ -599,7 +599,7 @@ function resizeLoginBox()
 }
 function resizeProjectList()
 {
-	if($("#project-list") )
+	if($("#project-list").length )
 	{
 		var windowWidth = $(window).width() - 180;
 		var projectWidth = $("#project-list > .list").children().length * 135;
@@ -1039,15 +1039,16 @@ $("head").styleReady(function(){
             for(var i=((p_num-1)*list_per_page);i<(p_num*list_per_page);i++)
             {
                 if(i >= listData.length) break;
-                auto_str = ''
-                if(listData[i].auto == 1)   auto_str = '(Auto)';
+                //auto_str = ''
+                //if(listData[i].auto == 1)   auto_str = '(Auto)';
                 tags = ''
                 for(var j=0;j<listData[i].tags.length;j++)
                     tags += '<li>' + listData[i].tags[j] + '<i></i></li>';
                 new_list = $('<tr iderror="'+ listData[i].iderror +'">\
-                    <td class="center"><span class="bold">'+listData[i].es+'</span><br>'+auto_str+'</td>\
+                    <td class="float"><span class="' + listData[i].rank + '"></span></td>\
+                    <td class="center"><span class="bold">'+listData[i].count+'</span></td>\
                     <td class="float" onclick="clickevent('+listData[i].iderror+')">\
-                        <span class="' + listData[i].rank + '"></span><p>'+listData[i].errorname + '<br>' + listData[i].errorclassname + ':' + listData[i].linenum+'</p>\
+                        <p>'+listData[i].errorname + '<br>' + listData[i].errorclassname + ':' + listData[i].linenum+'</p>\
                     </td>\
                     <td><p>\
                         <div class="updated-tags tags-list user-input">\
@@ -1077,15 +1078,14 @@ $("head").styleReady(function(){
                             <input type="hidden" name="status'+i+'" value="'+listData[i].status+'" />\
                         </div>\
                     </td>\
-                    <td class="center">'+listData[i].count+'</td>\
                     <td class="center small">'+listData[i].year+'<br>'+listData[i].month+'/'+listData[i].day+'</td>\
                 </tr>')
                 $('.content-large>tbody').append(new_list);
             }
             $('.content-large>tbody').append($('<tr class="empty">\
-                    <td data-match="true"></td>\
-                    <td data-match="true"></td>\
                     <td></td>\
+                    <td></td>\
+                    <td data-match="true"></td>\
                     <td></td>\
                     <td></td>\
                     <td></td>\
@@ -1219,6 +1219,7 @@ $("head").styleReady(function(){
             });
         }
 
+        var try_again = 0
         query_maker = function (reload)
         {
             if(reload == undefined)
@@ -1326,6 +1327,16 @@ $("head").styleReady(function(){
                     sort_list();
                     pageChange(page_num);
                 }
+                ,error : function(){
+                    //retry
+                    if(try_again == 0)
+                    {
+                        console.log('retry query once more!')
+                        try_again++;
+                        //query_maker()
+                        location.reload();
+                    }
+                }
                 , beforeSend: function(xhr, settings) {
                     var csrftoken = getCookie('csrftoken')
                     if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
@@ -1340,6 +1351,7 @@ $("head").styleReady(function(){
         }
         query_delay = function ()
         {
+            try_again = 0
             if(tID != 0)
                 clearTimeout(tID);
             tID = setTimeout(query_maker,100)
@@ -2102,7 +2114,7 @@ $("head").styleReady(function(){
 		if(obj)
 		{
 			$("#popup-info").css("top", obj.position().top + 20);
-			$("#popup-info").css("left", obj.position().left - 116);
+			$("#popup-info").css("left", obj.position().left - 36);
 		}
 	};
 
@@ -2491,7 +2503,7 @@ function adjustErrorListStyle(){
 		if(obj)
 		{
 			$("#popup-info").css("top", obj.position().top + 20);
-			$("#popup-info").css("left", obj.position().left - 116);
+			$("#popup-info").css("left", obj.position().left - 36);
 		}
 	};
 

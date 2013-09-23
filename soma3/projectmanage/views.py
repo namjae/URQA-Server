@@ -419,10 +419,10 @@ def projects(request):
         errorElements = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open])
         instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range = (week, today)).count()
         apprunCount = Appruncount.objects.filter(pid=project.pid,date__range = (week, today)).aggregate(apprunCount=Sum('runcount'))['apprunCount']
-        print instanceCount
-        print '(week, today)',project.pid,(week, today)
-        print Appruncount.objects.filter(pid=project.pid,date__gte = week)
-        print apprunCount
+        #print instanceCount
+        #print '(week, today)',project.pid,(week, today)
+        #print Appruncount.objects.filter(pid=project.pid,date__gte = week)
+        #print apprunCount
         projectdata['count'] =  instanceCount
         if not apprunCount:
             errorRate = 0
@@ -505,39 +505,43 @@ def dailyesgraph(request, apikey):
 
     #defalut값에 날짜를 대입함
     maxvalue = 0
+    errorElements = Errors.objects.filter(pid=ProjectElement,lastdate__range=(week , today))
+
     for i in range(0,timerange):
         value = {'key' : 0 , 'value' : 0}
-        tmpdate = datetime.timedelta(days  = i-(timerange-1) )
-        tmpdate = today + tmpdate
-        #timezone 적용
-        adtimezone = toTimezone(tmpdate,ProjectElement.timezone)
+        begin_date = today + datetime.timedelta(days  = i-(timerange) )
+        end_date = today + datetime.timedelta(days  = i-(timerange-1) )
 
+        instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range=(begin_date,end_date)).count()
+        #instanceCount = Instancecount.objects.filter(pid = ProjectElement,date=tmpdate).aggregate(Sum('count'))['count__sum']
 
-        value['key'] = adtimezone.__format__('%m / %d')
-
-        ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open] ,lastdate__year = adtimezone.year , lastdate__month = adtimezone.month , lastdate__day = adtimezone.day)
-        errorweight = 0
-        if len(ErrorsElements) > 0:
-            for error in ErrorsElements:
-                if error.rank == RANK.Suspense:
-                    continue
-                errorweight += error.errorweight
-
-            value['value'] = errorweight
-
-            if maxvalue < errorweight:  #maxvalue!
-                maxvalue = errorweight
-        else :
+        if instanceCount:
+            value['value'] = instanceCount
+            if maxvalue < instanceCount:  #maxvalue!
+                maxvalue = instanceCount
+        else:
             value['value'] = 0
 
+        #timezone 적용
+        adtimezone = toTimezone(end_date,ProjectElement.timezone)
+        value['key'] = adtimezone.__format__('%m / %d')
         default['tags'].append(value)
 
     default['max']['key'] = len(default['tags'])
     default['max']['value'] = maxvalue
 
+    #print 'default',default
+
     return HttpResponse(json.dumps(default),'application/json')
 
 def typeesgraph(request, apikey):
+
+    #프로젝트 ID에 맞는 에러들을 가져오기 위함
+    try:
+        ProjectElement = Projects.objects.get(apikey=apikey)
+    except ObjectDoesNotExist:
+        print 'invalid pid'
+        return HttpResponse(json.dumps(default), 'application/json')
 
     timerange = TimeRange.weekly
     week , today = getTimeRange(timerange)
@@ -552,22 +556,20 @@ def typeesgraph(request, apikey):
             ]
         }
 
-    #프로젝트 ID에 맞는 에러들을 가져오기 위함
-    try:
-        ProjectElement = Projects.objects.get(apikey= apikey)
-    except ObjectDoesNotExist:
-        print 'invalid pid'
-        return HttpResponse(json.dumps(default), 'application/json')
-
-    weektimezone = toTimezone(week,ProjectElement.timezone)
-    todaytimezone = toTimezone(today,ProjectElement.timezone)
 
     for i in range(RANK.Unhandle,RANK.Native+1): # unhandled 부터 Native 까지
+        errorElements = Errors.objects.filter(pid=ProjectElement,lastdate__range=(week,today),rank=i)
+        instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range=(week,today)).count()
+        #instanceCount = Instancecount.objects.filter(pid=ProjectElement,date__gte=week,rank=i).aggregate(Sum('count'))['count__sum']
+        print 'instanceCount',instanceCount
+        if instanceCount:
+            default['tags'][i]['value'] = instanceCount
+    """for i in range(RANK.Unhandle,RANK.Native+1): # unhandled 부터 Native 까지
        ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open], lastdate__range = (weektimezone,todaytimezone), rank = i) #일주일치 얻어옴
        if len(ErrorsElements) > 0:
            for error in ErrorsElements:
                default['tags'][i]['value'] += error.errorweight
-               #print str(i) + ':' +  str(default['tags'][i]['value'])
+               #print str(i) + ':' +  str(default['tags'][i]['value'])"""
 
     popcount = RANK.Unhandle
     for i in range(RANK.Unhandle,RANK.Native+1):
@@ -576,8 +578,7 @@ def typeesgraph(request, apikey):
             popcount+=1
 
     result = json.dumps(default)
-
-
+    print result
     return HttpResponse(result,'application/json')
 
 def typeescolor(request ,apikey):
@@ -632,7 +633,7 @@ def errorscorelist(apikey):
 
     #print today
 
-    ErrorElements = Errors.objects.filter(pid = ProjectElement , status__in=[Status.New,Status.Open],lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
+    ErrorElements = Errors.objects.filter(pid = ProjectElement , status__in=[Status.New,Status.Open],lastdate__range = (week, today) ).order_by('rank','-numofinstances','-lastdate')
 
     jsondata = []
 
