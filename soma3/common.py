@@ -93,8 +93,8 @@ def getSettingDict(projectelement,userelement):
             break;
         count += 1
 
-    print len(pytz.common_timezones)
-    print 'awefawefawefawefawef' + str(count)
+    #print len(pytz.common_timezones)
+    #print 'getSettingDict' + str(count)
 
     viewerlist = []
 

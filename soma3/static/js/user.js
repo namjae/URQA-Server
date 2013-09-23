@@ -1046,9 +1046,8 @@ $("head").styleReady(function(){
                     tags += '<li>' + listData[i].tags[j] + '<i></i></li>';
                 new_list = $('<tr iderror="'+ listData[i].iderror +'">\
                     <td class="center"><span class="bold">'+listData[i].es+'</span><br>'+auto_str+'</td>\
-                    <td class="float"><span class="' + listData[i].rank + '"></span></td>\
                     <td class="float" onclick="clickevent('+listData[i].iderror+')">\
-                        <p>'+listData[i].errorname + '<br>' + listData[i].errorclassname + ':' + listData[i].linenum+'</p>\
+                        <span class="' + listData[i].rank + '"></span><p>'+listData[i].errorname + '<br>' + listData[i].errorclassname + ':' + listData[i].linenum+'</p>\
                     </td>\
                     <td><p>\
                         <div class="updated-tags tags-list user-input">\
