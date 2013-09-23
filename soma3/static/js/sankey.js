@@ -312,9 +312,9 @@ function sankeydraw(data)
         return;
     var margin = {
         top : 0,
-        right : 1,
+        right : 50,
         bottom : 70,
-        left : 1
+        left : 70
             },
             width = sankeywidth - margin.left - margin.right,
             height = sankeyheight - margin.top - margin.bottom;

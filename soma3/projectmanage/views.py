@@ -27,12 +27,14 @@ from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.db.models import Sum
+from django.db.models import Avg
 from django.db.models import Q
 
 from common import validUserPjt
 from common import getUserProfileDict
 from common import getApikeyDict
 from common import getSettingDict
+from common import Avg_ER_Score_for_color
 
 from urqa.models import AuthUser
 from urqa.models import Projects
@@ -83,6 +85,7 @@ def registration(request):
     platformdata = json.loads(get_config('app_platforms'))
     stagedata = json.loads(get_config('app_stages'))
     stagecolordata = json.loads(get_config('app_stages_color'))
+    avgcolordata = json.loads(get_config('avg_error_score_color'))
 
     name = request.POST['name']
     platformtxt = request.POST['platform']
@@ -93,20 +96,19 @@ def registration(request):
     platform = platformdata[platformtxt]
     stage =  stagedata[stagetxt]
     category= categorydata[categorytxt]
-    color = stagecolordata[stagetxt]
-
+    color = Avg_ER_Score_for_color( avgcolordata , 0 )
 
     #project name은 중복을 허용한다.
 
     #step2: apikey를 발급받는다. apikeysms 8자리 숫자
     apikey = newApikey()
     print 'new apikey = %s' % apikey
-    projectElement = Projects(owner_uid=userElement,apikey=apikey,name=name,platform=platform,stage=stage,category=category)
+    projectElement = Projects(owner_uid=userElement,apikey=apikey,name=name,platform=platform,stage=stage,category=category,timezone='UTC')
     projectElement.save();
     #step3: viwer db에 사용자와 프로젝트를 연결한다.
     Viewer.objects.create(uid=userElement,pid=projectElement)
 
-    return HttpResponse(json.dumps({'success': True , 'prjname' : name , 'apikey' : apikey, 'color' : color , 'platform' : platformtxt}), 'application/json')
+    return HttpResponse(json.dumps({'success': True , 'prjname' : name , 'apikey' : apikey, 'color' : color , 'platform' : platformtxt,'stage':stagetxt}), 'application/json')
 
 def delete_req(request,apikey):
     print 'project delete request(APIKEY:%s)' % apikey
@@ -398,21 +400,35 @@ def projects(request):
     project_list = []
 
     stagedata = json.loads(get_config('app_stages'))
-    stagecolordata = json.loads(get_config('app_stages_color'))
+    #stagecolordata = json.loads(get_config('app_stages_color'))
+    avgcolordata = json.loads(get_config('avg_error_score_color'))
     platformdata = json.loads(get_config('app_platforms'))
+
 
     for idx, project in enumerate(MergeProjectElements):
         projectdata = {}
         projectdata['apikey'] = project.apikey
         #stage color 구하기
         stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
-        projectdata['color'] = stagecolordata.get(stagetxt)
+        #projectdata['color'] = stagecolordata.get(stagetxt)
 
-        Errorcounter = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open]).aggregate(Sum('errorweight'))
-        projectdata['errorcount'] =  Errorcounter['errorweight__sum'] is not None and numbertostrcomma(Errorcounter['errorweight__sum'])  or 0
+        Errorcounter = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open]).aggregate(Avg('errorweight'))
+        Erroravg = Errorcounter['errorweight__avg'] is not None and Errorcounter['errorweight__avg']  or 0
+        Erroravg = int(Erroravg)
+        projectdata['erroravg'] =  numbertostrcomma(Erroravg)
+        print Erroravg
+        #Avg ErrorScore에 대한 컬러
+        projectdata['color'] = Avg_ER_Score_for_color( avgcolordata , Erroravg )
+        print projectdata['color']
+
         projectdata['name'] = project.name
         projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
+        projectdata['stage'] = stagetxt
         project_list.append(projectdata)
+
+
+
+
 
     categorydata = json.loads(get_config('app_categories'))
     platformdata = json.loads(get_config('app_platforms'))

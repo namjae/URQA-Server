@@ -42,6 +42,7 @@ def registration(request):
     #default이미지 삽
     user = AuthUser.objects.get(username = username)
     user.image_path = './images/user_profiles/noimage.jpg'
+
     user.save()
 
     return HttpResponseRedirect('/urqa/')

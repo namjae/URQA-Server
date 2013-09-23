@@ -88,10 +88,15 @@
                     <a href= "/urqa/project/{{ project.apikey }}">
                         <div></div>
                         <div class="{{ project.platform }}"></div>
-                        <span></span>
-                        <p class="{{ project.color }}"><span>ERROR</span>{{ project.errorcount }}</p>
+                        <span><label>{{ project.name }}</label></span>
+                        <p class="{{ project.color }}">
+                            <span>Error Score</span>
+                            <span id = 'score'>{{ project.erroravg }}</span>
+                        </p>
                     </a>
-                        <label onclick="copyThis(this)">{{ project.name }}<span>{{ project.apikey }}</span></label>
+                        <div id = "stage">{{ project.stage }}</div>
+                        <label onclick="copyThis(this)">API Key : <span>{{ project.apikey }}</span></label>
+
                 </div>
                 {% endfor %}
              </div>

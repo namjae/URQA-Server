@@ -21,6 +21,8 @@
 	<script type="text/javascript" src="{% static 'js/css-compile.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/user.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/utility.js' %}"></script>
+    <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+	<script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
 
 	<script type="text/javascript">
         var project_id = "{{ projectid }}";
@@ -102,6 +104,62 @@
                     newv.css('position','absolute')
                     newv.css('background-color','#FFF')
                     panel.children('div').append(newv)*/
+                }
+                , beforeSend: function(xhr, settings) {
+                    var csrftoken = getCookie('csrftoken')
+                    if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                        // Send the token to same-origin, relative URLs only.
+                        // Send the token only if the method warrants CSRF protection
+                        // Using the CSRFToken value acquired earlier
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'../statistics/chartdata'
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':7
+                })}
+                ,success : function(jsonData) {
+
+                    $('#class-error-count').empty()
+                    $('#class-error-count').height('150px')
+                    $("#class-error-count").highcharts({
+                        chart: {
+                            plotBackgroundColor: null,
+                            plotBorderWidth: null,
+                            plotShadow: false
+                        },
+                        title: {
+                            text: ''//'Error by Class'
+                        },
+                        colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
+                        tooltip: {
+                            enabled: false
+                            //pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        },
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    enabled: true,
+                                    color: '#000000',
+                                    connectorColor: '#000000',
+                                    format: '<b>{point.name}</b>'
+                                }
+                            }
+                        },
+                        series: [{
+                            type: 'pie',
+                            name: 'Error by Class',
+                            data: jsonData.chart1
+                        }]
+                    });
                 }
                 , beforeSend: function(xhr, settings) {
                     var csrftoken = getCookie('csrftoken')
@@ -330,12 +388,11 @@
 					</ul>
 				</div>
 				<div class="navbar-profile">
-                    <div class="projectname"><div class="name">{{ project_name }} <br> ({{ project_platform }})</div></div>
 					<div class="profile"><img src="{{ profile_url }}" alt="profile" /></div>
 					<div id="profile-menu">
 						<div class="inv-triangle"></div>
 						<div class="color shadow">
-                            <img src="{{ profile_url }}" alt="profile" />
+							<img src="{{ profile_url }}" alt="profile" />
 							<div class="text">
 								<div class="name">{{ user_name }}</div>
                                 <div class="user-style">{{ user_email }}</div>
@@ -347,7 +404,7 @@
 									<p class="icon" data-name="profile"></p>
 									<p class="text">PROFILE</p>
 								</span>
-								<span onclick="openNotification();">
+								<span>
 									<p class="notification" data="0"></p>
 									<p class="icon" data-name="notification"></p>
 									<p class="text">NOTIFICATION</p>
@@ -371,7 +428,7 @@
 		<!--header-container fin-->
 
 		<div id="content-container">
-			<div class="title" data="errors"></div>
+			<div class="title" data="errors"><span> {{ project_name }}({{ project_platform }})</span></div>
 			<div id="errors_filter" class="content">
 				<table class="small top">
 					<thead><tr>
@@ -569,24 +626,11 @@
 
 						<!-- Class -->
 						<tr>
-                            <td>Class</td>
-							<td colspan="6">
-								<div class="tags-list classes-list">
-									<ul>
-										<li class="dropdown">
-											<a>Select</a>
-											<span></span>
-											<div>
-												 <ul id='classul'>
-                                                     {% for e in class_list %}
-                                                         <li data-value="false"><a>{{ e }}</a></li>
-                                                     {% endfor %}
-												 </ul>
-											</div>
-										</li>
-									</ul>
-									<input type="hidden" name="class" />
-								</div>
+                            <!--<td>Class</td>-->
+							<td colspan="7">
+								<div id="class-error-count" class="content">
+
+                                </div>
 							</td>
 						</tr>
 					</tbody>

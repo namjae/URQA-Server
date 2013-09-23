@@ -489,10 +489,12 @@ def calc_eventpath(errorElement):
     link_table = {}
 
     depth = 10
+    #print 'ins_count_limit',ins_count_limit
     while depth > (depth_max - depth_count):
         eventHash = {}
         #최근 인스턴스를 우선적으로 비교하기위해 -idinstance를 사용함
-        eventElements = Eventpaths.objects.filter(iderror=errorElement,depth=depth,ins_count__gt=ins_count_limit).order_by('-idinstance')
+        eventElements = Eventpaths.objects.filter(iderror=errorElement,depth=depth,ins_count__gte=ins_count_limit).order_by('-idinstance')
+        #print 'event:',depth,eventElements
         limit_count = 0
         for event in eventElements:
             key = str(depth) + ':' + event.classname + ':' + event.methodname + ':' + str(event.linenum)
@@ -505,7 +507,7 @@ def calc_eventpath(errorElement):
             if limit_count == instance_limit_count:
                 break;
         sorted_list = sorted(eventHash, key=eventHash.get, reverse=True)
-
+        #print 'sorted_list',sorted_list
         #이벤트가 5개를 초과하면 5번째를 Others로 변경함
         other_count = 0
         if len(sorted_list) > 5:
@@ -527,26 +529,28 @@ def calc_eventpath(errorElement):
 
         depth -= 1
 
-    #test라서 idinstance__lte=159쿼리를 날림
-    #instanceElements = Instances.objects.filter(iderror=errorElement,idinstance__lte=159).order_by('-idinstance')
-    instanceElements = Instances.objects.filter(iderror=errorElement,ins_count__gt=ins_count_limit).order_by('-idinstance')
+    #print 'k2i_table',k2i_table
+    #print 'i2k_table',i2k_table
+    instanceElements = Instances.objects.filter(iderror=errorElement,ins_count__gte=ins_count_limit).order_by('-idinstance')
 
+    print 'instanceElements',instanceElements
     limit_count = 0
     for instanceElement in instanceElements:
         #print instanceElement.idinstance
         eventElements = Eventpaths.objects.filter(iderror=errorElement,idinstance=instanceElement).order_by('-depth')
-
-        length = len(eventElements)
-        for i in range(0,depth_count-1):
+        length = min(len(eventElements),depth_count)
+        for i in range(0,length-1):
             #print i
             source_key = str(eventElements[i].depth) + ':' + eventElements[i].classname + ':' + eventElements[i].methodname + ':' + str(eventElements[i].linenum)
             #source_key = str(eventElements[i].depth) + ':' + str(eventElements[i].linenum)
+            print 'source_key',source_key
             if not source_key in k2i_table:
                 source_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
             else:
                 source_id = k2i_table[source_key]
             target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum)
             #target_key = str(eventElements[i+1].depth) + ':' + str(eventElements[i+1].linenum)
+            print 'target_key',target_key
             if not target_key in k2i_table:
                 target_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
             else:
@@ -819,7 +823,6 @@ def appv_ratio(request,apikey):
     past, today = getTimeRange(retention)
     errorElements = Errors.objects.filter(pid=projectElement,lastdate__range=(past,today))
 
-    #Chart4
     data = {'appv':{},'osv':{}}
     instances = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today)).order_by('-appversion')
 
@@ -831,6 +834,7 @@ def appv_ratio(request,apikey):
             data['appv'][key] += 1
     print data['appv']
 
+    osv_list = {}
     instances.order_by('-osversion')
     for i in instances:
         k = i.osversion.split('.')
@@ -838,8 +842,11 @@ def appv_ratio(request,apikey):
         if not key in data['osv']:
             print key
             data['osv'][key] = 1
+            osv_list[key] = []
         else:
             data['osv'][key] += 1
+        if not i.osversion in osv_list[key]:
+            osv_list[key].append(i.osversion)
     print data['osv']
 
     max_count = 5
@@ -856,7 +863,7 @@ def appv_ratio(request,apikey):
     print osv_data
 
 
-    return HttpResponse(json.dumps({'total':instances.count(),'appv':appv_data,'osv':osv_data}), 'application/json');
+    return HttpResponse(json.dumps({'total':instances.count(),'appv':appv_data,'osv':osv_data,'osv_list':osv_list}), 'application/json');
 
     """
     keys = []

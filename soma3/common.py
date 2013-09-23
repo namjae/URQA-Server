@@ -7,6 +7,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.timezone import utc
+from django.db.models import Count
+from django.db.models import Sum
+from django.db.models import Avg
 
 from urqa.models import AuthUser
 from urqa.models import Projects
@@ -17,6 +20,9 @@ from utility import get_dict_value_matchin_key
 from utility import get_dict_value_matchin_number
 
 from config import get_config
+from collections import OrderedDict
+
+from utility import Status
 
 
 def validUserPjtError(username, pid, iderror):
@@ -87,6 +93,9 @@ def getSettingDict(projectelement,userelement):
             break;
         count += 1
 
+    print len(pytz.common_timezones)
+    print 'awefawefawefawefawef' + str(count)
+
     viewerlist = []
 
 
@@ -112,4 +121,13 @@ def getSettingDict(projectelement,userelement):
     }
     return dict
 
+def Avg_ER_Score_for_color(sectiondict, avgscore):
+    colorstring = ''
+    sectiondict = OrderedDict(sorted(sectiondict.items(), key=lambda t: t[1]))
+
+    for key,value in sectiondict.items():
+        if avgscore >= value:
+            colorstring = key
+
+    return colorstring
 

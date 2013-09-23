@@ -1220,8 +1220,8 @@ html.login #body-header {
 		>div {
 			float: left;
 			display: block;
-			width: 120px;
-			height: 120px;
+			width: 150px;
+			height: 150px;
 			margin-right: 15px;
 			margin-bottom: 15px;
 			border-radius: 10px;
@@ -1230,7 +1230,7 @@ html.login #body-header {
 				cursor: pointer;
 				div:nth-child(1) {
 					position: absolute;
-					width: 120px;
+					width: 150px;
 					height: 98px;
 					margin-top: 10px;
 					background: url("./images/glass.png") no-repeat;
@@ -1246,12 +1246,23 @@ html.login #body-header {
 				}
 				span {
 					display: block;
-					height: 10px;
+					height: 30px;
+					>label {
+                        padding-top : 4px;
+						position: relative;
+						display: block;
+						margin-top: 4px;
+						width: 150px;
+						font: 16px "RixGo B";
+						color: @tm-tx-c3;
+						text-align: center;
+						vertical-align: middle;
+					}
 				}
 				>p {
 					display: block;
 					padding-top: 18px;
-					width: 120px;
+					width: 150px;
 					height: 54px;
 					font: 14px "RixGo B";
 					text-align: center;
@@ -1259,6 +1270,9 @@ html.login #body-header {
 					span {
 						display: block;
 						font-size: 18px;
+					}
+					span#score{
+						font-size: 22px;
 					}
 				}
 				p.red {
@@ -1274,22 +1288,29 @@ html.login #body-header {
 					background-color: @tm-hl-c4;
 				}
 			}
-			>label {
-				position: relative;
+            >div#stage {
 				display: block;
-				margin-top: 4px;
-				width: 120px;
+                padding-top: 10px;
+				width: 150px;
 				font: 12px "RixGo B";
 				color: @tm-tx-c3;
 				text-align: center;
-				cursor: copy;
+			}
+			>label {
+				display: block;
+                position: relative;
+				margin-top: 4px;
+				width: 150px;
+				font: 12px  "RixGo L";
+				color: @tm-tx-c3;
+				text-align : center;
 				span {
 					margin-top: 2px;
-					display: block;
 					font-family: "RixGo L";
 					font-size: 10px;
 				}
 			}
+
 		}
 		>div:hover {
 			background-color: white;
@@ -1470,6 +1491,7 @@ table {
 .notHover:not(.retention){
     height: 300px
 }
+
 table.top { margin-top: 0; }
 table.clickon > tbody > tr { cursor: pointer; }
 table div.dropdown { margin-bottom: -4px; }
@@ -1851,6 +1873,7 @@ table.content-small {
 						#content-container > .title[data="event-path"]:before { padding-left: 0px; }
 						#content-container > .title[data="call-stack"]:before { padding-left: 0px; }
 						#content-container > .title[data="instance"]:before { padding-left: 0px; }
+                        #content-container > .title[data="comments"]:before { padding-left: 0px; }
 #container.svg			#content-container > .title[data="statistics"] { background: url("./images/statistics.svg") no-repeat; }
 #container				#content-container > .title[data="statistics"],
 #container.decelerate	#content-container > .title[data="statistics"] { background: url("./images/statistics.png") no-repeat; }
@@ -1958,16 +1981,16 @@ blockquote:after {
     font: 18px "RixGo B";
 }
 
-
 table > tbody > tr > td > div.version-panel{
     height: 32px;
-    .version-content{
+    .button{
         height: 22px;
-        background-color: @tm-hl-c1;
+        background-color: @tm-dk-half-c1;
         border-radius: 5px;
         margin-top: 5px;
         margin-bottom: 5px;
         float: left;
+        cursor: pointer;
         > label{
             float: left;
             width: 100%;
@@ -1975,10 +1998,14 @@ table > tbody > tr > td > div.version-panel{
             font: 14px 'RixGo L';
             color: #fff;
             text-align: center;
+            cursor: pointer;
         }
     }
-    .version-content[data-value="checked"]{
-        background-color: #fff;
+    > .button:hover{
+        background-color: @tm-hl-half-c1;
+    }
+    .button[data-value="checked"]{
+        background-color: @tm-hl-c1;
     }
     .separator{
         height: 22px;

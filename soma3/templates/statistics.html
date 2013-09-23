@@ -268,6 +268,7 @@
 					</ul>
 				</div>
 				<div class="navbar-profile">
+                    <div class="projectname"><div class="name">{{ project_name }} <br> ({{ project_platform }})</div></div>
 					<div class="profile"><img src="{{ profile_url }}" alt="profile" /></div>
 					<div id="profile-menu">
 						<div class="inv-triangle"></div>
@@ -284,7 +285,7 @@
 									<p class="icon" data-name="profile"></p>
 									<p class="text">PROFILE</p>
 								</span>
-								<span>
+								<span onclick="openNotification();">
 									<p class="notification" data="0"></p>
 									<p class="icon" data-name="notification"></p>
 									<p class="text">NOTIFICATION</p>
@@ -308,7 +309,7 @@
 		<!--header-container fin-->
 
 		<div id="content-container">
-			<div class="title" data="statistics"><span> {{ project_name }}({{ project_platform }})</span></div>
+			<div class="title" data="statistics"></div>
 			<div class="title" data="retention"></div>
 			<div class="content">
 				<table style="margin-top: -10px">

@@ -205,8 +205,8 @@ def receive_exception(request):
     eventpath = jsonData['eventpaths']
 
     #테스트때문에 잠시 안씀
-    depth = 1
-    for event in eventpath:
+    depth = 10
+    for event in reversed(eventpath):
         Eventpaths.objects.create(
             idinstance = instanceElement,
             iderror = errorElement,
@@ -217,7 +217,7 @@ def receive_exception(request):
             linenum = event['linenum'],
             depth = depth
         )
-        depth += 1
+        depth -= 1
 
     #calc_eventpath(errorElement)
 

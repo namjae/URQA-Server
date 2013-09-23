@@ -10,6 +10,19 @@ var resizeStatusPopupMemberJoin = false,
 
 var variables = $().loadVariableFile("./css/theme/dark");
 
+Array.prototype.unique = function()
+{
+ var a = {};
+ for(var i=0; i <this.length; i++){
+  if(typeof a[this[i]] == "undefined")
+   a[this[i]] = 1;
+ }
+ this.length = 0;
+ for(var i in a)
+  this[this.length] = i;
+ return this;
+}
+
 function confirmCancel()
 {
 	hideConfirm();
@@ -166,25 +179,30 @@ function createProject(obj)
     , data: data
     , success : function(data) {
              if(data['success'])
-                successCreateProject(data['prjname'],data['apikey'],data['color'],data['platform'])
+                successCreateProject(data['prjname'],data['apikey'],data['color'],data['platform'],data['stage'])
         }
     })
 
 	return false;
 }
-function successCreateProject(prjname,apikey,color,platform)
+function successCreateProject(prjname,apikey,color,platform,stage)
 {
     platform = platform.toLowerCase()
 	var device = (data['platform'] == 1 ? "iphone" : "android");
     hidePopupCreateProject();
+
     $("#project-list > .list").append("<div>                                                                    \
                     <a href= \"/urqa/project/"+ apikey + "\">                                                   \
                         <div></div>                                                                                \
                         <div class=\"" + platform + "\"></div>                                                       \
-                        <span></span>                                                                               \
-                        <p class=\"" + color+ "\"><span>ERROR</span>0</p>                                         \
+                        <span><label>" + prjname +"</label></span>                                                  \
+                        <p class=\"" + color+ "\">\
+                            <span>Error Score</span> \
+                            <span id = 'score'>0</span> \
+                        </p>                                         \
                     </a>                                                                                             \
-                        <label onclick=\"copyThis(this)\">" + prjname + "<span>" + apikey + "</span></label>   \
+                        <div id = 'stage'>"+ stage +"</div> \
+                        <label onclick=\"copyThis(this)\">API key : <span>" + apikey + "</span></label>   \
                 </div>                                                                                               \
                 ");
 
@@ -1129,19 +1147,9 @@ $("head").styleReady(function(){
             pageChange(page_num)
         }
 
-        $('.checkbox').click(query_delay);
-        $('.radiobox').click(query_delay);
-        $('.scrollbar').click(query_delay);
-        $('.tags-list').click(query_delay);
-        tID = 0;
-        query_delay()
 
-        function query_delay(){
-            if(tID != 0)
-                clearTimeout(tID);
-            tID = setTimeout(query_maker,100)
-        }
-        function query_maker(reload){
+        query_maker = function (reload)
+        {
             if(reload == undefined)
             {
                 query = {}
@@ -1183,16 +1191,28 @@ $("head").styleReady(function(){
                 for(var i=0;i<classes.length;i++)
                     class_list.push(classes.eq(i).text())
 
-                osv_list = []
-                osv = $('#osvtr').find('.checkbox[data-value="checked"]:not(.half)')
-                for(var i=0;i<osv.length;i++)
-                    osv_list.push(osv.eq(i).children('label').text())
-
                 appv_list = []
-                appv = $('#appvtr').find('.checkbox[data-value="checked"]:not(.half)')
-                for(var i=0;i<appv.length;i++)
-                    appv_list.push(appv.eq(i).children('label').text())
+                appv = $('#appvtr').find('.checkbox[data-value="checked"]');
+                for(var i=0;i<appv.length;i++)   appv_list.push(appv.eq(i).children('label').text());
+                appv = $('#appvtr').find('.button[data-value="checked"]');
+                for(var i=0;i<appv.length;i++)   appv_list.push(appv.eq(i).children('label').text());
 
+                osv_list = []
+                osv = $('#osvtr').find('.checkbox[data-value="checked"]');
+                for(var i=0;i<osv.length;i++)    osv_list.push(osv.eq(i).children('label').text());
+                osv = $('#osvtr').find('.button[data-value="checked"]');
+                for(var i=0;i<osv.length;i++)    osv_list.push(osv.eq(i).children('label').text());
+
+                if(typeof osv_sub_list != 'undefined')
+                {
+                    for(var i=0;i<osv_list.length;i++)
+                    {
+                        var key = osv_list[i]
+                        if(typeof osv_sub_list[key] == 'undefined')    continue;
+                        osv_list = osv_list.concat(osv_sub_list[key])
+                        osv_list.unique()
+                    }
+                }
                 query['rank']=rank_list;
                 query['status']=status_idx;
                 query['date']=date_idx;
@@ -1234,10 +1254,24 @@ $("head").styleReady(function(){
                 }
             });
         }
+        query_delay = function ()
+        {
+            if(tID != 0)
+                clearTimeout(tID);
+            tID = setTimeout(query_maker,100)
+        }
+
+        $('.checkbox').click(query_delay);
+        $('.radiobox').click(query_delay);
+        $('.scrollbar').click(query_delay);
+        $('.tags-list').click(query_delay);
+        tID = 0;
+        query_delay()
     }
 	if($("body").hasClass("details") )
 	{
-        $("#event-path-parent").ready(function(){
+        $("#event-path-parent").ready(function()
+        {
         //Raphael.custom.eventPath("./data3", "#event-path", {"height": 230, "contentWidth": 20, "contentHeight": 20, "textColor": "#303335", "colorTable": [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ], "autoResize": true, "topgutter": 5, "bottomgutter": -10 })
         $.ajax({
             type: 'get'
@@ -1644,6 +1678,8 @@ $("head").styleReady(function(){
 				$(this).attr("data-value", "checked");
 				$(this).children("input").attr("value", $(this).children("input").attr("data-value"));
 			}
+            //if()
+            $(this).parent().parent().find('.button').removeAttr("data-value");
 			if($(this).parent().parent().hasClass("dropdown") )
 			{
 				if($(this).attr("data-value") == "checked")
