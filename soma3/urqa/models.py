@@ -255,6 +255,7 @@ class Tags(models.Model):
     idtag = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
     tag = models.CharField(max_length=45L)
+    pid = models.ForeignKey(Projects, null=True, db_column='pid', blank=True)
     class Meta:
         db_table = 'tags'
 

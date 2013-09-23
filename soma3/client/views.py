@@ -363,7 +363,7 @@ def receive_native(request):
     eventpath = jsonData['eventpaths']
 
     depth = 10
-    for event in eventpath:
+    for event in reversed(eventpath):
         Eventpaths.objects.create(
             idinstance = instanceElement,
             iderror = errorElement,

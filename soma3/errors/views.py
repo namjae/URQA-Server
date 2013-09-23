@@ -50,7 +50,7 @@ def newTag(request, apikey, iderror):
         return HttpResponse(msg)
 
     tag = request.POST['tag']
-    tagElement, created = Tags.objects.get_or_create(iderror=errorElement, tag=tag)
+    tagElement, created = Tags.objects.get_or_create(iderror=errorElement, tag=tag, pid=projectElement)
 
     if not created:
         return HttpResponse('tag %s already exists' % tag)
@@ -456,7 +456,7 @@ def instanceeventpath(request, apikey, iderror, idinstance):
 
     instanceElement = Instances.objects.get(idinstance = idinstance)
 
-    EventPathElements = Eventpaths.objects.filter(idinstance = instanceElement)
+    EventPathElements = Eventpaths.objects.filter(idinstance = instanceElement).order_by('depth')
 
     eventpathlist = []
     for eventpath in EventPathElements:
@@ -467,6 +467,7 @@ def instanceeventpath(request, apikey, iderror, idinstance):
         eventpathttuple['class'] = eventpath.classname
         eventpathttuple['methodline'] = str(eventpath.methodname) + ':' + str(eventpath.linenum)
         eventpathlist.append(eventpathttuple)
+        #print 'evd',eventpath.depth
 
     return HttpResponse(json.dumps(eventpathlist),'application/json')
 
@@ -577,8 +578,8 @@ def calc_eventpath(errorElement):
     result['links'] = []
     for link in link_table:
         key = link.split('>')
-        sid = int(key[0])
-        tid = int(key[1])
+        sid = int(key[1])
+        tid = int(key[0])
         result['links'].append({'source':sid,'target':tid,'value':link_table[link]})
     #print json.dumps(result)
     return result
@@ -634,7 +635,7 @@ def filter_view(request,apikey):
         return HttpResponse('')
 
     errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
-    valid_tag = Tags.objects.filter(iderror__in=errorElements).values('tag').distinct().order_by('tag')
+    valid_tag = Tags.objects.filter(pid=projectElement).values('tag').distinct().order_by('tag')
     valid_class = errorElements.values('errorclassname').distinct().order_by('errorclassname')
     valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct().order_by('-appversion')
     valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
