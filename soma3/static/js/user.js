@@ -1016,7 +1016,7 @@ $("head").styleReady(function(){
             {
                 $('.page-changer>ul').append($('<li class="dont" onclick="pageChange(1);">&lt;&lt;</li>'))
                 for(var i=0;i<Math.ceil(list_count/list_per_page);i++)
-                    $('.page-changer>ul').append($('<li onclick="pageChange('+Number(i+1)+');">'+ i +'</li>'))
+                    $('.page-changer>ul').append($('<li onclick="pageChange('+Number(i+1)+');">'+ (i+1) +'</li>'))
                 $('.page-changer>ul').append($('<li onclick="pageChange('+Math.ceil(list_count/list_per_page)+');">&gt;&gt;</li>'))
                 $('.page-changer>ul').children('li').eq(page_num).addClass('select')
             }
@@ -1147,6 +1147,78 @@ $("head").styleReady(function(){
             pageChange(page_num)
         }
 
+        var osv_others;
+        var appv_others;
+        appv_osv_update = function(retention){
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./appv_ratio'
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':retention,
+                    'depth':1
+                })}
+                ,success : function(jsonData) {
+                    //console.log(jsonData);
+                    $('.version-panel').empty();
+                    var margin = 5;
+
+                    var total = jsonData.total;
+                    var appv = jsonData.appv;
+                    var osv = jsonData.osv;
+                    osv_others = jsonData.osv_others
+                    appv_others = jsonData.appv_others
+                    osv_sub_list = jsonData.osv_list;
+                    var panel = $('.version-panel').eq(0);
+                    panel.height(panel.parent().height());
+                    var cur_width = 95;
+                    for(var i=0;i<appv.length;i++)
+                    {
+                        var newv = $('<div class="button"><label>'+appv[i][0]+'</label></div>');
+                        var width = calc_limit_width(95*appv[i][1]/total,cur_width,appv.length-i);
+                        cur_width -= width;
+                        width--;//마지막 -1는 Border용 1%
+                        newv.width(String(width) + '%')
+                        newv.click(toggle_check)
+                        newv.click(query_delay)
+                        panel.append(newv)
+                        panel.append($('<div class="separator"></div>'))
+                    }
+
+                    panel = $('.version-panel').eq(1);
+                    panel.height(panel.parent().height());
+                    var cur_width = 95;
+                    for(var i=0;i<osv.length;i++)
+                    {
+                        var newv = $('<div class="button"><label>'+osv[i][0]+'</label></div>');
+                        var width = calc_limit_width(95*osv[i][1]/total,cur_width,osv.length-i);
+                        cur_width -= width;
+                        width--;//마지막 -1는 Border용 1%
+                        newv.width(String(width) + '%')
+                        newv.click(toggle_check)
+                        newv.click(query_delay)
+                        panel.append(newv)
+                        panel.append($('<div class="separator"></div>'))
+                    }
+                    /*newv = $('<div></div>');
+                    newv.height(panel.height() - margin*2)
+                    newv.width(2)
+                    newv.css('position','absolute')
+                    newv.css('background-color','#FFF')
+                    panel.children('div').append(newv)*/
+                }
+                , beforeSend: function(xhr, settings) {
+                    var csrftoken = getCookie('csrftoken')
+                    if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                        // Send the token to same-origin, relative URLs only.
+                        // Send the token only if the method warrants CSRF protection
+                        // Using the CSRFToken value acquired earlier
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+        }
 
         query_maker = function (reload)
         {
@@ -1195,13 +1267,23 @@ $("head").styleReady(function(){
                 appv = $('#appvtr').find('.checkbox[data-value="checked"]');
                 for(var i=0;i<appv.length;i++)   appv_list.push(appv.eq(i).children('label').text());
                 appv = $('#appvtr').find('.button[data-value="checked"]');
-                for(var i=0;i<appv.length;i++)   appv_list.push(appv.eq(i).children('label').text());
+                for(var i=0;i<appv.length;i++)
+                {
+                    if(appv.eq(i).children('label').text()=='Others')
+                        appv_list = appv_list.concat(appv_others)
+                    appv_list.push(appv.eq(i).children('label').text());
+                }
 
                 osv_list = []
                 osv = $('#osvtr').find('.checkbox[data-value="checked"]');
                 for(var i=0;i<osv.length;i++)    osv_list.push(osv.eq(i).children('label').text());
                 osv = $('#osvtr').find('.button[data-value="checked"]');
-                for(var i=0;i<osv.length;i++)    osv_list.push(osv.eq(i).children('label').text());
+                for(var i=0;i<osv.length;i++)
+                {
+                    if(osv.eq(i).children('label').text()=='Others')
+                        osv_list = osv_list.concat(osv_others)
+                    osv_list.push(osv.eq(i).children('label').text());
+                }
 
                 if(typeof osv_sub_list != 'undefined')
                 {
@@ -1221,6 +1303,8 @@ $("head").styleReady(function(){
                 query['appv']=appv_list;
                 query['osv']=osv_list;
                 if(JSON.stringify(pre_query) == JSON.stringify(query))  return;
+                if(pre_query['date'] != query['date'])
+                    appv_osv_update(date_idx);
                 pre_query = query;
             }
             else
@@ -1253,6 +1337,7 @@ $("head").styleReady(function(){
                     }
                 }
             });
+
         }
         query_delay = function ()
         {

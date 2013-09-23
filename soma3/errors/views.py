@@ -749,20 +749,22 @@ def error_list(request,apikey):
         errorElements = errorElements.filter(iderror__in=iderror_list)
     #print appversion
     if appversion:
+        print 'appversion',appversion
         appvElements = Appstatistics.objects.select_related().filter(iderror__in=errorElements,appversion__in=appversion).values('iderror').distinct().order_by('iderror')
+        print 'appvElements',appvElements
         iderror_list = []
         for e in appvElements:
             iderror_list.append(int(e['iderror']))
-        if iderror_list:
-            errorElements = errorElements.filter(iderror__in=iderror_list)
+        #if iderror_list:
+        errorElements = errorElements.filter(iderror__in=iderror_list)
     #print osversion
     if osversion:
         osvElements = Osstatistics.objects.select_related().filter(iderror__in=errorElements,osversion__in=osversion).values('iderror').distinct().order_by('iderror')
         iderror_list = []
         for e in osvElements:
             iderror_list.append(int(e['iderror']))
-        if iderror_list:
-            errorElements = errorElements.filter(iderror__in=iderror_list)
+        #if iderror_list:
+        errorElements = errorElements.filter(iderror__in=iderror_list)
 
     #print errorElements
 
@@ -832,7 +834,7 @@ def appv_ratio(request,apikey):
             data['appv'][key] = 1
         else:
             data['appv'][key] += 1
-    print data['appv']
+    #print "data['appv']",data['appv']
 
     osv_list = {}
     instances.order_by('-osversion')
@@ -840,30 +842,38 @@ def appv_ratio(request,apikey):
         k = i.osversion.split('.')
         key = k[0]+'.'+k[1];
         if not key in data['osv']:
-            print key
+            #print key
             data['osv'][key] = 1
             osv_list[key] = []
         else:
             data['osv'][key] += 1
         if not i.osversion in osv_list[key]:
             osv_list[key].append(i.osversion)
-    print data['osv']
+    #print "data['osv']",data['osv']
 
     max_count = 5
     appv_data = sorted(data['appv'].iteritems(), key=operator.itemgetter(1), reverse=True)
 
+    appv_others = []
+    if len(appv_data) > max_count:
+        appv_others.append(appv_data[max_count-1][0])
     while len(appv_data) > max_count:
         appv_data[max_count-1] = ('Others',appv_data[max_count-1][1] + appv_data[max_count][1])
+        appv_others.append(appv_data[max_count][0])
         appv_data.pop(max_count)
 
     osv_data = sorted(data['osv'].iteritems(), key=operator.itemgetter(1), reverse=True)
+    osv_others = []
+    if len(appv_data) > max_count:
+        osv_others.append(appv_data[max_count-1][0])
     while len(osv_data) > max_count:
         osv_data[max_count-1] = ('Others',osv_data[max_count-1][1] + osv_data[max_count][1])
+        osv_others.append(osv_data[max_count][0])
         osv_data.pop(max_count)
-    print osv_data
+    #print osv_data
 
 
-    return HttpResponse(json.dumps({'total':instances.count(),'appv':appv_data,'osv':osv_data,'osv_list':osv_list}), 'application/json');
+    return HttpResponse(json.dumps({'total':instances.count(),'appv':appv_data,'osv':osv_data,'osv_list':osv_list,'appv_others':appv_others,'osv_others':osv_others}), 'application/json');
 
     """
     keys = []

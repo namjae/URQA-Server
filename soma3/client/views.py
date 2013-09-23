@@ -362,7 +362,7 @@ def receive_native(request):
     print instanceElement.idinstance
     eventpath = jsonData['eventpaths']
 
-    depth = 1
+    depth = 10
     for event in eventpath:
         Eventpaths.objects.create(
             idinstance = instanceElement,
@@ -374,7 +374,7 @@ def receive_native(request):
             linenum = event['linenum'],
             depth = depth,
         )
-        depth += 1
+        depth -= 1
 
 
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
