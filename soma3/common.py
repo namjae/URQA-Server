@@ -131,13 +131,13 @@ def ErrorRate_for_color(sectiondict,errorrate):
 
     return colorstring
 
-def Avg_ER_Score_for_color(sectiondict, avgscore):
-    colorstring = ''
-    sectiondict = OrderedDict(sorted(sectiondict.items(), key=lambda t: t[1]))
-
-    for key,value in sectiondict.items():
-        if avgscore >= value:
-            colorstring = key
-
-    return colorstring
+#def Avg_ER_Score_for_color(sectiondict, avgscore):
+#    colorstring = ''
+#    sectiondict = OrderedDict(sorted(sectiondict.items(), key=lambda t: t[1]))
+#
+#    for key,value in sectiondict.items():
+#        if avgscore >= value:
+#            colorstring = key
+#
+#    return colorstring
 

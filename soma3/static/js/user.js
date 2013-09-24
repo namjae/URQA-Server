@@ -1045,7 +1045,7 @@ $("head").styleReady(function(){
                 for(var j=0;j<listData[i].tags.length;j++)
                     tags += '<li>' + listData[i].tags[j] + '<i></i></li>';
                 new_list = $('<tr iderror="'+ listData[i].iderror +'">\
-                    <td class="float"><span class="' + listData[i].rank + '"></span></td>\
+                    <td class="float"><span class="' + listData[i].color + '"></span></td>\
                     <td class="center"><span class="bold">'+listData[i].count+'</span></td>\
                     <td class="float" onclick="clickevent('+listData[i].iderror+')">\
                         <p>'+listData[i].errorname + '<br>' + listData[i].errorclassname + ':' + listData[i].linenum+'</p>\
@@ -1095,23 +1095,31 @@ $("head").styleReady(function(){
         }
 
         var asc;
-        function sort_by_score(a1,a2)
+        function sort_by_rank(a1,a2)
         {
-            if(asc == 0)    return (a1.es>a2.es)?-1:1;
-            else            return (a1.es<a2.es)?-1:1;
+            if(a1.rank==a2.rank)
+            {
+                if(asc) return sort_by_occur(a2,a1);
+                else    return sort_by_occur(a1,a2);
+            }
+            if(asc == 0)    return (a1.rank>a2.rank)?-1:1;
+            else            return (a1.rank<a2.rank)?-1:1;
         }
         function sort_by_name(a1,a2)
         {
+            if(a1.errorname==a2.errorname)    return sort_by_rank(a1,a2);
             if(asc == 0)    return (a1.errorname>a2.errorname)?-1:1;
             else            return (a1.errorname<a2.errorname)?-1:1;
         }
         function sort_by_status(a1,a2)
         {
+            if(a1.status==a2.status)    return sort_by_rank(a1,a2);
             if(asc == 0)    return (a1.status>a2.status)?-1:1;
             else            return (a1.status<a2.status)?-1:1;
         }
         function sort_by_occur(a1,a2)
         {
+            if(a1.count==a2.count && a1.rank!=a2.rank)    return sort_by_rank(a1,a2);
             if(asc == 0)    return (a1.count>a2.count)?-1:1;
             else            return (a1.count<a2.count)?-1:1;
         }
@@ -1119,6 +1127,7 @@ $("head").styleReady(function(){
         {
             var dt1 = new Date(a1.year,a1.month,a1.day);
             var dt2 = new Date(a2.year,a2.month,a2.day);
+            if(dt1==dt2)    return sort_by_rank(a1,a2);
             if(asc == 0)    return (dt1>dt2)?-1:1;
             else            return (dt1<dt2)?-1:1;
         }
@@ -1134,10 +1143,10 @@ $("head").styleReady(function(){
                 {
                     switch(i)
                     {
-                        case 0: listData.sort(sort_by_score);   break;
-                        case 1: listData.sort(sort_by_name);   break;
-                        case 2: listData.sort(sort_by_status);   break;
-                        case 3: listData.sort(sort_by_occur);   break;
+                        case 0: listData.sort(sort_by_rank);   break;
+                        case 1: listData.sort(sort_by_occur);   break;
+                        case 2: listData.sort(sort_by_name);   break;
+                        case 3: listData.sort(sort_by_status);   break;
                         case 4: listData.sort(sort_by_date);   break;
                     }
                     break;

@@ -34,7 +34,6 @@ from common import validUserPjt
 from common import getUserProfileDict
 from common import getApikeyDict
 from common import getSettingDict
-from common import Avg_ER_Score_for_color
 from common import ErrorRate_for_color
 
 from urqa.models import AuthUser
@@ -85,8 +84,9 @@ def registration(request):
     categorydata = json.loads(get_config('app_categories'))
     platformdata = json.loads(get_config('app_platforms'))
     stagedata = json.loads(get_config('app_stages'))
-    stagecolordata = json.loads(get_config('app_stages_color'))
-    avgcolordata = json.loads(get_config('avg_error_score_color'))
+    #stagecolordata = json.loads(get_config('app_stages_color'))
+    #avgcolordata = json.loads(get_config('avg_error_score_color'))
+    countcolordata = json.loads(get_config('error_rate_color'))
 
     name = request.POST['name']
     platformtxt = request.POST['platform']
@@ -97,14 +97,14 @@ def registration(request):
     platform = platformdata[platformtxt]
     stage =  stagedata[stagetxt]
     category= categorydata[categorytxt]
-    color = Avg_ER_Score_for_color( avgcolordata , 0 )
+    color = ErrorRate_for_color( countcolordata , 0 )
 
     #project name은 중복을 허용한다.
 
     #step2: apikey를 발급받는다. apikeysms 8자리 숫자
     apikey = newApikey()
     print 'new apikey = %s' % apikey
-    projectElement = Projects(owner_uid=userElement,apikey=apikey,name=name,platform=platform,stage=stage,category=category,timezone='UTC')
+    projectElement = Projects(owner_uid=userElement,apikey=apikey,name=name,platform=platform,stage=stage,category=category,timezone='Asia/Seoul')
     projectElement.save();
     #step3: viwer db에 사용자와 프로젝트를 연결한다.
     Viewer.objects.create(uid=userElement,pid=projectElement)
@@ -549,15 +549,15 @@ def typeesgraph(request, apikey):
     default = {
         "tags":[
             {"key":"Unhandle", "value":0},
+            {"key":"Native", "value":0},
             {"key":"Critical", "value":0},
             {"key":"Major", "value":0},
             {"key":"Minor", "value":0},
-            {"key":"Native", "value":0}
             ]
         }
 
 
-    for i in range(RANK.Unhandle,RANK.Native+1): # unhandled 부터 Native 까지
+    for i in range(RANK.Unhandle,RANK.Minor+1): # unhandled 부터 Native 까지
         errorElements = Errors.objects.filter(pid=ProjectElement,lastdate__range=(week,today),rank=i)
         instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range=(week,today)).count()
         #instanceCount = Instancecount.objects.filter(pid=ProjectElement,date__gte=week,rank=i).aggregate(Sum('count'))['count__sum']
@@ -571,8 +571,9 @@ def typeesgraph(request, apikey):
                default['tags'][i]['value'] += error.errorweight
                #print str(i) + ':' +  str(default['tags'][i]['value'])"""
 
+    print default
     popcount = RANK.Unhandle
-    for i in range(RANK.Unhandle,RANK.Native+1):
+    for i in range(RANK.Unhandle,RANK.Minor+1):
         if default['tags'][i - popcount]['value'] == 0:
             default['tags'].pop(i - popcount)
             popcount+=1
@@ -605,7 +606,7 @@ def typeescolor(request ,apikey):
         return HttpResponse(json.dumps(default), 'application/json')
 
 
-    for i in range(RANK.Unhandle,RANK.Native+1): # unhandled 부터 Native 까지
+    for i in range(RANK.Unhandle,RANK.Minor+1): # unhandled 부터 Minor 까지
        ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open] ,lastdate__range = (week,today), rank = i) #일주일치 얻어옴
        if len(ErrorsElements) > 0:
            for error in ErrorsElements:
@@ -613,7 +614,7 @@ def typeescolor(request ,apikey):
                #print str(i) + ':' +  str(default['tags'][i]['value'])
 
     ColorTable = []
-    for i in range(RANK.Unhandle,RANK.Native+1):
+    for i in range(RANK.Unhandle,RANK.Minor+1):
         if default['tags'][i]['value'] != 0:
             ColorTable.append(RANK.rankcolorbit[i])
 

@@ -40,15 +40,15 @@ def getTemplatePath():
     return getProjectPath() + '/templates/'
 
 class RANK:
-    toString = ['Unhandle','Critical','Major','Minor','Native']
+    toString = ['Unhandle','Native','Critical','Major','Minor']
     Suspense = -1
     Unhandle = 0
-    Critical = 1
-    Major    = 2
-    Minor    = 3
-    Native   = 4
-    rankcolor = ['gray','red','blue', 'green' , 'purple']
-    rankcolorbit = ["#dd2323", "#de6363", "#5a9ccc", "#72c380", "#9d61dd" ]
+    Native   = 1
+    Critical = 2
+    Major    = 3
+    Minor    = 4
+    rankcolor = ['gray','purple','red','blue','green']
+    rankcolorbit = ["#dd2323", "#9d61dd", "#de6363", "#5a9ccc", "#72c380" ]
 
 class TimeRange:
     oneday = 1

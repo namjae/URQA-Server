@@ -777,7 +777,8 @@ def error_list(request,apikey):
         #print adtimezone
         new_e = {}
         new_e['iderror'] = e.iderror
-        new_e['rank'] = RANK.rankcolor[e.rank]
+        new_e['color'] = RANK.rankcolor[e.rank]
+        new_e['rank'] = e.rank
         new_e['status'] = e.status#Status.toString[e.status]
         new_e['errorname'] = e.errorname
         new_e['errorclassname'] = e.errorclassname
