@@ -1363,7 +1363,7 @@ $("head").styleReady(function(){
             try_again = 0
             if(tID != 0)
                 clearTimeout(tID);
-            tID = setTimeout(query_maker,100)
+            tID = setTimeout(query_maker,400)
         }
 
         $('.checkbox').click(query_delay);
@@ -1382,6 +1382,15 @@ $("head").styleReady(function(){
             type: 'get'
           , url: 'eventpath'
           , success : function(data) {
+                    if(data.nodes.length < 2 || data.links.length < 2)
+                    {
+                        //$('div[data="event-path"]').hide()
+                        $('#event-path-parent').parents().eq(2).hide()
+
+                        var message = "Not enough breadcrumb to draw eventpath"
+                        a = $('<div style="font: 14px \'RixGo B\';"><p></p></div>').text(message)
+                        $('#event-path-parent').parents().eq(3).append(a)
+                    }
                     sankeyloading = true
                     sankeydata = data
                     sankeydraw(data)

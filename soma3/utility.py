@@ -48,7 +48,7 @@ class RANK:
     Major    = 3
     Minor    = 4
     rankcolor = ['gray','purple','red','blue','green']
-    rankcolorbit = ["#dd2323", "#9d61dd", "#de6363", "#5a9ccc", "#72c380" ]
+    rankcolorbit = ["#de6363", "#9d61dd", "#dca763", "#5a9ccc", "#72c380" ]
 
 class TimeRange:
     oneday = 1

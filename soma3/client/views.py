@@ -56,7 +56,7 @@ def connect(request):
     appversion = jsonData['appversion']
     idsession = long(time.time() * 1000)
     Session.objects.create(idsession=idsession,pid=projectElement,appversion=appversion)
-    print 'new idsession: %d' % idsession
+    print 'Project: %s, Ver: %s, new idsession: %d' % (projectElement.name,appversion,idsession)
 
     #step3: app version별 누적카운트 증가하기
     appruncountElement, created = Appruncount.objects.get_or_create(pid=projectElement,appversion=appversion,defaults={'runcount':1},date=getUTCawaredate())

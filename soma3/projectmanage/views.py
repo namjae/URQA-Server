@@ -429,10 +429,10 @@ def projects(request):
         else:
             errorRate = int(instanceCount * 100.0 / apprunCount)
 
-        print 'errorRate', project.pid, errorRate
+        print project.name, 'errorRate %d%%' % errorRate, instanceCount, apprunCount
         #Avg ErrorScore에 대한 컬러
         projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
-        print projectdata['color']
+        #print projectdata['color']
 
         projectdata['name'] = project.name
         projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
@@ -461,10 +461,10 @@ def projectdashboard(request, apikey):
 
     valid , message , userelement, projectelement = validUserPjt(username,apikey)
 
-    print valid
-
     if not valid:
         return HttpResponseRedirect('/urqa')
+
+    print request.META.get('REMOTE_ADDR'),username, projectelement.name
 
     userdict = getUserProfileDict(userelement)
     apikeydict = getApikeyDict(apikey)
@@ -561,17 +561,10 @@ def typeesgraph(request, apikey):
         errorElements = Errors.objects.filter(pid=ProjectElement,lastdate__range=(week,today),rank=i)
         instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range=(week,today)).count()
         #instanceCount = Instancecount.objects.filter(pid=ProjectElement,date__gte=week,rank=i).aggregate(Sum('count'))['count__sum']
-        print 'instanceCount',instanceCount
+        #print 'instanceCount',instanceCount
         if instanceCount:
             default['tags'][i]['value'] = instanceCount
-    """for i in range(RANK.Unhandle,RANK.Native+1): # unhandled 부터 Native 까지
-       ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open], lastdate__range = (weektimezone,todaytimezone), rank = i) #일주일치 얻어옴
-       if len(ErrorsElements) > 0:
-           for error in ErrorsElements:
-               default['tags'][i]['value'] += error.errorweight
-               #print str(i) + ':' +  str(default['tags'][i]['value'])"""
 
-    print default
     popcount = RANK.Unhandle
     for i in range(RANK.Unhandle,RANK.Minor+1):
         if default['tags'][i - popcount]['value'] == 0:
@@ -579,7 +572,6 @@ def typeesgraph(request, apikey):
             popcount+=1
 
     result = json.dumps(default)
-    print result
     return HttpResponse(result,'application/json')
 
 def typeescolor(request ,apikey):

@@ -312,18 +312,32 @@ def errorDetail(request,apikey,iderror):
     counter = 0
     callstacklist = []
     compile = re.compile('\(.*?:[0-9]*?\)')
+    nativecompile = re.compile('\[.*?:.*?\]')
 
+    print '-----------------------'
     for linstr in callstackstrlist:
         tmp = {'counter' : 0, 'source' : '', 'value' : ''}
         counter += 1
         tmp['counter'] = counter
         tmp['value'] = re.sub('\(.*?:[0-9]*?\)','',linstr)
+        #native
+        tmp['value'] = re.sub('\[.*?:.*?\]','',tmp['value'])
+        print tmp['value']
+
         list = compile.findall(linstr)
+        nativelist =  nativecompile.findall(linstr)
         source = ''
+
         if len(list) > 0:
             source = list[0]
+        if len(nativelist) > 0:
+            source = nativelist[0]
+
         tmp['source'] = source
+        print tmp['source']
         callstacklist.append(tmp)
+
+    print '-----------------------'
 
     ####instance#######
     instancelist = []

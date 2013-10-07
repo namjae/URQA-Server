@@ -1530,8 +1530,8 @@ table.content-large {
         }
 
 		span.red {
-            background-color: @indicators-color1;
-            background-image: url("./images/critical-body.svg");
+            background-color: @indicators-color4;
+            background-image: url("./images/critical-body.png");
             background-size: 100%;
         }
 		span.blue {
@@ -1550,7 +1550,7 @@ table.content-large {
             background-size: 100%;
         }
 		span.gray {
-            background-color: @indicators-color4;
+            background-color: @indicators-color1;
             background-image: url("./images/unhandle-body.png");
             background-size: 100%;
         }
@@ -1691,13 +1691,13 @@ table.content-small {
 					text-align: center;
 					color: white;
 				}
-				div.thumbnail.red { background-color: @indicators-color1; }
+				div.thumbnail.red { background-color: @indicators-color4; }
 				div.thumbnail.red:before { content: "Critical Risk"; }
 				div.thumbnail.blue { background-color: @indicators-color2; }
 				div.thumbnail.blue:before { content: "Major Risk"; }
 				div.thumbnail.green { background-color: @indicators-color3; }
 				div.thumbnail.green:before { content: "Minor Risk"; }
-				div.thumbnail.gray { background-color: @indicators-color4; }
+				div.thumbnail.gray { background-color: @indicators-color1; }
 				div.thumbnail.gray:before { color: @tm-tx-c3; content: "Unhandled"; }
 				div.thumbnail.purple { background-color: @indicators-color5; }
 				div.thumbnail.purple:before { content: "Native Risk"; }
@@ -1845,7 +1845,7 @@ table.content-small {
 #critical-information .infobox.red .dropdown > div { margin-top: 26px; }
 #critical-information .infobox.red .dropdown[data-type="over"] span { background-position-y: 15px; height: 36px; }
 #critical-information .infobox.red .dropdown[data-type="clicked"] span { background-position-y: 15px; height: 36px; }
-#container.svg			#content-container > #critical-information table > tbody > tr > td div.thumbnail.red { background-image: url("./images/critical-body.svg"); }
+#container.svg			#content-container > #critical-information table > tbody > tr > td div.thumbnail.red { background-image: url("./images/critical-body.png"); }
 #container				#content-container > #critical-information table > tbody > tr > td div.thumbnail.red,
 #container.decelerate	#content-container > #critical-information table > tbody > tr > td div.thumbnail.red { background-image: url("./images/critical-body.png"); }
 #container.svg			#content-container > #critical-information table > tbody > tr > td div.thumbnail.blue { background-image: url("./images/major-body.svg"); }
