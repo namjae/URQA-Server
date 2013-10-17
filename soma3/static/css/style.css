@@ -1159,6 +1159,30 @@ html.login #body-header {
 #logout-header:hover {
 	border-bottom-color: rgba(255, 255, 255, 0.5);
 }
+#tutorial-header {
+        position: absolute;
+        width: 0;
+        height: 0;
+        right: 0px;
+        margin-top: -10px;
+        margin-right: -46px;
+        border-left: 71px solid transparent;
+        border-right: 70px solid transparent;
+        border-bottom: 70px solid rgba(255, 255, 255, 0.2);
+        @multi-platform { transform: rotate(45deg); }
+        cursor: pointer;
+        p {
+                position: relative;
+                margin-left: -24px;
+                margin-top: 50px;
+                font: 14px "RixGo L";
+                text-align: center;
+                color: white;
+        }
+}
+#tutorial-header:hover {
+        border-bottom-color: rgba(255, 255, 255, 0.5);
+}
 >#loginbox {
 	position: absolute;
 	width: 240px;

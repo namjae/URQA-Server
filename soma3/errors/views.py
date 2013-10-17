@@ -314,7 +314,7 @@ def errorDetail(request,apikey,iderror):
     compile = re.compile('\(.*?:[0-9]*?\)')
     nativecompile = re.compile('\[.*?:.*?\]')
 
-    print '-----------------------'
+    #print '-----------------------'
     for linstr in callstackstrlist:
         tmp = {'counter' : 0, 'source' : '', 'value' : ''}
         counter += 1
@@ -322,7 +322,7 @@ def errorDetail(request,apikey,iderror):
         tmp['value'] = re.sub('\(.*?:[0-9]*?\)','',linstr)
         #native
         tmp['value'] = re.sub('\[.*?:.*?\]','',tmp['value'])
-        print tmp['value']
+        #print tmp['value']
 
         list = compile.findall(linstr)
         nativelist =  nativecompile.findall(linstr)
@@ -334,10 +334,10 @@ def errorDetail(request,apikey,iderror):
             source = nativelist[0]
 
         tmp['source'] = source
-        print tmp['source']
+        #print tmp['source']
         callstacklist.append(tmp)
 
-    print '-----------------------'
+    #print '-----------------------'
 
     ####instance#######
     instancelist = []

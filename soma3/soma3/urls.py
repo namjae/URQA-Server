@@ -49,7 +49,8 @@ urlpatterns = patterns('',
     #url(r'^urqa/project/(?P<apikey>.{8})/errorscorelist$', 'projectmanage.views.errorscorelist'),
     #project manage static
     (r'(?:.*?/)?(?P<path>(css|font|js|images)/.+)$', 'urqa.views.mediapathrequest'),
-
+    #tutorial page
+    (r'(?:.*?/)?(?P<path>(tutorial)/.+)$', 'urqa.views.tutorialrequest'),
 
 
     #errors

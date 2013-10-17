@@ -68,8 +68,8 @@ def getTimeRange(t):
     today = datetime.datetime.utcnow().replace(tzinfo=utc)
     #today = today.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 
-    datedelta = datetime.timedelta(days =  -(t - 1))
-    #datedelta = datetime.timedelta(days =  -t)
+    #datedelta = datetime.timedelta(days =  -(t - 1))
+    datedelta = datetime.timedelta(days =  -t)
 
     past = today + datedelta
     #past.replace(hour=0,minute=0,second=0,microsecond=0)

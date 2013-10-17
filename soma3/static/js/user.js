@@ -1325,7 +1325,7 @@ $("head").styleReady(function(){
                 ,dataType :"json"
                 ,data:{'json':JSON.stringify(query)}
                 ,success : function(jsonData) {
-                    // unhandled = 0, critical = 1, major = 2, minor = 3, native = 4
+                    // unhandled = 0, native = 1, critical = 2, major = 3, minor = 4
                     if(jsonData.length == 0)
                         $('.noerror_msg').show();
                     else
@@ -1365,11 +1365,6 @@ $("head").styleReady(function(){
                 clearTimeout(tID);
             tID = setTimeout(query_maker,400)
         }
-
-        $('.checkbox').click(query_delay);
-        $('.radiobox').click(query_delay);
-        $('.scrollbar').click(query_delay);
-        $('.tags-list').click(query_delay);
         tID = 0;
         query_delay()
     }
@@ -1529,7 +1524,7 @@ $("head").styleReady(function(){
             RedrawCharts(retention)
         });
         function DrawChart1(data){
-            $('.notHover').eq(1).empty().append($('<td id="cecs"><svg></svg></td>'))
+            $('.notHover').eq(1).empty().append($('<td id="cecs"></td>'))
             $("#cecs").highcharts({
                 chart: {
                     plotBackgroundColor: null,
@@ -1608,8 +1603,9 @@ $("head").styleReady(function(){
         }
 
         function DrawChart4(categories,data){
-            $(function () {
-                $('#vers').highcharts({
+            $('.notHover').eq(4).empty().append($('<td id="vers"></td>'))
+            //$(function () {
+                /*$('#vers').highcharts({
                     chart: {
                         type: 'column'
                     },
@@ -1660,18 +1656,64 @@ $("head").styleReady(function(){
                             }
                         }
                     },
-                    series: data/*[{
-                        name: 'John',
-                        data: [5, 3, 4, 7, 2]
-                    }, {
-                        name: 'Jane',
-                        data: [2, 2, 3, 2, 1]
-                    }, {
-                        name: 'Joe',
-                        data: [3, 4, 4, 2, 5]
-                    }]*/
-                });
-            });
+                    series: data
+                });*/
+				chart4 = new Highcharts.Chart({
+                    chart: {
+                        type: 'column',
+						renderTo: 'vers'
+                    },
+                    title: {
+                        text: 'Version Error Rate'
+                    },
+                    colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
+                    xAxis: {
+                        categories: categories
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: 'Version Error Rate'
+                        },
+                        stackLabels: {
+                            enabled: true,
+                            style: {
+                                fontWeight: 'bold',
+                                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                            }
+                        }
+                    },
+                    legend: {
+                        align: 'right',
+                        x: -70,
+                        verticalAlign: 'top',
+                        y: 20,
+                        floating: true,
+                        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
+                        borderColor: '#CCC',
+                        borderWidth: 1,
+                        shadow: false
+                    },
+                    tooltip: {
+                        formatter: function() {
+                            return '<b>'+ this.x +'</b><br/>'+
+                                this.series.name +': '+ this.y +'<br/>'+
+                                'Total: '+ this.point.stackTotal;
+                        }
+                    },
+                    plotOptions: {
+                        column: {
+                            stacking: 'normal',
+                            dataLabels: {
+                                enabled: true,
+                                color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+                            }
+                        }
+                    },
+                    series: data
+                });	
+            //});
+			//addWindowResize(function(){chart4.setSize($('.notHover').eq(3).width(),$('.notHover').eq(3).height())})();
         }
         pre_retention = 1
         function RedrawCharts(retention){
@@ -1769,6 +1811,7 @@ $("head").styleReady(function(){
 			group_info.eq(0).children("input").attr("value", $(this).attr("data-value") );
 			$(this).children("span").attr("data-value", "checked");
 		});
+		if($("body").hasClass("error") )    $('.radiobox').click(query_delay);
 	});
 
 	// Checkbox component
@@ -1818,6 +1861,17 @@ $("head").styleReady(function(){
 					$(this).parent().parent().parent().parent().children("a").children(".checkbox").attr("data-value", "halfed");
 			}
 		});
+		$(".checkbox.red").click(function() {
+			if($(this).attr("data-value") == "checked"){
+				$(".checkbox:not(.red)[data-value=checked] > input[name=\""+$(this).children("input").attr("name")+"\"]").each(function() { $(this).parent().click(); });
+			}
+		});
+		$(".checkbox:not(.red)").click(function() {
+			if($(this).attr("data-value") == "checked"){
+				$(".checkbox.red[data-value=checked] > input[name=\""+$(this).children("input").attr("name")+"\"]").each(function() { $(this).parent().click(); });
+			}
+		});
+		if($("body").hasClass("error") )    $('.checkbox').click(query_delay);
 	});
 
 	// Dropdown component
@@ -2008,6 +2062,7 @@ $("head").styleReady(function(){
                 }
             });
 		});
+        if($("body").hasClass("error") )    $('.tags-list').click(query_delay);
 	});
 
 	// Scrollbar component
@@ -2040,6 +2095,7 @@ $("head").styleReady(function(){
 			$(this).attr({"data-value":"true", "data-temp":"true"});
 			$(this).parent().parent().children("input").attr("value", $(this).children("a")[0].innerText);
 		});
+        if($("body").hasClass("error") )    $('.scrollbar').click(query_delay);
 	});
 
 	$(".button").click(function(){
@@ -2059,16 +2115,7 @@ $("head").styleReady(function(){
 		}
 	});
 
-	$(".checkbox.red").click(function() {
-		if($(this).attr("data-value") == "checked"){
-			$(".checkbox:not(.red)[data-value=checked] > input[name=\""+$(this).children("input").attr("name")+"\"]").each(function() { $(this).parent().click(); });
-		}
-	});
-	$(".checkbox:not(.red)").click(function() {
-		if($(this).attr("data-value") == "checked"){
-			$(".checkbox.red[data-value=checked] > input[name=\""+$(this).children("input").attr("name")+"\"]").each(function() { $(this).parent().click(); });
-		}
-	});
+	
 
 	$("table.sort > thead > tr > td.sortable").click(function(){
 		if($(this).hasClass("asc") )

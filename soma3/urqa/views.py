@@ -62,3 +62,6 @@ def cleanup(request):
 def mediapathrequest(request, path):
     return HttpResponseRedirect(STATIC_URL+path)
 
+def tutorialrequest(request, path):
+    print ' inawelkfjalwkejflkawjef'
+    return HttpResponseRedirect(STATIC_URL + path)

@@ -1,0 +1,348 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>UrQA Tutorial Page &middot;</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+	<!--코드를 위한 -->
+	<link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shCore.css">
+	<link type="text/css" rel="stylesheet" href="syntaxhighlighter/styles/shThemeDefault.css">
+
+    <!-- Le styles -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+  
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+        
+    
+    
+    
+       <style>
+
+    /* GLOBAL STYLES
+    -------------------------------------------------- */
+    /* Padding below the footer and lighter body text */
+
+    body {
+      padding-bottom: 40px;
+      color: #5a5a5a;
+      background-color : #eaeaea;
+    }
+
+
+
+    /* CUSTOMIZE THE NAVBAR
+    -------------------------------------------------- */
+
+    /* Special class on .container surrounding .navbar, used for positioning it into place. */
+    .navbar-wrapper {
+      position: relative;
+      z-index: 10;
+      margin-top: 20px;
+      margin-bottom: -90px; /* Negative margin to pull up carousel. 90px is roughly margins and height of navbar. */
+    }
+
+    /* Remove border and change up box shadow for more contrast */
+    .navbar .navbar-inner {
+      border: 0;
+      -webkit-box-shadow: 0 2px 10px rgba(0,0,0,.25);
+         -moz-box-shadow: 0 2px 10px rgba(0,0,0,.25);
+              box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    }
+
+    /* Downsize the brand/project name a bit */
+    .navbar .brand {
+      padding: 14px 20px 16px; /* Increase vertical padding to match navbar links */
+      font-size: 16px;
+      font-weight: bold;
+      text-shadow: 0 -1px 0 rgba(0,0,0,.5);
+    }
+
+    /* Navbar links: increase padding for taller navbar */
+    .navbar .nav > li > a {
+      padding: 15px 20px;
+    }
+
+    /* Offset the responsive button for proper vertical alignment */
+    .navbar .btn-navbar {
+      margin-top: 10px;
+    }
+
+
+
+    /* CUSTOMIZE THE NAVBAR
+    -------------------------------------------------- */
+    </style>
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="shortcut icon" href="asset/A-57.png">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="asset/A-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="asset/A-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="asset/A-72.png">
+    <link rel="apple-touch-icon-precomposed" href="asset/A-57.png">
+    
+  </head>
+
+  <body >
+    <!-- NAVBAR
+    ================================================== -->
+    <!-- Wrap the .navbar in .container to center it on the page and provide easy way to target it with .navbar-wrapper. -->
+    
+
+   
+
+
+    
+    <div class="container navbar-wrapper">
+
+      <div class="navbar navbar-inverse">
+        <div class="navbar-inner">
+          <!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/urqa">UrQA</a>
+          <!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li><a href="/urqa">Home</a></li>
+              <li class="active"><a href="#">Tutorial</a></li>
+              <!--<li><a href="download.html">Download</a></li>
+              <li><a href="license.html">License</a></li>
+              <li><a href="team.html">Team</a></li>
+              <li><a href="about.html">About</a></li>-->
+              
+              <!-- Read about Bootstrap dropdowns at http://twitter.github.com/bootstrap/javascript.html#dropdowns -->
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!-- /.navbar-inner -->
+
+
+
+   
+
+<div class="container-fluid">
+
+
+<div class="page-header">
+<h1 style="color:black">UrQAClient Tutorial</h1>
+</div>
+<h3 style="color:black">This tutorial will guide you through the key steps to use UrQA Client.</h3>
+<br>
+<h3 style="color:black"><a href ="#1">Step 1: Import UrQAClient.jar</a></h3>
+<br>
+<h3 style="color:black"><a href ="#2">Step 2: Android manifest file setting</a></h3>
+<br>
+<h3 style="color:black"><a href ="#3">Step 3: Create instance</a></h3>
+    <br>
+    <h3 style="color:black">you are ready to start!!!</h3>
+<hr>
+
+<br>
+<h3 style="color:black"><a href ="#4">Additional : If you are using JNI project</a></h3>
+<br>
+    <br>
+    <br>
+    <br>
+
+
+
+
+    <h3 style="color:black"><a name = '1'></a>Step 1: Import UrQAClient.jar</h3>
+<p style="color:black">To use UrQA, you have to import the <a href='UrQA-Client_0.91.jar'>UrQAClient.jar</a>.<br>
+right click the project -> properties -> add External JARs -> add UrQAClient.jar
+</p>
+
+<img src= "asset/tutorial/step1.png" align="middle">
+<br>
+<br>
+<br>
+<h3 style="color:black"><a name = '2'></a>Step 2: Android manifest file setting</h3>
+<p style="color:black">Put the following settings:</p>
+<pre class='brush: xml'>
+&lt;uses-permission android:name="android.permission.INTERNET"/>
+</pre>
+<br>
+<br>
+<br>
+<h3 style="color:black"><a name = '3'></a>Step 3: Create instance</h3>
+<p style="color:black">Create a new class in your package root If your app already contains an Application subclass, add UrQA to this class.</p>
+
+<pre class='brush: java; highlight: [16]'>
+package com.example.testproject;
+
+import com.urqa.clientinterface.URQAController;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.view.Menu;
+
+public class MainActivity extends Activity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		URQAController.InitializeAndStartSession(getApplicationContext(),/* YourAPIKey */);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+}
+
+</pre>
+
+<br>
+<br>
+<br>	   
+<h3 style="color:black"><a name = '4'></a>If you are using JNI project</h3>
+<p style="color:black">create a JNI folder within the project</p>
+<img src= "asset/tutorial/step4.png" align="middle">
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+<p style="color:black">we provide <a href='UrQA-Native.zip'>UrQA-Native.zip</a> file.<br> copy the Jni folder from this file</p>
+<img src= "asset/tutorial/step4-1.png" align="middle">
+
+
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <p style="color:black">Please make mk files <br> 'Application.mk' and 'android.mk'</p>
+    <img src= "asset/tutorial/step4-2.png" align="middle">
+    <h4 style="color:black">Application.mk sample</h4>
+    <pre class='brush: bash; highlight: [1,2]'>
+
+APP_STL := stlport_static
+APP_ABI := armeabi armeabi-v7a
+
+</pre>
+<br>
+    <h4 style="color:black">android.mk sample</h4>
+<pre class='brush: bash; highlight: [3,4,5,6,7,9,13,16,17]'>
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS )
+LOCAL_MODULE := urqa
+LOCAL_SRC_FILES  = ./$(TARGET_ARCH_ABI)/liburqanative.a
+include $(PREBUILT_STATIC_LIBRARY)
+include $(CLEAR_VARS)
+
+LOCAL_DEFAULT_CPP_EXTENSION := cpp
+
+LOCAL_MODULE := csourcep
+LOCAL_SRC_FILES := csourcep.cpp
+LOCAL_STATIC_LIBRARIES += urqa
+LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib \
+
+LOCAL_C_INCLUDES        := $(LOCAL_PATH)/header/common/android/include \
+                           $(LOCAL_PATH)/header
+
+include $(BUILD_SHARED_LIBRARY)
+</pre>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <p style="color:black">When you initialize the app, place the following code</p>
+
+    <pre class='brush: cpp; highlight: [3,8]'>
+        #include &lt;string.h>
+        #include &lt;jni.h>
+        #include "urqa.h"
+
+        extern "C" {
+            JNIEXPORT jstring Java_com_example_urqanative_MainActivity_invokeNativeFunction(JNIEnv* env, jobject javaThis) {
+
+            UrqaNative::URQAIntialize(env);
+
+            return env->NewStringUTF("Hello from C Code!");
+          }
+        }
+
+    </pre>
+
+    <h4 style="color:black">Now you will be able to get Native Crash Report!!!!!!!!</h4>
+
+</div><!-- /.container -->
+
+
+
+    <!-- Marketing messaging and featurettes
+    ================================================== -->
+    <!-- Wrap the rest of the page in another container to center all the content. -->
+<hr>
+
+    <div class="container marketing">
+    
+      <!-- FOOTER -->
+      <footer>
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>&copy; 2013 UrQA,  Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+      </footer>
+</div><!-- /.container -->
+    
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    </body>
+
+<script src='syntaxhighlighter/scripts/shCore.js' type='text/javascript'></script> 
+<script src='syntaxhighlighter/scripts/shBrushJava.js' type='text/javascript'></script>
+<script src='syntaxhighlighter/scripts/shBrushXml.js' type='text/javascript'></script>
+  <script src='syntaxhighlighter/scripts/shBrushBash.js' type='text/javascript'></script>
+  <script src='syntaxhighlighter/scripts/shBrushCpp.js' type='text/javascript'></script>
+<script src='syntaxhighlighter/scripts/shAutoloader.js' type='text/javascript'></script>
+<script type="text/javascript" src="syntaxhighlighter/scripts/shLegacy.js"></script>
+
+<script type="text/javascript">
+//<![CDATA[
+SyntaxHighlighter.config.bloggerMode = false;
+SyntaxHighlighter.all();
+//]]>
+</script>
+
+    <script src="bootstrap/js/jquery.js"></script>
+    <script src="bootstrap/js/bootstrap.js"></script>
+     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+ 	<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+</html>
+    
+    
+    
+
+
+
+
+
+
+
+
