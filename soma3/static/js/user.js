@@ -1557,26 +1557,44 @@ $("head").styleReady(function(){
                 }]
             });
         }
+        function DrawChart2(categories,data){
+            $('.notHover').eq(2).empty().append($('<td id="decs"></td>'))
+            var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
+            for(var i=0;i<data[0]['data'].length;i++)
+                data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
+            chart3 = new Highcharts.Chart({
+                chart: {
+                    type: 'bar',
+                    renderTo: 'decs'
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    categories: categories
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: ''
+                    }
+                },
+                legend: {
+                    enabled:false
+                },
+                tooltip: {
+                    formatter: function() {
+                        return '<b>Device</b> :' + this.x + '<br/>'+
+                            '<b>Value</b> :' + this.y;
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        stacking: 'normal'
+                    }
+                },
+                series: data
 
-        function DrawChart2(data){
-            $('.notHover').eq(2).empty().append($('<td id="decs"><svg></svg></td>'))
-            nv.addGraph(function() {
-                var chart = nv.models.discreteBarChart()
-                    .x(function(d) { return d.label })
-                    .y(function(d) { return d.value })
-                    .color([ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ])
-                    .staggerLabels(true)
-                    .tooltips(false)
-                    .showValues(true);
-
-                d3.select('#decs svg')
-                    .datum(data)
-                    .transition().duration(500)
-                    .call(chart);
-
-                nv.utils.windowResize(chart.update);
-
-                return chart;
             });
         }
 
@@ -1649,11 +1667,7 @@ $("head").styleReady(function(){
                     }
                 },
                 legend: {
-                    align: 'right',
-                    x: -70,
                     verticalAlign: 'top',
-                    y: 20,
-                    floating: true,
                     backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
                     borderColor: '#CCC',
                     borderWidth: 1,
@@ -1700,16 +1714,17 @@ $("head").styleReady(function(){
                 })}
                 ,success : function(jsonData) {
                     DrawChart1(jsonData.chart1)
-                    DrawChart2([
+                    /*DrawChart2([
                     {
                         key: "Error Score by Device",
                         values:jsonData.chart2
-                    }])
+                    }])*/
                     /*DrawChart3([
                     {
                         key: "Error Score by Activity",
                         values:jsonData.chart3
                     }])*/
+                    DrawChart2(jsonData.chart2.categories,jsonData.chart2.data)
                     DrawChart3(jsonData.chart3.categories,jsonData.chart3.data)
                     DrawChart4(jsonData.chart4.categories,jsonData.chart4.data)
                 }

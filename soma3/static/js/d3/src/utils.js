@@ -1,4 +1,5 @@
-
+if(typeof nv !== "undefined")
+{
 nv.utils.windowSize = function() {
     // Sane defaults
     var size = {width: 640, height: 480};
@@ -150,3 +151,4 @@ nv.utils.optionsFunc = function(args) {
     }
     return this;
 };
+}

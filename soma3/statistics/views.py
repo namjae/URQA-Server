@@ -98,28 +98,28 @@ def chartdata(request,apikey):
             temp_data[device] += 1
 
     sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
-
-
-    device_count = 0
-    other_counts = 0
+    categories = []
+    temp_data = []
+    i = 0
+    others_count = 0
     for l,v in sorted_dic:
-        device_count = device_count + 1
-        if device_count >= 20:
-            other_counts = other_counts + v
+        i += 1
+        if i>25:
+            others_count += v
         else:
-            chart2.append({
-                'label': l,
-                'value': v,
-            })
-    if other_counts != 0:
-        chart2.append({
-                'label': 'others',
-                'value': other_counts,
-            })
+            categories.append(l)
+            temp_data.append(v)
+    if others_count != 0:
+        categories.append('Others')
+        temp_data.append(others_count)
+
+    dev_data = [{'name':'Device','data':temp_data}]
+    chart2 = {'categories':categories,'data':dev_data}
     result['chart2'] = chart2
+    print 'chart2',chart2
+
 
     #Chart3
-    chart3 = []
     temp_data = {}
     activities = []
     instances = instanceElements.order_by('lastactivity')
@@ -136,11 +136,21 @@ def chartdata(request,apikey):
     sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
     categories = []
     temp_data = []
+    i = 0
+    others_count = 0
     for l,v in sorted_dic:
-        categories.append(l)
-        temp_data.append(v)
-    dev_data = [{'name':'Activity','data':temp_data}]
-    chart3 = {'categories':categories,'data':dev_data}
+        i += 1
+        if i>25:
+            others_count += v
+        else:
+            categories.append(l)
+            temp_data.append(v)
+    if others_count != 0:
+        categories.append('Others')
+        temp_data.append(others_count)
+
+    act_data = [{'name':'Activity','data':temp_data}]
+    chart3 = {'categories':categories,'data':act_data}
     result['chart3'] = chart3
 
     #Chart4
@@ -177,5 +187,4 @@ def chartdata(request,apikey):
     result['chart4'] = chart4
 
     print 'chart3',chart3
-    print 'chart4',chart4
     return HttpResponse(json.dumps(result), 'application/json');
