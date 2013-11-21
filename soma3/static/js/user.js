@@ -1580,140 +1580,110 @@ $("head").styleReady(function(){
             });
         }
 
-        function DrawChart3(data){
-            $('.notHover').eq(3).empty().append($('<td id="ebas"><svg></svg></td>'))
-            nv.addGraph(function() {
-                var chart = nv.models.discreteBarChart()
-                    .x(function(d) { return d.label })
-                    .y(function(d) { return d.value })
-                    .color([ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ])
-                    .staggerLabels(true)
-                    .tooltips(false)
-                    .showValues(true);
+        function DrawChart3(categories,data){
+            $('.notHover').eq(3).empty().append($('<td id="ebas"></td>'))
+            var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
+            for(var i=0;i<data[0]['data'].length;i++)
+                data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
+            chart3 = new Highcharts.Chart({
+                chart: {
+                    type: 'bar',
+                    renderTo: 'ebas'
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    categories: categories
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: ''
+                    }
+                },
+                legend: {
+                    enabled:false
+                },
+                tooltip: {
+                    formatter: function() {
+                        return '<b>Activity</b> :' + this.x + '<br/>'+
+                            '<b>Value</b> :' + this.y;
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        stacking: 'normal'
+                    }
+                },
+                series: data
 
-                d3.select('#ebas svg')
-                    .datum(data)
-                    .transition().duration(500)
-                    .call(chart);
-
-                nv.utils.windowResize(chart.update);
-
-                return chart;
             });
         }
 
         function DrawChart4(categories,data){
             $('.notHover').eq(4).empty().append($('<td id="vers"></td>'))
-            //$(function () {
-                /*$('#vers').highcharts({
-                    chart: {
-                        type: 'column'
-                    },
+            chart4 = new Highcharts.Chart({
+                chart: {
+                    type: 'bar',
+                    renderTo: 'vers'
+                },
+                title: {
+                    text: ''
+                },
+                colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
+                xAxis: {
+                    categories: categories
+                },
+                yAxis: {
+                    min: 0,
                     title: {
-                        text: 'Version Error Rate'
+                        text: ''
                     },
-                    colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
-                    xAxis: {
-                        categories: categories
-                    },
-                    yAxis: {
-                        min: 0,
-                        title: {
-                            text: 'Version Error Rate'
-                        },
-                        stackLabels: {
+                    stackLabels: {
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                        }
+                    }
+                },
+                legend: {
+                    align: 'right',
+                    x: -70,
+                    verticalAlign: 'top',
+                    y: 20,
+                    floating: true,
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
+                    borderColor: '#CCC',
+                    borderWidth: 1,
+                    shadow: false
+                },
+                tooltip: {
+                    formatter: function() {
+                        return '<b>App</b> :'+ this.x +'<br/>'+
+                            '<b>OS</b>  :' + this.series.name +'<br/>' +
+                            '<b>Value</b> :' + this.y;
+                            //'Total: '+ this.point.stackTotal;
+                    }
+                },
+                /*plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: {
                             enabled: true,
-                            style: {
-                                fontWeight: 'bold',
-                                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
-                            }
+                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
                         }
-                    },
-                    legend: {
-                        align: 'right',
-                        x: -70,
-                        verticalAlign: 'top',
-                        y: 20,
-                        floating: true,
-                        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
-                        borderColor: '#CCC',
-                        borderWidth: 1,
-                        shadow: false
-                    },
-                    tooltip: {
-                        formatter: function() {
-                            return '<b>'+ this.x +'</b><br/>'+
-                                this.series.name +': '+ this.y +'<br/>'+
-                                'Total: '+ this.point.stackTotal;
-                        }
-                    },
-                    plotOptions: {
-                        column: {
-                            stacking: 'normal',
-                            dataLabels: {
-                                enabled: true,
-                                color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
-                            }
-                        }
-                    },
-                    series: data
-                });*/
-				chart4 = new Highcharts.Chart({
-                    chart: {
-                        type: 'column',
-						renderTo: 'vers'
-                    },
-                    title: {
-                        text: 'Version Error Rate'
-                    },
-                    colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
-                    xAxis: {
-                        categories: categories
-                    },
-                    yAxis: {
-                        min: 0,
-                        title: {
-                            text: 'Version Error Rate'
-                        },
-                        stackLabels: {
-                            enabled: true,
-                            style: {
-                                fontWeight: 'bold',
-                                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
-                            }
-                        }
-                    },
-                    legend: {
-                        align: 'right',
-                        x: -70,
-                        verticalAlign: 'top',
-                        y: 20,
-                        floating: true,
-                        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
-                        borderColor: '#CCC',
-                        borderWidth: 1,
-                        shadow: false
-                    },
-                    tooltip: {
-                        formatter: function() {
-                            return '<b>'+ this.x +'</b><br/>'+
-                                this.series.name +': '+ this.y +'<br/>'+
-                                'Total: '+ this.point.stackTotal;
-                        }
-                    },
-                    plotOptions: {
-                        column: {
-                            stacking: 'normal',
-                            dataLabels: {
-                                enabled: true,
-                                color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
-                            }
-                        }
-                    },
-                    series: data
-                });	
-            //});
-			//addWindowResize(function(){chart4.setSize($('.notHover').eq(3).width(),$('.notHover').eq(3).height())})();
+                    }
+                },*/
+
+                plotOptions: {
+                    series: {
+                        stacking: 'normal'
+                    }
+                },
+                series: data
+            });
         }
         pre_retention = 1
         function RedrawCharts(retention){
@@ -1735,12 +1705,12 @@ $("head").styleReady(function(){
                         key: "Error Score by Device",
                         values:jsonData.chart2
                     }])
-                    DrawChart3([
+                    /*DrawChart3([
                     {
                         key: "Error Score by Activity",
                         values:jsonData.chart3
-                    }])
-
+                    }])*/
+                    DrawChart3(jsonData.chart3.categories,jsonData.chart3.data)
                     DrawChart4(jsonData.chart4.categories,jsonData.chart4.data)
                 }
                 , beforeSend: function(xhr, settings) {

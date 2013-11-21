@@ -98,7 +98,7 @@ def chartdata(request,apikey):
             temp_data[device] += 1
 
     sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
-    print 'sorted_dic',sorted_dic
+
 
     device_count = 0
     other_counts = 0
@@ -134,38 +134,14 @@ def chartdata(request,apikey):
         else:
             temp_data[lastactivity] += 1
     sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
+    categories = []
+    temp_data = []
     for l,v in sorted_dic:
-        chart3.append({
-            'label': l,
-            'value': v,
-        })
+        categories.append(l)
+        temp_data.append(v)
+    dev_data = [{'name':'Activity','data':temp_data}]
+    chart3 = {'categories':categories,'data':dev_data}
     result['chart3'] = chart3
-    """temp_data = {}
-    for e in errorElements:
-        activity = Activitystatistics.objects.filter(iderror=e).order_by('activityname')
-        if devices.count() == 0:
-            continue
-        total = 0
-        for d in activity:
-            print d.activityname
-            total += d.count
-            #print d.devicename
-        #print total,e.errorweight
-
-        for d in activity:
-            if not d.activityname in temp_data:
-                temp_data[d.activityname] = e.errorweight * d.count / total
-            else:
-                temp_data[d.activityname] += e.errorweight * d.count / total
-
-    sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
-    for l,v in sorted_dic:
-        chart3.append({
-            'label': l,
-            'value': v,
-        })
-    """
-
 
     #Chart4
     categories = []
@@ -199,4 +175,7 @@ def chartdata(request,apikey):
     #print categories
     chart4 = {'categories':categories,'data':ver_data}
     result['chart4'] = chart4
+
+    print 'chart3',chart3
+    print 'chart4',chart4
     return HttpResponse(json.dumps(result), 'application/json');
