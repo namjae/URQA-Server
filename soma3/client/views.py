@@ -206,9 +206,10 @@ def receive_exception(request):
     print instanceElement.idinstance
     eventpath = jsonData['eventpaths']
 
-    #테스트때문에 잠시 안씀
     depth = 10
     for event in reversed(eventpath):
+        if not 'label' in event:    #event path에 label적용, 기존버전과 호환성을 확보하기위해 'label'초기화를 해줌 client ver 0.91 ->
+            event['label'] = ""
         Eventpaths.objects.create(
             idinstance = instanceElement,
             iderror = errorElement,
@@ -217,6 +218,7 @@ def receive_exception(request):
             classname = event['classname'],
             methodname = event['methodname'],
             linenum = event['linenum'],
+            label = event['label'],
             depth = depth
         )
         depth -= 1
@@ -364,6 +366,8 @@ def receive_native(request):
 
     depth = 10
     for event in reversed(eventpath):
+        if not 'label' in event:    #event path에 label적용, 기존버전과 호환성을 확보하기위해 'label'초기화를 해줌 client ver 0.91 ->
+            event['label'] = ""
         Eventpaths.objects.create(
             idinstance = instanceElement,
             iderror = errorElement,
@@ -372,6 +376,7 @@ def receive_native(request):
             classname = event['classname'],
             methodname = event['methodname'],
             linenum = event['linenum'],
+            label = event['label'],
             depth = depth,
         )
         depth -= 1

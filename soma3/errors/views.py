@@ -512,7 +512,7 @@ def calc_eventpath(errorElement):
         #print 'event:',depth,eventElements
         limit_count = 0
         for event in eventElements:
-            key = str(depth) + ':' + event.classname + ':' + event.methodname + ':' + str(event.linenum)
+            key = str(depth) + ':' + event.classname + ':' + event.methodname + ':' + str(event.linenum) + ':' + str(event.label)
             #key = str(depth) + ':' + str(event.linenum)
             if not key in eventHash:
                 eventHash[key] = 1
@@ -556,14 +556,14 @@ def calc_eventpath(errorElement):
         length = min(len(eventElements),depth_count)
         for i in range(0,length-1):
             #print i
-            source_key = str(eventElements[i].depth) + ':' + eventElements[i].classname + ':' + eventElements[i].methodname + ':' + str(eventElements[i].linenum)
+            source_key = str(eventElements[i].depth) + ':' + eventElements[i].classname + ':' + eventElements[i].methodname + ':' + str(eventElements[i].linenum) + ':' + eventElements[i].label
             #source_key = str(eventElements[i].depth) + ':' + str(eventElements[i].linenum)
             print 'source_key',source_key
             if not source_key in k2i_table:
                 source_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
             else:
                 source_id = k2i_table[source_key]
-            target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum)
+            target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum) + eventElements[i+1].label
             #target_key = str(eventElements[i+1].depth) + ':' + str(eventElements[i+1].linenum)
             print 'target_key',target_key
             if not target_key in k2i_table:
