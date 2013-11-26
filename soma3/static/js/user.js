@@ -197,8 +197,8 @@ function successCreateProject(prjname,apikey,color,platform,stage)
                         <div class=\"" + platform + "\"></div>                                                       \
                         <span><label>" + prjname +"</label></span>                                                  \
                         <p class=\"" + color+ "\">\
-                            <span>Error Score</span> \
                             <span id = 'score'>0</span> \
+                            <span>Errors</span> \
                         </p>                                         \
                     </a>                                                                                             \
                         <div id = 'stage'>"+ stage +"</div> \
