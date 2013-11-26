@@ -535,8 +535,8 @@ def calc_eventpath(errorElement):
                 other_count += eventHash[key]
                 del(eventHash[key])
                 sorted_list.pop(4)
-            eventHash[str(depth) + ':' + 'Others'] = other_count
-            sorted_list.append(str(depth) + ':' + 'Others')
+            eventHash[str(depth) + ':' + 'Others: : : '] = other_count
+            sorted_list.append(str(depth) + ':' + 'Others: : : ')
         #print sorted_list
         #print len(sorted_list)
 
@@ -568,18 +568,18 @@ def calc_eventpath(errorElement):
             #source_key = str(eventElements[i].depth) + ':' + str(eventElements[i].linenum)
             #print 'source_key',source_key
             if not source_key in k2i_table:
-                source_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
+                source_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others: : : ']
             else:
                 source_id = k2i_table[source_key]
             target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum)
-            if eventElements[i].label != None:
-                target_key = target_key + ':' + eventElements[i].label
+            if eventElements[i+1].label != None:
+                target_key = target_key + ':' + eventElements[i+1].label
             else:
                 target_key = target_key + ': '
             #target_key = str(eventElements[i+1].depth) + ':' + str(eventElements[i+1].linenum)
             #print 'target_key',target_key
             if not target_key in k2i_table:
-                target_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
+                target_id = k2i_table[str(eventElements[i+1].depth) + ':' + 'Others: : : ']
             else:
                 target_id = k2i_table[target_key]
 
