@@ -512,7 +512,11 @@ def calc_eventpath(errorElement):
         #print 'event:',depth,eventElements
         limit_count = 0
         for event in eventElements:
-            key = str(depth) + ':' + event.classname + ':' + event.methodname + ':' + str(event.linenum) + ':' + str(event.label)
+            key = str(depth) + ':' + event.classname + ':' + event.methodname + ':' + str(event.linenum)
+            if event.label != None:
+                key = key + ':' + event.label
+            else:
+                key = key + ': '
             #key = str(depth) + ':' + str(event.linenum)
             if not key in eventHash:
                 eventHash[key] = 1
@@ -548,7 +552,7 @@ def calc_eventpath(errorElement):
     #print 'i2k_table',i2k_table
     instanceElements = Instances.objects.filter(iderror=errorElement,ins_count__gte=ins_count_limit).order_by('-idinstance')
 
-    print 'instanceElements',instanceElements
+    #print 'instanceElements',instanceElements
     limit_count = 0
     for instanceElement in instanceElements:
         #print instanceElement.idinstance
@@ -556,16 +560,24 @@ def calc_eventpath(errorElement):
         length = min(len(eventElements),depth_count)
         for i in range(0,length-1):
             #print i
-            source_key = str(eventElements[i].depth) + ':' + eventElements[i].classname + ':' + eventElements[i].methodname + ':' + str(eventElements[i].linenum) + ':' + eventElements[i].label
+            source_key = str(eventElements[i].depth) + ':' + eventElements[i].classname + ':' + eventElements[i].methodname + ':' + str(eventElements[i].linenum)
+            if eventElements[i].label != None:
+                source_key = source_key + ':' + eventElements[i].label
+            else:
+                source_key = source_key + ': '
             #source_key = str(eventElements[i].depth) + ':' + str(eventElements[i].linenum)
-            print 'source_key',source_key
+            #print 'source_key',source_key
             if not source_key in k2i_table:
                 source_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
             else:
                 source_id = k2i_table[source_key]
-            target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum) + eventElements[i+1].label
+            target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum)
+            if eventElements[i].label != None:
+                target_key = target_key + ':' + eventElements[i].label
+            else:
+                target_key = target_key + ': '
             #target_key = str(eventElements[i+1].depth) + ':' + str(eventElements[i+1].linenum)
-            print 'target_key',target_key
+            #print 'target_key',target_key
             if not target_key in k2i_table:
                 target_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others']
             else:

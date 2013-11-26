@@ -168,6 +168,7 @@ class Eventpaths(models.Model):
     methodname = models.CharField(max_length=300L, blank=True)
     linenum = models.IntegerField(null=True, blank=True)
     depth = models.IntegerField(null=True, blank=True)
+    label = models.CharField(max_length=300L, blank=True)
     class Meta:
         db_table = 'eventpaths'
 
@@ -256,7 +257,7 @@ class Tags(models.Model):
     idtag = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
     tag = models.CharField(max_length=45L)
-    pid = models.ForeignKey(Projects, db_column='pid')
+    pid = models.ForeignKey(Projects, null=True, db_column='pid', blank=True)
     class Meta:
         db_table = 'tags'
 

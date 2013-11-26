@@ -1382,7 +1382,7 @@ $("head").styleReady(function(){
                         //$('div[data="event-path"]').hide()
                         $('#event-path-parent').parents().eq(2).hide()
 
-                        var message = "Not enough breadcrumb to draw eventpath"
+                        var message = "Not enough breadcrumb to draw eventpath. use leaveBreadcrumb() method"
                         a = $('<div style="font: 14px \'RixGo B\';"><p></p></div>').text(message)
                         $('#event-path-parent').parents().eq(3).append(a)
                     }

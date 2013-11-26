@@ -380,8 +380,8 @@ function sankeydraw(data)
                     return ''
                 var name = d.name.split(':')
                 return '<center>' + name[1] +"</center><br>" +
-                        '<center>' + name[2] +"</center><br>" +
-                        '<center>' + name[3]; + "</center>"
+                        '<center>' + name[2] + '(' + name[3] + ')' +"</center><br>" +
+                        '<center>' + name[4] + "</center>"
             })
             .attr('class', 'd3-tip')
             .direction('s')
