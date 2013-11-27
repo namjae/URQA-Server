@@ -1,13 +1,12 @@
 # URQA-Server
+* **Documentation**: http://
+* **Homepage**: http://
+* **Google Group**: http://
 
-## Installation Guide
-
-Front-end based on Django and Python.
-
-first, you can go to this site and install env.
-
-https://docs.djangoproject.com/en/dev/intro/install/
-
+## Requirements
+* **Django** https://docs.djangoproject.com/en/dev/intro/install/
+* **Python** http://www.python.org
+* **Java** http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 ## Branch Policy
 * product - 안정화 버전 (stable version )
