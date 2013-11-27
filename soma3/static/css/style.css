@@ -210,7 +210,7 @@ a:active { text-decoration:none; }
 	}
 	>#popup-memberjoin > .body {
 		width: 210px;
-		height: 390px;
+		height: 300px;
 		span {
 			display: block;
 			font: 12px "RixGo EB";

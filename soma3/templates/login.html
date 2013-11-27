@@ -21,6 +21,49 @@
 		$(document).ready(function(){
 			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
+
+        /*function testAjax(access_token,id_token){
+            $.ajax( {
+                 type :'GET'
+                ,asyn :true
+                ,url :'https://www.googleapis.com/oauth2/v1/userinfo?access_token='+access_token
+                ,dataType :"json"
+                ,success : function(jsonData) {
+                    console.log(jsonData);
+                }
+            });
+        }*/
+
+        function signinCallback(authResult) {
+            if (authResult['access_token']) {
+                $.get(
+                    '/urqa/user/login_by_google',
+                    {access_token:authResult['access_token']},
+                    function(data) {
+                       //alert('page content: ' + data);
+                    }
+                );
+                /*$.ajax( {
+                     type :'GET'
+                    ,asyn :true
+                    ,url :'/urqa/user/login_by_google'
+                    ,dataType :"json"
+                    ,data :{access_token:authResult['access_token']}
+                    ,success : function(jsonData) {
+                        console.log(jsonData);
+                    }
+                    , beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                            // Send the token to same-origin, relative URLs only.
+                            // Send the token only if the method warrants CSRF protection
+                            // Using the CSRFToken value acquired earlier
+                            var csrftoken = getCookie('csrftoken')
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    }
+                });*/
+            }
+        }
 	</script>
 </head>
 
@@ -135,7 +178,7 @@
                     data-clientid="659918816506-g8di1qo7d4n84imp7rh8vlsmp7e4511d.apps.googleusercontent.com"
                     data-cookiepolicy="single_host_origin"
                     data-requestvisibleactions="http://schemas.google.com/AddActivity"
-                    data-scope="https://www.googleapis.com/auth/plus.login"
+                    data-scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
                     data-width="wide"
                   </span>
                 </span>
