@@ -83,7 +83,7 @@
                          })
                     </script>
 					<span></span>
-					<div class="button gray" data-name="Connect with your google account" style="width: 210px; height: 26px"></div>
+					<!--<div class="button gray" data-name="Connect with your google account" style="width: 210px; height: 26px"></div>-->
 				</div>
 			</div>
 		</div>
@@ -127,6 +127,18 @@
                             }
                         }
                 </script>
+                <span></span>
+                <span id="signinButton">
+                  <span
+                    class="g-signin"
+                    data-callback="signinCallback"
+                    data-clientid="659918816506-g8di1qo7d4n84imp7rh8vlsmp7e4511d.apps.googleusercontent.com"
+                    data-cookiepolicy="single_host_origin"
+                    data-requestvisibleactions="http://schemas.google.com/AddActivity"
+                    data-scope="https://www.googleapis.com/auth/plus.login"
+                    data-width="wide"
+                  </span>
+                </span>
 			</div>
 			<div class="footer">
 				<label onclick="showPopupMemberjoin()">Create an Account</label><span></span><label onclick="logout()">Forgot Password?</label>
@@ -134,5 +146,13 @@
 		</div>
 		<!--content-container fin-->
 	</div>
+    <!-- 이 비동기 자바스크립트를 </body> 태그 앞에 배치 -->
+    <script type="text/javascript">
+      (function() {
+       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+       po.src = 'https://apis.google.com/js/client:plusone.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+     })();
+    </script>
 </body>
 </html>

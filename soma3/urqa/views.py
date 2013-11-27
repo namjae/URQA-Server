@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import time
-import datetime
+import random
+import string
 from django.utils.timezone import utc
 from django.utils import timezone
 from django.http import HttpResponse
@@ -20,10 +21,8 @@ def index(request):
     if request.user.is_authenticated():
        return HttpResponseRedirect('/urqa/projects')
 
+    ctx = {}
 
-    ctx = {
-
-    }
     return render(request, 'login.html', ctx)
 
 @csrf_exempt
