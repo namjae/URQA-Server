@@ -96,13 +96,6 @@ def login_req(request):
         return HttpResponseRedirect('/urqa')
     return HttpResponse('login')
 
-def login_google_req(request):
-    response = HttpResponseRedirect('/urqa')
-    response.set_cookie('urqa_google_access_token', request.GET['access_token'])
-    return response
-
-    #return HttpResponse(json.dumps({'access_token':request.POST['access_token']}), 'application/json');
-
 def logout_req(request):
     print request.user
     if request.user.is_authenticated():
