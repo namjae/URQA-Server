@@ -3,7 +3,6 @@
 
 import re
 import json
-import sys
 import operator
 from collections import OrderedDict
 
