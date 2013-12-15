@@ -16,7 +16,7 @@ PROJECT_DIR = os.path.dirname(__file__)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'urqa_release',               # Or path to database file if using sqlite3.
+        'NAME': 'urqa',               # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'root',
         'PASSWORD': 'stanly',
