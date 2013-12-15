@@ -22,48 +22,6 @@
 			$("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 		});
 
-        /*function testAjax(access_token,id_token){
-            $.ajax( {
-                 type :'GET'
-                ,asyn :true
-                ,url :'https://www.googleapis.com/oauth2/v1/userinfo?access_token='+access_token
-                ,dataType :"json"
-                ,success : function(jsonData) {
-                    console.log(jsonData);
-                }
-            });
-        }*/
-
-        function signinCallback(authResult) {
-            if (authResult['access_token']) {
-                $.get(
-                    '/urqa/user/login_by_google',
-                    {access_token:authResult['access_token']},
-                    function(data) {
-                       //alert('page content: ' + data);
-                    }
-                );
-                /*$.ajax( {
-                     type :'GET'
-                    ,asyn :true
-                    ,url :'/urqa/user/login_by_google'
-                    ,dataType :"json"
-                    ,data :{access_token:authResult['access_token']}
-                    ,success : function(jsonData) {
-                        console.log(jsonData);
-                    }
-                    , beforeSend: function(xhr, settings) {
-                        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-                            // Send the token to same-origin, relative URLs only.
-                            // Send the token only if the method warrants CSRF protection
-                            // Using the CSRFToken value acquired earlier
-                            var csrftoken = getCookie('csrftoken')
-                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                        }
-                    }
-                });*/
-            }
-        }
 	</script>
 </head>
 
@@ -171,6 +129,16 @@
                         }
                 </script>
                 <span></span>
+                <div id = 'loginwithgoogle' class="button red" data-name="Login with Google Account" style="width: 210px; height: 39px"></div>
+                    <script>
+                            function login_with_google(){
+                                post_to_url('/urqa/user/login_by_google',{},"{% csrf_token %}")
+                            }
+                            $(document).ready(function(){
+                                $('#loginwithgoogle').bind('click',login_with_google)
+                            })
+                    </script>
+                <!--
                 <span id="signinButton">
                   <span
                     class="g-signin"
@@ -181,7 +149,7 @@
                     data-scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
                     data-width="wide"
                   </span>
-                </span>
+                </span>-->
 			</div>
 			<div class="footer">
 				<label onclick="showPopupMemberjoin()">Create an Account</label><span></span><label onclick="logout()">Forgot Password?</label>
@@ -189,13 +157,6 @@
 		</div>
 		<!--content-container fin-->
 	</div>
-    <!-- 이 비동기 자바스크립트를 </body> 태그 앞에 배치 -->
-    <script type="text/javascript">
-      (function() {
-       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-       po.src = 'https://apis.google.com/js/client:plusone.js';
-       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-     })();
-    </script>
+
 </body>
 </html>

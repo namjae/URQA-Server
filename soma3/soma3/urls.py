@@ -30,10 +30,12 @@ urlpatterns = patterns('',
     url(r'^urqa/user/registration$', 'usermanage.views.registration'),
     url(r'^urqa/user/delete$', 'usermanage.views.delete_req'),
     url(r'^urqa/user/login$', 'usermanage.views.login_req'),
-    url(r'^urqa/user/login_by_google$', 'usermanage.views.login_google_req'),
     url(r'^urqa/user/google_oauth2', 'usermanage.views.google_oauth2'),
     url(r'^urqa/user/logout$', 'usermanage.views.logout_req'),
 
+    #oauth module
+    url(r'^urqa/user/login_by_google$', 'oauth.views.login_by_google'),
+    url(r'^urqa/user/auth_return/$', 'oauth.views.auth_return'),
 
     #project-list
     url(r'^urqa/projects$', 'projectmanage.views.projects'),
