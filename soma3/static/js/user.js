@@ -996,7 +996,7 @@ $("head").styleReady(function(){
     if($("body").hasClass("error") )
     {
         page_num = 1;
-        list_per_page = 5;
+        list_per_page = 15;
         listData = [];
         list_count = 0;
         pre_query={};
@@ -1098,10 +1098,7 @@ $("head").styleReady(function(){
         function sort_by_rank(a1,a2)
         {
             if(a1.rank==a2.rank)
-            {
-                if(asc) return sort_by_occur(a2,a1);
-                else    return sort_by_occur(a1,a2);
-            }
+                return sort_by_status2(a2,a1);
             if(asc == 0)    return (a1.rank>a2.rank)?-1:1;
             else            return (a1.rank<a2.rank)?-1:1;
         }
@@ -1116,6 +1113,15 @@ $("head").styleReady(function(){
             if(a1.status==a2.status)    return sort_by_rank(a1,a2);
             if(asc == 0)    return (a1.status>a2.status)?-1:1;
             else            return (a1.status<a2.status)?-1:1;
+        }
+        function sort_by_status2(a1,a2)
+        {
+            if(a1.status==a2.status)
+            {
+                if(asc == 0)    return sort_by_occur(a2,a1);
+                else            return sort_by_occur(a1,a2);
+            }
+            return (a1.status>a2.status)?-1:1;
         }
         function sort_by_occur(a1,a2)
         {
