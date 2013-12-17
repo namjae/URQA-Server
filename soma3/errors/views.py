@@ -36,6 +36,7 @@ from utility import naive2aware
 from utility import getTimeRange
 from utility import TimeRange
 from utility import RANK
+from utility import Status
 from utility import toTimezone
 
 from config import get_config
@@ -273,6 +274,11 @@ def errorDetail(request,apikey,iderror):
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
+
+    # Status New일 경우 Open으로 자동변경
+    if ErrorsElement.status == Status.New:
+        ErrorsElement.status = Status.Open
+        ErrorsElement.save()
 
     #manual_Auto
     isManual = True
