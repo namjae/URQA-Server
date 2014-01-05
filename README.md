@@ -1,4 +1,3 @@
-
 # URQA-Server
 * **Homepage**: http://
 * **Google Group**: http://
@@ -14,7 +13,7 @@
 * product + develop marging -> test -> master 
  
 ## Licenses
- * MIT License 
+ * MIT License - http://mit-license.org/
  
  
 ## UrQA User Guide
