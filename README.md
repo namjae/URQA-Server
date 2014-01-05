@@ -1,6 +1,6 @@
 # URQA-Server
-* **Homepage**: http://
-* **Google Group**: http://
+* **Homepage**: http://www.ur-qa.com/
+* **Google Group**: none
  
 ## Requirements
 * **Django** https://docs.djangoproject.com/en/dev/intro/install/
