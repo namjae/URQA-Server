@@ -1,6 +1,6 @@
 # URQA
 * **Homepage**: http://www.ur-qa.com/
-* **Service Introduction **:  KOR - https://www.dropbox.com/s/uu356dy829bt384/UrQA%20Intro.pptx 
+* **Service Introduction** :  KOR - https://www.dropbox.com/s/uu356dy829bt384/UrQA%20Intro.pptx 
 * **Google Group**: none
  
 ## Requirements
