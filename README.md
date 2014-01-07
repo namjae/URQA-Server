@@ -1,7 +1,9 @@
 # URQA
 * **Homepage**: http://www.ur-qa.com/
 * **Service Introduction** :  KOR - https://www.dropbox.com/s/uu356dy829bt384/UrQA%20Intro.pptx 
-* **Google Group**: https://groups.google.com/forum/#!forum/urqagroup
+* **Committer Group**: https://groups.google.com/forum/#!forum/urqagroup  
+* **User Group Google Grups**: https://groups.google.com/forum/#!forum/urqausergroup 
+* **User Group Facebook**: https://www.facebook.com/groups/1398899177025363/
  
 ## Requirements
 * **Django** https://docs.djangoproject.com/en/dev/intro/install/
