@@ -276,7 +276,8 @@ def errorDetail(request,apikey,iderror):
         return HttpResponseRedirect('/urqa')
 
     # Status New일 경우 Open으로 자동변경
-    if ErrorsElement.status == Status.New:
+    # SuperUser는 자동변경에서 예외
+    if not user.is_superuser and ErrorsElement.status == Status.New:
         ErrorsElement.status = Status.Open
         ErrorsElement.save()
 

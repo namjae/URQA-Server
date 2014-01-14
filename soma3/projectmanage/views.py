@@ -387,14 +387,20 @@ def projects(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/urqa/')
 
-    #주인인 project들
-    UserElement = AuthUser.objects.get(username = request.user)
-    OwnerProjectElements = Projects.objects.filter(owner_uid = UserElement.id)
 
-    ViewerElements = Viewer.objects.filter(uid = UserElement.id).values('pid')
-    ViewerProjectElements = Projects.objects.filter(pid__in = ViewerElements)
+    if request.user.is_superuser:
+        #Super User일 경우 모든 프로젝트 보이기
+        MergeProjectElements = Projects.objects.all()
 
-    MergeProjectElements = OwnerProjectElements | ViewerProjectElements
+    else:
+        #주인인 project들
+        UserElement = AuthUser.objects.get(username = request.user)
+        OwnerProjectElements = Projects.objects.filter(owner_uid = UserElement.id)
+
+        ViewerElements = Viewer.objects.filter(uid = UserElement.id).values('pid')
+        ViewerProjectElements = Projects.objects.filter(pid__in = ViewerElements)
+        MergeProjectElements = OwnerProjectElements | ViewerProjectElements
+
 
     #print MergeProjectElements
 
