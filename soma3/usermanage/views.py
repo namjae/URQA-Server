@@ -76,13 +76,11 @@ def delete_req(request):
     return HttpResponse('delete success')
 
 def login_req(request):
-    #print request.user
-    #print request
     username = request.POST['username']
     password = request.POST['password']
 
     print username
-    print password
+    #print password
 
     user = authenticate(username=username, password=password)
     print user

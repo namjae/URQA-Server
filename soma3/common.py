@@ -57,7 +57,8 @@ def validUserPjt(username,apikey):
 
     # User가 Project에 권한이 있는지 확인
     try:
-        viewerElement = Viewer.objects.get(uid=userElement, pid=projectElement)
+        if not userElement.is_superuser:
+            viewerElement = Viewer.objects.get(uid=userElement, pid=projectElement)
     except ObjectDoesNotExist:
         return False, 'user "%s" have no permission %s' % (username, apikey), userElement, projectElement
 
