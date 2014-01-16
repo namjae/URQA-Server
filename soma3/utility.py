@@ -8,8 +8,8 @@ import string
 
 from django.utils.timezone import utc
 
-def toTimezone(utc,to_zone):
-    return utc.astimezone(tz.gettz(to_zone))
+def toTimezone(time,to_zone):
+    return time.astimezone(tz.gettz(to_zone))
 
 def getTimezoneMidNight(timezone):
     return toTimezone(naive2aware(getUTCDatetime()),timezone).replace(hour=23,minute=59,second=59,microsecond=999999)
@@ -70,7 +70,7 @@ class Status:
 #weekly, monthly, 3monthly
 def getTimeRange(t,timezone):
 
-    today = toTimezone(getTimezoneMidNight(timezone),'utc')#datetime.datetime.utcnow().replace(tzinfo=utc)
+    today = toTimezone(getTimezoneMidNight(timezone),'UTC')#datetime.datetime.utcnow().replace(tzinfo=utc)
     #today = today.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 
     #print 'getDatetime', getDatetime()
