@@ -658,7 +658,7 @@ def filter_view(request,apikey):
 
     user = AuthUser.objects.get(username = request.user)
 
-    week, today = getTimeRange(TimeRange.weekly)
+    week, today = getTimeRange(TimeRange.weekly,projectelement.timezone)
 
     try:
         projectElement = Projects.objects.get(apikey = apikey)
@@ -766,7 +766,7 @@ def error_list(request,apikey):
         osversion = []
 
 
-    week, today = getTimeRange(date)
+    week, today = getTimeRange(date,projectElement.timezone)
     errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status__in=status,lastdate__range=(week,today)).order_by('-errorweight','rank', '-lastdate')
     #print '1',errorElements
     #print classes
@@ -856,7 +856,7 @@ def appv_ratio(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    past, today = getTimeRange(retention)
+    past, today = getTimeRange(retention,projectElement.timezone)
     errorElements = Errors.objects.filter(pid=projectElement,lastdate__range=(past,today))
 
     data = {'appv':{},'osv':{}}

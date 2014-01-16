@@ -3,6 +3,7 @@
 
 import json
 import operator
+import datetime
 
 from django.template import Context, loader
 from django.http import HttpResponse
@@ -15,13 +16,11 @@ from common import getApikeyDict
 from common import getSettingDict
 
 from utility import getTimeRange
-from utility import TimeRange
 from utility import Status
+from utility import getTimezoneMidNight
 
 from urqa.models import AuthUser
 from urqa.models import Errors
-from urqa.models import Devicestatistics
-from urqa.models import Activitystatistics
 from urqa.models import Instances
 
 
@@ -53,6 +52,8 @@ def statistics(request,apikey):
 
 
 def chartdata(request,apikey):
+
+
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
@@ -61,28 +62,64 @@ def chartdata(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    past, today = getTimeRange(retention)
+    print 'retention', retention
+    past, today = getTimeRange(retention,projectElement.timezone)
+    #print 'past',past, 'today',today
     errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
     instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
-    #Chart1
-    chart1 = []
+
+    result = {}
+    categories = []
+    appversions = instanceElements.values('appversion').distinct().order_by('appversion')
+    appcount_data = {}
+
+    for appversion in appversions:
+        appcount_data[appversion['appversion']] = []
+
+    for i in range(retention-1,-1,-1):
+        category_time = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
+        categories.append(category_time.strftime('%b-%d'))
+        p1, dummy = getTimeRange(i+1, projectElement.timezone)
+        p2, dummy = getTimeRange(i, projectElement.timezone)
+        instances = instanceElements.filter(datetime__range=(p1,p2))
+        for appversion in appversions:
+            appcount_data[appversion['appversion']].append(instances.filter(appversion=appversion['appversion']).count())
+            #print appversion['appversion'], ' hello', instances.filter(appversion=appversion['appversion']).count()
+
+    #print categories
+    #print appcount_data
+
+    appver_data = []
+
+    for appversion in appversions:
+        appver_data.append(
+            {
+                'name': appversion['appversion'],
+                'data': appcount_data[appversion['appversion']]
+            }
+        )
+    chart1 = {'categories':categories,'data':appver_data}
+    result['chart1'] = chart1
+
+
+    #chart2
+    chart2 = []
     pre_class = ''
-    print 'past',past
+    #print 'past',past
     for e in errorElements:
         instanceCount = Instances.objects.filter(iderror=e,datetime__gte=past).count()
         if pre_class != e.errorclassname:
             pre_class = e.errorclassname
-            chart1.append([e.errorclassname, instanceCount])
+            chart2.append([e.errorclassname, instanceCount])
         else:
-            last = len(chart1)
-            chart1[last-1] = [e.errorclassname,chart1[last-1][1] + (instanceCount)]
+            last = len(chart2)
+            chart2[last-1] = [e.errorclassname,chart2[last-1][1] + (instanceCount)]
 
 
-    result = {}
-    result['chart1'] = chart1
 
-    #Chart2 - Device error
-    chart2 = []
+    result['chart2'] = chart2
+
+    #chart3 - Device error
     temp_data = {}
     activities = []
     instances = instanceElements.order_by('device')
@@ -114,12 +151,12 @@ def chartdata(request,apikey):
         temp_data.append(others_count)
 
     dev_data = [{'name':'Device','data':temp_data}]
-    chart2 = {'categories':categories,'data':dev_data}
-    result['chart2'] = chart2
-    print 'chart2',chart2
+    chart3 = {'categories':categories,'data':dev_data}
+    result['chart3'] = chart3
+    #print 'chart3',chart3
 
 
-    #Chart3
+    #chart4
     temp_data = {}
     activities = []
     instances = instanceElements.order_by('lastactivity')
@@ -150,8 +187,8 @@ def chartdata(request,apikey):
         temp_data.append(others_count)
 
     act_data = [{'name':'Activity','data':temp_data}]
-    chart3 = {'categories':categories,'data':act_data}
-    result['chart3'] = chart3
+    chart4 = {'categories':categories,'data':act_data}
+    result['chart4'] = chart4
 
     #Chart4
     categories = []
@@ -183,8 +220,8 @@ def chartdata(request,apikey):
 
         #ver_data[appv_idx][]
     #print categories
-    chart4 = {'categories':categories,'data':ver_data}
-    result['chart4'] = chart4
+    chart5 = {'categories':categories,'data':ver_data}
+    result['chart5'] = chart5
 
-    print 'chart3',chart3
+    #print 'chart4',chart4
     return HttpResponse(json.dumps(result), 'application/json');

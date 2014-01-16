@@ -412,8 +412,6 @@ def projects(request):
     countcolordata = json.loads(get_config('error_rate_color'))
     platformdata = json.loads(get_config('app_platforms'))
 
-    week, today = getTimeRange(TimeRange.weekly)#최근 7일이내것만 표시
-
     for idx, project in enumerate(MergeProjectElements):
         projectdata = {}
         projectdata['apikey'] = project.apikey
@@ -421,6 +419,7 @@ def projects(request):
         stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
         #projectdata['color'] = stagecolordata.get(stagetxt)
 
+        week, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
 
         errorElements = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open])
         instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range = (week, today)).count()
@@ -507,7 +506,7 @@ def dailyesgraph(request, apikey):
 
     #오늘 날짜 및 일주일 전을 계산
     timerange = TimeRange.weekly
-    week , today = getTimeRange(timerange)
+    week , today = getTimeRange(timerange,ProjectElement.timezone)
 
     #defalut값에 날짜를 대입함
     maxvalue = 0
@@ -550,7 +549,7 @@ def typeesgraph(request, apikey):
         return HttpResponse(json.dumps(default), 'application/json')
 
     timerange = TimeRange.weekly
-    week , today = getTimeRange(timerange)
+    week , today = getTimeRange(timerange,ProjectElement.timezone)
 
     default = {
         "tags":[
@@ -583,7 +582,7 @@ def typeesgraph(request, apikey):
 def typeescolor(request ,apikey):
 
     timerange = TimeRange.weekly
-    week , today = getTimeRange(timerange)
+
 
 
     default = {
@@ -603,6 +602,7 @@ def typeescolor(request ,apikey):
         print 'invalid pid'
         return HttpResponse(json.dumps(default), 'application/json')
 
+    week , today = getTimeRange(timerange,ProjectElement.timezone)
 
     for i in range(RANK.Unhandle,RANK.Minor+1): # unhandled 부터 Minor 까지
        ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open] ,lastdate__range = (week,today), rank = i) #일주일치 얻어옴
@@ -622,7 +622,7 @@ def typeescolor(request ,apikey):
 #name, file, tag, counter
 def errorscorelist(apikey):
 
-    week, today = getTimeRange(TimeRange.weekly)
+
 
     try:
         ProjectElement = Projects.objects.get(apikey = apikey)
@@ -632,6 +632,7 @@ def errorscorelist(apikey):
 
     #print today
 
+    week, today = getTimeRange(TimeRange.weekly,ProjectElement.timezone)
     ErrorElements = Errors.objects.filter(pid = ProjectElement , status__in=[Status.New,Status.Open],lastdate__range = (week, today) ).order_by('rank','-numofinstances','-lastdate')
 
     jsondata = []

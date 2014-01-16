@@ -980,7 +980,35 @@ $("head").styleReady(function(){
 			Raphael.custom.areaGraph("dailyes", "#dailyES", {"lineWidth": 1, "horizonLine": false, "verticalLine": false, "leftgutter": 0, "topgutter": 5,
 				"color": "#dca763", "lineColor": "#3a3f42", "textColor": "#303335", "autoResize": true });
 		});
-		$("#typeES").ready(function(){
+        /*
+        $("#dailyES").ready(function(){
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./chartdata'
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':retention
+                })}
+                ,success : function(jsonData) {
+                    DrawChart1(jsonData.chart1.categories,jsonData.chart1.data)
+                    DrawChart2(jsonData.chart2)
+                    DrawChart3(jsonData.chart3.categories,jsonData.chart3.data)
+                    DrawChart4(jsonData.chart4.categories,jsonData.chart4.data)
+                    DrawChart5(jsonData.chart5.categories,jsonData.chart5.data)
+                }
+                , beforeSend: function(xhr, settings) {
+                    var csrftoken = getCookie('csrftoken')
+                    if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                        // Send the token to same-origin, relative URLs only.
+                        // Send the token only if the method warrants CSRF protection
+                        // Using the CSRFToken value acquired earlier
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+        });*/
+        $("#typeES").ready(function(){
              $.ajax({
                 type: 'get'
               , url: 'typees/color'
@@ -1529,8 +1557,60 @@ $("head").styleReady(function(){
             var retention = $('.scrollbar>ul>li[data-value="true"]').attr('value')
             RedrawCharts(retention)
         });
-        function DrawChart1(data){
-            $('.notHover').eq(1).empty().append($('<td id="cecs"></td>'))
+        function DrawChart1(categories,data){
+            $('.notHover').eq(1).empty().append($('<td id="ebav"></td>'))
+            chart3 = new Highcharts.Chart({
+                chart: {
+                    type: 'area',
+                    renderTo: 'ebav'
+                },
+                colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    categories: categories
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: ''
+                    }
+                },
+                legend: {
+                    verticalAlign: 'top',
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColorSolid) || 'white',
+                    borderColor: '#CCC',
+                    borderWidth: 1,
+                    shadow: false
+                },
+                tooltip: {
+                    shared: true,
+                    valueSuffix: ' errors'
+                },
+                plotOptions: {
+                    series: {
+                        stacking: 'normal'
+                    },
+                    area: {
+                        marker: {
+                            enabled: false,
+                            symbol: 'circle',
+                            radius: 2,
+                            states: {
+                                hover: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    }
+                },
+                series: data
+
+            });
+        }
+        function DrawChart2(data){
+            $('.notHover').eq(2).empty().append($('<td id="cecs"></td>'))
             $("#cecs").highcharts({
                 chart: {
                     plotBackgroundColor: null,
@@ -1563,8 +1643,8 @@ $("head").styleReady(function(){
                 }]
             });
         }
-        function DrawChart2(categories,data){
-            $('.notHover').eq(2).empty().append($('<td id="decs"></td>'))
+        function DrawChart3(categories,data){
+            $('.notHover').eq(3).empty().append($('<td id="decs"></td>'))
             var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
             for(var i=0;i<data[0]['data'].length;i++)
                 data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
@@ -1604,8 +1684,8 @@ $("head").styleReady(function(){
             });
         }
 
-        function DrawChart3(categories,data){
-            $('.notHover').eq(3).empty().append($('<td id="ebas"></td>'))
+        function DrawChart4(categories,data){
+            $('.notHover').eq(4).empty().append($('<td id="ebas"></td>'))
             var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
             for(var i=0;i<data[0]['data'].length;i++)
                 data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
@@ -1645,8 +1725,8 @@ $("head").styleReady(function(){
             });
         }
 
-        function DrawChart4(categories,data){
-            $('.notHover').eq(4).empty().append($('<td id="vers"></td>'))
+        function DrawChart5(categories,data){
+            $('.notHover').eq(5).empty().append($('<td id="vers"></td>'))
             chart4 = new Highcharts.Chart({
                 chart: {
                     type: 'bar',
@@ -1719,20 +1799,11 @@ $("head").styleReady(function(){
                     'retention':retention
                 })}
                 ,success : function(jsonData) {
-                    DrawChart1(jsonData.chart1)
-                    /*DrawChart2([
-                    {
-                        key: "Error Score by Device",
-                        values:jsonData.chart2
-                    }])*/
-                    /*DrawChart3([
-                    {
-                        key: "Error Score by Activity",
-                        values:jsonData.chart3
-                    }])*/
-                    DrawChart2(jsonData.chart2.categories,jsonData.chart2.data)
+                    DrawChart1(jsonData.chart1.categories,jsonData.chart1.data)
+                    DrawChart2(jsonData.chart2)
                     DrawChart3(jsonData.chart3.categories,jsonData.chart3.data)
                     DrawChart4(jsonData.chart4.categories,jsonData.chart4.data)
+                    DrawChart5(jsonData.chart5.categories,jsonData.chart5.data)
                 }
                 , beforeSend: function(xhr, settings) {
                     var csrftoken = getCookie('csrftoken')
