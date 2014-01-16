@@ -1829,6 +1829,10 @@ table.content-small {
 		}
 	}
 }
+
+#ebav svg {
+	height: 300px;
+}
 #cecs svg {
 	height: 300px;
 }
