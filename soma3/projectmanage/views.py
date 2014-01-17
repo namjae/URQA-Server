@@ -52,6 +52,7 @@ from urqa.models import Comments
 from urqa.models import Session
 from urqa.models import Sessionevent
 from urqa.models import Eventpaths
+from urqa.models import Proguardmap
 
 #from utility import getTemplatePath
 from utility import getTimeRange
@@ -62,6 +63,7 @@ from utility import get_dict_value_matchin_key
 #from utility import get_dict_value_matchin_number
 from utility import Status
 from utility import toTimezone
+from utility import getUTCawaredatetime
 from config import get_config
 
 
@@ -307,7 +309,7 @@ def extractinfo(projectElement,temp_path,temp_fname):
 
 def so_upload(request, apikey):
     #print request
-    print apikey
+    print 'so_upload',apikey
 
     #appver = request.POST['version']
 
@@ -381,6 +383,92 @@ def so_upload(request, apikey):
 
     print 'so_upload',retdat['result'], retdat['msg']
     return HttpResponse(json.dumps(retdat), 'application/json');
+
+def proguardmap_upload(request, apikey):
+    print 'proguardmap_upload',apikey
+
+    result, msg, userElement, projectElement = validUserPjt(request.user, apikey)
+
+    if not result:
+        return HttpResponse(msg)
+    print request.FILES
+
+    appver = request.POST['appversion']
+    retdat = {'result':-1,'msg':'Failed to Upload File'}
+
+    if request.method != 'POST':
+        retdat = {'result':-1,'msg':'Bad request'}
+    elif len(appver) == 0:
+        retdat = {'result':-1,'msg':'Invalid App version'}
+    elif not 'file' in request.FILES:
+        retdat = {'result':-1,'msg':'You should select file'}
+    else:
+        file = request.FILES['file']
+        temp_fname = file._name
+
+        temp_path = get_config('proguard_map_path')
+        if not os.path.isdir(temp_path):
+            os.mkdir(temp_path)
+        temp_path = os.path.join(temp_path,apikey)
+        if not os.path.isdir(temp_path):
+            os.mkdir(temp_path)
+        temp_path = os.path.join(temp_path,appver)
+        if not os.path.isdir(temp_path):
+            os.mkdir(temp_path)
+
+        fp = open(os.path.join(temp_path,temp_fname) , 'wb')
+        for chunk in file.chunks():
+            fp.write(chunk)
+        fp.close()
+        retdat = {'result':0,'msg':'File successfully Uploaded'}
+
+    if retdat['result'] == 0:
+        try:
+            mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appver)
+            if mapElement.filename != temp_fname:
+                temp_path = get_config('proguard_map_path')
+                temp_path = os.path.join(temp_path,apikey)
+                temp_path = os.path.join(temp_path,appver)
+                os.remove(os.path.join(temp_path,mapElement.filename))
+            mapElement.filename = temp_fname
+            mapElement.uploadtime = getUTCawaredatetime()
+            mapElement.save()
+            retdat = {'result':1,'msg':'File successfully re Uploaded'}
+            print 'mapping file overwrite'
+        except ObjectDoesNotExist:
+            print 'new mapping file'
+            mapElement = Proguardmap(
+                pid=projectElement,
+                appversion=appver,
+                filename=temp_fname,
+                uploadtime=getUTCawaredatetime(),
+            )
+            mapElement.save();
+        retdat['appversion'] = mapElement.appversion
+        retdat['filename'] = mapElement.filename
+        retdat['date'] = toTimezone(mapElement.uploadtime,projectElement.timezone).__format__('%Y.%m.%d')
+        retdat['time'] = toTimezone(mapElement.uploadtime,projectElement.timezone).__format__('%H:%M')
+    print retdat
+    return HttpResponse(json.dumps(retdat), 'application/json');
+
+def proguardmap_delete(request,apikey):
+    result, msg, userElement, projectElement = validUserPjt(request.user, apikey)
+
+    appversion = request.POST['appversion']
+    filename = request.POST['filename']
+
+    try:
+        mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appversion,filename=filename)
+        temp_path = get_config('proguard_map_path')
+        temp_path = os.path.join(temp_path,apikey)
+        temp_path = os.path.join(temp_path,appversion)
+        os.remove(os.path.join(temp_path,filename))
+        mapElement.delete();
+        retdat = {'result':0,'msg':'Success'}
+    except ObjectDoesNotExist:
+        retdat = {'result':-1,'msg':'Invalid delete request'}
+    return HttpResponse(json.dumps(retdat), 'application/json');
+
 
 def projects(request):
 

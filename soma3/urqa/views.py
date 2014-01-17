@@ -18,6 +18,7 @@ from soma3.settings import STATIC_URL
 from oauth2client.client import OAuth2WebServerFlow
 
 def index(request):
+
     #만약 로그인 되어 있다면!!
     if request.user.is_authenticated():
        return HttpResponseRedirect('/urqa/projects')

@@ -848,6 +848,30 @@ function showPopupLogdata(w, h, idinstance)
 	});
     getlog(idinstance)
 }
+
+function mapDeleteConfirm(version, filename)
+{
+    $.ajax({
+         type :'POST'
+        ,asyn :true
+        ,url :'/urqa/project/'+project_id+'/proguardmap/delete'
+        ,dataType :"json"
+        ,data:{'appversion':version,'filename':filename}
+        ,success : function(jsonData) {
+            location.reload()
+        }
+        , beforeSend: function(xhr, settings) {
+            var csrftoken = getCookie('csrftoken')
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+}
+
 function showConfirm()
 {
 	resizeConfirm();
@@ -973,6 +997,37 @@ $("head").styleReady(function(){
 		copyToClipboard("#project-list > .list > div > label > span", copyThis);
 	}
 
+    $("#mapUpload").ready(function(){
+        $("#mapUpload").ajaxForm(function(data,state){
+            console.log(data,state);
+            if(data.result == -1)
+            {
+                $("#mapUpload>table>tbody>tr").eq(0).children().eq(2).text('Upload fail')
+            }
+            //else location.reload();
+            else if(data.result == 0) //정상
+            {
+                $('<tr>\
+                    <td class="center">' + data.appversion+'</td>\
+                    <td class="center">' + data.filename+'</td>\
+                    <td class="center">' + data.date + '<br>' + data.time + '</td>\
+                    <td class="center"><div class="button red event" data-name="Remove" onclick="mapDeleteConfirm(\''+data.appversion+'\',\''+data.filename+'\')" style="width:80px;height:20px;"></div></td>\
+                </tr>').insertBefore("#maptable>tbody>.empty");
+            }
+            else if(data.result == 1) //중복
+            {
+                var i;
+                for(i=0;i<$('#maptable>tbody>tr>td').length;i++)
+                {
+                    if($('#maptable>tbody>tr>td').eq(i).text() == data.appversion)
+                    {
+                        $('#maptable>tbody>tr>td').eq(i+2).html(data.date + '<br>' + data.time);
+                        break;
+                    }
+                }
+            }
+        });
+    })
 	// Graph rendering
 	if($("body").hasClass("insight") )
 	{

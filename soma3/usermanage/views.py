@@ -16,6 +16,7 @@ from urqa.models import Viewer
 from urqa.models import Projects
 from urqa.models import Comments
 
+
 import projectmanage.views
 
 
@@ -78,6 +79,7 @@ def delete_req(request):
 def login_req(request):
     username = request.POST['username']
     password = request.POST['password']
+
 
     print username
     #print password
