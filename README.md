@@ -23,6 +23,8 @@
 * Server - 
 * Android - https://docs.google.com/document/d/10ZR7Rken21j8c3WZTiPSBi5-pXlYSQHJfsc3h7QCHaE/edit?usp=sharing 
  
+## UrQA Proguard Support
+* Server & Android - https://docs.google.com/document/d/1qIGKtFIST_EyU9XAeCrZ_qP85QkSFFzoPhdtNh46RDM/edit?usp=sharing
  
 ## UrQA Server Install Guide
 * if you want to bulid UrQA server at your machine. you refers at  https://docs.google.com/document/d/1NCBxk6MRz7rAFygk0J9wYbWJ4bt-CVYQhjQ94ZROLr8/edit?usp=sharing
