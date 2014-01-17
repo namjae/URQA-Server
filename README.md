@@ -20,8 +20,7 @@
  
  
 ## UrQA User Guide
-* Server - 
-* Android - https://docs.google.com/document/d/10ZR7Rken21j8c3WZTiPSBi5-pXlYSQHJfsc3h7QCHaE/edit?usp=sharing 
+* https://docs.google.com/document/d/10ZR7Rken21j8c3WZTiPSBi5-pXlYSQHJfsc3h7QCHaE/edit?usp=sharing 
  
 ## UrQA Proguard Support
 * Server & Android - https://docs.google.com/document/d/1qIGKtFIST_EyU9XAeCrZ_qP85QkSFFzoPhdtNh46RDM/edit?usp=sharing
