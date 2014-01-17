@@ -82,6 +82,7 @@ def proguard_retrace_oneline(str,linenum,map_path,mapElement):
     stdout_split = stdout.split('\t')
     str = stdout_split[1]
 
+    os.remove(os.path.join(map_path,'temp.txt'))
     return str
 
 def proguard_retrace_callstack(str,map_path,mapElement):
@@ -97,6 +98,7 @@ def proguard_retrace_callstack(str,map_path,mapElement):
     (stdout, stderr) = fd_popen.communicate()
     str = stdout
 
+    os.remove(os.path.join(map_path,'temp.txt'))
     return str
 
 @csrf_exempt
