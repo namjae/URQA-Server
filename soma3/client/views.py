@@ -26,6 +26,7 @@ from urqa.models import Osstatistics
 from urqa.models import Devicestatistics
 from urqa.models import Countrystatistics
 from urqa.models import Activitystatistics
+from urqa.models import Proguardmap
 
 from utility import naive2aware
 from utility import getUTCDatetime
@@ -67,6 +68,37 @@ def connect(request):
         print 'project: %s, new version: %s' % (projectElement.name,appruncountElement.appversion)
     return HttpResponse(json.dumps({'idsession':idsession}), 'application/json');
 
+def proguard_retrace_oneline(str,linenum,map_path,mapElement):
+    if mapElement == None:
+        return str
+    fp = open(os.path.join(map_path,'temp.txt') , 'wb')
+    fp.write('at\t'+str+'\t(:%s)' % linenum)
+    fp.close()
+
+    arg = ['java','-jar',get_config('proguard_retrace_path'),'-verbose',os.path.join(map_path,mapElement.filename),os.path.join(map_path,'temp.txt')]
+    #print arg
+    fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (stdout, stderr) = fd_popen.communicate()
+    stdout_split = stdout.split('\t')
+    str = stdout_split[1]
+
+    return str
+
+def proguard_retrace_callstack(str,map_path,mapElement):
+    if mapElement == None:
+        return str
+    fp = open(os.path.join(map_path,'temp.txt') , 'wb')
+    fp.write(str)
+    fp.close()
+
+    arg = ['java','-jar',get_config('proguard_retrace_path'),'-verbose',os.path.join(map_path,mapElement.filename),os.path.join(map_path,'temp.txt')]
+    #print arg
+    fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (stdout, stderr) = fd_popen.communicate()
+    str = stdout
+
+    return str
+
 @csrf_exempt
 def receive_exception(request):
     jsonData = json.loads(request.body,encoding='utf-8')
@@ -81,13 +113,29 @@ def receive_exception(request):
         print 'Invalid apikey'
         return HttpResponse('Invalid apikey')
 
-
     #step2: errorname, errorclassname, linenum을 이용하여 동일한 에러가 있는지 찾기
     errorname = jsonData['errorname']
     errorclassname = jsonData['errorclassname']
     linenum = jsonData['linenum']
 
     print '%s %s %s' % (errorname,errorclassname,linenum)
+
+    #step2-0: Proguard 적용 확인
+    appversion = jsonData['appversion']
+
+    map_path = get_config('proguard_map_path')
+    map_path = os.path.join(map_path,projectElement.apikey)
+    map_path = os.path.join(map_path,appversion)
+    try:
+        mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appversion)
+
+        errorname = proguard_retrace_oneline(errorname,linenum,map_path,mapElement)
+        errorclassname = proguard_retrace_oneline(errorclassname,linenum,map_path,mapElement)
+        callstack = proguard_retrace_callstack(jsonData['callstack'],map_path,mapElement)
+    except ObjectDoesNotExist:
+        mapElement = None
+        callstack = jsonData['callstack']
+        print 'no proguard mapfile'
 
     try:
         errorElement = Errors.objects.get(pid=projectElement,errorname=errorname,errorclassname=errorclassname,linenum=linenum)
@@ -144,7 +192,7 @@ def receive_exception(request):
             createdate = naive2aware(jsonData['datetime']),
             lastdate = naive2aware(jsonData['datetime']),
             numofinstances = 1,
-            callstack = jsonData['callstack'],
+            callstack = callstack,
             wifion = jsonData['wifion'],
             gpson = jsonData['gpson'],
             mobileon = jsonData['mobileon'],
@@ -195,7 +243,7 @@ def receive_exception(request):
         xdpi = jsonData['xdpi'],
         ydpi = jsonData['ydpi'],
         lastactivity = jsonData['lastactivity'],
-        callstack = jsonData['callstack'],
+        callstack = callstack,
     )
     # primary key가 Auto-incrementing이기 때문에 save한 후 primary key를 읽을 수 있다.
     instanceElement.save()
@@ -204,11 +252,16 @@ def receive_exception(request):
     #step5: 이벤트패스 생성
     #print 'here! ' + instanceElement.idinstance
     #instanceElement.update()
-    print instanceElement.idinstance
+    print 'instanceElement.idinstance',instanceElement.idinstance
     eventpath = jsonData['eventpaths']
 
     depth = 10
     for event in reversed(eventpath):
+        temp_str = event['classname'] + '.' + event['methodname']
+        temp_str = proguard_retrace_oneline(temp_str,event['linenum'],map_path,mapElement)
+        flag = temp_str.rfind('.')
+        classname = temp_str[0:flag]
+        methodname =  temp_str[flag+1:]
         if not 'label' in event:    #event path에 label적용, 기존버전과 호환성을 확보하기위해 'label'초기화를 해줌 client ver 0.91 ->
             event['label'] = ""
         Eventpaths.objects.create(
@@ -216,8 +269,8 @@ def receive_exception(request):
             iderror = errorElement,
             ins_count = errorElement.numofinstances,
             datetime = naive2aware(event['datetime']),
-            classname = event['classname'],
-            methodname = event['methodname'],
+            classname = classname,
+            methodname = methodname,
             linenum = event['linenum'],
             label = event['label'],
             depth = depth
@@ -362,11 +415,24 @@ def receive_native(request):
     #step5: 이벤트패스 생성
     #print 'here! ' + instanceElement.idinstance
     #instanceElement.update()
-    print instanceElement.idinstance
+    appversion = jsonData['appversion']
+
+    map_path = get_config('proguard_map_path')
+    map_path = os.path.join(map_path,projectElement.apikey)
+    map_path = os.path.join(map_path,appversion)
+    mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appversion)
+
+    print 'instanceElement.idinstance',instanceElement.idinstance
     eventpath = jsonData['eventpaths']
 
     depth = 10
     for event in reversed(eventpath):
+        temp_str = event['classname'] + '.' + event['methodname']
+        temp_str = proguard_retrace_oneline(temp_str,event['linenum'],map_path,mapElement,projectElement,appversion)
+        flag = temp_str.rfind('.')
+        classname = temp_str[0:flag]
+        methodname =  temp_str[flag+1:]
+
         if not 'label' in event:    #event path에 label적용, 기존버전과 호환성을 확보하기위해 'label'초기화를 해줌 client ver 0.91 ->
             event['label'] = ""
         Eventpaths.objects.create(
@@ -374,8 +440,8 @@ def receive_native(request):
             iderror = errorElement,
             ins_count = errorElement.numofinstances,
             datetime = naive2aware(event['datetime']),
-            classname = event['classname'],
-            methodname = event['methodname'],
+            classname = classname,
+            methodname = methodname,
             linenum = event['linenum'],
             label = event['label'],
             depth = depth,

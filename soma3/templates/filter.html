@@ -12,6 +12,7 @@
 	<script type="text/javascript" src="{% static 'js/lib.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/hashmap.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/jquery-2.0.0.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.form.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/raphael/raphael.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/raphael/r.raphael.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'js/raphael/r.pie.min.js' %}"></script>
@@ -61,12 +62,12 @@
 			<div id="popup-modifyproject">
 				<div class="body">
 					<form onsubmit="return modifiProject(this);">
-						<div class="half">
-							<div>
-								<div class="area">
-									<span>APP Name</span>
+                        <div class="half">
+                            <div>
+                                <div class="area">
+                                    <span>APP Name</span>
                                     {% if owner_user %}
-									    <input name="appname" type="input" value="{{ project_name }}" />
+                                        <input name="appname" type="input" value="{{ project_name }}" />
                                     {% else %}
                                         <table id="viewer-list" class="content-small">
                                             <tbody><tr>
@@ -78,12 +79,12 @@
                                         <span></span>
                                         </div>-->
                                     {% endif %}
-									<span>Device</span>
-									<div class="dropdown">
-										<a>Android</a>
-										<span></span>
-										<div>
-											<ul id = 'platform_list'>
+                                    <span>Device</span>
+                                    <div class="dropdown">
+                                        <a>Android</a>
+                                        <span></span>
+                                        <div>
+                                            <ul id = 'platform_list'>
                                             {% for key,value in app_platformlist %}
                                                 {% if owner_user %}
                                                     <li value="{{ value }}"><a>{{ key }}</a></li>
@@ -93,20 +94,20 @@
                                                     {% endif %}
                                                 {% endif %}
                                             {% endfor %}
-											</ul>
-										</div>
-										{% if owner_user %}
-										<input type="hidden" name="device_type" value="{{ platform_number }}" />
+                                            </ul>
+                                        </div>
+                                        {% if owner_user %}
+                                        <input type="hidden" name="device_type" value="{{ platform_number }}" />
                                         {% else %}
                                         <input type="hidden" name="device_type" value="0" />
                                         {% endif %}
-									</div>
-									<span>APP Category</span>
-									<div class="dropdown">
-										<a>Game</a>
-										<span></span>
-										<div>
-											<ul id = 'category_list'>
+                                    </div>
+                                    <span>APP Category</span>
+                                    <div class="dropdown">
+                                        <a>Game</a>
+                                        <span></span>
+                                        <div>
+                                            <ul id = 'category_list'>
                                             {% for key,value in app_categorylist %}
                                                 {% if owner_user %}
                                                     <li value="{{ value }}"><a>{{ key }}</a></li>
@@ -116,20 +117,20 @@
                                                     {% endif %}
                                                 {% endif %}
                                             {% endfor %}
-											</ul>
-										</div>
-										{% if owner_user %}
-										<input type="hidden" name="app_category" value="{{ category_number }}" />
+                                            </ul>
+                                        </div>
+                                        {% if owner_user %}
+                                        <input type="hidden" name="app_category" value="{{ category_number }}" />
                                         {% else %}
                                         <input type="hidden" name="app_category" value="0" />
                                         {% endif %}
-									</div>
-									<span>Stage</span>
-									<div class="dropdown">
-										<a>Test</a>
-										<span></span>
-										<div>
-											 <ul id = 'stage_list'>
+                                    </div>
+                                    <span>Stage</span>
+                                    <div class="dropdown">
+                                        <a>Test</a>
+                                        <span></span>
+                                        <div>
+                                             <ul id = 'stage_list'>
                                              {% for key,value in app_stagelist %}
                                                 {% if owner_user %}
                                                     <li value="{{ value }}"><a>{{ key }}</a></li>
@@ -139,24 +140,24 @@
                                                     {% endif %}
                                                 {% endif %}
                                             {% endfor %}
-											 </ul>
-										</div>
-										{% if owner_user %}
-										<input type="hidden" name="stage" value="{{ stage_number }}" />
+                                             </ul>
+                                        </div>
+                                        {% if owner_user %}
+                                        <input type="hidden" name="stage" value="{{ stage_number }}" />
                                         {% else %}
                                         <input type="hidden" name="stage" value="0" />
                                         {% endif %}
-									</div>
-								</div>
-							</div>
-							<div>
-								<div class="area">
-									<span>Timezone</span>
-									<div class="dropdown">
-										<a>Android</a>
-										<span></span>
-										<div>
-											 <ul id = 'timezone_list'>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="area">
+                                    <span>Timezone</span>
+                                    <div class="dropdown">
+                                        <a>Android</a>
+                                        <span></span>
+                                        <div>
+                                             <ul id = 'timezone_list'>
                                                 {% for timezone in timezonelist %}
                                                     {% if owner_user %}
                                                         <li><a>{{ timezone }}</a></li>
@@ -166,59 +167,107 @@
                                                         {% endif %}
                                                     {% endif %}
                                                 {% endfor %}
-											 </ul>
-										</div>
+                                             </ul>
+                                        </div>
                                         {% if owner_user %}
-										<input type="hidden" name="device_type" value="{{ timezone_number }}" />
+                                        <input type="hidden" name="device_type" value="{{ timezone_number }}" />
                                         {% else %}
                                         <input type="hidden" name="device_type" value="0" />
                                         {% endif %}
-									</div>
-									<span>Viewer</span>
-									<div class="y-scroll" style="width: 310px; height: 166px;">
-										<div style="width: 285px; margin: auto;">
-											<table id="viewer-list" class="content-small">
-												<thead><tr>
-													<td>Viewer</td>
+                                    </div>
+                                    <span>Viewer</span>
+                                    <div class="y-scroll" style="width: 310px; height: 166px;">
+                                        <div style="width: 285px; margin: auto;">
+                                            <table id="viewer-list" class="content-small">
+                                                <thead><tr>
+                                                    <td>Viewer</td>
                                                     {% if owner_user %}
-													<td style="width: 80px"></td>
+                                                    <td style="width: 80px"></td>
                                                     {% endif %}
-												</tr></thead>
-												<tbody>
+                                                </tr></thead>
+                                                <tbody>
                                                     {% for viewer in project_viewerlist %}
                                                     <tr>
-														<td class="float"><p>{{ viewer }}</p></td>
+                                                        <td class="float"><p>{{ viewer }}</p></td>
                                                         {% if owner_user %}
-														<td>
-															<div class="button red event" onclick="deleteviewer(this)" data-name="Remove" style="width: 74px; height: 26px; margin: 2px;"></div>
-														</td>
+                                                        <td>
+                                                            <div class="button red event" onclick="deleteviewer(this)" data-name="Remove" style="width: 74px; height: 26px; margin: 2px;"></div>
+                                                        </td>
                                                         {% endif %}
-													</tr>
+                                                    </tr>
                                                     {% endfor %}
                                                     {% if owner_user %}
-													<tr id = 'addviewer'>
-														<td colspan="2"><input name="userid" type="input" onkeypress="return submitViewer(event, this)" value="" /></td>
-													</tr>
+                                                    <tr id = 'addviewer'>
+                                                        <td colspan="2"><input name="userid" type="input" onkeypress="return submitViewer(event, this)" value="" /></td>
+                                                    </tr>
                                                     {% endif %}
-													<tr class="empty">
-														<td data-match="true"></td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="white-area"></div>
+                                                    <tr class="empty">
+                                                        <td data-match="true"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="white-area"></div>
                         {% if owner_user %}
-						<div style="margin: auto">
+						<div style="margin: auto;margin-top:10px">
 							<div class="button purple" data-name="Modify Project" style="width: 210px; height: 39px"></div>
 							<span></span>
 							<div class="button red event" data-name="Remove Project" data-event="showConfirm()" style="width: 210px; height: 24px"></div>
 						</div>
                         {% endif %}
 					</form>
+                    <form id="mapUpload" action="/urqa/project/{{ projectid }}/proguardmap/upload" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="white-area"></div>
+                        <span>Proguard</span>
+                        <table class="small" style="margin-top: 5px">
+                            <tbody>
+                                <tr>
+                                    <td class="center" style="width: 50px;">Version</td>
+                                    <td class="center" style="width: 250px;">Mapping File</td>
+                                    <td class="center" style="width: 70px;"></td>
+                                </tr>
+                                <tr>
+                                    <td class="center"><input type="text" name="appversion" id="appversion" style="width:100%;height:15px;margin-bottom:0px;"></td>
+                                    <td><input type="file" name="file" id="file" style="width:100%;margin-bottom:0px;"></td>
+                                    <td style="width: 100px;"><div class="button purple" data-name="Upload" data-event="uploadMapfile()" style="width: 96px; height:25px;"></div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                    <div class="white-area"></div>
+                    <div class="y-scroll" style="width:100%; height:128px;">
+                        <div style="width:100%">
+                            <table class="content-small" id="maptable">
+                                <thead><tr>
+                                    <td class="center" style="width: 84px">APP Version</td>
+                                    <td class="center" style="width: 104px">Filename</td>
+                                    <td class="center" style="width: 74px">When</td>
+                                    <td class="center" style="width: 80px"></td>
+                                </tr></thead>
+                                <tbody>
+                                    {% for mapfile in map_file_list %}
+                                    <tr>
+                                        <td class="center">{{ mapfile.appversion }}</td>
+                                        <td class="center">{{ mapfile.filename }}</td>
+                                        <td class="center">{{ mapfile.date }}<br>{{ mapfile.time }}</td>
+                                        <td class="center"><div class="button red event" data-name="Remove" data-event="mapDeleteConfirm('{{ mapfile.appversion }}','{{ mapfile.filename }}')" style="width:80px;height:20px;"></div></td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr class="empty">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 				</div>
 			</div>
 			<div id="warning-alert">
@@ -595,7 +644,7 @@
 						</tr>-->
 					</tbody>
 				</table>
-                <div class="noerror_msg" style="display:none">No Errors match your search or error entries are out of the retention window of your plan.</div>
+                <div class="noerror_msg" style="display:none">No Errors match your search</div>
 				<div id="popup-info">
 					<div id="popup-tri"></div>
 					<div id="popup-body">
