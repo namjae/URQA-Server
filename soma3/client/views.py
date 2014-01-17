@@ -195,6 +195,7 @@ def receive_exception(request):
         xdpi = jsonData['xdpi'],
         ydpi = jsonData['ydpi'],
         lastactivity = jsonData['lastactivity'],
+        callstack = jsonData['callstack'],
     )
     # primary key가 Auto-incrementing이기 때문에 save한 후 primary key를 읽을 수 있다.
     instanceElement.save()
