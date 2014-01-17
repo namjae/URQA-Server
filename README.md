@@ -11,7 +11,7 @@
 * **Java** http://www.oracle.com/technetwork/java/javase/downloads/index.html
  
 ## Branch Policy
-* product - 안정화 버전 (stable version )
+* product - stable version 
 * develop - develop/[developername]  (개발할때는 develop/[본인이름]/[이슈네임])
 * product + develop marging -> test -> master 
  
