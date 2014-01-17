@@ -86,7 +86,9 @@ urlpatterns = patterns('',
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/symbol/list$', 'errors.views.so_list'),
     url(r'^urqa/project/(?P<apikey>.{8})/symbol/upload$', 'projectmanage.views.so_upload'),
 
-
+    #proguard map
+    url(r'^urqa/project/(?P<apikey>.{8})/proguardmap/upload$', 'projectmanage.views.proguardmap_upload'),
+    url(r'^urqa/project/(?P<apikey>.{8})/proguardmap/delete$', 'projectmanage.views.proguardmap_delete'),
 
     # Examples:
     # url(r'^$', 'soma4.views.home', name='home'),

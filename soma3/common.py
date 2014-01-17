@@ -15,9 +15,11 @@ from urqa.models import AuthUser
 from urqa.models import Projects
 from urqa.models import Errors
 from urqa.models import Viewer
+from urqa.models import Proguardmap
 
 from utility import get_dict_value_matchin_key
 from utility import get_dict_value_matchin_number
+from utility import toTimezone
 
 from config import get_config
 from collections import OrderedDict
@@ -119,7 +121,12 @@ def getSettingDict(projectelement,userelement):
         'app_stagelist' : stagedata.items(),
         'project_name' : projectelement.name,
         'project_platform' : platformtxt,
+        'map_file_list' : Proguardmap.objects.filter(pid = projectelement),
     }
+    for mapfile in dict['map_file_list']:
+        mapfile.date = toTimezone(mapfile.uploadtime,projectelement.timezone).__format__('%Y.%m.%d')
+        mapfile.time = toTimezone(mapfile.uploadtime,projectelement.timezone).__format__('%H:%M')
+    #print dict['map_file_list']
     return dict
 
 def ErrorRate_for_color(sectiondict,errorrate):

@@ -717,7 +717,7 @@ def filter_view(request,apikey):
     for i in range(0,5 - len(appv_list)):
         appv_margin += ' '
 
-    tpl = loader.get_template('filter.html')
+    #tpl = loader.get_template('filter.html')
     filterdict = {
         #'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
         'tag_list' : tag_list,
@@ -734,7 +734,10 @@ def filter_view(request,apikey):
     ctxdict  = dict(userdict.items() + apikeydict.items() + settingdict.items() + filterdict.items() )
     ctx = Context(ctxdict);
 
-    return HttpResponse(tpl.render(ctx))
+
+    #return HttpResponse(tpl.render(ctx))
+
+    return render(request, 'filter.html', ctx)
 
 
 def error_list(request,apikey):

@@ -102,7 +102,7 @@ CREATE  TABLE IF NOT EXISTS `urqa`.`errors` (
   `createdate` DATETIME NOT NULL ,
   `lastdate` DATETIME NOT NULL ,
   `callstack` MEDIUMTEXT NOT NULL ,
-  `errorname` VARCHAR(300) NOT NULL ,
+  `errorname` VARCHAR(500) NOT NULL ,
   `errorclassname` VARCHAR(300) NOT NULL ,
   `linenum` VARCHAR(45) NOT NULL ,
   `errorweight` INT NULL ,
@@ -536,6 +536,25 @@ CREATE  TABLE IF NOT EXISTS `urqa`.`activitystatistics` (
   CONSTRAINT `errors_activitystatistics`
     FOREIGN KEY (`iderror` )
     REFERENCES `urqa`.`errors` (`iderror` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `urqa`.`proguardmap`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `urqa`.`proguardmap` (
+  `idproguardmap` INT NOT NULL AUTO_INCREMENT ,
+  `pid` INT NOT NULL ,
+  `appversion` VARCHAR(45) NULL ,
+  `filename` VARCHAR(45) NULL ,
+  `uploadtime` DATETIME NULL ,
+  PRIMARY KEY (`idproguardmap`) ,
+  INDEX `projects_proguardmap_idx` (`pid` ASC) ,
+  CONSTRAINT `projects_proguardmap`
+    FOREIGN KEY (`pid` )
+    REFERENCES `urqa`.`projects` (`pid` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
