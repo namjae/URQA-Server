@@ -173,8 +173,8 @@ def receive_exception(request):
             e.count += 1
             e.save()
 
-        #에러 스코어 계산
-        calc_errorScore(errorElement)
+        #에러 스코어 계산 에러스코어 삭제
+        #calc_errorScore(errorElement)
 
     except ObjectDoesNotExist:
         #새로 들어온 에러라면 새로운 에러 생성
@@ -208,8 +208,8 @@ def receive_exception(request):
         Devicestatistics.objects.create(iderror=errorElement,devicename=jsonData['device'],count=1)
         Countrystatistics.objects.create(iderror=errorElement,countryname=jsonData['country'],count=1)
         Activitystatistics.objects.create(iderror=errorElement,activityname=jsonData['lastactivity'],count=1)
-        #error score 계산
-        calc_errorScore(errorElement)
+        #error score 계산 에러스코어 삭제
+        #calc_errorScore(errorElement)
     #step3: 테그 저장
     if jsonData['tag']:
         tagstr = jsonData['tag']
@@ -610,8 +610,8 @@ def receive_native_dump(request, idinstance):
 
 
         errorElement.delete()
-        #errorscore 계산
-        calc_errorScore(errorElement_exist)
+        #errorscore 계산  에러스코어삭제
+        #calc_errorScore(errorElement_exist)
         print 'native error %s:%s already exist' % (errorname, errorclassname)
     except ObjectDoesNotExist:
         errorElement.errorname = errorname
@@ -624,8 +624,8 @@ def receive_native_dump(request, idinstance):
         Devicestatistics.objects.create(iderror=errorElement,devicename=instanceElement.device,count=1)
         Countrystatistics.objects.create(iderror=errorElement,countryname=instanceElement.country,count=1)
         Activitystatistics.objects.create(iderror=errorElement,activityname=instanceElement.lastactivity,count=1)
-        #errorscore 계산
-        calc_errorScore(errorElement)
+        #errorscore 계산 에러스코어 삭제
+        #calc_errorScore(errorElement)
     return HttpResponse('Success')
 
 def calc_errorScore(errorElement):
