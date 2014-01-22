@@ -11,7 +11,7 @@
 * **Java** http://www.oracle.com/technetwork/java/javase/downloads/index.html
  
 ## Branch Policy
-* product - 안정화 버전 (stable version )
+* product - stable version 
 * develop - develop/[developername]  (개발할때는 develop/[본인이름]/[이슈네임])
 * product + develop marging -> test -> master 
  
@@ -20,8 +20,7 @@
  
  
 ## UrQA User Guide
-* Server - 
-* Android - https://docs.google.com/document/d/10ZR7Rken21j8c3WZTiPSBi5-pXlYSQHJfsc3h7QCHaE/edit?usp=sharing 
+* https://docs.google.com/document/d/10ZR7Rken21j8c3WZTiPSBi5-pXlYSQHJfsc3h7QCHaE/edit?usp=sharing 
  
 ## UrQA Proguard Support
 * Server & Android - https://docs.google.com/document/d/1qIGKtFIST_EyU9XAeCrZ_qP85QkSFFzoPhdtNh46RDM/edit?usp=sharing
