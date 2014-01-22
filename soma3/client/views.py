@@ -145,7 +145,7 @@ def receive_exception(request):
 
         errorElement.lastdate = naive2aware(jsonData['datetime'])
         errorElement.numofinstances += 1
-        errorElement.totalmemusage += jsonData['appmemtotal']
+        #errorElement.totalmemusage += jsonData['appmemtotal']
         errorElement.wifion += int(jsonData['wifion'])
         errorElement.gpson += int(jsonData['gpson'])
         errorElement.mobileon += int(jsonData['mobileon'])
