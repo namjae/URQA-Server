@@ -177,11 +177,15 @@ def receive_exception(request):
         #calc_errorScore(errorElement)
 
     except ObjectDoesNotExist:
+        #RANK 값이 이상하게 들어오면 Unhandle로 변경
+        if int(jsonData['rank']) < 0 or int(jsonData['rank']) > 4:
+            jsonData['rank'] = RANK.Unhandle
         #새로 들어온 에러라면 새로운 에러 생성
-        if int(jsonData['rank']) == -1:
-            autodetermine = 1 #True
-        else:
-            autodetermine = 0 #False
+        #if int(jsonData['rank']) == -1:
+        #    autodetermine = 1 #True
+        #else:
+        #    autodetermine = 0 #False
+        autodetermine = 0
 
         errorElement = Errors(
             pid = projectElement,
@@ -347,12 +351,15 @@ def receive_native(request):
 
 
     #step2: dummy errorElement생성
-
+    #RANK 값이 이상하게 들어오면 Unhandle로 변경
+    if int(jsonData['rank']) < 0 or int(jsonData['rank']) > 4:
+        jsonData['rank'] = RANK.Unhandle
     #새로 들어온 에러라면 새로운 에러 생성
-    if int(jsonData['rank']) == -1:
-        autodetermine = 1 #True
-    else:
-        autodetermine = 0 #False
+    #if int(jsonData['rank']) == -1:
+    #    autodetermine = 1 #True
+    #else:
+    #    autodetermine = 0 #False
+    autodetermine = 0
 
     errorElement = Errors(
         pid = projectElement,
