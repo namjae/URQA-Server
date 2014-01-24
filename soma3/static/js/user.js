@@ -615,6 +615,7 @@ function resizeProjectList()
 		}
 
 		var tops = ($(window).height() - toHeight) / 2;
+        tops = Math.max(tops,$("#body-header").position().top + $("#body-header").height()+10);
 		var lefts = ($(window).width() - toWidth) / 2;
 		$("#project-list > .list").css({
 			width: windowWidthCount * 135,
