@@ -6,7 +6,6 @@ import os
 import time
 import json
 import subprocess
-import datetime
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -33,7 +32,7 @@ from utility import getUTCDatetime
 from utility import getUTCawaredate
 from utility import RANK
 from config import get_config
-
+from soma3.settings import PROJECT_DIR
 
 #삭제요망
 from common import validUserPjtError
@@ -78,7 +77,7 @@ def proguard_retrace_oneline(str,linenum,map_path,mapElement):
     fp.write('at\t'+str+'\t(:%s)' % linenum)
     fp.close()
 
-    arg = ['java','-jar',get_config('proguard_retrace_path'),'-verbose',os.path.join(map_path,mapElement.filename),os.path.join(map_path,'temp.txt')]
+    arg = ['java','-jar',os.path.join(PROJECT_DIR,get_config('proguard_retrace_path')),'-verbose',os.path.join(map_path,mapElement.filename),os.path.join(map_path,'temp.txt')]
     #print arg
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
@@ -95,7 +94,7 @@ def proguard_retrace_callstack(str,map_path,mapElement):
     fp.write(str)
     fp.close()
 
-    arg = ['java','-jar',get_config('proguard_retrace_path'),'-verbose',os.path.join(map_path,mapElement.filename),os.path.join(map_path,'temp.txt')]
+    arg = ['java','-jar',os.path.join(PROJECT_DIR,get_config('proguard_retrace_path')),'-verbose',os.path.join(map_path,mapElement.filename),os.path.join(map_path,'temp.txt')]
     #print arg
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
@@ -128,7 +127,7 @@ def receive_exception(request):
     #step2-0: Proguard 적용 확인
     appversion = jsonData['appversion']
 
-    map_path = get_config('proguard_map_path')
+    map_path = os.path.join(PROJECT_DIR,get_config('proguard_map_path'))
     map_path = os.path.join(map_path,projectElement.apikey)
     map_path = os.path.join(map_path,appversion)
     try:
@@ -304,7 +303,7 @@ def receive_exception_log(request, idinstance):
         return HttpResponse('Fail')
 
     #step2: log파일 저장하기
-    log_path = os.path.join(get_config('log_pool_path'), '%s.txt' % str(idinstance))
+    log_path = os.path.join(PROJECT_DIR,os.path.join(get_config('log_pool_path'), '%s.txt' % str(idinstance)))
 
     f = file(log_path,'w')
     f.write(request.body)
@@ -429,7 +428,7 @@ def receive_native(request):
     #instanceElement.update()
     appversion = jsonData['appversion']
 
-    map_path = get_config('proguard_map_path')
+    map_path = os.path.join(PROJECT_DIR,get_config('proguard_map_path'))
     map_path = os.path.join(map_path,projectElement.apikey)
     map_path = os.path.join(map_path,appversion)
     mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appversion)
@@ -492,7 +491,7 @@ def receive_native_dump(request, idinstance):
         return HttpResponse('Fail')
 
     #step2: dump파일 저장하기
-    dump_path = os.path.join(get_config('dmp_pool_path'), '%s.dmp' % str(idinstance))
+    dump_path = os.path.join(PROJECT_DIR,os.path.join(get_config('dmp_pool_path'), '%s.dmp' % str(idinstance)))
 
     f = file(dump_path,'w')
     f.write(request.body)
@@ -503,10 +502,7 @@ def receive_native_dump(request, idinstance):
     instanceElement.save()
 
     #step4: dmp파일 분석(with nosym)
-    #sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.apikey))
-    #sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
-    #arg = [get_config('minidump_stackwalk_path') , dump_path, sym_pool_path]
-    arg = [get_config('minidump_stackwalk_path') , dump_path]
+    arg = [os.path.join(PROJECT_DIR,get_config('minidump_stackwalk_path')) , dump_path]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
@@ -562,9 +558,9 @@ def receive_native_dump(request, idinstance):
             cs_flag = 1
 
     #dmp파일 분석(with sym)
-    sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.apikey))
+    sym_pool_path = os.path.join(PROJECT_DIR,os.path.join(get_config('sym_pool_path'),str(projectElement.apikey)))
     sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
-    arg = [get_config('minidump_stackwalk_path') , dump_path, sym_pool_path]
+    arg = [os.path.join(PROJECT_DIR,get_config('minidump_stackwalk_path')) , dump_path, sym_pool_path]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 

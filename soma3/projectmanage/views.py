@@ -65,7 +65,7 @@ from utility import Status
 from utility import toTimezone
 from utility import getUTCawaredatetime
 from config import get_config
-
+from soma3.settings import PROJECT_DIR
 
 def newApikey():
     while True:
@@ -135,10 +135,10 @@ def delete_req(request,apikey):
 
     #so & sym files 삭제
     Sofiles.objects.filter(pid=project).delete()
-    sym_path = get_config('sym_pool_path') + '%s' % project.apikey
+    sym_path = os.path.join(PROJECT_DIR,get_config('sym_pool_path') + '%s' % project.apikey)
     if os.path.isdir(sym_path):
         shutil.rmtree(sym_path)
-    so_path = get_config('so_pool_path') + '%s' % project.apikey
+    so_path = os.path.join(PROJECT_DIR,get_config('so_pool_path') + '%s' % project.apikey)
     if os.path.isdir(so_path):
         shutil.rmtree(so_path)
 
@@ -205,7 +205,7 @@ def modify_req(request, apikey):
     return HttpResponse(json.dumps({'success' : True , 'message' : 'success modify project'}),'application/json')
 
 def so2sym(projectElement, appver, so_path, filename):
-    arg = [get_config('dump_syms_path') ,os.path.join(so_path,filename)]
+    arg = [os.path.join(PROJECT_DIR,get_config('dump_syms_path')) ,os.path.join(so_path,filename)]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
@@ -219,7 +219,7 @@ def so2sym(projectElement, appver, so_path, filename):
     except ObjectDoesNotExist:
         return False, 0
 
-    sym_path = get_config('sym_pool_path') + '/%s' % projectElement.apikey
+    sym_path = os.path.join(PROJECT_DIR,get_config('sym_pool_path') + '/%s' % projectElement.apikey)
     if not os.path.isdir(sym_path):
         os.mkdir(sym_path)
 
@@ -258,8 +258,8 @@ def update_error_callstack(projectElement, appversion):
         #error중에 첫번째 인스턴스의 콜스텍만 사용함
         instanceElement = instanceElements[0]
         print instanceElement.iderror
-        sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.apikey))
-        sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
+        sym_pool_path = os.path.join(PROJECT_DIR,os.path.join(get_config('sym_pool_path'),str(projectElement.apikey)))
+        sym_pool_path = os.path.join(PROJECT_DIR,os.path.join(sym_pool_path, instanceElement.appversion))
         arg = [get_config('minidump_stackwalk_path') , instanceElement.dump_path, sym_pool_path]
         print arg
         fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -288,7 +288,7 @@ def update_error_callstack(projectElement, appversion):
 def extractinfo(projectElement,temp_path,temp_fname):
     print projectElement,temp_path,temp_fname
 
-    arg = [get_config('dump_syms_path') ,os.path.join(temp_path,temp_fname)]
+    arg = [os.path.join(PROJECT_DIR,get_config('dump_syms_path')) ,os.path.join(temp_path,temp_fname)]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
@@ -332,7 +332,7 @@ def so_upload(request, apikey):
             file = request.FILES['file']
             temp_fname = file._name
 
-            temp_path = get_config('so_pool_path') +'/%s' % apikey
+            temp_path = os.path.join(PROJECT_DIR,get_config('so_pool_path') +'/%s' % apikey)
             if not os.path.isdir(temp_path):
                 os.mkdir(temp_path)
 
@@ -356,7 +356,7 @@ def so_upload(request, apikey):
             #if 1:
             #    return HttpResponse('Failed to Upload File')
 
-            so_path = get_config('so_pool_path') +'/%s' % apikey
+            so_path = os.path.join(PROJECT_DIR,get_config('so_pool_path') +'/%s' % apikey)
             if not os.path.isdir(so_path):
                 os.mkdir(so_path)
             so_path = so_path + '/%s' % appver
@@ -406,7 +406,7 @@ def proguardmap_upload(request, apikey):
         file = request.FILES['file']
         temp_fname = file._name
 
-        temp_path = get_config('proguard_map_path')
+        temp_path = os.path.join(PROJECT_DIR,get_config('proguard_map_path'))
         if not os.path.isdir(temp_path):
             os.mkdir(temp_path)
         temp_path = os.path.join(temp_path,apikey)
@@ -426,7 +426,7 @@ def proguardmap_upload(request, apikey):
         try:
             mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appver)
             if mapElement.filename != temp_fname:
-                temp_path = get_config('proguard_map_path')
+                temp_path = os.path.join(PROJECT_DIR,get_config('proguard_map_path'))
                 temp_path = os.path.join(temp_path,apikey)
                 temp_path = os.path.join(temp_path,appver)
                 os.remove(os.path.join(temp_path,mapElement.filename))
@@ -459,7 +459,7 @@ def proguardmap_delete(request,apikey):
 
     try:
         mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appversion,filename=filename)
-        temp_path = get_config('proguard_map_path')
+        temp_path = os.path.join(PROJECT_DIR,get_config('proguard_map_path'))
         temp_path = os.path.join(temp_path,apikey)
         temp_path = os.path.join(temp_path,appversion)
         os.remove(os.path.join(temp_path,filename))
