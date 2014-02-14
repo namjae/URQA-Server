@@ -439,7 +439,14 @@ def receive_native(request):
     map_path = os.path.join(PROJECT_DIR,get_config('proguard_map_path'))
     map_path = os.path.join(map_path,projectElement.apikey)
     map_path = os.path.join(map_path,appversion)
-    mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appversion)
+
+    try:
+        mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appversion)
+    except ObjectDoesNotExist:
+        mapElement = None
+        print 'no proguard mapfile'
+
+
 
     print 'instanceElement.idinstance',instanceElement.idinstance
     eventpath = jsonData['eventpaths']
