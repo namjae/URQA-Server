@@ -6,7 +6,6 @@ import os
 import time
 import json
 import subprocess
-import datetime
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -33,7 +32,7 @@ from utility import getUTCDatetime
 from utility import getUTCawaredate
 from utility import RANK
 from config import get_config
-
+from soma3.settings import PROJECT_DIR
 
 #삭제요망
 from common import validUserPjtError
@@ -71,38 +70,46 @@ def connect(request):
         print 'project: %s, new version: %s' % (projectElement.name,appruncountElement.appversion)
     return HttpResponse(json.dumps({'idsession':idsession}), 'application/json');
 
-def proguard_retrace_oneline(str,linenum,map_path,mapElement):
+def proguard_retrace_oneline(string,linenum,map_path,mapElement):
     if mapElement == None:
-        return str
-    fp = open(os.path.join(map_path,'temp.txt') , 'wb')
-    fp.write('at\t'+str+'\t(:%s)' % linenum)
+        return string
+    for i in range(1,100):
+        temp_path = os.path.join(map_path,'temp'+str(i)+'.txt')
+        if not os.path.isfile(temp_path):
+            break
+    fp = open(temp_path , 'wb')
+    fp.write('at\t'+string+'\t(:%s)' % linenum)
     fp.close()
 
-    arg = ['java','-jar',get_config('proguard_retrace_path'),'-verbose',os.path.join(map_path,mapElement.filename),os.path.join(map_path,'temp.txt')]
+    arg = ['java','-jar',os.path.join(PROJECT_DIR,get_config('proguard_retrace_path')),'-verbose',os.path.join(map_path,mapElement.filename),temp_path]
     #print arg
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
     stdout_split = stdout.split('\t')
-    str = stdout_split[1]
+    string = stdout_split[1]
 
-    os.remove(os.path.join(map_path,'temp.txt'))
-    return str
+    os.remove(temp_path)
+    return string
 
-def proguard_retrace_callstack(str,map_path,mapElement):
+def proguard_retrace_callstack(string,map_path,mapElement):
     if mapElement == None:
-        return str
-    fp = open(os.path.join(map_path,'temp.txt') , 'wb')
-    fp.write(str)
+        return string
+    for i in range(1,100):
+        temp_path = os.path.join(map_path,'temp'+str(i)+'.txt')
+        if not os.path.isfile(temp_path):
+            break
+    fp = open(temp_path , 'wb')
+    fp.write(string)
     fp.close()
 
-    arg = ['java','-jar',get_config('proguard_retrace_path'),'-verbose',os.path.join(map_path,mapElement.filename),os.path.join(map_path,'temp.txt')]
+    arg = ['java','-jar',os.path.join(PROJECT_DIR,get_config('proguard_retrace_path')),'-verbose',os.path.join(map_path,mapElement.filename),temp_path]
     #print arg
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
-    str = stdout
+    string = stdout
 
-    os.remove(os.path.join(map_path,'temp.txt'))
-    return str
+    os.remove(temp_path)
+    return string
 
 @csrf_exempt
 def receive_exception(request):
@@ -128,7 +135,7 @@ def receive_exception(request):
     #step2-0: Proguard 적용 확인
     appversion = jsonData['appversion']
 
-    map_path = get_config('proguard_map_path')
+    map_path = os.path.join(PROJECT_DIR,get_config('proguard_map_path'))
     map_path = os.path.join(map_path,projectElement.apikey)
     map_path = os.path.join(map_path,appversion)
     try:
@@ -304,7 +311,7 @@ def receive_exception_log(request, idinstance):
         return HttpResponse('Fail')
 
     #step2: log파일 저장하기
-    log_path = os.path.join(get_config('log_pool_path'), '%s.txt' % str(idinstance))
+    log_path = os.path.join(PROJECT_DIR,os.path.join(get_config('log_pool_path'), '%s.txt' % str(idinstance)))
 
     f = file(log_path,'w')
     f.write(request.body)
@@ -429,10 +436,17 @@ def receive_native(request):
     #instanceElement.update()
     appversion = jsonData['appversion']
 
-    map_path = get_config('proguard_map_path')
+    map_path = os.path.join(PROJECT_DIR,get_config('proguard_map_path'))
     map_path = os.path.join(map_path,projectElement.apikey)
     map_path = os.path.join(map_path,appversion)
-    mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appversion)
+
+    try:
+        mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appversion)
+    except ObjectDoesNotExist:
+        mapElement = None
+        print 'no proguard mapfile'
+
+
 
     print 'instanceElement.idinstance',instanceElement.idinstance
     eventpath = jsonData['eventpaths']
@@ -440,7 +454,7 @@ def receive_native(request):
     depth = 10
     for event in reversed(eventpath):
         temp_str = event['classname'] + '.' + event['methodname']
-        temp_str = proguard_retrace_oneline(temp_str,event['linenum'],map_path,mapElement,projectElement,appversion)
+        temp_str = proguard_retrace_oneline(temp_str,event['linenum'],map_path,mapElement)
         flag = temp_str.rfind('.')
         classname = temp_str[0:flag]
         methodname =  temp_str[flag+1:]
@@ -464,6 +478,9 @@ def receive_native(request):
 
 class Ignore_clib:
     list = [
+        'libWVStreamControlAPI_L1',
+        'libwebviewchromium',
+        'libLLVM.so',
         'libdvm.so',
         'libc.so',
         'libcutils.so',
@@ -492,7 +509,7 @@ def receive_native_dump(request, idinstance):
         return HttpResponse('Fail')
 
     #step2: dump파일 저장하기
-    dump_path = os.path.join(get_config('dmp_pool_path'), '%s.dmp' % str(idinstance))
+    dump_path = os.path.join(PROJECT_DIR,os.path.join(get_config('dmp_pool_path'), '%s.dmp' % str(idinstance)))
 
     f = file(dump_path,'w')
     f.write(request.body)
@@ -503,10 +520,7 @@ def receive_native_dump(request, idinstance):
     instanceElement.save()
 
     #step4: dmp파일 분석(with nosym)
-    #sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.apikey))
-    #sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
-    #arg = [get_config('minidump_stackwalk_path') , dump_path, sym_pool_path]
-    arg = [get_config('minidump_stackwalk_path') , dump_path]
+    arg = [os.path.join(PROJECT_DIR,get_config('minidump_stackwalk_path')) , dump_path]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
@@ -562,9 +576,9 @@ def receive_native_dump(request, idinstance):
             cs_flag = 1
 
     #dmp파일 분석(with sym)
-    sym_pool_path = os.path.join(get_config('sym_pool_path'),str(projectElement.apikey))
+    sym_pool_path = os.path.join(PROJECT_DIR,os.path.join(get_config('sym_pool_path'),str(projectElement.apikey)))
     sym_pool_path = os.path.join(sym_pool_path, instanceElement.appversion)
-    arg = [get_config('minidump_stackwalk_path') , dump_path, sym_pool_path]
+    arg = [os.path.join(PROJECT_DIR,get_config('minidump_stackwalk_path')) , dump_path, sym_pool_path]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
