@@ -70,38 +70,46 @@ def connect(request):
         print 'project: %s, new version: %s' % (projectElement.name,appruncountElement.appversion)
     return HttpResponse(json.dumps({'idsession':idsession}), 'application/json');
 
-def proguard_retrace_oneline(str,linenum,map_path,mapElement):
+def proguard_retrace_oneline(string,linenum,map_path,mapElement):
     if mapElement == None:
-        return str
-    fp = open(os.path.join(map_path,'temp.txt') , 'wb')
-    fp.write('at\t'+str+'\t(:%s)' % linenum)
+        return string
+    for i in range(1,100):
+        temp_path = os.path.join(map_path,'temp'+str(i)+'.txt')
+        if not os.path.isfile(temp_path):
+            break
+    fp = open(temp_path , 'wb')
+    fp.write('at\t'+string+'\t(:%s)' % linenum)
     fp.close()
 
-    arg = ['java','-jar',os.path.join(PROJECT_DIR,get_config('proguard_retrace_path')),'-verbose',os.path.join(map_path,mapElement.filename),os.path.join(map_path,'temp.txt')]
+    arg = ['java','-jar',os.path.join(PROJECT_DIR,get_config('proguard_retrace_path')),'-verbose',os.path.join(map_path,mapElement.filename),temp_path]
     #print arg
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
     stdout_split = stdout.split('\t')
-    str = stdout_split[1]
+    string = stdout_split[1]
 
-    os.remove(os.path.join(map_path,'temp.txt'))
-    return str
+    os.remove(temp_path)
+    return string
 
-def proguard_retrace_callstack(str,map_path,mapElement):
+def proguard_retrace_callstack(string,map_path,mapElement):
     if mapElement == None:
-        return str
-    fp = open(os.path.join(map_path,'temp.txt') , 'wb')
-    fp.write(str)
+        return string
+    for i in range(1,100):
+        temp_path = os.path.join(map_path,'temp'+str(i)+'.txt')
+        if not os.path.isfile(temp_path):
+            break
+    fp = open(temp_path , 'wb')
+    fp.write(string)
     fp.close()
 
-    arg = ['java','-jar',os.path.join(PROJECT_DIR,get_config('proguard_retrace_path')),'-verbose',os.path.join(map_path,mapElement.filename),os.path.join(map_path,'temp.txt')]
+    arg = ['java','-jar',os.path.join(PROJECT_DIR,get_config('proguard_retrace_path')),'-verbose',os.path.join(map_path,mapElement.filename),temp_path]
     #print arg
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
-    str = stdout
+    string = stdout
 
-    os.remove(os.path.join(map_path,'temp.txt'))
-    return str
+    os.remove(temp_path)
+    return string
 
 @csrf_exempt
 def receive_exception(request):
@@ -439,7 +447,7 @@ def receive_native(request):
     depth = 10
     for event in reversed(eventpath):
         temp_str = event['classname'] + '.' + event['methodname']
-        temp_str = proguard_retrace_oneline(temp_str,event['linenum'],map_path,mapElement,projectElement,appversion)
+        temp_str = proguard_retrace_oneline(temp_str,event['linenum'],map_path,mapElement)
         flag = temp_str.rfind('.')
         classname = temp_str[0:flag]
         methodname =  temp_str[flag+1:]

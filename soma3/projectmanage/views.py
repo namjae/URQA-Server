@@ -260,7 +260,7 @@ def update_error_callstack(projectElement, appversion):
         print instanceElement.iderror
         sym_pool_path = os.path.join(PROJECT_DIR,os.path.join(get_config('sym_pool_path'),str(projectElement.apikey)))
         sym_pool_path = os.path.join(PROJECT_DIR,os.path.join(sym_pool_path, instanceElement.appversion))
-        arg = [get_config('minidump_stackwalk_path') , instanceElement.dump_path, sym_pool_path]
+        arg = [os.path.join(PROJECT_DIR,get_config('minidump_stackwalk_path')) , instanceElement.dump_path, sym_pool_path]
         print arg
         fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = fd_popen.communicate()
