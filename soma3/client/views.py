@@ -478,6 +478,9 @@ def receive_native(request):
 
 class Ignore_clib:
     list = [
+        'libWVStreamControlAPI_L1',
+        'libwebviewchromium',
+        'libLLVM.so',
         'libdvm.so',
         'libc.so',
         'libcutils.so',
