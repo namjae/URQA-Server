@@ -6,6 +6,7 @@ import os
 import time
 import json
 import subprocess
+import random
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -55,10 +56,10 @@ def connect(request):
 
     #step2: idsession 발급하기
     appversion = jsonData['appversion']
-    idsession = long(time.time() * 1000)
+    idsession = long(time.time() * 1000 + random.randint(0,1000))
     duple = Session.objects.filter(idsession=idsession);
     if len(duple) != 0:
-        idsession = long(time.time() * 1000 + 1);
+        idsession = long(time.time() * 1000 + random.randint(0,1000));
     Session.objects.create(idsession=idsession,pid=projectElement,appversion=appversion)
     print 'Project: %s, Ver: %s, new idsession: %d' % (projectElement.name,appversion,idsession)
 
