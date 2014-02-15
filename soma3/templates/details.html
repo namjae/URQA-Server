@@ -71,6 +71,19 @@
                 })
                 });
             });
+
+            $(".call-stack-line").mouseover(function(){
+                $(this).css({"overflow":"visible","white-space":"normal"})
+            });
+            $(".call-stack-line").mouseout(function(){
+                $(this).css({"overflow":"hidden","white-space":"nowrap"})
+            });
+            $("#error-name").mouseover(function(){
+                $(this).css({"overflow":"visible","white-space":"normal"})
+            });
+            $("#error-name").mouseout(function(){
+                $(this).css({"overflow":"hidden","white-space":"nowrap"})
+            });
 		});
 	</script>
 
@@ -748,7 +761,7 @@
                         <tr>
                             <td class="center">{{ stackline.counter }}</td>
                             <td class="float">
-                                <p>{{ stackline.value }}</p>
+                                <p class="call-stack-line">{{ stackline.value }}</p>
                             </td>
                             <td class="float center">
                                 <p>{{ stackline.source }}</p>
