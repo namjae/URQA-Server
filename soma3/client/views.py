@@ -30,6 +30,7 @@ from urqa.models import Proguardmap
 from utility import naive2aware
 from utility import getUTCDatetime
 from utility import getUTCawaredate
+from utility import getUTCawaredatetime
 from utility import RANK
 from config import get_config
 from soma3.settings import PROJECT_DIR
@@ -153,7 +154,8 @@ def receive_exception(request):
         errorElement = Errors.objects.get(pid=projectElement,errorname=errorname,errorclassname=errorclassname,linenum=linenum)
         #새로온 인스턴스 정보로 시간 갱신
 
-        errorElement.lastdate = naive2aware(jsonData['datetime'])
+        #errorElement.lastdate = naive2aware(jsonData['datetime'])
+        errorElement.lastdate = getUTCawaredatetime()
         errorElement.numofinstances += 1
         #errorElement.totalmemusage += jsonData['appmemtotal']
         errorElement.wifion += int(jsonData['wifion'])
@@ -205,8 +207,8 @@ def receive_exception(request):
             autodetermine = autodetermine,
             rank = int(jsonData['rank']), # Undesided = -1, unhandled = 0, critical = 1, major = 2, minor = 3, native = 4
             status = 0, # 0 = new, 1 = open, 2 = fixed, 3 = ignore
-            createdate = naive2aware(jsonData['datetime']),
-            lastdate = naive2aware(jsonData['datetime']),
+            createdate = getUTCawaredatetime(),
+            lastdate = getUTCawaredatetime(),
             numofinstances = 1,
             callstack = callstack,
             wifion = jsonData['wifion'],
@@ -242,7 +244,7 @@ def receive_exception(request):
         appmemfree = jsonData['appmemfree'],
         appmemtotal = jsonData['appmemtotal'],
         country = jsonData['country'],
-        datetime = naive2aware(jsonData['datetime']),
+        datetime = getUTCawaredatetime(),
         locale = jsonData['locale'],
         mobileon = jsonData['mobileon'],
         gpson = jsonData['gpson'],
@@ -379,8 +381,8 @@ def receive_native(request):
         autodetermine = autodetermine,
         rank = int(jsonData['rank']), # Undesided = -1, unhandled = 0, critical = 1, major = 2, minor = 3, native = 4
         status = 0, # 0 = new, 1 = open, 2 = ignore, 3 = renew
-        createdate = naive2aware(jsonData['datetime']),
-        lastdate = naive2aware(jsonData['datetime']),
+        createdate = getUTCawaredatetime(),
+        lastdate = getUTCawaredatetime(),
         numofinstances = 1,
         callstack = '',#jsonData['callstack'],
         wifion = jsonData['wifion'],
@@ -409,7 +411,7 @@ def receive_native(request):
         appmemfree = jsonData['appmemfree'],
         appmemtotal = jsonData['appmemtotal'],
         country = jsonData['country'],
-        datetime = naive2aware(jsonData['datetime']),
+        datetime = getUTCawaredatetime(),
         locale = jsonData['locale'],
         mobileon = jsonData['mobileon'],
         gpson = jsonData['gpson'],
