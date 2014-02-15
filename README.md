@@ -27,7 +27,10 @@
  
 ## UrQA Server Install Guide
 * if you want to bulid UrQA server at your machine. you refers at  https://docs.google.com/document/d/1NCBxk6MRz7rAFygk0J9wYbWJ4bt-CVYQhjQ94ZROLr8/edit?usp=sharing
- 
+
+## UrQA DB ERDiagram
+* https://docs.google.com/file/d/0B-p_Ig-CmFFeSlFLWmdEWDlseEk 
+
 ## UrQA Protocol Documentation
 * https://docs.google.com/document/d/1PKUL0H1H_IJxM4CHGelH7R16KGFnn9bJdcuYZFDrT7k/edit
 * http://docs.urqa.apiary.io
