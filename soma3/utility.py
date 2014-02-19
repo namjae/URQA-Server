@@ -36,6 +36,7 @@ def getUTCawaredate():
     time_str = '%04d-%02d-%02d'  % (now.year, now.month, now.day)
     naivetime = datetime.datetime.strptime(time_str, "%Y-%m-%d")
     return naivetime.replace(tzinfo=utc)
+
 def getUTCawaredatetime():
     now = datetime.datetime.utcnow()
     time_str = '%04d-%02d-%02d %02d:%02d:%02d'  % (now.year, now.month, now.day, now.hour, now.minute, now.second)

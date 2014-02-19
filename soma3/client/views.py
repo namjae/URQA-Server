@@ -72,7 +72,7 @@ def connect(request):
     print 'Project: %s, Ver: %s, new idsession: %d' % (projectElement.name,appversion,idsession)
 
     #step3: app version별 누적카운트 증가하기
-    appruncountElement, created = Appruncount.objects.get_or_create(pid=projectElement,appversion=appversion,defaults={'runcount':1},date=getUTCawaredate())
+    appruncountElement, created = Appruncount.objects.get_or_create(pid=projectElement,appversion=appversion,defaults={'runcount':1},date=getUTCawaredatetime())
     if created == False:
         appruncountElement.runcount += 1
         appruncountElement.save()
@@ -89,13 +89,13 @@ def client_data_validate(jsonData):
     if not 'errorname' in jsonData:
         jsonData['errorname'] = 'unknown'
         errorFlag = 1
-    if jsonData['errorname'] >= 499:
+    if len(jsonData['errorname']) >= 499:
         jsonData['errorname'] = jsonData['errorname'][0:499]
         errorFlag = 1
     if not 'errorclassname' in jsonData:
         jsonData['errorclassname'] = 'unknown'
         errorFlag = 1
-    if jsonData['errorclassname'] >= 299:
+    if len(jsonData['errorclassname']) >= 299:
         jsonData['errorclassname'] = jsonData['errorclassname'][0:299]
         errorFlag = 1
     if not 'linenum' in jsonData:
