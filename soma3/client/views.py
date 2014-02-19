@@ -7,6 +7,7 @@ import time
 import json
 import subprocess
 import random
+import sys
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -43,7 +44,12 @@ from common import validUserPjtError
 
 @csrf_exempt
 def connect(request):
-    jsonData = json.loads(request.body,encoding='utf-8')
+    try:
+        jsonData = json.loads(request.body,encoding='utf-8')
+    except (ValueError, KeyError, TypeError):
+        print >> sys.stderr, 'connect error!!!!! bad request.body'
+        print >> sys.stderr, request.body
+        return HttpResponse(json.dumps({'idsession':long(time.time() * 1000 + random.randint(0,1000))}), 'application/json');
     #print jsonData
 
     #step1: apikey를 이용하여 project찾기
@@ -71,6 +77,7 @@ def connect(request):
     else:
         print 'project: %s, new version: %s' % (projectElement.name,appruncountElement.appversion)
     return HttpResponse(json.dumps({'idsession':idsession}), 'application/json');
+
 
 def proguard_retrace_oneline(string,linenum,map_path,mapElement):
     if mapElement == None:
