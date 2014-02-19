@@ -7,6 +7,7 @@ import time
 import json
 import subprocess
 import random
+import sys
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -43,7 +44,12 @@ from common import validUserPjtError
 
 @csrf_exempt
 def connect(request):
-    jsonData = json.loads(request.body,encoding='utf-8')
+    try:
+        jsonData = json.loads(request.body,encoding='utf-8')
+    except (ValueError, KeyError, TypeError):
+        print >> sys.stderr, 'connect error!!!!! bad request.body'
+        print >> sys.stderr, request.body
+        return HttpResponse(json.dumps({'idsession':long(time.time() * 1000 + random.randint(0,1000))}), 'application/json');
     #print jsonData
 
     #step1: apikey를 이용하여 project찾기
@@ -57,10 +63,10 @@ def connect(request):
     #step2: idsession 발급하기
     appversion = jsonData['appversion']
     idsession = long(time.time() * 1000 + random.randint(0,1000))
-    duple = Session.objects.filter(idsession=idsession);
-    if len(duple) != 0:
-        idsession = long(time.time() * 1000 + random.randint(0,1000));
-    Session.objects.create(idsession=idsession,pid=projectElement,appversion=appversion)
+    #duple = Session.objects.filter(idsession=idsession);
+    #if len(duple) != 0:
+    #    idsession = long(time.time() * 1000 + random.randint(0,1000));
+    #Session.objects.create(idsession=idsession,pid=projectElement,appversion=appversion)
     print 'Project: %s, Ver: %s, new idsession: %d' % (projectElement.name,appversion,idsession)
 
     #step3: app version별 누적카운트 증가하기
@@ -71,6 +77,109 @@ def connect(request):
     else:
         print 'project: %s, new version: %s' % (projectElement.name,appruncountElement.appversion)
     return HttpResponse(json.dumps({'idsession':idsession}), 'application/json');
+
+def client_data_validate(jsonData):
+    oriData = jsonData;
+    errorFlag = 0
+    if not 'apikey' in jsonData:
+        jsonData['apikey'] = 'unknown'
+        errorFlag = 1
+    if not 'errorname' in jsonData:
+        jsonData['errorname'] = 'unknown'
+        errorFlag = 1
+    if not 'errorclassname' in jsonData:
+        jsonData['errorclassname'] = 'unknown'
+        errorFlag = 1
+    if not 'linenum' in jsonData:
+        jsonData['linenum'] = 'unknown'
+        errorFlag = 1
+    if not 'callstack' in jsonData:
+        jsonData['callstack'] = 'unknown'
+        errorFlag = 1
+    if not 'wifion' in jsonData:
+        jsonData['wifion'] = 0
+        errorFlag = 1
+    if not 'gpson' in jsonData:
+        jsonData['gpson'] = 0
+        errorFlag = 1
+    if not 'mobileon' in jsonData:
+        jsonData['mobileon'] = 0
+        errorFlag = 1
+    if not 'appversion' in jsonData:
+        jsonData['appversion'] = 'unknown'
+        errorFlag = 1
+    if not 'osversion' in jsonData:
+        jsonData['osversion'] = 'unknown'
+        errorFlag = 1
+    if not 'device' in jsonData:
+        jsonData['device'] = 'unknown'
+        errorFlag = 1
+    if not 'country' in jsonData:
+        jsonData['country'] = 'unknown'
+        errorFlag = 1
+    if not 'lastactivity' in jsonData:
+        jsonData['lastactivity'] = 'unknown'
+        errorFlag = 1
+    if not 'rank' in jsonData:
+        jsonData['rank'] = RANK.Critical
+        errorFlag = 1
+    if int(jsonData['rank']) < 0 or int(jsonData['rank']) > 4:
+        jsonData['rank'] = RANK.Critical
+        errorFlag = 1
+    if not 'sdkversion' in jsonData:
+        jsonData['sdkversion'] = 'unknown'
+        errorFlag = 1
+    if not 'kernelversion' in jsonData:
+        jsonData['kernelversion'] = 'unknown'
+        errorFlag = 1
+    if not 'appmemmax' in jsonData:
+        jsonData['appmemmax'] = 'unknown'
+        errorFlag = 1
+    if not 'appmemfree' in jsonData:
+        jsonData['appmemfree'] = 'unknown'
+        errorFlag = 1
+    if not 'appmemtotal' in jsonData:
+        jsonData['appmemtotal'] = 'unknown'
+        errorFlag = 1
+    if not 'locale' in jsonData:
+        jsonData['locale'] = 'unknown'
+        errorFlag = 1
+    if not 'rooted' in jsonData:
+        jsonData['rooted'] = 0
+        errorFlag = 1
+    if not 'scrheight' in jsonData:
+        jsonData['scrheight'] = 0
+        errorFlag = 1
+    if not 'scrwidth' in jsonData:
+        jsonData['scrwidth'] = 0
+        errorFlag = 1
+    if not 'scrorientation' in jsonData:
+        jsonData['scrorientation'] = 0
+        errorFlag = 1
+    if not 'sysmemlow' in jsonData:
+        jsonData['sysmemlow'] = 'unknown'
+        errorFlag = 1
+    if not 'batterylevel' in jsonData:
+        jsonData['batterylevel'] = 0
+        errorFlag = 1
+    if not 'availsdcard' in jsonData:
+        jsonData['availsdcard'] = 0
+        errorFlag = 1
+    if not 'xdpi' in jsonData:
+        jsonData['xdpi'] = 0
+        errorFlag = 1
+    if not 'ydpi' in jsonData:
+        jsonData['ydpi'] = 0
+        errorFlag = 1
+    if not 'eventpaths' in jsonData:
+        jsonData['eventpaths'] = 'unknown'
+        errorFlag = 1
+
+    if errorFlag == 1:
+        print >> sys.stderr, 'exception Data Error: ', oriData
+        print >> sys.stderr, 'Revise JSON Data    : ', jsonData
+
+    return jsonData
 
 def proguard_retrace_oneline(string,linenum,map_path,mapElement):
     if mapElement == None:
@@ -117,7 +226,8 @@ def proguard_retrace_callstack(string,map_path,mapElement):
 def receive_exception(request):
     jsonData = json.loads(request.body,encoding='utf-8')
 
-    print 'receive_exception requested'
+    jsonData = client_data_validate(jsonData)
+    #print 'receive_exception requested'
     #step1: apikey를 이용하여 project찾기
     #apikey가 validate한지 확인하기.
     try:
@@ -127,12 +237,13 @@ def receive_exception(request):
         print 'Invalid apikey'
         return HttpResponse('Invalid apikey')
 
+    print >> sys.stderr, 'receive_exception requested',apikey
     #step2: errorname, errorclassname, linenum을 이용하여 동일한 에러가 있는지 찾기
     errorname = jsonData['errorname']
     errorclassname = jsonData['errorclassname']
     linenum = jsonData['linenum']
 
-    print '%s %s %s' % (errorname,errorclassname,linenum)
+    print >> sys.stderr, '%s %s %s' % (errorname,errorclassname,linenum)
 
     #step2-0: Proguard 적용 확인
     appversion = jsonData['appversion']
@@ -190,9 +301,6 @@ def receive_exception(request):
         #calc_errorScore(errorElement)
 
     except ObjectDoesNotExist:
-        #RANK 값이 이상하게 들어오면 Unhandle로 변경
-        if int(jsonData['rank']) < 0 or int(jsonData['rank']) > 4:
-            jsonData['rank'] = RANK.Unhandle
         #새로 들어온 에러라면 새로운 에러 생성
         #if int(jsonData['rank']) == -1:
         #    autodetermine = 1 #True
@@ -353,6 +461,8 @@ def receive_native(request):
     jsonData = json.loads(request.body,encoding='utf-8')
     #print jsonData
 
+    jsonData = client_data_validate(jsonData)
+
     #step1: apikey를 이용하여 project찾기
     #apikey가 validate한지 확인하기.
     try:
@@ -364,9 +474,6 @@ def receive_native(request):
 
 
     #step2: dummy errorElement생성
-    #RANK 값이 이상하게 들어오면 Unhandle로 변경
-    if int(jsonData['rank']) < 0 or int(jsonData['rank']) > 4:
-        jsonData['rank'] = RANK.Unhandle
     #새로 들어온 에러라면 새로운 에러 생성
     #if int(jsonData['rank']) == -1:
     #    autodetermine = 1 #True
