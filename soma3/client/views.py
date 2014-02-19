@@ -48,8 +48,8 @@ def connect(request):
         jsonData = json.loads(request.body,encoding='utf-8')
     except Exception as e:
         print >> sys.stderr, 'connect error!!!!! bad request.body'
-        print >> sys.stderr, 'request = ',request
         print >> sys.stderr, 'request.body = ', request.body
+        print >> sys.stderr, 'request = ',request
         print >> sys.stderr, 'Exception = ', e
         return HttpResponse(json.dumps({'idsession':long(time.time() * 1000 + random.randint(0,1000))}), 'application/json');
     #print jsonData
