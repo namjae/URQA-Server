@@ -46,9 +46,11 @@ from common import validUserPjtError
 def connect(request):
     try:
         jsonData = json.loads(request.body,encoding='utf-8')
-    except (ValueError, KeyError, TypeError):
+    except Exception as e:
         print >> sys.stderr, 'connect error!!!!! bad request.body'
-        print >> sys.stderr, request.body
+        print >> sys.stderr, 'request = ',request
+        print >> sys.stderr, 'request.body = ', request.body
+        print >> sys.stderr, 'Exception = ', e
         return HttpResponse(json.dumps({'idsession':long(time.time() * 1000 + random.randint(0,1000))}), 'application/json');
     #print jsonData
 
@@ -79,7 +81,7 @@ def connect(request):
     return HttpResponse(json.dumps({'idsession':idsession}), 'application/json');
 
 def client_data_validate(jsonData):
-    oriData = jsonData;
+    oriData = jsonData.copy();
     errorFlag = 0
     if not 'apikey' in jsonData:
         jsonData['apikey'] = 'unknown'
@@ -87,8 +89,14 @@ def client_data_validate(jsonData):
     if not 'errorname' in jsonData:
         jsonData['errorname'] = 'unknown'
         errorFlag = 1
+    if jsonData['errorname'] >= 499:
+        jsonData['errorname'] = jsonData['errorname'][0:499]
+        errorFlag = 1
     if not 'errorclassname' in jsonData:
         jsonData['errorclassname'] = 'unknown'
+        errorFlag = 1
+    if jsonData['errorclassname'] >= 299:
+        jsonData['errorclassname'] = jsonData['errorclassname'][0:299]
         errorFlag = 1
     if not 'linenum' in jsonData:
         jsonData['linenum'] = 'unknown'
@@ -243,6 +251,7 @@ def receive_exception(request):
     errorclassname = jsonData['errorclassname']
     linenum = jsonData['linenum']
 
+    print >> sys.stderr, 'appver:', jsonData['appversion'], 'osver:', jsonData['osversion']
     print >> sys.stderr, '%s %s %s' % (errorname,errorclassname,linenum)
 
     #step2-0: Proguard 적용 확인
