@@ -44,13 +44,16 @@ from common import validUserPjtError
 
 @csrf_exempt
 def connect(request):
+    req_dump = request.copy();
     try:
         jsonData = json.loads(request.body,encoding='utf-8')
+        req_dump = None
     except Exception as e:
         print >> sys.stderr, 'connect error!!!!! bad request.body'
-        print >> sys.stderr, 'request.body = ', request.body
-        print >> sys.stderr, 'request = ',request
+        print >> sys.stderr, 'request.body = ', req_dump.body
+        print >> sys.stderr, 'request = ',req_dump
         print >> sys.stderr, 'Exception = ', e
+        req_dump = None
         return HttpResponse(json.dumps({'idsession':long(time.time() * 1000 + random.randint(0,1000))}), 'application/json');
     #print jsonData
 
@@ -232,7 +235,18 @@ def proguard_retrace_callstack(string,map_path,mapElement):
 
 @csrf_exempt
 def receive_exception(request):
-    jsonData = json.loads(request.body,encoding='utf-8')
+    #jsonData = json.loads(request.body,encoding='utf-8')
+    req_dump = request.copy();
+    try:
+        jsonData = json.loads(request.body,encoding='utf-8')
+        req_dump = None
+    except Exception as e:
+        print >> sys.stderr, 'connect error!!!!! bad request.body'
+        print >> sys.stderr, 'request.body = ', req_dump.body
+        print >> sys.stderr, 'request = ',req_dump
+        print >> sys.stderr, 'Exception = ', e
+        req_dump = None
+        return HttpResponse(json.dumps({'idinstance':0}), 'application/json');
 
     jsonData = client_data_validate(jsonData)
     #print 'receive_exception requested'
@@ -467,7 +481,18 @@ def receive_eventpath(request):
 def receive_native(request):
     print 'receive_native requested'
     #print request.body
-    jsonData = json.loads(request.body,encoding='utf-8')
+    #jsonData = json.loads(request.body,encoding='utf-8')
+    req_dump = request.copy();
+    try:
+        jsonData = json.loads(request.body,encoding='utf-8')
+        req_dump = None
+    except Exception as e:
+        print >> sys.stderr, 'connect error!!!!! bad request.body'
+        print >> sys.stderr, 'request.body = ', req_dump.body
+        print >> sys.stderr, 'request = ',req_dump
+        print >> sys.stderr, 'Exception = ', e
+        req_dump = None
+        return HttpResponse(json.dumps({'idinstance':0}), 'application/json');
     #print jsonData
 
     jsonData = client_data_validate(jsonData)
