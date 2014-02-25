@@ -290,6 +290,7 @@ def receive_exception(request):
         #새로온 인스턴스 정보로 시간 갱신
 
         #errorElement.lastdate = naive2aware(jsonData['datetime'])
+        errorElement.callstack = callstack
         errorElement.lastdate = getUTCawaredatetime()
         errorElement.numofinstances += 1
         #errorElement.totalmemusage += jsonData['appmemtotal']
