@@ -44,11 +44,16 @@ from common import validUserPjtError
 
 @csrf_exempt
 def connect(request):
+    #req_dump = request.copy();
     try:
         jsonData = json.loads(request.body,encoding='utf-8')
-    except (ValueError, KeyError, TypeError):
+        #req_dump = None
+    except Exception as e:
         print >> sys.stderr, 'connect error!!!!! bad request.body'
-        print >> sys.stderr, request.body
+        #print >> sys.stderr, 'request.body = ', req_dump.body
+        #print >> sys.stderr, 'request = ',req_dump
+        print >> sys.stderr, 'Exception = ', e
+        #req_dump = None
         return HttpResponse(json.dumps({'idsession':long(time.time() * 1000 + random.randint(0,1000))}), 'application/json');
     #print jsonData
 
@@ -70,7 +75,7 @@ def connect(request):
     print 'Project: %s, Ver: %s, new idsession: %d' % (projectElement.name,appversion,idsession)
 
     #step3: app version별 누적카운트 증가하기
-    appruncountElement, created = Appruncount.objects.get_or_create(pid=projectElement,appversion=appversion,defaults={'runcount':1},date=getUTCawaredate())
+    appruncountElement, created = Appruncount.objects.get_or_create(pid=projectElement,appversion=appversion,defaults={'runcount':1},date=getUTCawaredatetime())
     if created == False:
         appruncountElement.runcount += 1
         appruncountElement.save()
@@ -79,7 +84,7 @@ def connect(request):
     return HttpResponse(json.dumps({'idsession':idsession}), 'application/json');
 
 def client_data_validate(jsonData):
-    oriData = jsonData;
+    oriData = jsonData.copy();
     errorFlag = 0
     if not 'apikey' in jsonData:
         jsonData['apikey'] = 'unknown'
@@ -87,8 +92,14 @@ def client_data_validate(jsonData):
     if not 'errorname' in jsonData:
         jsonData['errorname'] = 'unknown'
         errorFlag = 1
+    if len(jsonData['errorname']) >= 499:
+        jsonData['errorname'] = jsonData['errorname'][0:499]
+        errorFlag = 1
     if not 'errorclassname' in jsonData:
         jsonData['errorclassname'] = 'unknown'
+        errorFlag = 1
+    if len(jsonData['errorclassname']) >= 299:
+        jsonData['errorclassname'] = jsonData['errorclassname'][0:299]
         errorFlag = 1
     if not 'linenum' in jsonData:
         jsonData['linenum'] = 'unknown'
@@ -224,7 +235,18 @@ def proguard_retrace_callstack(string,map_path,mapElement):
 
 @csrf_exempt
 def receive_exception(request):
-    jsonData = json.loads(request.body,encoding='utf-8')
+    #jsonData = json.loads(request.body,encoding='utf-8')
+    #req_dump = request.copy();
+    try:
+        jsonData = json.loads(request.body,encoding='utf-8')
+        #req_dump = None
+    except Exception as e:
+        print >> sys.stderr, 'connect error!!!!! bad request.body'
+        #print >> sys.stderr, 'request.body = ', req_dump.body
+        #print >> sys.stderr, 'request = ',req_dump
+        print >> sys.stderr, 'Exception = ', e
+        #req_dump = None
+        return HttpResponse(json.dumps({'idinstance':0}), 'application/json');
 
     jsonData = client_data_validate(jsonData)
     #print 'receive_exception requested'
@@ -243,6 +265,7 @@ def receive_exception(request):
     errorclassname = jsonData['errorclassname']
     linenum = jsonData['linenum']
 
+    print >> sys.stderr, 'appver:', jsonData['appversion'], 'osver:', jsonData['osversion']
     print >> sys.stderr, '%s %s %s' % (errorname,errorclassname,linenum)
 
     #step2-0: Proguard 적용 확인
@@ -267,6 +290,7 @@ def receive_exception(request):
         #새로온 인스턴스 정보로 시간 갱신
 
         #errorElement.lastdate = naive2aware(jsonData['datetime'])
+        errorElement.callstack = callstack
         errorElement.lastdate = getUTCawaredatetime()
         errorElement.numofinstances += 1
         #errorElement.totalmemusage += jsonData['appmemtotal']
@@ -458,7 +482,18 @@ def receive_eventpath(request):
 def receive_native(request):
     print 'receive_native requested'
     #print request.body
-    jsonData = json.loads(request.body,encoding='utf-8')
+    #jsonData = json.loads(request.body,encoding='utf-8')
+    #req_dump = request.copy();
+    try:
+        jsonData = json.loads(request.body,encoding='utf-8')
+        #req_dump = None
+    except Exception as e:
+        print >> sys.stderr, 'connect error!!!!! bad request.body'
+        #print >> sys.stderr, 'request.body = ', req_dump.body
+        #print >> sys.stderr, 'request = ',req_dump
+        print >> sys.stderr, 'Exception = ', e
+        #req_dump = None
+        return HttpResponse(json.dumps({'idinstance':0}), 'application/json');
     #print jsonData
 
     jsonData = client_data_validate(jsonData)
