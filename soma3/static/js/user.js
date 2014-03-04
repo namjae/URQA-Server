@@ -1620,8 +1620,7 @@ $("head").styleReady(function(){
                     type: 'area',
                     renderTo: 'ebav'
                 },
-                colors: ["#fce700","#eda700","#ff6d05","#fb405a","#de3cad","#aa26aa","#211a74","#0046ae","#0086cf","#04ae8e",
-                          "#55a51a","#bbd004","#786a65","#cab280","#e7a1af","#e3abd7","#8584a3","#71a38a","#da88b8","#6492b6"],
+                colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
                 title: {
                     text: ''
                 },
@@ -1677,8 +1676,7 @@ $("head").styleReady(function(){
                 title: {
                     text: 'Class Error Rate'
                 },
-                colors: ["#fce700","#eda700","#ff6d05","#fb405a","#de3cad","#aa26aa","#211a74","#0046ae","#0086cf","#04ae8e",
-                          "#55a51a","#bbd004","#786a65","#cab280","#e7a1af","#e3abd7","#8584a3","#71a38a","#da88b8","#6492b6"],
+                colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
                 tooltip: {
                     pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
                 },
@@ -1744,8 +1742,7 @@ $("head").styleReady(function(){
 
         function DrawChart4(categories,data){
             $('.notHover').eq(4).empty().append($('<td id="ebas"></td>'))
-            var colors = ["#fce700","#eda700","#ff6d05","#fb405a","#de3cad","#aa26aa","#211a74","#0046ae","#0086cf","#04ae8e",
-                          "#55a51a","#bbd004","#786a65","#cab280","#e7a1af","#e3abd7","#8584a3","#71a38a","#da88b8","#6492b6"];
+            var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
             for(var i=0;i<data[0]['data'].length;i++)
                 data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
             chart3 = new Highcharts.Chart({
@@ -1794,8 +1791,7 @@ $("head").styleReady(function(){
                 title: {
                     text: ''
                 },
-                colors: ["#fce700","#eda700","#ff6d05","#fb405a","#de3cad","#aa26aa","#211a74","#0046ae","#0086cf","#04ae8e",
-                          "#55a51a","#bbd004","#786a65","#cab280","#e7a1af","#e3abd7","#8584a3","#71a38a","#da88b8","#6492b6"],
+                colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
                 xAxis: {
                     categories: categories
                 },
