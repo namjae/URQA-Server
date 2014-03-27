@@ -84,6 +84,6 @@ def auth_return(request):
     user.image_path = image_path
 
     user.save()
-
+    user = authenticate(username=username, password=password)
     login(request, user)
     return HttpResponseRedirect('/urqa/projects')
