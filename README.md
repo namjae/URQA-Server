@@ -38,5 +38,5 @@
 ## UrQA Issue 
 * Server Issue 
     * https://github.com/UrQA/URQA-Server/issues?state=open 
-* Server Issue 
-    * [Sub1]
+* Android Issue 
+    * https://github.com/UrQA/UrQA-Client-Android/issues
