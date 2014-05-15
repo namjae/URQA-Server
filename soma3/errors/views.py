@@ -678,6 +678,8 @@ def filter_view(request,apikey):
     prev_v = ['-1','-1','-1']
     for e in valid_os:
         v = e['osversion'].split('.')
+        if len(v) < 2:
+            v.append(' ')
         if v[0] != prev_v[0] or v[1] != prev_v[1]:
             prev_v = v
             os_idx += 1
@@ -877,6 +879,8 @@ def appv_ratio(request,apikey):
     instances.order_by('-osversion')
     for i in instances:
         k = i.osversion.split('.')
+        if len(k) < 2:
+            k.append(' ')
         key = k[0]+'.'+k[1];
         if not key in data['osv']:
             #print key
