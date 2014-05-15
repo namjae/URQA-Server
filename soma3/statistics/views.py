@@ -23,7 +23,7 @@ from utility import getTimezoneMidNight
 from urqa.models import AuthUser
 from urqa.models import Errors
 from urqa.models import Instances
-
+from urqa.models import Appruncount
 
 def statistics(request,apikey):
     username = request.user
@@ -65,6 +65,20 @@ def chartdata(request,apikey):
         return HttpResponseRedirect('/urqa')
 
     print 'retention', retention
+
+
+    chart_sbav = {'categories':categories,'data':appver_data}
+    appversions = instanceElements.values('appversion').distinct().order_by('appversion')
+    appcount_data = {}
+    for appversion in appversions:
+        appcount_data[appversion['appversion']] = []
+
+    for i in range(retention):
+        day1 = getTimezoneMidNight('UTC') + datetime.timedelta(days =  -i)
+        day2 = getTimezoneMidNight('UTC') + datetime.timedelta(days =  -i-1)
+        for appversion in appversions:
+            appcount_data[appversion['appversion']].append(Appruncount.objects.filter(pid=projectElement,appversion=appversion['appversion'],date__range=(day1,day2)))
+
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
     errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')

@@ -1830,6 +1830,9 @@ table.content-small {
 	}
 }
 
+#sbav svg {
+	height: 300px;
+}
 #ebav svg {
 	height: 300px;
 }
