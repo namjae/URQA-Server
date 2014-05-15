@@ -130,7 +130,7 @@ ENGINE = InnoDB;
 CREATE  TABLE IF NOT EXISTS `urqa`.`appstatistics` (
   `idappstatistics` INT NOT NULL AUTO_INCREMENT ,
   `iderror` INT NOT NULL ,
-  `appversion` VARCHAR(10) NOT NULL ,
+  `appversion` VARCHAR(45) NOT NULL ,
   `count` INT NOT NULL ,
   PRIMARY KEY (`idappstatistics`) ,
   CONSTRAINT `errors_appstatistics`

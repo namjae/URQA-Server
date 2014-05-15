@@ -33,7 +33,7 @@ class Appruncount(models.Model):
 class Appstatistics(models.Model):
     idappstatistics = models.AutoField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
-    appversion = models.CharField(max_length=10)
+    appversion = models.CharField(max_length=45)
     count = models.IntegerField()
     class Meta:
         managed = False
