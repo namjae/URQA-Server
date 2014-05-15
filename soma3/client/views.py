@@ -39,7 +39,7 @@ from soma3.settings import PROJECT_DIR
 
 #삭제요망
 from common import validUserPjtError
-
+from django.core.exceptions import MultipleObjectsReturned
 
 
 @csrf_exempt
@@ -75,13 +75,18 @@ def connect(request):
     print 'Project: %s, Ver: %s, new idsession: %d' % (projectElement.name,appversion,idsession)
 
     #step3: app version별 누적카운트 증가하기
-    appruncountElement, created = Appruncount.objects.get_or_create(pid=projectElement,appversion=appversion,defaults={'runcount':1},date=getUTCawaredatetime())
-    if created == False:
-        appruncountElement.runcount += 1
-        appruncountElement.save()
-    else:
-        print 'project: %s, new version: %s' % (projectElement.name,appruncountElement.appversion)
+    try:
+    	appruncountElement, created = Appruncount.objects.get_or_create(pid=projectElement,appversion=appversion,defaults={'runcount':1},date=getUTCawaredatetime())
+    	if created == False:
+        	appruncountElement.runcount += 1
+        	appruncountElement.save()
+    	else:
+        	print 'project: %s, new version: %s' % (projectElement.name,appruncountElement.appversion)
+    except MultipleObjectsReturned:
+	print "MultipleObjectsReturned in client app version count"
+
     return HttpResponse(json.dumps({'idsession':idsession}), 'application/json');
+
 
 def client_data_validate(jsonData):
     oriData = jsonData.copy();
@@ -260,6 +265,9 @@ def receive_exception(request):
         return HttpResponse('Invalid apikey')
 
     print >> sys.stderr, 'receive_exception requested',apikey
+    print >> sys.stderr, '=========== JsonData ========='
+    print >> sys.stderr, jsonData
+    print >> sys.stderr, '=============================='
     #step2: errorname, errorclassname, linenum을 이용하여 동일한 에러가 있는지 찾기
     errorname = jsonData['errorname']
     errorclassname = jsonData['errorclassname']
