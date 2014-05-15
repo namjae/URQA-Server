@@ -522,7 +522,7 @@ def projects(request):
         else:
             errorRate = int(instanceCount * 100.0 / apprunCount)
 
-        print project.name, 'errorRate %d%%' % errorRate, instanceCount, apprunCount
+        #print project.name, 'errorRate %d%%' % errorRate, instanceCount, apprunCount
         #Avg ErrorScore에 대한 컬러
         projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
         #print projectdata['color']
