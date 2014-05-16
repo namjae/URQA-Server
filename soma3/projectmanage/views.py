@@ -29,6 +29,7 @@ from django.db.models import Count
 from django.db.models import Sum
 from django.db.models import Avg
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 from common import validUserPjt
 from common import getUserProfileDict
@@ -478,7 +479,11 @@ def projects(request):
 
     if request.user.is_superuser:
         #Super User일 경우 모든 프로젝트 보이기
-        MergeProjectElements = Projects.objects.all()
+
+
+        tenProjects = Projects.objects.all()
+
+
 
     else:
         #주인인 project들
@@ -487,7 +492,22 @@ def projects(request):
 
         ViewerElements = Viewer.objects.filter(uid = UserElement.id).values('pid')
         ViewerProjectElements = Projects.objects.filter(pid__in = ViewerElements)
-        MergeProjectElements = OwnerProjectElements | ViewerProjectElements
+        tenProjects = OwnerProjectElements | ViewerProjectElements
+
+    page = request.GET.get('page')
+
+    p = Paginator(tenProjects, 10)
+    try:
+        page_info = p.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        page_info = p.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        page_info = p.page(p.num_pages)
+
+    MergeProjectElements = page_info.object_list 
+
 
 
     #print MergeProjectElements
@@ -534,18 +554,23 @@ def projects(request):
 
 
 
-
+    
 
     categorydata = json.loads(get_config('app_categories'))
     platformdata = json.loads(get_config('app_platforms'))
     stagedata = json.loads(get_config('app_stages'))
 
     ctx = {
-        'project_list' : project_list ,
+        # 'project_list' : project_list ,
+        'project_list' : project_list,
         'app_platformlist' : platformdata.items(),
         'app_categorylist' : categorydata.items(),
-        'app_stagelist' : stagedata.items()
+        'app_stagelist' : stagedata.items(),
+        'page_info' : page_info
     }
+
+
+
     return render(request, 'project-select.html', ctx)
 
 def projectdashboard(request, apikey):

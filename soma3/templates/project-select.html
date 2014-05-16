@@ -78,6 +78,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div id="body-header">UrQA - My Projects</div>
         <a href="/urqa/user/logout">
         <div id="logout-header"><p>LOGOUT</p></div>
@@ -104,6 +105,21 @@
                 </div>
                 {% endfor %}
              </div>
+             <div class="pagination" id="pagenation">
+			    <span class="step-links">
+			        {% if page_info.has_previous %}
+			            <a href="?page={{ page_info.previous_page_number }}">previous</a>
+			        {% endif %}
+
+			        <span class="current">
+			            Page {{ page_info.number }} of {{ page_info.paginator.num_pages }}.
+			        </span>
+
+			        {% if page_info.has_next %}
+			            <a href="?page={{ page_info.next_page_number }}">next</a>
+			        {% endif %}
+			    </span>
+			</div>
 			<div class="add" onclick="showPopupCreateProject()"><div></div></div>
 		</div>
 		<!--content-container fin-->

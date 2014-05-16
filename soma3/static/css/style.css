@@ -1129,6 +1129,18 @@ body.statistics .navbar-menu > ul > li:nth-child(3) > a {
 	@multi-platform { text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.33); }
 }
 
+#pagenation {
+	position: absolute;
+	margin-left: -150px;
+	top: 500px;
+	left: 50%;
+	width: 300px;
+	font: 800 18px "Helvetica";
+	color: white;
+	text-align: center;
+	@multi-platform { text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.33); }
+}
+
 html.login #body-header {
 	padding-top: 50px;
 	top: 50px;
