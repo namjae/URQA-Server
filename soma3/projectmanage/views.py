@@ -29,7 +29,7 @@ from django.db.models import Count
 from django.db.models import Sum
 from django.db.models import Avg
 from django.db.models import Q
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from common import validUserPjt
 from common import getUserProfileDict
