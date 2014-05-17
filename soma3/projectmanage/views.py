@@ -29,7 +29,6 @@ from django.db.models import Count
 from django.db.models import Sum
 from django.db.models import Avg
 from django.db.models import Q
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from common import validUserPjt
 from common import getUserProfileDict
@@ -39,6 +38,7 @@ from common import ErrorRate_for_color
 
 from urqa.models import AuthUser
 from urqa.models import Projects
+from urqa.models import ProjectSummary
 from urqa.models import Viewer
 from urqa.models import Sofiles
 from urqa.models import Errors
@@ -476,42 +476,6 @@ def projects(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/urqa/')
 
-
-    if request.user.is_superuser:
-        #Super User일 경우 모든 프로젝트 보이기
-
-
-        tenProjects = Projects.objects.all()
-
-
-
-    else:
-        #주인인 project들
-        UserElement = AuthUser.objects.get(username = request.user)
-        OwnerProjectElements = Projects.objects.filter(owner_uid = UserElement.id)
-
-        ViewerElements = Viewer.objects.filter(uid = UserElement.id).values('pid')
-        ViewerProjectElements = Projects.objects.filter(pid__in = ViewerElements)
-        tenProjects = OwnerProjectElements | ViewerProjectElements
-
-    page = request.GET.get('page')
-
-    p = Paginator(tenProjects, 10)
-    try:
-        page_info = p.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        page_info = p.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        page_info = p.page(p.num_pages)
-
-    MergeProjectElements = page_info.object_list 
-
-
-
-    #print MergeProjectElements
-
     project_list = []
 
     stagedata = json.loads(get_config('app_stages'))
@@ -520,37 +484,67 @@ def projects(request):
     countcolordata = json.loads(get_config('error_rate_color'))
     platformdata = json.loads(get_config('app_platforms'))
 
-    for idx, project in enumerate(MergeProjectElements):
-        projectdata = {}
-        projectdata['apikey'] = project.apikey
-        #stage color 구하기
-        stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
-        #projectdata['color'] = stagecolordata.get(stagetxt)
+    if request.user.is_superuser:
+        #Super User일 경우 모든 프로젝트 보이기
+        MergeProjectElements = ProjectSummary.objects.all()
 
-        week, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
+        for idx, project in enumerate(MergeProjectElements):
+            projectdata = {}
+            projectdata['apikey'] = project.apikey
+            stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
+            projectdata['count'] =  project.instanceCount
+            errorRate = int(project.instanceCount * 100 / project.runcount)
+            projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
+            projectdata['name'] = project.name
+            projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
+            projectdata['stage'] = stagetxt
+            project_list.append(projectdata)
 
-        errorElements = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open])
-        instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range = (week, today)).count()
-        apprunCount = Appruncount.objects.filter(pid=project.pid,date__range = (week, today)).aggregate(apprunCount=Sum('runcount'))['apprunCount']
-        #print instanceCount
-        #print '(week, today)',project.pid,(week, today)
-        #print Appruncount.objects.filter(pid=project.pid,date__gte = week)
-        #print apprunCount
-        projectdata['count'] =  instanceCount
-        if not apprunCount:
-            errorRate = 0
-        else:
-            errorRate = int(instanceCount * 100.0 / apprunCount)
+    else:
+        #주인인 project들
+        UserElement = AuthUser.objects.get(username = request.user)
+        OwnerProjectElements = Projects.objects.filter(owner_uid = UserElement.id)
 
-        #print project.name, 'errorRate %d%%' % errorRate, instanceCount, apprunCount
-        #Avg ErrorScore에 대한 컬러
-        projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
-        #print projectdata['color']
+        ViewerElements = Viewer.objects.filter(uid = UserElement.id).values('pid')
+        ViewerProjectElements = Projects.objects.filter(pid__in = ViewerElements)
+        MergeProjectElements = OwnerProjectElements | ViewerProjectElements
 
-        projectdata['name'] = project.name
-        projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
-        projectdata['stage'] = stagetxt
-        project_list.append(projectdata)
+
+    #print MergeProjectElements
+
+
+
+        for idx, project in enumerate(MergeProjectElements):
+            projectdata = {}
+            projectdata['apikey'] = project.apikey
+            #stage color 구하기
+            stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
+            #projectdata['color'] = stagecolordata.get(stagetxt)
+
+            week, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
+
+            errorElements = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open])
+            instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range = (week, today)).count()
+            apprunCount = Appruncount.objects.filter(pid=project.pid,date__range = (week, today)).aggregate(apprunCount=Sum('runcount'))['apprunCount']
+            #print instanceCount
+            #print '(week, today)',project.pid,(week, today)
+            #print Appruncount.objects.filter(pid=project.pid,date__gte = week)
+            #print apprunCount
+            projectdata['count'] =  instanceCount
+            if not apprunCount:
+                errorRate = 0
+            else:
+                errorRate = int(instanceCount * 100.0 / apprunCount)
+
+            #print project.name, 'errorRate %d%%' % errorRate, instanceCount, apprunCount
+            #Avg ErrorScore에 대한 컬러
+            projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
+            #print projectdata['color']
+
+            projectdata['name'] = project.name
+            projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
+            projectdata['stage'] = stagetxt
+            project_list.append(projectdata)
 
 
 
@@ -565,8 +559,7 @@ def projects(request):
         'project_list' : project_list,
         'app_platformlist' : platformdata.items(),
         'app_categorylist' : categorydata.items(),
-        'app_stagelist' : stagedata.items(),
-        'page_info' : page_info
+        'app_stagelist' : stagedata.items()
     }
 
 

@@ -315,3 +315,15 @@ class Viewer(models.Model):
         managed = False
         db_table = 'viewer'
 
+class ProjectSummary(models.Model):
+    instanceCount = models.IntegerField()
+    pid = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=45)
+    apikey = models.CharField(max_length=10)
+    owner_uid = models.CharField(max_length=10)
+    platform = models.IntegerField()
+    stage = models.IntegerField()
+    runcount = models.IntegerField()
+    class Meta:
+         managed = False
+         db_table = 'apprunCount'
