@@ -16,8 +16,8 @@
 * product + develop marging -> test -> master 
  
 ## Licenses
- * MIT License - http://mit-license.org/
- 
+ * CC BY-NC-SA http://creativecommons.org/licenses/by-nc-sa/3.0/ 
+ * 실제 판매를 목적으로 사용하는 것은 불가능하며, 기업 내부용으로 쓰는 것은 제한이 없습니다. 
  
 ## UrQA User Guide
 * https://docs.google.com/document/d/10ZR7Rken21j8c3WZTiPSBi5-pXlYSQHJfsc3h7QCHaE/edit?usp=sharing 
