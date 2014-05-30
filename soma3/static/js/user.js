@@ -1893,6 +1893,15 @@ $("head").styleReady(function(){
                 series: data
             });
         }
+        csrfFunc = function(xhr, settings) {
+            var csrftoken = getCookie('csrftoken')
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
         pre_retention = 1
         function RedrawCharts(retention){
             if(pre_retention == retention)
@@ -1901,28 +1910,85 @@ $("head").styleReady(function(){
             $.ajax( {
                  type :'POST'
                 ,asyn :true
-                ,url :'./chartdata'
+                ,url :'./chartdata/sbav' //error by app version
                 ,dataType :"json"
                 ,data:{'json':JSON.stringify({
                     'retention':retention
                 })}
                 ,success : function(jsonData) {
                     DrawChart_sbav(jsonData.chart_sbav.categories,jsonData.chart_sbav.data)
+                }
+                , beforeSend: csrfFunc
+            });
+
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./chartdata/ebav' //error by app version
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':retention
+                })}
+                ,success : function(jsonData) {
                     DrawChart1(jsonData.chart1.categories,jsonData.chart1.data)
+                }
+                , beforeSend: csrfFunc
+            });
+
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./chartdata/erbc' //error rate by class
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':retention
+                })}
+                ,success : function(jsonData) {
                     DrawChart2(jsonData.chart2)
+                }
+                , beforeSend: csrfFunc
+            });
+
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./chartdata/erbd' // error rate by device
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':retention
+                })}
+                ,success : function(jsonData) {
                     DrawChart3(jsonData.chart3.categories,jsonData.chart3.data)
+                }
+                , beforeSend: csrfFunc
+            });
+
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./chartdata/erba' // error rate by activity
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':retention
+                })}
+                ,success : function(jsonData) {
                     DrawChart4(jsonData.chart4.categories,jsonData.chart4.data)
+                }
+                , beforeSend: csrfFunc
+            });
+
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./chartdata/erbv' // error rate by version
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':retention
+                })}
+                ,success : function(jsonData) {
                     DrawChart5(jsonData.chart5.categories,jsonData.chart5.data)
                 }
-                , beforeSend: function(xhr, settings) {
-                    var csrftoken = getCookie('csrftoken')
-                    if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-                        // Send the token to same-origin, relative URLs only.
-                        // Send the token only if the method warrants CSRF protection
-                        // Using the CSRFToken value acquired earlier
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                }
+                , beforeSend: csrfFunc
             });
         }
         RedrawCharts(7);
