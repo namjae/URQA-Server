@@ -65,30 +65,55 @@ def chartdata(request,apikey):
         return HttpResponseRedirect('/urqa')
 
     print 'retention', retention
-
-
-    chart_sbav = {'categories':categories,'data':appver_data}
-    appversions = instanceElements.values('appversion').distinct().order_by('appversion')
-    appcount_data = {}
-    for appversion in appversions:
-        appcount_data[appversion['appversion']] = []
-
-    for i in range(retention):
-        day1 = getTimezoneMidNight('UTC') + datetime.timedelta(days =  -i)
-        day2 = getTimezoneMidNight('UTC') + datetime.timedelta(days =  -i-1)
-        for appversion in appversions:
-            appcount_data[appversion['appversion']].append(Appruncount.objects.filter(pid=projectElement,appversion=appversion['appversion'],date__range=(day1,day2)))
-
+    # Common Data
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
     errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
     instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
-
+    AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
+
+
+
+
+
+    # Chart 0 session by appversion
+    appversions = AppruncountElemtns.values('appversion').distinct().order_by('appversion')
     categories = []
+    appcount_data = {}
+    for appversion in appversions:
+        appcount_data[appversion['appversion']] = []
+
+    for i in range(retention-1,-1,-1):
+        day1 = getTimezoneMidNight('UTC') + datetime.timedelta(days =  -i)
+        categories.append(day1.strftime('%b-%d'))
+        for appversion in appversions:
+            #appcount_data[appversion['appversion']].append(Appruncount.objects.filter(pid=projectElement,appversion=appversion['appversion'],date__range=(day1,day2)))
+            runcounts = Appruncount.objects.filter(pid=projectElement,appversion=appversion['appversion'],date=day1.strftime('20%y-%m-%d'))
+            result_runcount = 0
+            for runcount in runcounts:
+                result_runcount = result_runcount + runcount.runcount
+            appcount_data[appversion['appversion']].append(result_runcount);
+
+    appver_data = []
+
+    for appversion in appversions:
+        appver_data.append(
+            {
+                'name': appversion['appversion'],
+                'data': appcount_data[appversion['appversion']]
+            }
+        )
+
+    chart_sbav = {'categories':categories,'data':appver_data}
+    result['chart_sbav'] = chart_sbav
+    #print 'chart0', chart_sbav
+
+
+    # Chart 1 error by appversion
     appversions = instanceElements.values('appversion').distinct().order_by('appversion')
     appcount_data = {}
-
+    categories = []
     for appversion in appversions:
         appcount_data[appversion['appversion']] = []
 
@@ -117,6 +142,7 @@ def chartdata(request,apikey):
     chart1 = {'categories':categories,'data':appver_data}
     result['chart1'] = chart1
 
+    #print 'chart1', chart1
 
     #chart2
     chart2 = []

@@ -411,7 +411,7 @@ def receive_exception(request):
     #step5: 이벤트패스 생성
     #print 'here! ' + instanceElement.idinstance
     #instanceElement.update()
-    print 'instanceElement.idinstance',instanceElement.idinstance
+    print >> sys.stderr, 'instanceElement.idinstance',instanceElement.idinstance
     eventpath = jsonData['eventpaths']
 
     depth = 10

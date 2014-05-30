@@ -1615,10 +1615,10 @@ $("head").styleReady(function(){
         });
         function DrawChart_sbav(categories,data){
             $('.notHover').eq(1).empty().append($('<td id="sbav"></td>'))
-            chart3 = new Highcharts.Chart({
+            chart_sbav = new Highcharts.Chart({
                 chart: {
                     type: 'area',
-                    renderTo: 'ebav'
+                    renderTo: 'sbav'
                 },
                 colors: [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ],
                 title: {
@@ -1642,7 +1642,7 @@ $("head").styleReady(function(){
                 },
                 tooltip: {
                     shared: true,
-                    valueSuffix: ' errors'
+                    valueSuffix: ' sessions'
                 },
                 plotOptions: {
                     series: {
@@ -1667,7 +1667,7 @@ $("head").styleReady(function(){
         }
         function DrawChart1(categories,data){
             $('.notHover').eq(2).empty().append($('<td id="ebav"></td>'))
-            chart3 = new Highcharts.Chart({
+            chart1 = new Highcharts.Chart({
                 chart: {
                     type: 'area',
                     renderTo: 'ebav'
@@ -1797,7 +1797,7 @@ $("head").styleReady(function(){
             var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
             for(var i=0;i<data[0]['data'].length;i++)
                 data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
-            chart3 = new Highcharts.Chart({
+            chart4 = new Highcharts.Chart({
                 chart: {
                     type: 'bar',
                     renderTo: 'ebas'
@@ -1835,7 +1835,7 @@ $("head").styleReady(function(){
 
         function DrawChart5(categories,data){
             $('.notHover').eq(6).empty().append($('<td id="vers"></td>'))
-            chart4 = new Highcharts.Chart({
+            chart5 = new Highcharts.Chart({
                 chart: {
                     type: 'bar',
                     renderTo: 'vers'

@@ -1923,6 +1923,7 @@ table.content-small {
 #container.svg			#content-container > .title[data="statistics"] { background: url("./images/statistics.svg") no-repeat; }
 #container				#content-container > .title[data="statistics"],
 #container.decelerate	#content-container > .title[data="statistics"] { background: url("./images/statistics.png") no-repeat; }
+                        #content-container > .title[data="session"]:before { padding-left: 0px; }
 						#content-container > .title[data="class"]:before { padding-left: 0px; }
 						#content-container > .title[data="device"]:before { padding-left: 0px; }
 						#content-container > .title[data="country"]:before { padding-left: 0px; }
