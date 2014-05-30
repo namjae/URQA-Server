@@ -80,7 +80,13 @@ urlpatterns = patterns('',
 
     #Statistics
     url(r'^urqa/project/(?P<apikey>.{8})/statistics/$', 'statistics.views.statistics'),
-    url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata', 'statistics.views.chartdata'),
+    #url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata', 'statistics.views.chartdata'),
+    url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/sbav', 'statistics.views.chartdata_sbav'),
+    url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/ebav', 'statistics.views.chartdata_ebav'),
+    url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/erbc', 'statistics.views.chartdata_erbc'),
+    url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/erbd', 'statistics.views.chartdata_erbd'),
+    url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/erba', 'statistics.views.chartdata_erba'),
+    url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/erbv', 'statistics.views.chartdata_erbv'),
 
     #symbol
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/symbol/list$', 'errors.views.so_list'),
