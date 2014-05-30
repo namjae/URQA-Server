@@ -51,11 +51,7 @@ def statistics(request,apikey):
     #return HttpResponse(tpl.render(ctx))
 
 
-
-
-def chartdata(request,apikey):
-
-
+def chartdata_sbav(request,apikey):
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
@@ -69,13 +65,9 @@ def chartdata(request,apikey):
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
     errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
     AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
-
-
-
-
 
     # Chart 0 session by appversion
     appversions = AppruncountElemtns.values('appversion').distinct().order_by('appversion')
@@ -107,8 +99,26 @@ def chartdata(request,apikey):
 
     chart_sbav = {'categories':categories,'data':appver_data}
     result['chart_sbav'] = chart_sbav
-    #print 'chart0', chart_sbav
 
+    return HttpResponse(json.dumps(result), 'application/json');
+
+def chartdata_ebav(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    print 'retention', retention
+    # Common Data
+    past, today = getTimeRange(retention,projectElement.timezone)
+    #print 'past',past, 'today',today
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+    result = {}
 
     # Chart 1 error by appversion
     appversions = instanceElements.values('appversion').distinct().order_by('appversion')
@@ -142,7 +152,26 @@ def chartdata(request,apikey):
     chart1 = {'categories':categories,'data':appver_data}
     result['chart1'] = chart1
 
-    #print 'chart1', chart1
+    return HttpResponse(json.dumps(result), 'application/json');
+
+
+def chartdata_erbc(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    print 'retention', retention
+    # Common Data
+    past, today = getTimeRange(retention,projectElement.timezone)
+    #print 'past',past, 'today',today
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+    #instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+    result = {}
 
     #chart2
     chart2 = []
@@ -160,6 +189,25 @@ def chartdata(request,apikey):
 
 
     result['chart2'] = chart2
+    return HttpResponse(json.dumps(result), 'application/json');
+
+def chartdata_erbd(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    print 'retention', retention
+    # Common Data
+    past, today = getTimeRange(retention,projectElement.timezone)
+    #print 'past',past, 'today',today
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+    result = {}
 
     #chart3 - Device error
     temp_data = {}
@@ -195,8 +243,26 @@ def chartdata(request,apikey):
     dev_data = [{'name':'Device','data':temp_data}]
     chart3 = {'categories':categories,'data':dev_data}
     result['chart3'] = chart3
-    #print 'chart3',chart3
 
+    return HttpResponse(json.dumps(result), 'application/json');
+
+def chartdata_erba(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    print 'retention', retention
+    # Common Data
+    past, today = getTimeRange(retention,projectElement.timezone)
+    #print 'past',past, 'today',today
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+    result = {}
 
     #chart4
     temp_data = {}
@@ -231,8 +297,29 @@ def chartdata(request,apikey):
     act_data = [{'name':'Activity','data':temp_data}]
     chart4 = {'categories':categories,'data':act_data}
     result['chart4'] = chart4
+    return HttpResponse(json.dumps(result), 'application/json');
 
-    #Chart4
+
+def chartdata_erbv(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    print 'retention', retention
+    # Common Data
+    past, today = getTimeRange(retention,projectElement.timezone)
+    #print 'past',past, 'today',today
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+    result = {}
+
+
+    #Chart5
     categories = []
     ver_data = []
     temp_data = {}
@@ -257,13 +344,7 @@ def chartdata(request,apikey):
             idx += 1
         ver_data.append({'name':t,'data':temp_data[t]})
 
-    #print categories
-    #print ver_data
-
-        #ver_data[appv_idx][]
-    #print categories
     chart5 = {'categories':categories,'data':ver_data}
     result['chart5'] = chart5
 
-    #print 'chart4',chart4
     return HttpResponse(json.dumps(result), 'application/json');
