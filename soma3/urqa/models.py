@@ -327,3 +327,8 @@ class ProjectSummary(models.Model):
     class Meta:
          managed = False
          db_table = 'apprunCount'
+
+class ErrorsbyApp(models.Model):
+    errorcount = models.IntegerField(primary_key=True)
+    appversion = models.CharField(max_length=45, blank=True)
+    errorday = models.CharField(max_length=45, blank=True)

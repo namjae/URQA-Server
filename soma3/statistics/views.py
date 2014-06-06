@@ -4,7 +4,7 @@
 import json
 import operator
 import datetime
-
+import sys
 from django.template import Context, loader
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -24,7 +24,7 @@ from urqa.models import AuthUser
 from urqa.models import Errors
 from urqa.models import Instances
 from urqa.models import Appruncount
-
+from urqa.models import ErrorsbyApp
 def statistics(request,apikey):
     username = request.user
 
@@ -111,45 +111,61 @@ def chartdata_ebav(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
     # Common Data
-    past, today = getTimeRange(retention,projectElement.timezone)
-    #print 'past',past, 'today',today
-    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
-    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
 
-    # Chart 1 error by appversion
-    appversions = instanceElements.values('appversion').distinct().order_by('appversion')
     appcount_data = {}
     categories = []
-    for appversion in appversions:
-        appcount_data[appversion['appversion']] = []
+    appver_data = []
+
+    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(A.datetime, '%%m-%%d') as errorday "
+    sql = sql + "from instances A, errors B "
+    sql = sql + "where A.iderror = B.iderror "
+    sql = sql + "and pid = %(pidinput)s "
+    sql = sql + "and B.status in (0,1) "
+    sql = sql + "and A.datetime > (curdate() - interval %(intervalinput)s day) "
+    sql = sql + "group by DATE_FORMAT(A.datetime, '%%m%%d'),appversion"
+    
+    params = {'pidinput':projectElement.pid,'intervalinput':retention - 1}
+    places = ErrorsbyApp.objects.raw(sql, params)
+
+    #listing app version
+    appversions = []
+    for idx, pl in enumerate(places):
+        appversions.append(pl.appversion)
+
+    appversionList = list(set(appversions))
+    appversionList.sort()
+    print >>sys.stderr ,appversionList
+    #loop for retention
+    dates = []
+    for idx, pl in enumerate(places):
+        dates.append(pl.errorday)	
+    print >>sys.stderr, dates
+    dateList = list(set(dates))
+    dateList.sort()
+    print >>sys.stderr, dateList
+    returnValue = []
+    for version in appversionList:
+        dataList = [0] * len(dateList)
+        for index, date in enumerate(dateList):
+            for idx, pl in enumerate(places):
+                if pl.appversion == version and pl.errorday == date:
+                    dataList[index] = pl.errorcount
+
+        returnValue.append(
+            {
+                'name': version, 
+                'data': dataList
+            }
+        )
+
 
     for i in range(retention-1,-1,-1):
         category_time = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
         categories.append(category_time.strftime('%b-%d'))
-        p1, dummy = getTimeRange(i+1, projectElement.timezone)
-        p2, dummy = getTimeRange(i, projectElement.timezone)
-        instances = instanceElements.filter(datetime__range=(p1,p2))
-        for appversion in appversions:
-            appcount_data[appversion['appversion']].append(instances.filter(appversion=appversion['appversion']).count())
-            #print appversion['appversion'], ' hello', instances.filter(appversion=appversion['appversion']).count()
 
-    #print categories
-    #print appcount_data
-
-    appver_data = []
-
-    for appversion in appversions:
-        appver_data.append(
-            {
-                'name': appversion['appversion'],
-                'data': appcount_data[appversion['appversion']]
-            }
-        )
-    chart1 = {'categories':categories,'data':appver_data}
+    chart1 = {'categories':categories,'data':returnValue}
     result['chart1'] = chart1
 
     return HttpResponse(json.dumps(result), 'application/json');
