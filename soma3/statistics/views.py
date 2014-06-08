@@ -4,7 +4,7 @@
 import json
 import operator
 import datetime
-
+import sys
 from django.template import Context, loader
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -24,7 +24,7 @@ from urqa.models import AuthUser
 from urqa.models import Errors
 from urqa.models import Instances
 from urqa.models import Appruncount
-
+from urqa.models import ErrorsbyApp
 def statistics(request,apikey):
     username = request.user
 
@@ -51,11 +51,7 @@ def statistics(request,apikey):
     #return HttpResponse(tpl.render(ctx))
 
 
-
-
-def chartdata(request,apikey):
-
-
+def chartdata_sbav(request,apikey):
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
@@ -69,13 +65,9 @@ def chartdata(request,apikey):
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
     errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
     AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
-
-
-
-
 
     # Chart 0 session by appversion
     appversions = AppruncountElemtns.values('appversion').distinct().order_by('appversion')
@@ -107,42 +99,92 @@ def chartdata(request,apikey):
 
     chart_sbav = {'categories':categories,'data':appver_data}
     result['chart_sbav'] = chart_sbav
-    #print 'chart0', chart_sbav
 
+    return HttpResponse(json.dumps(result), 'application/json');
 
-    # Chart 1 error by appversion
-    appversions = instanceElements.values('appversion').distinct().order_by('appversion')
+def chartdata_ebav(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    # Common Data
+    result = {}
+
     appcount_data = {}
     categories = []
-    for appversion in appversions:
-        appcount_data[appversion['appversion']] = []
+    appver_data = []
+
+    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(A.datetime, '%%m-%%d') as errorday "
+    sql = sql + "from instances A, errors B "
+    sql = sql + "where A.iderror = B.iderror "
+    sql = sql + "and pid = %(pidinput)s "
+    sql = sql + "and B.status in (0,1) "
+    sql = sql + "and A.datetime > (curdate() - interval %(intervalinput)s day) "
+    sql = sql + "group by DATE_FORMAT(A.datetime, '%%m%%d'),appversion"
+    
+    params = {'pidinput':projectElement.pid,'intervalinput':retention - 1}
+    places = ErrorsbyApp.objects.raw(sql, params)
+
+    #listing app version
+    appversions = []
+    for idx, pl in enumerate(places):
+        appversions.append(pl.appversion)
+
+    appversionList = list(set(appversions))
+    appversionList.sort()
+    #loop for retention
+    dates = []
+    for idx, pl in enumerate(places):
+        dates.append(pl.errorday)	
+    dateList = list(set(dates))
+    dateList.sort()
+    returnValue = []
+    for version in appversionList:
+        dataList = [0] * len(dateList)
+        for index, date in enumerate(dateList):
+            for idx, pl in enumerate(places):
+                if pl.appversion == version and pl.errorday == date:
+                    dataList[index] = pl.errorcount
+
+        returnValue.append(
+            {
+                'name': version, 
+                'data': dataList
+            }
+        )
+
 
     for i in range(retention-1,-1,-1):
         category_time = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
         categories.append(category_time.strftime('%b-%d'))
-        p1, dummy = getTimeRange(i+1, projectElement.timezone)
-        p2, dummy = getTimeRange(i, projectElement.timezone)
-        instances = instanceElements.filter(datetime__range=(p1,p2))
-        for appversion in appversions:
-            appcount_data[appversion['appversion']].append(instances.filter(appversion=appversion['appversion']).count())
-            #print appversion['appversion'], ' hello', instances.filter(appversion=appversion['appversion']).count()
 
-    #print categories
-    #print appcount_data
-
-    appver_data = []
-
-    for appversion in appversions:
-        appver_data.append(
-            {
-                'name': appversion['appversion'],
-                'data': appcount_data[appversion['appversion']]
-            }
-        )
-    chart1 = {'categories':categories,'data':appver_data}
+    chart1 = {'categories':categories,'data':returnValue}
     result['chart1'] = chart1
+    print >>sys.stderr, chart1
+    return HttpResponse(json.dumps(result), 'application/json');
 
-    #print 'chart1', chart1
+
+def chartdata_erbc(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    print 'retention', retention
+    # Common Data
+    past, today = getTimeRange(retention,projectElement.timezone)
+    #print 'past',past, 'today',today
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+    #instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+    result = {}
 
     #chart2
     chart2 = []
@@ -160,6 +202,25 @@ def chartdata(request,apikey):
 
 
     result['chart2'] = chart2
+    return HttpResponse(json.dumps(result), 'application/json');
+
+def chartdata_erbd(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    print 'retention', retention
+    # Common Data
+    past, today = getTimeRange(retention,projectElement.timezone)
+    #print 'past',past, 'today',today
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+    result = {}
 
     #chart3 - Device error
     temp_data = {}
@@ -195,8 +256,26 @@ def chartdata(request,apikey):
     dev_data = [{'name':'Device','data':temp_data}]
     chart3 = {'categories':categories,'data':dev_data}
     result['chart3'] = chart3
-    #print 'chart3',chart3
 
+    return HttpResponse(json.dumps(result), 'application/json');
+
+def chartdata_erba(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    print 'retention', retention
+    # Common Data
+    past, today = getTimeRange(retention,projectElement.timezone)
+    #print 'past',past, 'today',today
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+    result = {}
 
     #chart4
     temp_data = {}
@@ -231,8 +310,29 @@ def chartdata(request,apikey):
     act_data = [{'name':'Activity','data':temp_data}]
     chart4 = {'categories':categories,'data':act_data}
     result['chart4'] = chart4
+    return HttpResponse(json.dumps(result), 'application/json');
 
-    #Chart4
+
+def chartdata_erbv(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    print 'retention', retention
+    # Common Data
+    past, today = getTimeRange(retention,projectElement.timezone)
+    #print 'past',past, 'today',today
+    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+    result = {}
+
+
+    #Chart5
     categories = []
     ver_data = []
     temp_data = {}
@@ -257,13 +357,7 @@ def chartdata(request,apikey):
             idx += 1
         ver_data.append({'name':t,'data':temp_data[t]})
 
-    #print categories
-    #print ver_data
-
-        #ver_data[appv_idx][]
-    #print categories
     chart5 = {'categories':categories,'data':ver_data}
     result['chart5'] = chart5
 
-    #print 'chart4',chart4
     return HttpResponse(json.dumps(result), 'application/json');
