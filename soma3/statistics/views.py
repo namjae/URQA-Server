@@ -136,15 +136,12 @@ def chartdata_ebav(request,apikey):
 
     appversionList = list(set(appversions))
     appversionList.sort()
-    print >>sys.stderr ,appversionList
     #loop for retention
     dates = []
     for idx, pl in enumerate(places):
         dates.append(pl.errorday)	
-    print >>sys.stderr, dates
     dateList = list(set(dates))
     dateList.sort()
-    print >>sys.stderr, dateList
     returnValue = []
     for version in appversionList:
         dataList = [0] * len(dateList)
@@ -167,7 +164,7 @@ def chartdata_ebav(request,apikey):
 
     chart1 = {'categories':categories,'data':returnValue}
     result['chart1'] = chart1
-
+    print >>sys.stderr, chart1
     return HttpResponse(json.dumps(result), 'application/json');
 
 
