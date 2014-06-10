@@ -22,7 +22,7 @@ from oauth2client.client import OAuth2WebServerFlow
 CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'google_client_secrets.json')
 FLOW = flow_from_clientsecrets(CLIENT_SECRETS,
                                    scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
-                                   redirect_uri="http://ur-qa.com:9000/urqa/user/auth_return")
+                                   redirect_uri="http://urqa.io/urqa/user/auth_return")
 
 def login_by_google(request):
 
