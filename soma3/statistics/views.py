@@ -125,7 +125,7 @@ def chartdata_ebav(request,apikey):
     sql = sql + "and B.status in (0,1) "
     sql = sql + "and A.datetime > (curdate() - interval %(intervalinput)s day) "
     sql = sql + "group by DATE_FORMAT(A.datetime, '%%m%%d'),appversion"
-    
+
     params = {'pidinput':projectElement.pid,'intervalinput':retention - 1}
     places = ErrorsbyApp.objects.raw(sql, params)
 
@@ -139,10 +139,17 @@ def chartdata_ebav(request,apikey):
     #loop for retention
     dates = []
     for idx, pl in enumerate(places):
-        dates.append(pl.errorday)	
-    dateList = list(set(dates))
-    dateList.sort()
+        dates.append(pl.errorday)
+    print >> sys.stderr,'dates',dates
+    #dateList = list(set(dates))
+    #dateList.sort()
+    dateList = []
+    for i in range(retention-1,-1,-1):
+        day1 = getTimezoneMidNight('UTC') + datetime.timedelta(days =  -i)
+        dateList.append(day1.strftime('%m-%d'))
+        categories.append(day1.strftime('%b-%d'))
     returnValue = []
+    #print >> sys.stderr,'dateList',dateList
     for version in appversionList:
         dataList = [0] * len(dateList)
         for index, date in enumerate(dateList):
@@ -152,19 +159,62 @@ def chartdata_ebav(request,apikey):
 
         returnValue.append(
             {
-                'name': version, 
+                'name': version,
                 'data': dataList
             }
         )
 
 
-    for i in range(retention-1,-1,-1):
-        category_time = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
-        categories.append(category_time.strftime('%b-%d'))
+    #Fixed, Ignore 찾기
+    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(A.datetime, '%%m-%%d') as errorday "
+    sql = sql + "from instances A, errors B "
+    sql = sql + "where A.iderror = B.iderror "
+    sql = sql + "and pid = %(pidinput)s "
+    sql = sql + "and B.status in (2) "
+    sql = sql + "and A.datetime > (curdate() - interval %(intervalinput)s day) "
+    sql = sql + "group by DATE_FORMAT(A.datetime, '%%m%%d'),appversion"
 
+    params = {'pidinput':projectElement.pid,'intervalinput':retention - 1}
+    places = ErrorsbyApp.objects.raw(sql, params)
+
+    dataList = [0] * len(dateList)
+    for index, date in enumerate(dateList):
+        for idx, pl in enumerate(places):
+            if pl.errorday == date:
+                dataList[index] = pl.errorcount
+    if max(dataList) > 0:
+        returnValue.append(
+            {
+                'name': 'Fixed',
+                'data': dataList
+            }
+        )
+    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(A.datetime, '%%m-%%d') as errorday "
+    sql = sql + "from instances A, errors B "
+    sql = sql + "where A.iderror = B.iderror "
+    sql = sql + "and pid = %(pidinput)s "
+    sql = sql + "and B.status in (3) "
+    sql = sql + "and A.datetime > (curdate() - interval %(intervalinput)s day) "
+    sql = sql + "group by DATE_FORMAT(A.datetime, '%%m%%d'),appversion"
+
+    params = {'pidinput':projectElement.pid,'intervalinput':retention - 1}
+    places = ErrorsbyApp.objects.raw(sql, params)
+
+    dataList = [0] * len(dateList)
+    for index, date in enumerate(dateList):
+        for idx, pl in enumerate(places):
+            if pl.errorday == date:
+                dataList[index] = pl.errorcount
+    if max(dataList) > 0:
+        returnValue.append(
+            {
+                'name': 'Ignore',
+                'data': dataList
+            }
+        )
     chart1 = {'categories':categories,'data':returnValue}
     result['chart1'] = chart1
-    print >>sys.stderr, chart1
+    #print >>sys.stderr, chart1
     return HttpResponse(json.dumps(result), 'application/json');
 
 
