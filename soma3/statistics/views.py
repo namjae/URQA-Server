@@ -166,6 +166,7 @@ def chartdata_ebav(request,apikey):
 
 
     #Fixed, Ignore 찾기
+    """
     sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(A.datetime, '%%m-%%d') as errorday "
     sql = sql + "from instances A, errors B "
     sql = sql + "where A.iderror = B.iderror "
@@ -212,6 +213,7 @@ def chartdata_ebav(request,apikey):
                 'data': dataList
             }
         )
+    """
     chart1 = {'categories':categories,'data':returnValue}
     result['chart1'] = chart1
     #print >>sys.stderr, chart1
