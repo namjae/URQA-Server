@@ -680,6 +680,8 @@ def filter_view(request,apikey):
         v = e['osversion'].split('.')
         if len(v) < 2:
             v.append(' ')
+        if len(v) < 3:
+            v.append(' ')
         if v[0] != prev_v[0] or v[1] != prev_v[1]:
             prev_v = v
             os_idx += 1
@@ -694,6 +696,10 @@ def filter_view(request,apikey):
     prev_v = ['-1','-1','-1']
     for e in valid_app:
         v = e['appversion'].split('.')
+        if len(v) < 2:
+            v.append(' ')
+        if len(v) < 3:
+            v.append(' ')
         if v[0] != prev_v[0] or v[1] != prev_v[1]:
             prev_v = v
             app_idx += 1
