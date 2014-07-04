@@ -17,7 +17,7 @@
  
 ## Licenses
  * Server (include overall backend features)  - GPL 3.0
- * Client (ios, android) 라이센스 - Apache 2.0 
+ * Client (ios, android, phonegap.. )  - Apache 2.0 
  
 ## UrQA User Guide
 * https://docs.google.com/document/d/10ZR7Rken21j8c3WZTiPSBi5-pXlYSQHJfsc3h7QCHaE/edit?usp=sharing 
