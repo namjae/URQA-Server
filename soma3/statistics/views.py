@@ -19,12 +19,14 @@ from common import getSettingDict
 from utility import getTimeRange
 from utility import Status
 from utility import getTimezoneMidNight
+from utility import toTimezone
 
 from urqa.models import AuthUser
 from urqa.models import Errors
 from urqa.models import Instances
 from urqa.models import Appruncount
 from urqa.models import ErrorsbyApp
+from urqa.models import SessionbyApp
 def statistics(request,apikey):
     username = request.user
 
@@ -62,10 +64,34 @@ def chartdata_sbav(request,apikey):
 
     print 'retention', retention
     # Common Data
+    #midnight = getTimezoneMidNight(projectElement.timezone)
+    #print >> sys.stderr,projectElement.timezone,midnight
+    #print >> sys.stderr,'utc',toTimezone(midnight,'UTC')
     past, today = getTimeRange(retention,projectElement.timezone)
-    #print 'past',past, 'today',today
-    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-    #instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+    print >> sys.stderr,'time',past,today
+
+
+    sql = 'select idappruncount2 as idsessionbyapp, sum(appruncount) as sessioncount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC","%(timezone)s"),"%%y-%%m-%%d") as sessionday'
+    sql = sql + ' from urqa.appruncount2'
+    sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s'
+    sql = sql + ' Group by appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC","%(timezone)s"),"%%y-%%m-%%d")'
+    #sql = sql + ' Group by sessionday'
+
+    #print >> sys.stderr,'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second);
+    #params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':past}
+    params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+    places = SessionbyApp.objects.raw(sql, params)
+    print >> sys.stderr,'places',places
+
+    appversions = []
+    dates = []
+    for idx, pl in enumerate(places):
+        appversions.append(pl.appversion)
+        dates.append(pl.sessionday)
+        print >> sys.stderr,pl.appversion, pl.idsessionbyapp, pl.sessionday
+    print >> sys.stderr,'appversion',appversions
+    print >> sys.stderr,'dates',dates
+
     AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
 
