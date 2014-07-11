@@ -71,12 +71,15 @@ def chartdata_sbav(request,apikey):
     print >> sys.stderr,'time',past,today
 
 
-    sql = 'select sum(appruncount) as sessioncount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC","%(timezone)s"),"%%y-%%m-%%d") as sessionday'
+    sql = 'select idappruncount2 as idsessionbyapp, sum(appruncount) as sessioncount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC","%(timezone)s"),"%%y-%%m-%%d") as sessionday'
     sql = sql + ' from urqa.appruncount2'
     sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s'
-    sql = sql + ' Group by appversion, sessionday'
+    sql = sql + ' Group by appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC","%(timezone)s"),"%%y-%%m-%%d")'
+    #sql = sql + ' Group by sessionday'
 
-    params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':past}
+    #print >> sys.stderr,'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second);
+    #params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':past}
+    params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = SessionbyApp.objects.raw(sql, params)
     print >> sys.stderr,'places',places
 
@@ -85,7 +88,7 @@ def chartdata_sbav(request,apikey):
     for idx, pl in enumerate(places):
         appversions.append(pl.appversion)
         dates.append(pl.sessionday)
-        print >> sys.stderr,pl
+        print >> sys.stderr,pl.appversion, pl.idsessionbyapp, pl.sessionday
     print >> sys.stderr,'appversion',appversions
     print >> sys.stderr,'dates',dates
 

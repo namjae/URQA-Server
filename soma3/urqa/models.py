@@ -344,6 +344,7 @@ class ErrorsbyApp(models.Model):
     errorday = models.CharField(max_length=45, blank=True)
 
 class SessionbyApp(models.Model):
-    sessioncount = models.IntegerField(primary_key=True)
+    idsessionbyapp = models.IntegerField(primary_key=True)
+    sessioncount = models.IntegerField(blank=True, null=True)
     appversion = models.CharField(max_length=45, blank=True)
-    sessionday = models.DateTimeField(blank=True, null=True)
+    sessionday = models.CharField(max_length=45, blank=True)
