@@ -345,6 +345,6 @@ class ErrorsbyApp(models.Model):
 
 class SessionbyApp(models.Model):
     idsessionbyapp = models.IntegerField(primary_key=True)
-    sessioncount = models.IntegerField(blank=True, null=True)
+    runcount = models.IntegerField(blank=True, null=True)
     appversion = models.CharField(max_length=45, blank=True)
     sessionday = models.CharField(max_length=45, blank=True)

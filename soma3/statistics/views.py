@@ -71,61 +71,73 @@ def chartdata_sbav(request,apikey):
     print >> sys.stderr,'time',past,today
 
 
-    sql = 'select idappruncount2 as idsessionbyapp, sum(appruncount) as sessioncount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC","%(timezone)s"),"%%y-%%m-%%d") as sessionday'
+    sql = 'select idappruncount2 as idsessionbyapp, sum(appruncount) as runcount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC",%(timezone)s),"%%y-%%m-%%d") as sessionday'
     sql = sql + ' from urqa.appruncount2'
     sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s'
-    sql = sql + ' Group by appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC","%(timezone)s"),"%%y-%%m-%%d")'
+    sql = sql + ' Group by appversion, sessionday'
     #sql = sql + ' Group by sessionday'
 
     #print >> sys.stderr,'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second);
     #params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':past}
     params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = SessionbyApp.objects.raw(sql, params)
-    print >> sys.stderr,'places',places
+    #print >> sys.stderr,'places',places
 
     appversions = []
     dates = []
     for idx, pl in enumerate(places):
-        appversions.append(pl.appversion)
-        dates.append(pl.sessionday)
-        print >> sys.stderr,pl.appversion, pl.idsessionbyapp, pl.sessionday
+        if not pl.appversion in appversions:
+            appversions.append(pl.appversion)
+        if not pl.sessionday in dates:
+            dates.append(pl.sessionday)
     print >> sys.stderr,'appversion',appversions
     print >> sys.stderr,'dates',dates
 
-    AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
 
     # Chart 0 session by appversion
-    appversions = AppruncountElemtns.values('appversion').distinct().order_by('appversion')
+    #appversions = AppruncountElemtns.values('appversion').distinct().order_by('appversion')
     categories = []
     appcount_data = {}
     for appversion in appversions:
-        appcount_data[appversion['appversion']] = []
+        appcount_data[appversion] = []
+    print >> sys.stderr,'appcount_data',appcount_data
 
     for i in range(retention-1,-1,-1):
-        day1 = getTimezoneMidNight('UTC') + datetime.timedelta(days =  -i)
+        day1 = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
+        #print >> sys.stderr,'day',day1,day1.month,day1.day,day1.hour,day1.minute
+        #print >> sys.stderr,'utc',toTimezone(day1,'UTC')
         categories.append(day1.strftime('%b-%d'))
+
         for appversion in appversions:
             #appcount_data[appversion['appversion']].append(Appruncount.objects.filter(pid=projectElement,appversion=appversion['appversion'],date__range=(day1,day2)))
-            runcounts = Appruncount.objects.filter(pid=projectElement,appversion=appversion['appversion'],date=day1.strftime('20%y-%m-%d'))
+            #runcounts = Appruncount.objects.filter(pid=projectElement,appversion=appversion['appversion'],date=day1.strftime('20%y-%m-%d'))
             result_runcount = 0
-            for runcount in runcounts:
-                result_runcount = result_runcount + runcount.runcount
-            appcount_data[appversion['appversion']].append(result_runcount);
+            for idx, pl in enumerate(places):
+                if pl.appversion == appversion and pl.sessionday == day1.strftime('%y-%m-%d'):
+                    result_runcount = pl.runcount
+                    print >> sys.stderr,appversion,pl.sessionday,pl.runcount
+                    break
+
+            #for runcount in runcounts:
+            #    result_runcount = result_runcount + runcount.runcount
+            appcount_data[appversion].append(int(result_runcount));
 
     appver_data = []
 
     for appversion in appversions:
         appver_data.append(
             {
-                'name': appversion['appversion'],
-                'data': appcount_data[appversion['appversion']]
+                'name': appversion,
+                'data': appcount_data[appversion]
             }
         )
 
     chart_sbav = {'categories':categories,'data':appver_data}
     result['chart_sbav'] = chart_sbav
 
+    print >> sys.stderr, 'result',result
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebav(request,apikey):
