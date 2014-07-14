@@ -348,3 +348,8 @@ class SessionbyApp(models.Model):
     runcount = models.IntegerField(blank=True, null=True)
     appversion = models.CharField(max_length=45, blank=True)
     sessionday = models.CharField(max_length=45, blank=True)
+
+class ErrorbyRank(models.Model):
+    iderrorbyrank = models.IntegerField(primary_key=True)
+    errorcount = models.IntegerField(blank=True, null=True)
+    errorrank = models.IntegerField(blank=True, null=True)

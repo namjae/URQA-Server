@@ -11,6 +11,8 @@ import datetime
 import time
 import shutil
 import pytz
+import sys
+
 #from goto import goto, label
 
 from django.utils.timezone import utc
@@ -54,6 +56,7 @@ from urqa.models import Session
 from urqa.models import Sessionevent
 from urqa.models import Eventpaths
 from urqa.models import Proguardmap
+from urqa.models import ErrorsbyApp
 
 #from utility import getTemplatePath
 from utility import getTimeRange
@@ -62,6 +65,7 @@ from utility import RANK
 from utility import numbertostrcomma
 from utility import get_dict_value_matchin_key
 #from utility import get_dict_value_matchin_number
+from utility import getTimezoneMidNight
 from utility import Status
 from utility import toTimezone
 from utility import getUTCawaredatetime
@@ -594,69 +598,58 @@ def projectdashboard(request, apikey):
 
 def dailyesgraph(request, apikey):
 
-
-    #기본 데이터
     default = {
-	    "max":{"key":5, "value":0},
-	    "tags":[
-	        ]
+        "max":{"key":5, "value":0},
+        "tags":[
+            ]
         }
 
-    #프로젝트 ID에 맞는 에러들을 가져오기 위함
-    try:
-        ProjectElement = Projects.objects.get(apikey= apikey)
-    except ObjectDoesNotExist:
-        print 'invalid pid'
-        return HttpResponse(json.dumps(default), 'application/json');
+    retention = TimeRange.weekly #7일치 데이터를 보여줌
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
 
+    if not valid:
+        return HttpResponse(json.dumps(default),'application/json')
 
-    #오늘 날짜 및 일주일 전을 계산
-    timerange = TimeRange.weekly
-    week , today = getTimeRange(timerange,ProjectElement.timezone)
+    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'%%y-%%m-%%d') as errorday "
+    sql = sql + "from instances A, errors B "
+    sql = sql + "where A.iderror = B.iderror "
+    sql = sql + "and pid = %(pidinput)s "
+    sql = sql + "and B.status in (0,1) "
+    sql = sql + "and A.datetime > %(pasttime)s"
+    sql = sql + "group by errorday"
 
-    #defalut값에 날짜를 대입함
+    past, today = getTimeRange(retention,projectElement.timezone)
+
+    params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+    places = ErrorsbyApp.objects.raw(sql, params)
+
     maxvalue = 0
-    errorElements = Errors.objects.filter(pid=ProjectElement,lastdate__range=(week , today))
+    value = {'key' : 0 , 'value' : 0}
+    for i in range(retention-1,-1,-1):
+        day1 = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
+        #print >> sys.stderr,'day',day1,day1.month,day1.day,day1.hour,day1.minute
+        #print >> sys.stderr,'utc',toTimezone(day1,'UTC')
 
-    for i in range(0,timerange):
-        value = {'key' : 0 , 'value' : 0}
-        begin_date = today + datetime.timedelta(days  = i-(timerange) )
-        end_date = today + datetime.timedelta(days  = i-(timerange-1) )
-
-        instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range=(begin_date,end_date)).count()
-        #instanceCount = Instancecount.objects.filter(pid = ProjectElement,date=tmpdate).aggregate(Sum('count'))['count__sum']
-
-        if instanceCount:
-            value['value'] = instanceCount
-            if maxvalue < instanceCount:  #maxvalue!
+        instanceCount = 0
+        for idx, pl in enumerate(places):
+            if day1.strftime('%y-%m-%d') == pl.errorday:
+                instanceCount = pl.errorcount
+                break;
+        value = {'key' : 0 , 'value' : instanceCount}
+        if maxvalue < instanceCount:  #maxvalue!
                 maxvalue = instanceCount
-        else:
-            value['value'] = 0
-
-        #timezone 적용
-        adtimezone = toTimezone(end_date,ProjectElement.timezone)
-        value['key'] = adtimezone.__format__('%m / %d')
+        value['key'] = day1.strftime('%m / %d')
         default['tags'].append(value)
-
     default['max']['key'] = len(default['tags'])
     default['max']['value'] = maxvalue
-
-    #print 'default',default
 
     return HttpResponse(json.dumps(default),'application/json')
 
 def typeesgraph(request, apikey):
 
+    #print >> sys.stderr,'typeesgraph'
     #프로젝트 ID에 맞는 에러들을 가져오기 위함
-    try:
-        ProjectElement = Projects.objects.get(apikey=apikey)
-    except ObjectDoesNotExist:
-        print 'invalid pid'
-        return HttpResponse(json.dumps(default), 'application/json')
-
-    timerange = TimeRange.weekly
-    week , today = getTimeRange(timerange,ProjectElement.timezone)
-
     default = {
         "tags":[
             {"key":"Unhandle", "value":0},
@@ -667,21 +660,39 @@ def typeesgraph(request, apikey):
             ]
         }
 
+    try:
+        projectElement = Projects.objects.get(apikey=apikey)
+    except ObjectDoesNotExist:
+        #print 'invalid pid'
+        return HttpResponse(json.dumps(default), 'application/json')
 
-    for i in range(RANK.Unhandle,RANK.Minor+1): # unhandled 부터 Native 까지
-        errorElements = Errors.objects.filter(pid=ProjectElement,lastdate__range=(week,today),rank=i)
-        instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range=(week,today)).count()
-        #instanceCount = Instancecount.objects.filter(pid=ProjectElement,date__gte=week,rank=i).aggregate(Sum('count'))['count__sum']
-        #print 'instanceCount',instanceCount
-        if instanceCount:
-            default['tags'][i]['value'] = instanceCount
+    retention = TimeRange.weekly
+    past, today = getTimeRange(retention,projectElement.timezone)
 
+
+    sql = 'select B.iderror as iderrorbyrank, count(*) as errorcount, rank as errorrank '
+    sql = sql + ' from instances A, errors B '
+    sql = sql + ' where A.iderror = B.iderror '
+    sql = sql + ' and B.status in (0,1) '
+    sql = sql + ' and B.pid = %(pidinput)s and datetime > %(pasttime)s'
+    sql = sql + ' group by errorrank'
+
+    params = {'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+    places = ErrorsbyApp.objects.raw(sql, params)
+
+    for i in range(RANK.Unhandle,RANK.Minor+1):
+        for idx, pl in enumerate(places):
+            if pl.errorrank == i:
+                default['tags'][i]['value'] = pl.errorcount
+                break
+            #print >> sys.stderr,pl.iderrorbyrank,pl.errorcount,pl.errorrank
     popcount = RANK.Unhandle
     for i in range(RANK.Unhandle,RANK.Minor+1):
-        if default['tags'][i - popcount]['value'] == 0:
-            default['tags'].pop(i - popcount)
-            popcount+=1
+        if default['tags'][i-popcount]['value'] == 0:
+            default['tags'].pop(i-popcount)
+            popcount += 1
 
+   
     result = json.dumps(default)
     return HttpResponse(result,'application/json')
 
@@ -689,7 +700,7 @@ def typeescolor(request ,apikey):
 
     timerange = TimeRange.weekly
 
-
+    #print >> sys.stderr,'typeescolor'
 
     default = {
         "tags":[
@@ -705,7 +716,7 @@ def typeescolor(request ,apikey):
     try:
         ProjectElement = Projects.objects.get(apikey= apikey)
     except ObjectDoesNotExist:
-        print 'invalid pid'
+        #print 'invalid pid'
         return HttpResponse(json.dumps(default), 'application/json')
 
     week , today = getTimeRange(timerange,ProjectElement.timezone)
@@ -723,6 +734,7 @@ def typeescolor(request ,apikey):
             ColorTable.append(RANK.rankcolorbit[i])
 
     result = json.dumps(ColorTable)
+    print >>sys.stderr,'ColorTable',ColorTable
     return HttpResponse(result,'application/json')
 
 #name, file, tag, counter

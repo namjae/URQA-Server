@@ -75,7 +75,6 @@ def chartdata_sbav(request,apikey):
     sql = sql + ' from urqa.appruncount2'
     sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s'
     sql = sql + ' Group by appversion, sessionday'
-    #sql = sql + ' Group by sessionday'
 
     #print >> sys.stderr,'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second);
     #params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':past}
@@ -162,7 +161,7 @@ def chartdata_ebav(request,apikey):
     sql = sql + "and pid = %(pidinput)s "
     sql = sql + "and B.status in (0,1) "
     sql = sql + "and A.datetime > %(pasttime)s"
-    sql = sql + "group by DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'%%m%%d'),appversion"
+    sql = sql + "group by errorday,appversion"
 
     past, today = getTimeRange(retention,projectElement.timezone)
 
