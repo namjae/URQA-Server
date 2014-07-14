@@ -68,7 +68,7 @@ def chartdata_sbav(request,apikey):
     #print >> sys.stderr,projectElement.timezone,midnight
     #print >> sys.stderr,'utc',toTimezone(midnight,'UTC')
     past, today = getTimeRange(retention,projectElement.timezone)
-    print >> sys.stderr,'time',past,today
+    #print >> sys.stderr,'time',past,today
 
 
     sql = 'select idappruncount2 as idsessionbyapp, sum(appruncount) as runcount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC",%(timezone)s),"%%y-%%m-%%d") as sessionday'
@@ -90,8 +90,8 @@ def chartdata_sbav(request,apikey):
             appversions.append(pl.appversion)
         if not pl.sessionday in dates:
             dates.append(pl.sessionday)
-    print >> sys.stderr,'appversion',appversions
-    print >> sys.stderr,'dates',dates
+    #print >> sys.stderr,'appversion',appversions
+    #print >> sys.stderr,'dates',dates
 
     #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
@@ -102,7 +102,7 @@ def chartdata_sbav(request,apikey):
     appcount_data = {}
     for appversion in appversions:
         appcount_data[appversion] = []
-    print >> sys.stderr,'appcount_data',appcount_data
+    #print >> sys.stderr,'appcount_data',appcount_data
 
     for i in range(retention-1,-1,-1):
         day1 = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
@@ -117,7 +117,7 @@ def chartdata_sbav(request,apikey):
             for idx, pl in enumerate(places):
                 if pl.appversion == appversion and pl.sessionday == day1.strftime('%y-%m-%d'):
                     result_runcount = pl.runcount
-                    print >> sys.stderr,appversion,pl.sessionday,pl.runcount
+                    #print >> sys.stderr,appversion,pl.sessionday,pl.runcount
                     break
 
             #for runcount in runcounts:
@@ -137,7 +137,7 @@ def chartdata_sbav(request,apikey):
     chart_sbav = {'categories':categories,'data':appver_data}
     result['chart_sbav'] = chart_sbav
 
-    print >> sys.stderr, 'result',result
+    #print >> sys.stderr, 'result',result
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebav(request,apikey):
@@ -152,19 +152,21 @@ def chartdata_ebav(request,apikey):
     # Common Data
     result = {}
 
-    appcount_data = {}
+    #appcount_data = {}
     categories = []
-    appver_data = []
+    #appver_data = []
 
-    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(A.datetime, '%%m-%%d') as errorday "
+    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'%%y-%%m-%%d') as errorday "
     sql = sql + "from instances A, errors B "
     sql = sql + "where A.iderror = B.iderror "
     sql = sql + "and pid = %(pidinput)s "
     sql = sql + "and B.status in (0,1) "
-    sql = sql + "and A.datetime > (curdate() - interval %(intervalinput)s day) "
-    sql = sql + "group by DATE_FORMAT(A.datetime, '%%m%%d'),appversion"
+    sql = sql + "and A.datetime > %(pasttime)s"
+    sql = sql + "group by DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'%%m%%d'),appversion"
 
-    params = {'pidinput':projectElement.pid,'intervalinput':retention - 1}
+    past, today = getTimeRange(retention,projectElement.timezone)
+
+    params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = ErrorsbyApp.objects.raw(sql, params)
 
     #listing app version
@@ -183,8 +185,8 @@ def chartdata_ebav(request,apikey):
     #dateList.sort()
     dateList = []
     for i in range(retention-1,-1,-1):
-        day1 = getTimezoneMidNight('UTC') + datetime.timedelta(days =  -i)
-        dateList.append(day1.strftime('%m-%d'))
+        day1 = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
+        dateList.append(day1.strftime('%y-%m-%d'))
         categories.append(day1.strftime('%b-%d'))
     returnValue = []
     #print >> sys.stderr,'dateList',dateList
