@@ -366,7 +366,10 @@ def chartdata_erba(request,apikey):
 
 
 def chartdata_erbv(request,apikey):
-    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    jsonData = json
+
+
+    .loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
     username = request.user
@@ -413,3 +416,47 @@ def chartdata_erbv(request,apikey):
     result['chart5'] = chart5
 
     return HttpResponse(json.dumps(result), 'application/json');
+
+
+def chartdata_erbco(request,apikey):
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
+
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+
+    print 'retention', retention
+    # Common Data
+    result = {}
+
+    #chart4
+    temp_data = {}
+    activities = []
+
+    sql = "select count(*) count, country from errors e, instances i, projects p"
+    sql = sql + "where e.iderror = i.iderror"
+    sql = sql + "and e.pid = p.pid"
+    sql = sql + "and p.name = %(pname)s"
+    sql = sql + "group by country"
+    sql = sql + "order by count desc"
+    sql = sql + "limit 10"
+
+    params = {'pidinput':projectElement.pid}
+    counts = CountrysbyApp.objects.raw(sql, params)
+
+    categories = []
+    temp_data = []
+
+    for idx, pl in enumerate(counts):
+        appversions.append(pl.appversion)
+        categories.append(pl.country)
+        temp_data.append(pl.count)
+
+
+    act_data = [{'name':'Country','data':temp_data}]
+    chart4 = {'categories':categories,'data':act_data}
+    result['chart4'] = chart4
+    return HttpResponse(json.dumps(result), 'application/json');
+

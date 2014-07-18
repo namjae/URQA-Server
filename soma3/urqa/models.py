@@ -332,3 +332,7 @@ class ErrorsbyApp(models.Model):
     errorcount = models.IntegerField(primary_key=True)
     appversion = models.CharField(max_length=45, blank=True)
     errorday = models.CharField(max_length=45, blank=True)
+
+class CountrysbyApp(models.Model):
+    count = models.IntegerField(primary_key=True)
+    country = models.CharField(max_length=45, blank=True)
