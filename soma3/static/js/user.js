@@ -672,6 +672,10 @@ function showPopupMemberjoin()
 		$(this).css({"opacity": 1.0});
 	});
 }
+function showForgetPassword()
+{
+    alert("forget password")
+}
 function hidePopupSymbolUpload()
 {
 	$("#popup-container").stop(true, true);
