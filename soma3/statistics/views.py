@@ -27,6 +27,7 @@ from urqa.models import Instances
 from urqa.models import Appruncount
 from urqa.models import ErrorsbyApp
 from urqa.models import SessionbyApp
+from urqa.models import CountrysbyApp
 def statistics(request,apikey):
     username = request.user
 
@@ -453,7 +454,7 @@ def chartdata_erbv(request,apikey):
 
     return HttpResponse(json.dumps(result), 'application/json');
 
-def chartdata_erbco(request,apikey):
+def chartdata_ebcs(request,apikey):
      jsonData = json.loads(request.POST['json'],encoding='utf-8')
      retention = int(jsonData['retention'])
 
@@ -485,7 +486,6 @@ def chartdata_erbco(request,apikey):
      temp_data = []
 
      for idx, pl in enumerate(counts):
-         appversions.append(pl.appversion)
          categories.append(pl.country)
          temp_data.append(pl.count)
 
