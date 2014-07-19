@@ -1893,6 +1893,46 @@ $("head").styleReady(function(){
                 series: data
             });
         }
+	function DrawChart6(data){
+	     $('.notHover').eq(5).empty().append($('<td id="ebcs"></td>'))
+	     var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
+	     for(var i=0;i<data[0]['data'].length;i++)
+	         data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
+	     chart4 = new Highcharts.Chart({
+	         chart: {
+	             type: 'bar',
+	             renderTo: 'ebcs'
+	         },
+	         title: {
+	             text: ''
+	         },
+	         xAxis: {
+	             categories: categories
+	         },
+	         yAxis: {
+	             min: 0,
+	             title: {
+	                 text: ''
+	             }
+	         },
+	         legend: {
+	             enabled:false
+	         },
+	         tooltip: {
+	             formatter: function() {
+	                 return '<b>Country</b> :' + this.x + '<br/>'+
+	                     '<b>Value</b> :' + this.y;
+	             }
+	         },
+	         plotOptions: {
+	             series: {
+	                 stacking: 'normal'
+	             }
+	         },
+	         series: data
+
+	     });
+	 }
         csrfFunc = function(xhr, settings) {
             var csrftoken = getCookie('csrftoken')
             if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
@@ -1976,7 +2016,19 @@ $("head").styleReady(function(){
                 }
                 , beforeSend: csrfFunc
             });
-
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./chartdata/ebcs' // error count by country
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':retention
+                })}
+                ,success : function(jsonData) {
+                    DrawChart6(jsonData.chart6.categories,jsonData.chart6.data)
+                }
+                , beforeSend: csrfFunc
+            });
             $.ajax( {
                  type :'POST'
                 ,asyn :true

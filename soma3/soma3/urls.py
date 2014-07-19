@@ -87,6 +87,7 @@ urlpatterns = patterns('',
     url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/erbd', 'statistics.views.chartdata_erbd'),
     url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/erba', 'statistics.views.chartdata_erba'),
     url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/erbv', 'statistics.views.chartdata_erbv'),
+    url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/erbco', 'statistics.views.chartdata_erbco'),
 
     #symbol
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/symbol/list$', 'errors.views.so_list'),
