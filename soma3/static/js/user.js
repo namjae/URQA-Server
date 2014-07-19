@@ -461,6 +461,24 @@ function resizePopupMemberjoin()
 		resizeStatusPopupMemberJoin = true;
 	}
 }
+function resizePopupForgetPassword()
+{
+    if($("#popup-forgetpassword").length )
+    {
+        var tops = ($(window).height() - $("#popup-forgetpassword > .body").height()) / 2;
+        var lefts = ($(window).width() - $("#popup-forgetpassword > .body").width()) / 2;
+        if(resizeStatusPopupMemberJoin)
+        {
+            $("#popup-forgetpassword > .body").stop(true, true);
+            $("#popup-forgetpassword > .body").animate({'top': tops, 'left': lefts}, 250, function() { $(this).css({'top': tops, 'left': lefts}); } );
+        }
+        else
+        {
+            $("#popup-forgetpassword > .body").css({'top': tops, 'left': lefts});
+        }
+        resizeStatusPopupMemberJoin = true;
+    }
+}
 function resizePopupNotification()
 {
 	if($("#popup-notification").length )
@@ -2601,6 +2619,7 @@ $("head").styleReady(function(){
 		bodyChecker_confirm = false;
 	$("#popup-uploadsymbol").click(function(){ if(bodyChecker_upsy == false){ hidePopupSymbolUpload(); } bodyChecker_upsy = false; });
 	$("#popup-memberjoin").click(function(){ if(bodyChecker_join == false){ hidePopupMemberjoin(); } bodyChecker_join = false; });
+    $("#popup-forgetpassword").click(function(){ if(bodyChecker_join == false){ hidePopupMemberjoin(); } bodyChecker_join = false; });
 	$("#popup-information").click(function(){ if(bodyChecker_info == false){ hidePopupInformation(); } bodyChecker_info = false; });
 	$("#popup-eventpath").click(function(){ if(bodyChecker_evpt == false){ hidePopupEventpath(); } bodyChecker_evpt = false; });
 	$("#popup-logdata").click(function(){ if(bodyChecker_logd == false){ hidePopupLogdata(); } bodyChecker_logd = false; });
@@ -2609,6 +2628,7 @@ $("head").styleReady(function(){
 	$("#warning-alert").click(function(){ if(bodyChecker_confirm == false){ hideConfirm(); } bodyChecker_confirm = false; });
 	$("#popup-uploadsymbol > .body").click(function(){ bodyChecker_upsy = true; });
 	$("#popup-memberjoin > .body").click(function(){ bodyChecker_join = true; });
+    $("#popup-forgetpassword > .body").click(function(){ bodyChecker_join = true; });
 	$("#popup-information > .body").click(function(){ bodyChecker_info = true; });
 	$("#popup-modifyproject > .body").click(function(){ bodyChecker_addP = true; });
 	$("#popup-createproject > .body").click(function(){ bodyChecker_addP = true; });
