@@ -1,5 +1,5 @@
 # URQA
-* **Homepage**: http://www.ur-qa.com/
+* **Homepage**: http://www.urqa.io/
 * **Service Introduction** :  KOR - https://www.dropbox.com/s/uu356dy829bt384/UrQA%20Intro.pptx 
 * **Committer Group**: https://groups.google.com/forum/#!forum/urqagroup  
 * **User Group Google Grups**: https://groups.google.com/forum/#!forum/urqausergroup 
