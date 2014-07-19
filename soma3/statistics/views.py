@@ -366,10 +366,7 @@ def chartdata_erba(request,apikey):
 
 
 def chartdata_erbv(request,apikey):
-    jsonData = json
-
-
-    .loads(request.POST['json'],encoding='utf-8')
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
     username = request.user
@@ -457,6 +454,6 @@ def chartdata_erbco(request,apikey):
 
     act_data = [{'name':'Country','data':temp_data}]
     chart4 = {'categories':categories,'data':act_data}
-    result['chart4'] = chart4
+    result['chart6'] = chart4
     return HttpResponse(json.dumps(result), 'application/json');
 

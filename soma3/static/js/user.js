@@ -2020,7 +2020,7 @@ $("head").styleReady(function(){
             $.ajax( {
                  type :'POST'
                 ,asyn :true
-                ,url :'./chartdata/ebcs' // error count by country
+                ,url :'./chartdata/erbco' // error count by country
                 ,dataType :"json"
                 ,data:{'json':JSON.stringify({
                     'retention':retention
