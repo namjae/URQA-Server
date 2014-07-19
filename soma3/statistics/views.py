@@ -474,12 +474,12 @@ def chartdata_ebcs(request,apikey):
      sql = "select count(*) count, country from errors e, instances i, projects p"
      sql = sql + "where e.iderror = i.iderror"
      sql = sql + "and e.pid = p.pid"
-     sql = sql + "and p.name = %(pname)s"
+     sql = sql + "and p.pid = %(pname)s"
      sql = sql + "group by country"
      sql = sql + "order by count desc"
      sql = sql + "limit 10"
 
-     params = {'pidinput':projectElement.pid}
+     params = {'pname':projectElement.pid}
      counts = CountrysbyApp.objects.raw(sql, params)
 
      categories = []
