@@ -674,7 +674,21 @@ function showPopupMemberjoin()
 }
 function showForgetPassword()
 {
-    alert("forget password")
+    var oriW = $("#popup-memberjoin > .body").width();
+    var oriH = $("#popup-memberjoin > .body").height();
+
+    $("#popup-memberjoin > .body > input").each(function(){ $(this)[0].value = ""; });
+
+    $("body").css("overflow", "hidden");
+    $("#popup-memberjoin").css("display", "block");
+
+    $("#popup-container").stop(true, true);
+    $("#popup-container").css({"display": "block", "opacity": 0.0});
+    $("#popup-container").animate({
+        opacity: 1.0,
+    }, 250, function(){
+        $(this).css({"opacity": 1.0});
+    });
 }
 function hidePopupSymbolUpload()
 {
