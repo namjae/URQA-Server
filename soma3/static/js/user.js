@@ -1895,7 +1895,7 @@ $("head").styleReady(function(){
             });
         }
 	function DrawChart6(data){
-	     $('.notHover').eq(5).empty().append($('<td id="ebcs"></td>'))
+	     $('.notHover').eq(7).empty().append($('<td id="ebcs"></td>'))
 	     var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
 	     for(var i=0;i<data[0]['data'].length;i++)
 	         data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
@@ -2020,19 +2020,6 @@ $("head").styleReady(function(){
             $.ajax( {
                  type :'POST'
                 ,asyn :true
-                ,url :'./chartdata/ebcs' // error count by country
-                ,dataType :"json"
-                ,data:{'json':JSON.stringify({
-                    'retention':retention
-                })}
-                ,success : function(jsonData) {
-                    DrawChart6(jsonData.chart6.categories,jsonData.chart6.data)
-                }
-                , beforeSend: csrfFunc
-            });
-            $.ajax( {
-                 type :'POST'
-                ,asyn :true
                 ,url :'./chartdata/erbv' // error rate by version
                 ,dataType :"json"
                 ,data:{'json':JSON.stringify({
@@ -2040,6 +2027,19 @@ $("head").styleReady(function(){
                 })}
                 ,success : function(jsonData) {
                     DrawChart5(jsonData.chart5.categories,jsonData.chart5.data)
+                }
+                , beforeSend: csrfFunc
+            });
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./chartdata/ebcs' // error count by country
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify({
+                    'retention':retention
+                })}
+                ,success : function(jsonData) {
+                    DrawChart6(jsonData.chart6.categories,jsonData.chart6.data)
                 }
                 , beforeSend: csrfFunc
             });
