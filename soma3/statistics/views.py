@@ -466,7 +466,7 @@ def chartdata_erbco(request,apikey):
      # Common Data
      result = {}
 
-     #chart4
+     #chart6
      temp_data = {}
      activities = []
 
@@ -491,6 +491,6 @@ def chartdata_erbco(request,apikey):
 
 
      act_data = [{'name':'Country','data':temp_data}]
-     chart4 = {'categories':categories,'data':act_data}
-     result['chart4'] = chart4
+     chart6 = {'categories':categories,'data':act_data}
+     result['chart6'] = chart6
      return HttpResponse(json.dumps(result), 'application/json');
