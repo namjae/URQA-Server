@@ -57,6 +57,8 @@ def resetpassword(request):
     print pname
     print apikey
 
+    return HttpResponseRedirect('/urqa/')
+
 def delete_req(request):
 
     print request.user
