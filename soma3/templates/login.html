@@ -88,6 +88,65 @@
 					<!--<div class="button gray" data-name="Connect with your google account" style="width: 210px; height: 26px"></div>-->
 				</div>
 			</div>
+            <div id="popup-memberjoin2">
+                <div class="body">
+                    <span>User e-mail</span>
+                    <input name="userid" id = 'useremail'type="input" value="" />
+                    <span>Password</span>
+                    <input name="password" id = 'userpassword' type="password" value="" />
+                    <span>Password Confirm</span>
+                    <input name="password2" id = 'userpasswordconfirm' type="password" value="" />
+                    <span>Nickname</span>
+                    <input name="username" id = 'usernickname' type="input" value="" />
+                    <div class="button purple" id = 'registration'data-name="Create an Account" style="width: 210px; height: 39px"></div>
+                    <script>
+                         $(document).ready(function () {
+                            $('#registration').bind('click',function (e){
+                                if($('#useremail').val() == '')
+                                {
+                                    alert('Please Input ID')
+                                    return;
+                                }
+                                else
+                                {
+                                    if(!valid_email($('#useremail').val()))
+                                        return
+                                }
+
+                                if($('#userpassword').val() == '')
+                                {
+                                    alert('Please Input Password')
+                                    return;
+                                }
+                                if($('#userpasswordconfirm').val() == '')
+                                {
+                                    alert('Please Input Password Confirm')
+                                    return;
+                                }
+
+                                if($('#userpassword').val() != $('#userpasswordconfirm').val())
+                                {
+                                    alert('Diffrent Password confirm')
+                                    return;
+                                }
+                                if($('#usernickname').val() == '')
+                                {
+                                    alert('input User Nickname')
+                                    return;
+                                }
+
+                                var logindata = {'username' : $('#useremail').val(),'password' : $('#userpassword').val() , 'usernickname' : $('#usernickname').val() }
+                                post_to_url('/urqa/user/registration',logindata ,"{% csrf_token %}")
+
+                                $('#username').val('')
+                                $('#password').val('')
+                            })
+                         })
+                    </script>
+                    <span></span>
+                    <!--<div class="button gray" data-name="Connect with your google account" style="width: 210px; height: 26px"></div>-->
+                </div>
+            </div>
 		</div>
         <div id="body-header">UrQA - Mobile QA System</div>
         <a href="/static/tutorial/tutorial.html">
