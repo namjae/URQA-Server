@@ -2667,6 +2667,7 @@ $("head").styleReady(function(){
 
 	addWindowResize(resizePopupSymbolUpload)();
 	addWindowResize(resizePopupMemberjoin)();
+    addWindowResize(resizePopupForgetPassword)();
 	addWindowResize(resizePopupNotification)();
 	addWindowResize(resizePopupInformation)();
 	addWindowResize(resizePopupEventpath)();
