@@ -1052,6 +1052,7 @@ $("head").styleReady(function(){
                     DrawChart3(jsonData.chart3.categories,jsonData.chart3.data)
                     DrawChart4(jsonData.chart4.categories,jsonData.chart4.data)
                     DrawChart5(jsonData.chart5.categories,jsonData.chart5.data)
+		    DrawChart6(jsonData.chart6.categories,jsonData.chart6.data)
                 }
                 , beforeSend: function(xhr, settings) {
                     var csrftoken = getCookie('csrftoken')
@@ -1898,7 +1899,7 @@ $("head").styleReady(function(){
 	     var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
 	     for(var i=0;i<data[0]['data'].length;i++)
 	         data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
-	     chart4 = new Highcharts.Chart({
+	     chart6 = new Highcharts.Chart({
 	         chart: {
 	             type: 'bar',
 	             renderTo: 'ebcs'
