@@ -28,6 +28,7 @@ urlpatterns = patterns('',
 
     #user manage
     url(r'^urqa/user/registration$', 'usermanage.views.registration'),
+    url(r'^urqa/user/resetpassword$', 'usermanage.views.resetpassword'),
     url(r'^urqa/user/delete$', 'usermanage.views.delete_req'),
     url(r'^urqa/user/login$', 'usermanage.views.login_req'),
     url(r'^urqa/user/logout$', 'usermanage.views.logout_req'),
