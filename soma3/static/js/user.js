@@ -1894,7 +1894,7 @@ $("head").styleReady(function(){
                 series: data
             });
         }
-	function DrawChart6(data){
+	function DrawChart6(categories,data){
 	     $('.notHover').eq(7).empty().append($('<td id="ebcs"></td>'))
 	     var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
 	     for(var i=0;i<data[0]['data'].length;i++)
