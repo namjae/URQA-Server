@@ -674,13 +674,13 @@ function showPopupMemberjoin()
 }
 function showForgetPassword()
 {
-    var oriW = $("#popup-memberjoin2 > .body").width();
-    var oriH = $("#popup-memberjoin2 > .body").height();
+    var oriW = $("#popup-forgetpassword > .body").width();
+    var oriH = $("#popup-forgetpassword > .body").height();
 
-    $("#popup-memberjoin2 > .body > input").each(function(){ $(this)[0].value = ""; });
+    $("#popup-forgetpassword > .body > input").each(function(){ $(this)[0].value = ""; });
 
     $("body").css("overflow", "hidden");
-    $("#popup-memberjoin2").css("display", "block");
+    $("#popup-forgetpassword").css("display", "block");
 
     $("#popup-container").stop(true, true);
     $("#popup-container").css({"display": "block", "opacity": 0.0});
