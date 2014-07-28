@@ -363,3 +363,7 @@ class ErrorbyRank(models.Model):
     iderrorbyrank = models.IntegerField(primary_key=True)
     errorcount = models.IntegerField(blank=True, null=True)
     errorrank = models.IntegerField(blank=True, null=True)
+
+class CountrysbyApp(models.Model):
+   count = models.IntegerField(primary_key=True)
+   country = models.CharField(max_length=45, blank=True)
