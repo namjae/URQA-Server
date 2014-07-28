@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import time
-
+import sys
 
 from django.utils.timezone import utc
 from django.utils import timezone
@@ -11,9 +11,10 @@ from django.http import HttpResponseRedirect
 from django.template import Context, loader
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from urqa.models import Session
-
+from urqa.models import Appruncount
+from urqa.models import Appruncount2
 from soma3.settings import STATIC_URL
+from utility import getUTCawaredatetime
 
 from oauth2client.client import OAuth2WebServerFlow
 
@@ -50,13 +51,28 @@ def fileuploadtest(request):
     return render(request, 'fileupload.html', c)
 
 def cleanup(request):
-    expire_time = long(0.5 * 24 * 60 * 60 * 1000) # 1일
-    expire_time = long(time.time() * 1000) - expire_time
+    #expire_time = long(0.5 * 24 * 60 * 60 * 1000) # 1일
+    #expire_time = long(time.time() * 1000) - expire_time
 
-    elements = Session.objects.filter(idsession__lt=expire_time)
+    #elements = Session.objects.filter(idsession__lt=expire_time)
 
-    elements.delete()
+    #elements.delete()
+    """
+    appruncountElement = Appruncount.objects.filter(date__lt='2014-07-25')
+    appruncount2Element = Appruncount2.objects.filter(datetime__lt='2014-07-25 00:00:00+00:00')
 
+    print >> sys.stderr,len(appruncount2Element);
+    appruncount2Element.delete()
+    i = 1
+
+    for e in appruncountElement:
+        if e.date == None or e.appversion == None or e.runcount == None:
+            print  >> sys.stderr,'error',e.pid,e.date,e.appversion,e.runcount
+            continue
+        Appruncount2.objects.create(pid=e.pid,appversion=e.appversion,appruncount=e.runcount,datetime='%s 00:00:00+00:00' % e.date)
+        print >> sys.stderr, i, e.date
+        i = i + 1
+    """
     return HttpResponse('clean up')
 
 

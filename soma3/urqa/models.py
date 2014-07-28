@@ -31,6 +31,16 @@ class Appruncount(models.Model):
         db_table = 'appruncount'
 
 class Appruncount2(models.Model):
+    idappruncount2 = models.AutoField(primary_key=True)
+    pid = models.ForeignKey('Projects', db_column='pid')
+    datetime = models.DateTimeField(blank=True, null=True)
+    appversion = models.CharField(max_length=45, blank=True)
+    appruncount = models.BigIntegerField(blank=True, null=True)
+    class Meta:
+        managed = False
+        db_table = 'appruncount2'
+
+class Appruncount2(models.Model):
     idappruncount = models.AutoField(primary_key=True)
     pid = models.ForeignKey('Projects', db_column='pid')
     datetime = models.DateTimeField(blank=True, null=True)
