@@ -436,11 +436,12 @@ def chartdata_erbco(request,apikey):
     sql = sql + "where e.iderror = i.iderror"
     sql = sql + "and e.pid = p.pid"
     sql = sql + "and p.name = %(pname)s"
+    sql = sql + "and i.datetime > (curdate() - interval %(intervalinput)s day) "
     sql = sql + "group by country"
     sql = sql + "order by count desc"
     sql = sql + "limit 10"
 
-    params = {'pidinput':projectElement.pid}
+    params = {'pidinput':projectElement.pid, 'intervalinput':retention - 1}
     counts = CountrysbyApp.objects.raw(sql, params)
 
     categories = []
