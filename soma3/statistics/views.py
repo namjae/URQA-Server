@@ -25,6 +25,7 @@ from urqa.models import Errors
 from urqa.models import Instances
 from urqa.models import Appruncount
 from urqa.models import ErrorsbyApp
+from urqa.models import CountrysbyApp
 def statistics(request,apikey):
     username = request.user
 
@@ -414,7 +415,7 @@ def chartdata_erbv(request,apikey):
     return HttpResponse(json.dumps(result), 'application/json');
 
 
-def chartdata_erbco(request,apikey):
+def chartdata_ebcs(request,apikey):
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
@@ -432,28 +433,27 @@ def chartdata_erbco(request,apikey):
     activities = []
 
     sql = "select count(*) count, country from errors e, instances i, projects p"
-    sql = sql + "where e.iderror = i.iderror"
-    sql = sql + "and e.pid = p.pid"
-    sql = sql + "and p.name = %(pname)s"
-    sql = sql + "and i.datetime > (curdate() - interval %(intervalinput)s day) "
-    sql = sql + "group by country"
-    sql = sql + "order by count desc"
-    sql = sql + "limit 10"
+    sql = sql + " where e.iderror = i.iderror"
+    sql = sql + " and e.pid = p.pid"
+    sql = sql + " and p.pid = %(pname)s"
+    sql = sql + " and i.datetime > (curdate() - interval %(intervalinput)s day) "
+    sql = sql + " group by country"
+    sql = sql + " order by count desc"
+    sql = sql + " limit 10"
 
-    params = {'pidinput':projectElement.pid, 'intervalinput':retention - 1}
+    params = {'pname':projectElement.pid, 'intervalinput':retention - 1}
     counts = CountrysbyApp.objects.raw(sql, params)
 
     categories = []
     temp_data = []
 
     for idx, pl in enumerate(counts):
-        appversions.append(pl.appversion)
         categories.append(pl.country)
         temp_data.append(pl.count)
 
 
     act_data = [{'name':'Country','data':temp_data}]
-    chart4 = {'categories':categories,'data':act_data}
-    result['chart6'] = chart4
+    chart6 = {'categories':categories,'data':act_data}
+    result['chart6'] = chart6
     return HttpResponse(json.dumps(result), 'application/json');
 

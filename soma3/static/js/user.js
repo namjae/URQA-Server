@@ -1271,7 +1271,7 @@ $("head").styleReady(function(){
                     var panel = $('.version-panel').eq(0);
                     panel.height(panel.parent().height());
                     var cur_width = 95;
-                    for(var i=0;i<appv.length;i++)
+                    for(var i=0;i<appv.length;i++)static/css/style.css
                     {
                         var newv = $('<div class="button"><label>'+appv[i][0]+'</label></div>');
                         var width = calc_limit_width(95*appv[i][1]/total,cur_width,appv.length-i);
@@ -1893,12 +1893,12 @@ $("head").styleReady(function(){
                 series: data
             });
         }
-        function DrawChart6(data){
-            $('.notHover').eq(5).empty().append($('<td id="ebcs"></td>'))
+        function DrawChart6(categories,data){
+            $('.notHover').eq(7).empty().append($('<td id="ebcs"></td>'))
             var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
             for(var i=0;i<data[0]['data'].length;i++)
                 data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
-            chart4 = new Highcharts.Chart({
+            chart6 = new Highcharts.Chart({
                 chart: {
                     type: 'bar',
                     renderTo: 'ebcs'
@@ -2020,13 +2020,13 @@ $("head").styleReady(function(){
             $.ajax( {
                  type :'POST'
                 ,asyn :true
-                ,url :'./chartdata/erbco' // error count by country
+                ,url :'./chartdata/erbv' // error count by country
                 ,dataType :"json"
                 ,data:{'json':JSON.stringify({
                     'retention':retention
                 })}
                 ,success : function(jsonData) {
-                    DrawChart6(jsonData.chart6.categories,jsonData.chart6.data)
+                    DrawChart5(jsonData.chart5.categories,jsonData.chart5.data)
                 }
                 , beforeSend: csrfFunc
             });
@@ -2034,13 +2034,13 @@ $("head").styleReady(function(){
             $.ajax( {
                  type :'POST'
                 ,asyn :true
-                ,url :'./chartdata/erbv' // error rate by version
+                ,url :'./chartdata/ercs' // error rate by version
                 ,dataType :"json"
                 ,data:{'json':JSON.stringify({
                     'retention':retention
                 })}
                 ,success : function(jsonData) {
-                    DrawChart5(jsonData.chart5.categories,jsonData.chart5.data)
+                    DrawChart6(jsonData.chart6.categories,jsonData.chart6.data)
                 }
                 , beforeSend: csrfFunc
             });
