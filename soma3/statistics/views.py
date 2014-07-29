@@ -140,7 +140,6 @@ def chartdata_ebav(request,apikey):
     dates = []
     for idx, pl in enumerate(places):
         dates.append(pl.errorday)
-    print >> sys.stderr,'dates',dates
     #dateList = list(set(dates))
     #dateList.sort()
     dateList = []
