@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     #test page
     url(r'^$', RedirectView.as_view(url='/urqa/')),
     url(r'^urqa/$', 'urqa.views.index'),
+    url(r'^urqa/login$', 'urqa.views.login'),
     url(r'^urqa/posttest$', 'urqa.views.posttest'),
     url(r'^urqa/fileuploadtest$', 'urqa.views.fileuploadtest'),
     url(r'^urqa/cleanup$', 'urqa.views.cleanup'),

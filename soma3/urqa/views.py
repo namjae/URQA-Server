@@ -14,11 +14,14 @@ from django.shortcuts import render
 from urqa.models import Appruncount
 from urqa.models import Appruncount2
 from soma3.settings import STATIC_URL
-from utility import getUTCawaredatetime
+# from utility import getUTCawaredatetime
 
-from oauth2client.client import OAuth2WebServerFlow
+# from oauth2client.client import OAuth2WebServerFlow
 
 def index(request):
+    return render(request, 'index.html')
+
+def login(request):
 
     #만약 로그인 되어 있다면!!
     if request.user.is_authenticated():
