@@ -63,7 +63,7 @@ def chartdata_sbav(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
+    #print 'retention', retention
 
     if retention == 1:
         retention = 24 #retention을 24로 변경 24시를 의미
@@ -113,7 +113,7 @@ def chartdata_sbav(request,apikey):
             categories.append(day1.strftime('%b-%d'))
         for appversion in appversions:
             result_runcount = 0
-            for idx in range(1,len(new_places)):
+            for idx in range(0,len(new_places)):
                 if new_places[idx]['appversion'] == appversion and new_places[idx]['sessionday'] == day1.strftime(strformat):
                     result_runcount = new_places[idx]['runcount']
                     new_places.pop(idx)
@@ -150,8 +150,14 @@ def chartdata_ebav(request,apikey):
     #appver_data = []
 
     if retention == 1:
-        dateformat = '%%y-%%m-%%d'
+        retention = 24 #retention을 24로 변경 24시를 의미
+        past, today = getTimeRangeExactHour(retention,projectElement.timezone)
+        strformat = '%y-%m-%d %H'
+        dateformat = '%%y-%%m-%%d %%H'
     else:
+        past, today = getTimeRange(retention,projectElement.timezone)
+        strformat = '%y-%m-%d'
+        dateformat = '%%y-%%m-%%d'
 
     sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'" + dateformat + "') as errorday "
     sql = sql + "from instances A, errors B "
@@ -168,43 +174,53 @@ def chartdata_ebav(request,apikey):
 
     #listing app version
     appversions = []
-    for idx, pl in enumerate(places):
-        appversions.append(pl.appversion)
-
-    appversionList = list(set(appversions))
-    appversionList.sort()
-    #loop for retention
     dates = []
     for idx, pl in enumerate(places):
-        dates.append(pl.errorday)
-    print >> sys.stderr,'dates',dates
-    #dateList = list(set(dates))
-    #dateList.sort()
-    dateList = []
-    for i in range(retention-1,-1,-1):
-        day1 = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
-        dateList.append(day1.strftime('%y-%m-%d'))
-        categories.append(day1.strftime('%b-%d'))
-    returnValue = []
+        if not pl.appversion in appversions:
+            appversions.append(pl.appversion)
+        if not pl.errorday in dates:
+            dates.append(pl.errorday)
+
+    result = {}
+
+    categories = []
+    appcount_data = {}
+    for appversion in appversions:
+        appcount_data[appversion] = []
 
     new_places = []
     for idx, pl in enumerate(places):
         new_places.append({'appversion':pl.appversion,'errorday':pl.errorday,'errorcount':pl.errorcount})
-    for version in appversionList:
-        dataList = [0] * len(dateList)
-        for index, date in enumerate(dateList):
-            for idx in range(1,len(new_places)):
-                if new_places[idx]['appversion'] == version and new_places[idx]['errorday'] == date:
-                    dataList[index] = new_places[idx]['errorcount']
-                    new_places.pop(idx);
-                    break;
 
-        returnValue.append(
+    for i in range(retention-1,-1,-1):
+        if retention == 24:
+            day1 = getTimezoneHour(projectElement.timezone) + datetime.timedelta(hours =  -i)
+            if day1.hour == 0:
+                categories.append(day1.strftime('%b-%d'))
+            else:
+                categories.append(day1.strftime('%H'))
+        else:
+            day1 = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
+            categories.append(day1.strftime('%b-%d'))
+        for appversion in appversions:
+            result_runcount = 0
+            for idx in range(0,len(new_places)):
+                if new_places[idx]['appversion'] == appversion and new_places[idx]['errorday'] == day1.strftime(strformat):
+                    result_runcount = new_places[idx]['errorcount']
+                    new_places.pop(idx)
+                    break
+            appcount_data[appversion].append(int(result_runcount))
+
+    appver_data = []
+    for appversion in appversions:
+        appver_data.append(
             {
-                'name': version,
-                'data': dataList
+                'name': appversion,
+                'data': appcount_data[appversion]
             }
         )
+    chart_ebav = {'categories':categories,'data':appver_data}
+    result['chart_sbav'] = chart_ebav
 
 
     #Fixed, Ignore 찾기
@@ -256,7 +272,7 @@ def chartdata_ebav(request,apikey):
             }
         )
     """
-    chart1 = {'categories':categories,'data':returnValue}
+    chart1 = {'categories':categories,'data':appver_data}
     result['chart1'] = chart1
     #print >>sys.stderr, chart1
     return HttpResponse(json.dumps(result), 'application/json');
@@ -271,7 +287,7 @@ def chartdata_erbc(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
+    #print 'retention', retention
     # Common Data
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
@@ -307,7 +323,7 @@ def chartdata_erbd(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
+    #print 'retention', retention
     # Common Data
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
@@ -362,7 +378,7 @@ def chartdata_erba(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
+    #print 'retention', retention
     # Common Data
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
@@ -416,7 +432,7 @@ def chartdata_erbv(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
+    #print 'retention', retention
     # Common Data
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
@@ -465,7 +481,7 @@ def chartdata_ebcs(request,apikey):
      if not valid:
          return HttpResponseRedirect('/urqa')
 
-     print 'retention', retention
+     #print 'retention', retention
      # Common Data
      result = {}
 
