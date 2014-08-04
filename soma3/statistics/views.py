@@ -17,17 +17,17 @@ from common import getApikeyDict
 from common import getSettingDict
 
 from utility import getTimeRange
+from utility import getTimeRangeExactHour
 from utility import Status
 from utility import getTimezoneMidNight
-from utility import toTimezone
+from utility import getTimezoneHour
 
-from urqa.models import AuthUser
 from urqa.models import Errors
 from urqa.models import Instances
-from urqa.models import Appruncount
 from urqa.models import ErrorsbyApp
 from urqa.models import SessionbyApp
 from urqa.models import CountrysbyApp
+
 def statistics(request,apikey):
     username = request.user
 
@@ -63,25 +63,24 @@ def chartdata_sbav(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
-    # Common Data
-    #midnight = getTimezoneMidNight(projectElement.timezone)
-    #print >> sys.stderr,projectElement.timezone,midnight
-    #print >> sys.stderr,'utc',toTimezone(midnight,'UTC')
-    past, today = getTimeRange(retention,projectElement.timezone)
-    #print >> sys.stderr,'time',past,today
+    #print 'retention', retention
 
+    if retention == 1:
+        retention = 24 #retention을 24로 변경 24시를 의미
+        past, today = getTimeRangeExactHour(retention,projectElement.timezone)
+        strformat = '%y-%m-%d %H'
+        dateformat = '%%y-%%m-%%d %%H'
+    else:
+        past, today = getTimeRange(retention,projectElement.timezone)
+        strformat = '%y-%m-%d'
+        dateformat = '%%y-%%m-%%d'
 
-    sql = 'select idappruncount2 as idsessionbyapp, sum(appruncount) as runcount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC",%(timezone)s),"%%y-%%m-%%d") as sessionday'
+    sql = 'select idappruncount2 as idsessionbyapp, sum(appruncount) as runcount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC",%(timezone)s),"' + dateformat +'") as sessionday'
     sql = sql + ' from urqa.appruncount2'
     sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s'
     sql = sql + ' Group by appversion, sessionday'
-
-    #print >> sys.stderr,'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second);
-    #params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':past}
     params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = SessionbyApp.objects.raw(sql, params)
-    #print >> sys.stderr,'places',places
 
     appversions = []
     dates = []
@@ -90,42 +89,38 @@ def chartdata_sbav(request,apikey):
             appversions.append(pl.appversion)
         if not pl.sessionday in dates:
             dates.append(pl.sessionday)
-    #print >> sys.stderr,'appversion',appversions
-    #print >> sys.stderr,'dates',dates
 
-    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
 
-    # Chart 0 session by appversion
-    #appversions = AppruncountElemtns.values('appversion').distinct().order_by('appversion')
     categories = []
     appcount_data = {}
     for appversion in appversions:
         appcount_data[appversion] = []
-    #print >> sys.stderr,'appcount_data',appcount_data
+
+    new_places = []
+    for idx, pl in enumerate(places):
+        new_places.append({'appversion':pl.appversion,'sessionday':pl.sessionday,'runcount':pl.runcount})
 
     for i in range(retention-1,-1,-1):
-        day1 = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
-        #print >> sys.stderr,'day',day1,day1.month,day1.day,day1.hour,day1.minute
-        #print >> sys.stderr,'utc',toTimezone(day1,'UTC')
-        categories.append(day1.strftime('%b-%d'))
-
+        if retention == 24: # Statistics 하루치
+            day1 = getTimezoneHour(projectElement.timezone) + datetime.timedelta(hours =  -i)
+            if day1.hour == 0:
+                categories.append(day1.strftime('%b-%d'))
+            else:
+                categories.append(day1.strftime('%H'))
+        else:
+            day1 = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
+            categories.append(day1.strftime('%b-%d'))
         for appversion in appversions:
-            #appcount_data[appversion['appversion']].append(Appruncount.objects.filter(pid=projectElement,appversion=appversion['appversion'],date__range=(day1,day2)))
-            #runcounts = Appruncount.objects.filter(pid=projectElement,appversion=appversion['appversion'],date=day1.strftime('20%y-%m-%d'))
             result_runcount = 0
-            for idx, pl in enumerate(places):
-                if pl.appversion == appversion and pl.sessionday == day1.strftime('%y-%m-%d'):
-                    result_runcount = pl.runcount
-                    #print >> sys.stderr,appversion,pl.sessionday,pl.runcount
+            for idx in range(0,len(new_places)):
+                if new_places[idx]['appversion'] == appversion and new_places[idx]['sessionday'] == day1.strftime(strformat):
+                    result_runcount = new_places[idx]['runcount']
+                    new_places.pop(idx)
                     break
-
-            #for runcount in runcounts:
-            #    result_runcount = result_runcount + runcount.runcount
-            appcount_data[appversion].append(int(result_runcount));
+            appcount_data[appversion].append(int(result_runcount))
 
     appver_data = []
-
     for appversion in appversions:
         appver_data.append(
             {
@@ -133,11 +128,9 @@ def chartdata_sbav(request,apikey):
                 'data': appcount_data[appversion]
             }
         )
-
     chart_sbav = {'categories':categories,'data':appver_data}
     result['chart_sbav'] = chart_sbav
 
-    #print >> sys.stderr, 'result',result
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebav(request,apikey):
@@ -156,7 +149,17 @@ def chartdata_ebav(request,apikey):
     categories = []
     #appver_data = []
 
-    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'%%y-%%m-%%d') as errorday "
+    if retention == 1:
+        retention = 24 #retention을 24로 변경 24시를 의미
+        past, today = getTimeRangeExactHour(retention,projectElement.timezone)
+        strformat = '%y-%m-%d %H'
+        dateformat = '%%y-%%m-%%d %%H'
+    else:
+        past, today = getTimeRange(retention,projectElement.timezone)
+        strformat = '%y-%m-%d'
+        dateformat = '%%y-%%m-%%d'
+
+    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'" + dateformat + "') as errorday "
     sql = sql + "from instances A, errors B "
     sql = sql + "where A.iderror = B.iderror "
     sql = sql + "and pid = %(pidinput)s "
@@ -171,38 +174,53 @@ def chartdata_ebav(request,apikey):
 
     #listing app version
     appversions = []
-    for idx, pl in enumerate(places):
-        appversions.append(pl.appversion)
-
-    appversionList = list(set(appversions))
-    appversionList.sort()
-    #loop for retention
     dates = []
     for idx, pl in enumerate(places):
-        dates.append(pl.errorday)
-    print >> sys.stderr,'dates',dates
-    #dateList = list(set(dates))
-    #dateList.sort()
-    dateList = []
-    for i in range(retention-1,-1,-1):
-        day1 = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
-        dateList.append(day1.strftime('%y-%m-%d'))
-        categories.append(day1.strftime('%b-%d'))
-    returnValue = []
-    #print >> sys.stderr,'dateList',dateList
-    for version in appversionList:
-        dataList = [0] * len(dateList)
-        for index, date in enumerate(dateList):
-            for idx, pl in enumerate(places):
-                if pl.appversion == version and pl.errorday == date:
-                    dataList[index] = pl.errorcount
+        if not pl.appversion in appversions:
+            appversions.append(pl.appversion)
+        if not pl.errorday in dates:
+            dates.append(pl.errorday)
 
-        returnValue.append(
+    result = {}
+
+    categories = []
+    appcount_data = {}
+    for appversion in appversions:
+        appcount_data[appversion] = []
+
+    new_places = []
+    for idx, pl in enumerate(places):
+        new_places.append({'appversion':pl.appversion,'errorday':pl.errorday,'errorcount':pl.errorcount})
+
+    for i in range(retention-1,-1,-1):
+        if retention == 24:
+            day1 = getTimezoneHour(projectElement.timezone) + datetime.timedelta(hours =  -i)
+            if day1.hour == 0:
+                categories.append(day1.strftime('%b-%d'))
+            else:
+                categories.append(day1.strftime('%H'))
+        else:
+            day1 = getTimezoneMidNight(projectElement.timezone) + datetime.timedelta(days =  -i)
+            categories.append(day1.strftime('%b-%d'))
+        for appversion in appversions:
+            result_runcount = 0
+            for idx in range(0,len(new_places)):
+                if new_places[idx]['appversion'] == appversion and new_places[idx]['errorday'] == day1.strftime(strformat):
+                    result_runcount = new_places[idx]['errorcount']
+                    new_places.pop(idx)
+                    break
+            appcount_data[appversion].append(int(result_runcount))
+
+    appver_data = []
+    for appversion in appversions:
+        appver_data.append(
             {
-                'name': version,
-                'data': dataList
+                'name': appversion,
+                'data': appcount_data[appversion]
             }
         )
+    chart_ebav = {'categories':categories,'data':appver_data}
+    result['chart_sbav'] = chart_ebav
 
 
     #Fixed, Ignore 찾기
@@ -254,7 +272,7 @@ def chartdata_ebav(request,apikey):
             }
         )
     """
-    chart1 = {'categories':categories,'data':returnValue}
+    chart1 = {'categories':categories,'data':appver_data}
     result['chart1'] = chart1
     #print >>sys.stderr, chart1
     return HttpResponse(json.dumps(result), 'application/json');
@@ -269,7 +287,7 @@ def chartdata_erbc(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
+    #print 'retention', retention
     # Common Data
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
@@ -305,7 +323,7 @@ def chartdata_erbd(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
+    #print 'retention', retention
     # Common Data
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
@@ -360,7 +378,7 @@ def chartdata_erba(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
+    #print 'retention', retention
     # Common Data
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
@@ -414,7 +432,7 @@ def chartdata_erbv(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
+    #print 'retention', retention
     # Common Data
     past, today = getTimeRange(retention,projectElement.timezone)
     #print 'past',past, 'today',today
@@ -463,7 +481,7 @@ def chartdata_ebcs(request,apikey):
      if not valid:
          return HttpResponseRedirect('/urqa')
 
-     print 'retention', retention
+     #print 'retention', retention
      # Common Data
      result = {}
 

@@ -13,6 +13,8 @@ def toTimezone(time,to_zone):
 
 def getTimezoneMidNight(timezone):
     return toTimezone(naive2aware(getUTCDatetime()),timezone).replace(hour=23,minute=59,second=59,microsecond=999999)
+def getTimezoneHour(timezone):
+    return toTimezone(naive2aware(getUTCDatetime()),timezone).replace(minute=59,second=59,microsecond=999999)
 
 def getTimezoneTime(timezone):
     return toTimezone(naive2aware(getUTCDatetime()),timezone)
@@ -76,19 +78,18 @@ class Status:
 #weekly, monthly, 3monthly
 def getTimeRange(t,timezone):
 
-    today = toTimezone(getTimezoneMidNight(timezone),'UTC')#datetime.datetime.utcnow().replace(tzinfo=utc)
-    #today = today.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
-
-    #print 'getDatetime', getDatetime()
-    #print 'getUTCDatetime', getUTCDatetime()
-    #print 'getTimezoneMidNight', getTimezoneMidNight(projectElement.timezone);
-    #print 'toTimezone',toTimezone(getTimezoneMidNight(projectElement.timezone),'utc')
-
-    #datedelta = datetime.timedelta(days =  -(t - 1))
+    today = toTimezone(getTimezoneMidNight(timezone),'UTC')
     datedelta = datetime.timedelta(days =  -t,microseconds = 1)
 
     past = today + datedelta
     #past.replace(hour=0,minute=0,second=0,microsecond=0)
+    return past, today
+
+def getTimeRangeExactHour(t,timezone):
+
+    today = toTimezone(getTimezoneHour(timezone),'UTC')
+    datedelta = datetime.timedelta(days =  -t,microseconds = 1)
+    past = today + datedelta
     return past, today
 
 def numbertostrcomma(num) :
