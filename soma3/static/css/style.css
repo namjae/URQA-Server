@@ -222,6 +222,20 @@ a:active { text-decoration:none; }
 			margin-bottom: 10px;
 		}
 	}
+	>#popup-forgetpassword > .body {
+		width: 210px;
+		height: 300px;
+		span {
+			display: block;
+			font: 12px "RixGo EB";
+			color: @tm-hl-c4;
+			margin-bottom: 2px;
+		}
+		input {
+			width: 186px;
+			margin-bottom: 10px;
+		}
+	}
 	#popup-createproject > .body {
 		width: 210px;
 		height: 284px;
@@ -1852,7 +1866,7 @@ table.content-small {
 	height: 300px;
 }
 #ebcs svg {
-	height: 300px;	
+ 	height: 300px;	
 }
 #decs svg {
 	height: 300px;

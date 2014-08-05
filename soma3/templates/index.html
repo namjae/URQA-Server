@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko" class="login">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<title>UrQA - Crash Report and QA For Android</title>
+
+
+      {% load static %}
+    <script type="text/javascript" src="{% static 'js/angular.js'%}"></script>
+    <link href="{% static 'js/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+    <link href="{% static 'js/bootstrap/css/jumbotron.css'%}" rel="stylesheet">
+</head>
+
+<body>
+
+ <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">URQA</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right" role="form">
+            <a href="http://urqa.io/static/tutorial/UrQA-Client_0.96.jar" download="UrQA-Client_0.96.jar" class="btn btn-primary btn-lg">Downlaod SDK</a>
+            <a href="http://urqa.io/static/tutorial/tutorial.html" class="btn btn-info btn-lg">
+          Tutorial
+          </a>
+          <a href="/urqa/login" class="btn btn-success btn-lg">Log in</a>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <img src="../static/images/Vintage-Black-Map-Background.jpg" alt="main_image" style="width:100%">
+        <h1>Your all of qualified apps</h1>
+              <div class="row">
+        <div class="col-md-6">
+        <p>If you want to make a perfect apps escaped from crash. download this apk and test it. You can make a happy to client who using your apps. we provide reporting and analytics</p>
+        </div></div>
+        <p><a class="btn btn-primary btn-lg" role="button">Download APK &raquo;</a></p>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-4">
+              <div class="row">
+                <div class="col-md-4">
+                    <p><img src="../static/images/mobile.png" alt="main_image" style="width:100%"></p>
+                </div>
+                <div class="col-md-8">
+                <p>For Mobile</p>
+                    <p align="left" >모바일 사용자에게 적합한 QA</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+              <div class="row">
+                <div class="col-md-4">
+                    <p><img src="../static/images/Measurement-Units-Speed-icon.png" alt="main_image" style="width:100%"></p>
+                </div>
+                <div class="col-md-8">
+                <p>For Crash</p>
+                    <p align="left" >크래쉬를 빠르게 대응</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+              <div class="row">
+                <div class="col-md-4">
+                    <p><img src="../static/images/smile.png" alt="main_image" style="width:100%"></p>
+                </div>
+                <div class="col-md-8">
+                <p>For Client</p>
+                    <p align="left" >고객에게 맞춤서비스를 할 수 있는 통찰력</p>
+                </div>
+            </div>
+        </div>
+        </div>
+      <div class="row">   
+        <div class="col-md-4">
+              <div class="row">
+                <div class="col-md-4">
+                    <p><img src="../static/images/report.png" alt="main_image" style="width:100%"></p>
+                </div>
+                <div class="col-md-8">
+                <p>For Report</p>
+                    <p align="left" >실시간으로 에러를 등급화 하여 리포트</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+              <div class="row">
+                <div class="col-md-4">
+                    <p><img src="../static/images/automation.png" alt="main_image" style="width:100%"></p>
+                </div>
+                <div class="col-md-8">
+                <p>For Automation</p>
+                    <p align="left" >QA 자동화</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+              <div class="row">
+                <div class="col-md-4">
+                    <p><img src="../static/images/group.png" alt="main_image" style="width:100%"></p>
+                </div>
+                <div class="col-md-8">
+                <p>For Group</p>
+                    <p align="left" >그룹화된 유저별 성향 파악</p>
+                </div>
+            </div>
+        </div>
+      </div>
+      <hr>
+      <img src="../static/images/image1.png" alt="main_image" style="width:100%">
+      <hr>
+      <img src="../static/images/image2.png" alt="main_image" style="width:100%">
+      <hr>
+      <img src="../static/images/image3.png" alt="main_image" style="width:100%">
+      <hr>
+    </div>
+
+   <!--  <div class="jumbotron">
+      <div class="container">
+            <div class="row">
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        </div>
+            <div class="row">
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        </div>
+            <div class="row">
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        <div class="col-md-2">
+            <h2>회사</h2>
+        </div>
+        </div>
+      </div>
+      </div>
+      <hr> -->
+
+<!--       <div class="container">
+      멤버소개
+    </div>  -->
+
+      <div class="container">
+      <footer>
+        <p>&copy; URQA since 2013. 질문은 google groups 혹은 Facebook 혹은 김현종님께..</p>
+      </footer>
+    </div> 
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static 'js/bootstrap/js/bootstrap.min.js'%}"></script>
+</body>
+</html>

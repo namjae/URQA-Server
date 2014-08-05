@@ -30,6 +30,16 @@ class Appruncount(models.Model):
         managed = False
         db_table = 'appruncount'
 
+class Appruncount2(models.Model):
+    idappruncount = models.AutoField(primary_key=True)
+    pid = models.ForeignKey('Projects', db_column='pid')
+    datetime = models.DateTimeField(blank=True, null=True)
+    appversion = models.CharField(max_length=45, blank=True)
+    appruncount = models.BigIntegerField(blank=True, null=True)
+    class Meta:
+        managed = False
+        db_table = 'appruncount2'
+
 class Appstatistics(models.Model):
     idappstatistics = models.AutoField(primary_key=True)
     iderror = models.ForeignKey('Errors', db_column='iderror')
@@ -333,6 +343,17 @@ class ErrorsbyApp(models.Model):
     appversion = models.CharField(max_length=45, blank=True)
     errorday = models.CharField(max_length=45, blank=True)
 
+class SessionbyApp(models.Model):
+    idsessionbyapp = models.IntegerField(primary_key=True)
+    runcount = models.IntegerField(blank=True, null=True)
+    appversion = models.CharField(max_length=45, blank=True)
+    sessionday = models.CharField(max_length=45, blank=True)
+
+class ErrorbyRank(models.Model):
+    iderrorbyrank = models.IntegerField(primary_key=True)
+    errorcount = models.IntegerField(blank=True, null=True)
+    errorrank = models.IntegerField(blank=True, null=True)
+
 class CountrysbyApp(models.Model):
-    count = models.IntegerField(primary_key=True)
-    country = models.CharField(max_length=45, blank=True)
+   count = models.IntegerField(primary_key=True)
+   country = models.CharField(max_length=45, blank=True)

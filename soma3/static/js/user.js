@@ -461,6 +461,24 @@ function resizePopupMemberjoin()
 		resizeStatusPopupMemberJoin = true;
 	}
 }
+function resizePopupForgetPassword()
+{
+    if($("#popup-forgetpassword").length )
+    {
+        var tops = ($(window).height() - $("#popup-forgetpassword > .body").height()) / 2;
+        var lefts = ($(window).width() - $("#popup-forgetpassword > .body").width()) / 2;
+        if(resizeStatusPopupMemberJoin)
+        {
+            $("#popup-forgetpassword > .body").stop(true, true);
+            $("#popup-forgetpassword > .body").animate({'top': tops, 'left': lefts}, 250, function() { $(this).css({'top': tops, 'left': lefts}); } );
+        }
+        else
+        {
+            $("#popup-forgetpassword > .body").css({'top': tops, 'left': lefts});
+        }
+        resizeStatusPopupMemberJoin = true;
+    }
+}
 function resizePopupNotification()
 {
 	if($("#popup-notification").length )
@@ -671,6 +689,24 @@ function showPopupMemberjoin()
 	}, 250, function(){
 		$(this).css({"opacity": 1.0});
 	});
+}
+function showForgetPassword()
+{
+    var oriW = $("#popup-forgetpassword > .body").width();
+    var oriH = $("#popup-forgetpassword > .body").height();
+
+    $("#popup-forgetpassword > .body > input").each(function(){ $(this)[0].value = ""; });
+
+    $("body").css("overflow", "hidden");
+    $("#popup-forgetpassword").css("display", "block");
+
+    $("#popup-container").stop(true, true);
+    $("#popup-container").css({"display": "block", "opacity": 0.0});
+    $("#popup-container").animate({
+        opacity: 1.0,
+    }, 250, function(){
+        $(this).css({"opacity": 1.0});
+    });
 }
 function hidePopupSymbolUpload()
 {
@@ -1052,6 +1088,7 @@ $("head").styleReady(function(){
                     DrawChart3(jsonData.chart3.categories,jsonData.chart3.data)
                     DrawChart4(jsonData.chart4.categories,jsonData.chart4.data)
                     DrawChart5(jsonData.chart5.categories,jsonData.chart5.data)
+		    DrawChart6(jsonData.chart6.categories,jsonData.chart6.data)
                 }
                 , beforeSend: function(xhr, settings) {
                     var csrftoken = getCookie('csrftoken')
@@ -1271,7 +1308,7 @@ $("head").styleReady(function(){
                     var panel = $('.version-panel').eq(0);
                     panel.height(panel.parent().height());
                     var cur_width = 95;
-                    for(var i=0;i<appv.length;i++)static/css/style.css
+                    for(var i=0;i<appv.length;i++)
                     {
                         var newv = $('<div class="button"><label>'+appv[i][0]+'</label></div>');
                         var width = calc_limit_width(95*appv[i][1]/total,cur_width,appv.length-i);
@@ -1893,46 +1930,46 @@ $("head").styleReady(function(){
                 series: data
             });
         }
-        function DrawChart6(categories,data){
-            $('.notHover').eq(7).empty().append($('<td id="ebcs"></td>'))
-            var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
-            for(var i=0;i<data[0]['data'].length;i++)
-                data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
-            chart6 = new Highcharts.Chart({
-                chart: {
-                    type: 'bar',
-                    renderTo: 'ebcs'
-                },
-                title: {
-                    text: ''
-                },
-                xAxis: {
-                    categories: categories
-                },
-                yAxis: {
-                    min: 0,
-                    title: {
-                        text: ''
-                    }
-                },
-                legend: {
-                    enabled:false
-                },
-                tooltip: {
-                    formatter: function() {
-                        return '<b>Country</b> :' + this.x + '<br/>'+
-                            '<b>Value</b> :' + this.y;
-                    }
-                },
-                plotOptions: {
-                    series: {
-                        stacking: 'normal'
-                    }
-                },
-                series: data
+	function DrawChart6(categories,data){
+	     $('.notHover').eq(7).empty().append($('<td id="ebcs"></td>'))
+	     var colors = [ "#de6363", "#5a9ccc", "#72c380", "#cccdc7", "#9d61dd", "#6371dc", "#dca763", "#a96f6e", "#6fa79a", "#737270" ]
+	     for(var i=0;i<data[0]['data'].length;i++)
+	         data[0]['data'][i]={y:data[0]['data'][i],color:colors[i%colors.length]}
+	     chart6 = new Highcharts.Chart({
+	         chart: {
+	             type: 'bar',
+	             renderTo: 'ebcs'
+	         },
+	         title: {
+	             text: ''
+	         },
+	         xAxis: {
+	             categories: categories
+	         },
+	         yAxis: {
+	             min: 0,
+	             title: {
+	                 text: ''
+	             }
+	         },
+	         legend: {
+	             enabled:false
+	         },
+	         tooltip: {
+	             formatter: function() {
+	                 return '<b>Country</b> :' + this.x + '<br/>'+
+	                     '<b>Value</b> :' + this.y;
+	             }
+	         },
+	         plotOptions: {
+	             series: {
+	                 stacking: 'normal'
+	             }
+	         },
+	         series: data
 
-            });
-        }
+	     });
+	 }
         csrfFunc = function(xhr, settings) {
             var csrftoken = getCookie('csrftoken')
             if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
@@ -2016,11 +2053,10 @@ $("head").styleReady(function(){
                 }
                 , beforeSend: csrfFunc
             });
-
             $.ajax( {
                  type :'POST'
                 ,asyn :true
-                ,url :'./chartdata/erbv' // error count by country
+                ,url :'./chartdata/erbv' // error rate by version
                 ,dataType :"json"
                 ,data:{'json':JSON.stringify({
                     'retention':retention
@@ -2030,11 +2066,10 @@ $("head").styleReady(function(){
                 }
                 , beforeSend: csrfFunc
             });
-
             $.ajax( {
                  type :'POST'
                 ,asyn :true
-                ,url :'./chartdata/ercs' // error rate by version
+                ,url :'./chartdata/ebcs' // error count by country
                 ,dataType :"json"
                 ,data:{'json':JSON.stringify({
                     'retention':retention
@@ -2584,6 +2619,7 @@ $("head").styleReady(function(){
 		bodyChecker_confirm = false;
 	$("#popup-uploadsymbol").click(function(){ if(bodyChecker_upsy == false){ hidePopupSymbolUpload(); } bodyChecker_upsy = false; });
 	$("#popup-memberjoin").click(function(){ if(bodyChecker_join == false){ hidePopupMemberjoin(); } bodyChecker_join = false; });
+    $("#popup-forgetpassword").click(function(){ if(bodyChecker_join == false){ hidePopupMemberjoin(); } bodyChecker_join = false; });
 	$("#popup-information").click(function(){ if(bodyChecker_info == false){ hidePopupInformation(); } bodyChecker_info = false; });
 	$("#popup-eventpath").click(function(){ if(bodyChecker_evpt == false){ hidePopupEventpath(); } bodyChecker_evpt = false; });
 	$("#popup-logdata").click(function(){ if(bodyChecker_logd == false){ hidePopupLogdata(); } bodyChecker_logd = false; });
@@ -2592,6 +2628,7 @@ $("head").styleReady(function(){
 	$("#warning-alert").click(function(){ if(bodyChecker_confirm == false){ hideConfirm(); } bodyChecker_confirm = false; });
 	$("#popup-uploadsymbol > .body").click(function(){ bodyChecker_upsy = true; });
 	$("#popup-memberjoin > .body").click(function(){ bodyChecker_join = true; });
+    $("#popup-forgetpassword > .body").click(function(){ bodyChecker_join = true; });
 	$("#popup-information > .body").click(function(){ bodyChecker_info = true; });
 	$("#popup-modifyproject > .body").click(function(){ bodyChecker_addP = true; });
 	$("#popup-createproject > .body").click(function(){ bodyChecker_addP = true; });
@@ -2630,6 +2667,7 @@ $("head").styleReady(function(){
 
 	addWindowResize(resizePopupSymbolUpload)();
 	addWindowResize(resizePopupMemberjoin)();
+    addWindowResize(resizePopupForgetPassword)();
 	addWindowResize(resizePopupNotification)();
 	addWindowResize(resizePopupInformation)();
 	addWindowResize(resizePopupEventpath)();
@@ -2893,3 +2931,4 @@ function adjustErrorListStyle(){
 
 	}
 }
+

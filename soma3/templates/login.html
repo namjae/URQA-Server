@@ -16,7 +16,7 @@
 	<script type="text/javascript" src="{% static 'js/css-compile.js'%}"></script>
 	<script type="text/javascript" src="{% static 'js/user.js'%}"></script>
     <script type="text/javascript" src="{% static 'js/utility.js'%}"></script>
-
+    <script type="text/javascript" src="{% static 'js/angular.js'%}"></script>
 	<link rel="stylesheet" type="text/css" href="{% static '/js/d3/src/nv.d3.css'%}">
 	<script type="text/javascript">
 		$(document).ready(function(){
@@ -88,6 +88,42 @@
 					<!--<div class="button gray" data-name="Connect with your google account" style="width: 210px; height: 26px"></div>-->
 				</div>
 			</div>
+            <div id="popup-forgetpassword">
+                <div class="body">
+                    <span>Project Name</span>
+                    <input name="pname" id = 'projectname'type="input" value="" />
+                    <span>API Key</span>
+                    <input name="apikey" id = 'userapikey' type="password" value="" />
+                    <div class="button purple" id = 'resetpassword' data-name="Send Reset Password" style="width: 210px; height: 39px"></div>
+                    <script>
+                         $(document).ready(function () {
+                            $('#resetpassword').bind('click',function (e){
+                                if($('#projectname').val() == '')
+                                {
+                                    alert('Please Input Project Name')
+                                    return;
+                                }
+
+                                if($('#userapikey').val() == '')
+                                {
+                                    alert('Please Input API Key')
+                                    return;
+                                }
+
+                                var logindata = {'pname' : $('#projectname').val(),'apikey' : $('#userapikey').val() }
+                                post_to_url('/urqa/user/resetpassword',logindata ,"{% csrf_token %}")
+
+                                $('#projectname').val('')
+                                $('#userapikey').val('')
+
+                                alert("Reset Password Mail was sent")
+                            })
+                         })
+                    </script>
+                    <span></span>
+                    <!--<div class="button gray" data-name="Connect with your google account" style="width: 210px; height: 26px"></div>-->
+                </div>
+            </div>
 		</div>
         <div id="body-header">UrQA - Mobile QA System</div>
         <a href="/static/tutorial/tutorial.html">
@@ -153,7 +189,9 @@
                 </span>-->
 			</div>
 			<div class="footer">
-				<label onclick="showPopupMemberjoin()">Create an Account</label><span></span><label onclick="logout()">Forgot Password?</label>
+				<label onclick="showPopupMemberjoin()">Create an Account</label>
+                <span></span>
+                <label onclick="showForgetPassword()">Forgot Password?</label>
 			</div>
 		</div>
 		<!--content-container fin-->

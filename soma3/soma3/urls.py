@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     #test page
     url(r'^$', RedirectView.as_view(url='/urqa/')),
     url(r'^urqa/$', 'urqa.views.index'),
+    url(r'^urqa/login$', 'urqa.views.login'),
     url(r'^urqa/posttest$', 'urqa.views.posttest'),
     url(r'^urqa/fileuploadtest$', 'urqa.views.fileuploadtest'),
     url(r'^urqa/cleanup$', 'urqa.views.cleanup'),
@@ -28,6 +29,7 @@ urlpatterns = patterns('',
 
     #user manage
     url(r'^urqa/user/registration$', 'usermanage.views.registration'),
+    url(r'^urqa/user/resetpassword$', 'usermanage.views.resetpassword'),
     url(r'^urqa/user/delete$', 'usermanage.views.delete_req'),
     url(r'^urqa/user/login$', 'usermanage.views.login_req'),
     url(r'^urqa/user/logout$', 'usermanage.views.logout_req'),
@@ -88,7 +90,7 @@ urlpatterns = patterns('',
     url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/erba', 'statistics.views.chartdata_erba'),
     url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/erbv', 'statistics.views.chartdata_erbv'),
     url(r'^urqa/project/(?P<apikey>.{8})/statistics/chartdata/ebcs', 'statistics.views.chartdata_ebcs'),
-    
+
     #symbol
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/symbol/list$', 'errors.views.so_list'),
     url(r'^urqa/project/(?P<apikey>.{8})/symbol/upload$', 'projectmanage.views.so_upload'),

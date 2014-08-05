@@ -50,6 +50,15 @@ def registration(request):
 
     return HttpResponseRedirect('/urqa/')
 
+def resetpassword(request):
+
+    pname = request.POST['pname']
+    apikey = request.POST['apikey']
+    print pname
+    print apikey
+
+    return HttpResponseRedirect('/urqa/')
+
 def delete_req(request):
 
     print request.user
