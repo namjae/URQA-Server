@@ -1,5 +1,5 @@
 # URQA
-* **Homepage**: http://www.ur-qa.com/
+* **Homepage**: http://www.urqa.io/
 * **Service Introduction** :  KOR - https://www.dropbox.com/s/uu356dy829bt384/UrQA%20Intro.pptx 
 * **Committer Group**: https://groups.google.com/forum/#!forum/urqagroup  
 * **User Group Google Grups**: https://groups.google.com/forum/#!forum/urqausergroup 
@@ -16,8 +16,8 @@
 * product + develop marging -> test -> master 
  
 ## Licenses
- * CC BY-NC-SA http://creativecommons.org/licenses/by-nc-sa/3.0/ 
- * 실제 판매나 수익을 목적으로 사용하는 것은 불가능하며, 기업 내부용으로 쓰는 것은 제한이 없습니다. 
+ * Server (include overall backend features)  - GPL 3.0
+ * Client (ios, android,  codova )  - Apache 2.0 
  
 ## UrQA User Guide
 * https://docs.google.com/document/d/10ZR7Rken21j8c3WZTiPSBi5-pXlYSQHJfsc3h7QCHaE/edit?usp=sharing 

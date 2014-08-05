@@ -563,7 +563,8 @@ def projects(request):
         'project_list' : project_list,
         'app_platformlist' : platformdata.items(),
         'app_categorylist' : categorydata.items(),
-        'app_stagelist' : stagedata.items()
+        'app_stagelist' : stagedata.items(),
+        'user' : request.user
     }
 
 

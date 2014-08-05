@@ -473,42 +473,44 @@ def chartdata_erbv(request,apikey):
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebcs(request,apikey):
-     jsonData = json.loads(request.POST['json'],encoding='utf-8')
-     retention = int(jsonData['retention'])
+    jsonData = json.loads(request.POST['json'],encoding='utf-8')
+    retention = int(jsonData['retention'])
 
-     username = request.user
-     valid , message , userElement, projectElement = validUserPjt(username,apikey)
-     if not valid:
-         return HttpResponseRedirect('/urqa')
+    username = request.user
+    valid , message , userElement, projectElement = validUserPjt(username,apikey)
+    if not valid:
+        return HttpResponseRedirect('/urqa')
 
-     #print 'retention', retention
-     # Common Data
-     result = {}
+    print 'retention', retention
+    # Common Data
+    result = {}
 
-     #chart6
-     temp_data = {}
-     activities = []
+    #chart4
+    temp_data = {}
+    activities = []
 
-     sql = "select count(*) count, country from errors e, instances i, projects p"
-     sql = sql + " where e.iderror = i.iderror"
-     sql = sql + " and e.pid = p.pid"
-     sql = sql + " and p.pid = %(pname)s"
-     sql = sql + " group by country"
-     sql = sql + " order by count desc"
-     sql = sql + " limit 10"
+    sql = "select count(*) count, country from errors e, instances i, projects p"
+    sql = sql + " where e.iderror = i.iderror"
+    sql = sql + " and e.pid = p.pid"
+    sql = sql + " and p.pid = %(pname)s"
+    sql = sql + " and i.datetime > (curdate() - interval %(intervalinput)s day) "
+    sql = sql + " group by country"
+    sql = sql + " order by count desc"
+    sql = sql + " limit 10"
 
-     params = {'pname':projectElement.pid}
-     counts = CountrysbyApp.objects.raw(sql, params)
+    params = {'pname':projectElement.pid, 'intervalinput':retention - 1}
+    counts = CountrysbyApp.objects.raw(sql, params)
 
-     categories = []
-     temp_data = []
+    categories = []
+    temp_data = []
 
-     for idx, pl in enumerate(counts):
-         categories.append(pl.country)
-         temp_data.append(pl.count)
+    for idx, pl in enumerate(counts):
+        categories.append(pl.country)
+        temp_data.append(pl.count)
 
 
-     act_data = [{'name':'Country','data':temp_data}]
-     chart6 = {'categories':categories,'data':act_data}
-     result['chart6'] = chart6
-     return HttpResponse(json.dumps(result), 'application/json');
+    act_data = [{'name':'Country','data':temp_data}]
+    chart6 = {'categories':categories,'data':act_data}
+    result['chart6'] = chart6
+    return HttpResponse(json.dumps(result), 'application/json');
+
