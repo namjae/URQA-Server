@@ -281,7 +281,6 @@ def chartdata_ebav(request,apikey):
 def chartdata_erbc(request,apikey):
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
-
     username = request.user
     valid , message , userElement, projectElement = validUserPjt(username,apikey)
     if not valid:
@@ -469,7 +468,6 @@ def chartdata_erbv(request,apikey):
 
     chart5 = {'categories':categories,'data':ver_data}
     result['chart5'] = chart5
-
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebcs(request,apikey):
@@ -498,7 +496,7 @@ def chartdata_ebcs(request,apikey):
     sql = sql + " order by count desc"
     sql = sql + " limit 10"
 
-    params = {'pname':projectElement.pid, 'intervalinput':retention - 1}
+    params = {'pname':projectElement.pid, 'intervalinput':retention }
     counts = CountrysbyApp.objects.raw(sql, params)
 
     categories = []
