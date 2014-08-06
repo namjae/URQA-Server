@@ -1979,7 +1979,7 @@ $("head").styleReady(function(){
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
         }
-        pre_retention = 1
+        pre_retention = 7
         function RedrawCharts(retention){
             if(pre_retention == retention)
                 return;
@@ -2080,7 +2080,7 @@ $("head").styleReady(function(){
                 , beforeSend: csrfFunc
             });
         }
-        RedrawCharts(7);
+        RedrawCharts(1);
 	}
 
 	/** Component Start **/
