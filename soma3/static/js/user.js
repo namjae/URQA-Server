@@ -1126,10 +1126,10 @@ $("head").styleReady(function(){
 
         clickevent = function(id,event)
         {
-            if(event.shiftKey == true)
-                location.href = './' + id;
-            else
-                window.open('./'+id,'_blank');
+            //if(event.shiftKey == true)
+            //    location.href = './' + id;
+            //else
+            window.open('./'+id,'_blank');
         }
         function initPageChanger()
         {
