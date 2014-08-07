@@ -32,9 +32,9 @@
         function clickevent(id)
         {
             if(event.shiftKey == true)
-                window.open('./errors/'+id,'_blank');
+                location.href = './errors/' + id;
             else
-                location.href = './errors/' + id
+                window.open('./errors/'+id,'_blank');
         }
     </script>
     <script>

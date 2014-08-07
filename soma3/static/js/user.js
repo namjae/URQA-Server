@@ -1127,9 +1127,9 @@ $("head").styleReady(function(){
         clickevent = function(id,event)
         {
             if(event.shiftKey == true)
-                window.open('./'+id,'_blank');
+                location.href = './' + id;
             else
-                location.href = './' + id
+                window.open('./'+id,'_blank');
         }
         function initPageChanger()
         {
