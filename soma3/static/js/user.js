@@ -1124,9 +1124,12 @@ $("head").styleReady(function(){
 
 
 
-        clickevent = function(id)
+        clickevent = function(id,event)
         {
-            location.href = './' + id
+            if(event.shiftKey == true)
+                window.open('./'+id,'_blank');
+            else
+                location.href = './' + id
         }
         function initPageChanger()
         {
@@ -1168,7 +1171,7 @@ $("head").styleReady(function(){
                 new_list = $('<tr iderror="'+ listData[i].iderror +'">\
                     <td class="float"><span class="' + listData[i].color + '"></span></td>\
                     <td class="center"><span class="bold">'+listData[i].count+'</span></td>\
-                    <td class="float" onclick="clickevent('+listData[i].iderror+')">\
+                    <td class="float" onclick="clickevent('+listData[i].iderror+',event)">\
                         <p>'+listData[i].errorname + '<br>' + listData[i].errorclassname + ':' + listData[i].linenum+'</p>\
                     </td>\
                     <td><p>\

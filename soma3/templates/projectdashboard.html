@@ -31,7 +31,10 @@
 
         function clickevent(id)
         {
-            location.href = 'errors/' + id
+            if(event.shiftKey == true)
+                window.open('./errors/'+id,'_blank');
+            else
+                location.href = './errors/' + id
         }
     </script>
     <script>
@@ -528,7 +531,7 @@
 					</tr></thead>
 					<tbody>
                         {% for data in error_list %}
-                        <tr onclick = clickevent({{ data.Errorid }})>
+                        <tr onclick = clickevent({{ data.Errorid }},event)>
                             <td class="float">
                                 <span class="{{ data.Errorrankcolor }}"></span>
                             </td>
