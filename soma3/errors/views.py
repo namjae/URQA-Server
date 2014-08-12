@@ -347,6 +347,7 @@ def errorDetail(request,apikey,iderror):
 
     ####instance#######
     instancelist = []
+    instanceCount = 0
     for instance in instanceElements:
         instancetuple = {'datetime' : "", 'osversion' : '','appversion' : '' , 'device' : '', 'country' : '', 'idinstance' : ''}
         adtimezone = toTimezone(instance.datetime,projectelement.timezone)
@@ -358,7 +359,9 @@ def errorDetail(request,apikey,iderror):
         instancetuple['country'] = instance.country
         instancetuple['idinstance'] = instance.idinstance
         instancelist.append(instancetuple)
-
+        instanceCount = instanceCount + 1
+        if instanceCount >= 100:
+            break
 
     #projectelement = Projects.objects.get(apikey = apikey)
     platformdata = json.loads(get_config('app_platforms'))
