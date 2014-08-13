@@ -57,6 +57,7 @@ from urqa.models import Sessionevent
 from urqa.models import Eventpaths
 from urqa.models import Proguardmap
 from urqa.models import ErrorsbyApp
+from urqa.models import InstanceCountModel
 
 #from utility import getTemplatePath
 from utility import getTimeRange
@@ -525,15 +526,29 @@ def projects(request):
             stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
             #projectdata['color'] = stagecolordata.get(stagetxt)
 
-            week, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
+            past, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
 
-            errorElements = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open])
-            instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range = (week, today)).count()
-            apprunCount = Appruncount.objects.filter(pid=project.pid,date__range = (week, today)).aggregate(apprunCount=Sum('runcount'))['apprunCount']
-            #print instanceCount
-            #print '(week, today)',project.pid,(week, today)
-            #print Appruncount.objects.filter(pid=project.pid,date__gte = week)
-            #print apprunCount
+            #errorElements = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open])
+            #instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range = (week, today)).count()
+            sql = "select B.iderror, count(*) as count "
+            sql = sql + "from instances A, errors B "
+            sql = sql + "where A.iderror = B.iderror "
+            sql = sql + "and B.pid = %(pidinput)s "
+            sql = sql + "and B.status in (0,1) "
+            sql = sql + "and A.datetime > %(pasttime)s"
+
+            params = {'pidinput':project.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+
+            places = InstanceCountModel.objects.raw(sql, params)
+            #print >> sys.stderr, places
+            instanceCount = 0;
+            for idx, pl in enumerate(places):
+                #print >> sys.stderr, pl, pl.count
+                instanceCount = instanceCount + pl.count
+
+            apprunCount = Appruncount.objects.filter(pid=project.pid,date__range = (past, today)).aggregate(apprunCount=Sum('runcount'))['apprunCount']
+
+
             projectdata['count'] =  instanceCount
             if not apprunCount:
                 errorRate = 0
