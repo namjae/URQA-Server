@@ -556,12 +556,16 @@ def projects(request):
 
     categorydata = json.loads(get_config('app_categories'))
     platformdata = json.loads(get_config('app_platforms'))
+    sorted_platform = [];
+    for key in sorted(platformdata, key=lambda key: platformdata[key]):
+        sorted_platform.append((key,platformdata[key]))
+
     stagedata = json.loads(get_config('app_stages'))
 
     ctx = {
         # 'project_list' : project_list ,
         'project_list' : project_list,
-        'app_platformlist' : platformdata.items(),
+        'app_platformlist' : sorted_platform,
         'app_categorylist' : categorydata.items(),
         'app_stagelist' : stagedata.items(),
         'user' : request.user
