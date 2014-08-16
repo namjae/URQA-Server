@@ -17,7 +17,7 @@ from soma3.settings import STATIC_URL
 # from utility import getUTCawaredatetime
 
 # from oauth2client.client import OAuth2WebServerFlow
- def index(request):
+def index(request):
     return render(request, 'index.html')
 
 def login(request):
