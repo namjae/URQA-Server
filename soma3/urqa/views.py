@@ -17,8 +17,10 @@ from soma3.settings import STATIC_URL
 # from utility import getUTCawaredatetime
 
 # from oauth2client.client import OAuth2WebServerFlow
+ def index(request):
+    return render(request, 'index.html')
 
-def index(request):
+def login(request):
 
     #만약 로그인 되어 있다면!!
     if request.user.is_authenticated():
