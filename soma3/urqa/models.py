@@ -361,3 +361,8 @@ class CountrysbyApp(models.Model):
 class InstanceCountModel(models.Model):
     iderror = models.IntegerField(primary_key=True)
     count = models.IntegerField(blank=True, null=True)
+
+class ErrorStatistics(models.Model):
+    iderrorstatistics = models.IntegerField(primary_key=True)
+    keyname = models.CharField(max_length=45, blank=True)
+    count = models.IntegerField(blank=True, null=True)
