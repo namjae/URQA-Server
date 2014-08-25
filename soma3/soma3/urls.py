@@ -17,6 +17,9 @@ urlpatterns = patterns('',
     url(r'^urqa/fileuploadtest$', 'urqa.views.fileuploadtest'),
     url(r'^urqa/cleanup$', 'urqa.views.cleanup'),
 
+    #unity cross domain
+    url(r'^crossdomain.xml$', 'urqa.views.unity_crossdomain'),
+
     #client module
     url(r'^urqa/client/connect$', 'client.views.connect'),
     url(r'^urqa/client/send/exception$', 'client.views.receive_exception'),
