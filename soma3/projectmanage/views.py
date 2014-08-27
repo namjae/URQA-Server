@@ -49,6 +49,7 @@ from urqa.models import Devicestatistics
 from urqa.models import Osstatistics
 from urqa.models import Countrystatistics
 from urqa.models import Appruncount
+from urqa.models import Appruncount2
 from urqa.models import Instances
 from urqa.models import Tags
 from urqa.models import Comments
@@ -133,6 +134,7 @@ def delete_req(request,apikey):
 
     #appruncount 삭제
     Appruncount.objects.filter(pid=project).delete()
+    Appruncount2.objects.filter(pid=project).delete()
 
     #Session 삭제
     sessions = Session.objects.filter(pid=project)
@@ -488,7 +490,7 @@ def projects(request):
     #avgcolordata = json.loads(get_config('avg_error_score_color'))
     countcolordata = json.loads(get_config('error_rate_color'))
     platformdata = json.loads(get_config('app_platforms'))
-
+    """
     if request.user.is_superuser:
         #Super User일 경우 모든 프로젝트 보이기
         MergeProjectElements = ProjectSummary.objects.all()
@@ -498,14 +500,18 @@ def projects(request):
             projectdata['apikey'] = project.apikey
             stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
             projectdata['count'] =  project.instanceCount
-            errorRate = int(project.instanceCount * 100 / project.runcount)
+            #errorRate = int(project.instanceCount * 100 / project.runcount)
+            errorRate = 0
             projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
             projectdata['name'] = project.name
             projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
             projectdata['stage'] = stagetxt
             project_list.append(projectdata)
 
-    else:
+    else:"""
+    if request.user.is_superuser:
+        MergeProjectElements = Projects.objects.filter()
+    else :
         #주인인 project들
         UserElement = AuthUser.objects.get(username = request.user)
         OwnerProjectElements = Projects.objects.filter(owner_uid = UserElement.id)
@@ -519,51 +525,55 @@ def projects(request):
 
 
 
-        for idx, project in enumerate(MergeProjectElements):
-            projectdata = {}
-            projectdata['apikey'] = project.apikey
-            #stage color 구하기
-            stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
-            #projectdata['color'] = stagecolordata.get(stagetxt)
+    for idx, project in enumerate(MergeProjectElements):
+        projectdata = {}
+        projectdata['apikey'] = project.apikey
+        #stage color 구하기
+        stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
+        #projectdata['color'] = stagecolordata.get(stagetxt)
 
-            past, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
+        past, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
 
-            #errorElements = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open])
-            #instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range = (week, today)).count()
-            sql = "select B.iderror, count(*) as count "
-            sql = sql + "from instances A, errors B "
-            sql = sql + "where A.iderror = B.iderror "
-            sql = sql + "and B.pid = %(pidinput)s "
-            sql = sql + "and B.status in (0,1) "
-            sql = sql + "and A.datetime > %(pasttime)s"
+        #errorElements = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open])
+        #instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range = (week, today)).count()
+        sql = "select B.iderror, count(*) as count "
+        sql = sql + "from instances A, errors B "
+        sql = sql + "where A.iderror = B.iderror "
+        sql = sql + "and B.pid = %(pidinput)s "
+        sql = sql + "and B.status in (0,1) "
+        sql = sql + "and A.datetime > %(pasttime)s"
 
-            params = {'pidinput':project.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+        params = {'pidinput':project.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
 
-            places = InstanceCountModel.objects.raw(sql, params)
-            #print >> sys.stderr, places
-            instanceCount = 0;
-            for idx, pl in enumerate(places):
-                #print >> sys.stderr, pl, pl.count
-                instanceCount = instanceCount + pl.count
+        places = InstanceCountModel.objects.raw(sql, params)
+        #print >> sys.stderr, places
+        instanceCount = 0;
+        for idx, pl in enumerate(places):
+            #print >> sys.stderr, pl, pl.count
+            instanceCount = instanceCount + pl.count
 
-            apprunCount = Appruncount.objects.filter(pid=project.pid,date__range = (past, today)).aggregate(apprunCount=Sum('runcount'))['apprunCount']
+        if request.user.is_superuser and instanceCount == 0:
+            continue
+        apprunCount = Appruncount2.objects.filter(pid=project.pid,datetime__range = (past, today)).aggregate(apprunCount=Sum('appruncount'))['apprunCount']
+        if apprunCount == 0 or apprunCount == None:
+            apprunCount = 1;
 
 
-            projectdata['count'] =  instanceCount
-            if not apprunCount:
-                errorRate = 0
-            else:
-                errorRate = int(instanceCount * 100.0 / apprunCount)
+        projectdata['count'] =  instanceCount
+        if not apprunCount:
+            errorRate = 0
+        else:
+            errorRate = int(instanceCount * 100.0 / apprunCount)
+        #print >> sys.stderr,errorRate,instanceCount,apprunCount
+        #print project.name, 'errorRate %d%%' % errorRate, instanceCount, apprunCount
+        #Avg ErrorScore에 대한 컬러
+        projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
+        #print projectdata['color']
 
-            #print project.name, 'errorRate %d%%' % errorRate, instanceCount, apprunCount
-            #Avg ErrorScore에 대한 컬러
-            projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
-            #print projectdata['color']
-
-            projectdata['name'] = project.name
-            projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
-            projectdata['stage'] = stagetxt
-            project_list.append(projectdata)
+        projectdata['name'] = project.name
+        projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
+        projectdata['stage'] = stagetxt
+        project_list.append(projectdata)
 
 
 

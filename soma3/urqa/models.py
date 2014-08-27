@@ -333,10 +333,10 @@ class ProjectSummary(models.Model):
     owner_uid = models.CharField(max_length=10)
     platform = models.IntegerField()
     stage = models.IntegerField()
-    runcount = models.IntegerField()
+    #runcount = models.IntegerField()
     class Meta:
          managed = False
-         db_table = 'apprunCount'
+         db_table = 'projectsummary'
 
 class ErrorsbyApp(models.Model):
     errorcount = models.IntegerField(primary_key=True)
