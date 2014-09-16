@@ -1,5 +1,5 @@
 .view {
-   width: 200px;
+   width: 110px;
    margin: 10px;
    float: left;
    overflow: hidden;
@@ -25,7 +25,6 @@
    position: relative;
    font-size: 17px;
    padding: 10px;
-   background: rgba(0, 0, 0, 0.8);
    margin: 20px 0 0 0;
 }
 .view p {
