@@ -77,10 +77,6 @@ h6 {
 .bg-history {
     background-image: url('bg.png');
     background-repeat: repeat-x;
-    height: 100%;
-    position:absolute;
-    top:0;
-    left:0;
     opacity:0.9;
     width:0 auto;
 }
