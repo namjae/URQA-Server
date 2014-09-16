@@ -229,13 +229,20 @@
     </section>
 
     <!-- About Section -->
+    <style>
+    div img { max-width: 100%; height: auto; }
+    div img.normal,
+    div:hover img.hover { display: block; }
+    div img.hover,
+    div:hover img.normal { display: none; }
+</style>
     <section id="about" class="bg-history">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2 class="section-heading" style="color:#FFFFFF">Our History</h2>
+                    <h2 class="section-heading" style="color:#FFFFFF">Our History
                     <img src="{% static 'img/p4/title_slash.png' %}">
-                    <small><font style="color:#FFFFFF">저희는 이런 히스토리를 가지고 있습니다.</font></small>
+                    <small><font style="color:#FFFFFF">저희는 이런 히스토리를 가지고 있습니다.</font></small></h2>
                 </div>
             </div>
             <div class="row">
@@ -243,7 +250,8 @@
                     <ul class="timeline">
                         <li>
                             <div class="timeline-image">
-                                <img class="img-circle img-responsive" src="{% static 'img/about/1.jpg' %}" alt="">
+                                <img class="normal" src="{% static 'img/about/1.jpg' %}" alt="">
+                                <img class="hover" src="{% static 'img/about/2.jpg' %}" alt="">
                             </div>
                             <div class="timeline-panel">
                                 <div class="timeline-heading">
@@ -332,7 +340,7 @@
                 </div>
                 <div class="col-sm-3">
                     <div class="team-member">
-                        <img src="{% static 'img/team/yang.png' %}" class="img-responsive img-circle" alt="">
+                        <img src="{% static 'img/team/yang.jpg' %}" class="img-responsive img-circle" alt="">
                         <h4>Yang HyunChul</h4>
                         <p class="text-muted">Creator</p>
                         <ul class="list-inline social-buttons">
