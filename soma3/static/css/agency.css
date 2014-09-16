@@ -60,6 +60,12 @@ h6 {
     margin: 0 auto;
 }
 
+.img-smalled {
+      width: 100% \6;
+      max-width: 60%;
+      height: auto;
+}
+
 .bg-light-gray {
     background-color: #f7f7f7;
 }
