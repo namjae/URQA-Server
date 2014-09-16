@@ -644,6 +644,7 @@ class Ignore_clib:
         'libjavacore.so',
         'librs_jni.so',
         'linker',
+        'eglsubAndroid.so'
     ]
 
 

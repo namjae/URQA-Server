@@ -1,6 +1,7 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
+import sys
 import re
 import json
 import operator
@@ -24,6 +25,7 @@ from urqa.models import Appstatistics
 from urqa.models import Tags
 from urqa.models import Comments
 from urqa.models import Sofiles
+from urqa.models import ErrorStatistics
 
 from common import validUserPjt
 from common import validUserPjtError
@@ -124,30 +126,24 @@ def os(request,apikey,iderror):
     if not result:
         return HttpResponse(msg)
 
+    sql = "select idinstance as iderrorstatistics, osversion as keyname, count(*) as count "
+    sql = sql + "from instances where iderror = %(id_error)s "
+    sql = sql + "group by keyname order by count desc"
+
+    params = {'id_error':iderror}
+    places = ErrorStatistics.objects.raw(sql, params)
+
     data = []
-    InstanceElements = Instances.objects.filter(iderror=iderror)
-
-    dict = {}
-    for Instance in InstanceElements:
-        if Instance.osversion in dict:
-            dict[Instance.osversion] += 1
-        else:
-            dict[Instance.osversion] = 1
-
-    sortdict = OrderedDict(sorted(dict.iteritems(), key=lambda dict: dict[1], reverse=True))
-
-
     counter = 0
     others = 0
-    for key,value in sortdict.items():
+    for idx, pl in enumerate(places):
         counter += 1
         if counter <= 5:
-            tuple = {'label' : key, 'value' : value}
+            tuple = {'label' : pl.keyname, 'value' : pl.count}
             data.append(tuple)
         else:
-            others += 1
-
-    if len(sortdict) > 5:
+            others += pl.count
+    if others != 0:
         tuple = {'label' : 'Ohters' , 'value' : others}
         data.append(tuple)
 
@@ -163,30 +159,24 @@ def app(request,apikey,iderror):
     if not result:
         return HttpResponse(msg)
 
+    sql = "select idinstance as iderrorstatistics, appversion as keyname, count(*) as count "
+    sql = sql + "from instances where iderror = %(id_error)s "
+    sql = sql + "group by keyname order by count desc"
+
+    params = {'id_error':iderror}
+    places = ErrorStatistics.objects.raw(sql, params)
+
     data = []
-    InstanceElements = Instances.objects.filter(iderror=iderror)
-
-    dict = {}
-    for Instance in InstanceElements:
-        if Instance.appversion in dict:
-            dict[Instance.appversion] += 1
-        else:
-            dict[Instance.appversion] = 1
-
-    sortdict = OrderedDict(sorted(dict.iteritems(), key=lambda dict: dict[1], reverse=True))
-
-
     counter = 0
     others = 0
-    for key,value in sortdict.items():
+    for idx, pl in enumerate(places):
         counter += 1
         if counter <= 5:
-            tuple = {'label' : key, 'value' : value}
+            tuple = {'label' : pl.keyname, 'value' : pl.count}
             data.append(tuple)
         else:
-            others += 1
-
-    if len(sortdict) > 5:
+            others += pl.count
+    if others != 0:
         tuple = {'label' : 'Ohters' , 'value' : others}
         data.append(tuple)
 
@@ -200,30 +190,24 @@ def device(request,apikey,iderror):
     if not result:
         return HttpResponse(msg)
 
+    sql = "select idinstance as iderrorstatistics, device as keyname, count(*) as count "
+    sql = sql + "from instances where iderror = %(id_error)s "
+    sql = sql + "group by keyname order by count desc"
+
+    params = {'id_error':iderror}
+    places = ErrorStatistics.objects.raw(sql, params)
+
     data = []
-    InstanceElements = Instances.objects.filter(iderror=iderror)
-
-    dict = {}
-    for Instance in InstanceElements:
-        if Instance.device in dict:
-            dict[Instance.device] += 1
-        else:
-            dict[Instance.device] = 1
-
-    sortdict = OrderedDict(sorted(dict.iteritems(), key=lambda dict: dict[1], reverse=True))
-
-
     counter = 0
     others = 0
-    for key,value in sortdict.items():
+    for idx, pl in enumerate(places):
         counter += 1
         if counter <= 5:
-            tuple = {'label' : key, 'value' : value}
+            tuple = {'label' : pl.keyname, 'value' : pl.count}
             data.append(tuple)
         else:
-            others += 1
-
-    if len(sortdict) > 5:
+            others += pl.count
+    if others != 0:
         tuple = {'label' : 'Ohters' , 'value' : others}
         data.append(tuple)
 
@@ -237,30 +221,24 @@ def country(request,apikey,iderror):
     if not result:
         return HttpResponse(msg)
 
+    sql = "select idinstance as iderrorstatistics, country as keyname, count(*) as count "
+    sql = sql + "from instances where iderror = %(id_error)s "
+    sql = sql + "group by keyname order by count desc"
+
+    params = {'id_error':iderror}
+    places = ErrorStatistics.objects.raw(sql, params)
+
     data = []
-    InstanceElements = Instances.objects.filter(iderror=iderror)
-
-    dict = {}
-    for Instance in InstanceElements:
-        if Instance.country in dict:
-            dict[Instance.country] += 1
-        else:
-            dict[Instance.country] = 1
-
-    sortdict = OrderedDict(sorted(dict.iteritems(), key=lambda dict: dict[1], reverse=True))
-
-
     counter = 0
     others = 0
-    for key,value in sortdict.items():
+    for idx, pl in enumerate(places):
         counter += 1
         if counter <= 5:
-            tuple = {'label' : key, 'value' : value}
+            tuple = {'label' : pl.keyname, 'value' : pl.count}
             data.append(tuple)
         else:
-            others += 1
-
-    if len(sortdict) > 5:
+            others += pl.count
+    if others != 0:
         tuple = {'label' : 'Ohters' , 'value' : others}
         data.append(tuple)
 
@@ -288,19 +266,15 @@ def errorDetail(request,apikey,iderror):
     else:
         isManual = True
 
-    instanceElements = Instances.objects.filter(iderror = ErrorsElement).order_by('-datetime')
+    instanceElements = Instances.objects.filter(iderror = ErrorsElement).order_by('-datetime')[:100]
+
     #wifi
-    wifi = 0
-    wifielements = instanceElements.filter(wifion = 1)
-    wifi = len(wifielements)
+    wifi = Instances.objects.filter(iderror = ErrorsElement,wifion = 1).count()
     #gps
-    gps = 0
-    gpselements = instanceElements.filter(gpson = 1)
-    gps = len(gpselements)
+    gps = Instances.objects.filter(iderror = ErrorsElement,gpson = 1).count()
     #mobilenetwork
-    mobilenetwork = 0
-    mobilenetworkelements = instanceElements.filter(mobileon = 1)
-    mobilenetwork = len(mobilenetworkelements)
+    mobilenetwork = Instances.objects.filter(iderror = ErrorsElement,mobileon = 1).count()
+
     numobins = float(ErrorsElement.numofinstances)
 
     ###taglist###
@@ -347,6 +321,7 @@ def errorDetail(request,apikey,iderror):
 
     ####instance#######
     instancelist = []
+    instanceCount = 0
     for instance in instanceElements:
         instancetuple = {'datetime' : "", 'osversion' : '','appversion' : '' , 'device' : '', 'country' : '', 'idinstance' : ''}
         adtimezone = toTimezone(instance.datetime,projectelement.timezone)
@@ -358,7 +333,9 @@ def errorDetail(request,apikey,iderror):
         instancetuple['country'] = instance.country
         instancetuple['idinstance'] = instance.idinstance
         instancelist.append(instancetuple)
-
+        instanceCount = instanceCount + 1
+        if instanceCount >= 100:
+            break
 
     #projectelement = Projects.objects.get(apikey = apikey)
     platformdata = json.loads(get_config('app_platforms'))

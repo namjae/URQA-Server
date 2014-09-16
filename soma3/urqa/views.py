@@ -1,22 +1,19 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
-import time
-import sys
-
-from django.utils.timezone import utc
-from django.utils import timezone
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
-from django.template import Context, loader
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from urqa.models import Appruncount
-from urqa.models import Appruncount2
 from soma3.settings import STATIC_URL
+<<<<<<< HEAD
 # from utility import getUTCawaredatetime
 
 # from oauth2client.client import OAuth2WebServerFlow
+=======
+from soma3.settings import PROJECT_DIR
+
+>>>>>>> master
 def index(request):
     return render(request, 'index.html')
 
@@ -83,3 +80,13 @@ def mediapathrequest(request, path):
 
 def tutorialrequest(request, path):
     return HttpResponseRedirect(STATIC_URL + path)
+
+def unity_crossdomain(request):
+    abspath = open(PROJECT_DIR + '/templates/crossdomain.xml','r')
+    response = HttpResponse(content=abspath.read())
+    response['Content-Type']= 'application/xml'
+    response['Content-Disposition'] = 'attachment; filename=crossdomain.xml';
+    return response
+    #ctx = {}
+    #print request
+    #return render(request, 'crossdomain.xml', ctx)

@@ -333,10 +333,10 @@ class ProjectSummary(models.Model):
     owner_uid = models.CharField(max_length=10)
     platform = models.IntegerField()
     stage = models.IntegerField()
-    runcount = models.IntegerField()
+    #runcount = models.IntegerField()
     class Meta:
          managed = False
-         db_table = 'apprunCount'
+         db_table = 'projectsummary'
 
 class ErrorsbyApp(models.Model):
     errorcount = models.IntegerField(primary_key=True)
@@ -357,3 +357,12 @@ class ErrorbyRank(models.Model):
 class CountrysbyApp(models.Model):
    count = models.IntegerField(primary_key=True)
    country = models.CharField(max_length=45, blank=True)
+
+class InstanceCountModel(models.Model):
+    iderror = models.IntegerField(primary_key=True)
+    count = models.IntegerField(blank=True, null=True)
+
+class ErrorStatistics(models.Model):
+    iderrorstatistics = models.IntegerField(primary_key=True)
+    keyname = models.CharField(max_length=45, blank=True)
+    count = models.IntegerField(blank=True, null=True)
