@@ -1,13 +1,16 @@
 .view {
-   width: 100% / 6;
+   width: 100%;
    margin: 10px;
    float: left;
+   overflow: hidden;
    position: relative;
    text-align: center;
    cursor: default;
+   background: #fff url('selected_circle.png') no-repeat center center;
 }
 .view .mask,.view .content {
    width: 100%;
+   overflow: visible;
    position: absolute;
    top: 20;
    left: 0;
