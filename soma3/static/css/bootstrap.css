@@ -930,7 +930,7 @@ img {
   vertical-align: middle;
 }
 .img-responsive,
-.thumbnail > img,
+.thumbnail > itemmg,
 .thumbnail a > img,
 .carousel-inner > .item > img,
 .carousel-inner > .item > a > img {
@@ -958,6 +958,11 @@ img {
 }
 .img-circle {
   border-radius: 50%;
+}
+
+.img-circle .img-smalled {
+  border-radius: 50%;
+  width: 100% \6;
 }
 hr {
   margin-top: 20px;
