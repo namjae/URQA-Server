@@ -6,14 +6,10 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from soma3.settings import STATIC_URL
-<<<<<<< HEAD
 # from utility import getUTCawaredatetime
 
 # from oauth2client.client import OAuth2WebServerFlow
-=======
 from soma3.settings import PROJECT_DIR
-
->>>>>>> master
 def index(request):
     return render(request, 'index.html')
 
