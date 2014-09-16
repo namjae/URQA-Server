@@ -2,16 +2,14 @@
    width: 100% / 6;
    margin: 10px;
    float: left;
-   overflow: hidden;
    position: relative;
    text-align: center;
    cursor: default;
 }
 .view .mask,.view .content {
-   width: 100% / 6;
+   width: 100%;
    position: absolute;
-   overflow: hidden;
-   top: 0;
+   top: 20;
    left: 0;
 }
 .view img {
