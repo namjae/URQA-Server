@@ -21,8 +21,8 @@ import projectmanage.views
 
 
 def registration(request):
-    #print request
-
+    #사용자 등록 루틴
+    #이메일, 페스워드, 닉네임을 이용하여 DB에 데이터 생성
     username = request.POST['username']
     password = request.POST['password']
     email = username
@@ -51,7 +51,7 @@ def registration(request):
     return HttpResponseRedirect('/urqa/')
 
 def resetpassword(request):
-
+    #Not yet
     pname = request.POST['pname']
     apikey = request.POST['apikey']
     print pname
@@ -60,7 +60,7 @@ def resetpassword(request):
     return HttpResponseRedirect('/urqa/')
 
 def delete_req(request):
-
+    #User의 아이디를 삭제한다.
     print request.user
     try:
         user = AuthUser.objects.get(username = request.user)
@@ -86,6 +86,7 @@ def delete_req(request):
     return HttpResponse('delete success')
 
 def login_req(request):
+    #Login, Django의 Session을 그대로 사용함
     username = request.POST['username']
     password = request.POST['password']
 
@@ -106,6 +107,7 @@ def login_req(request):
     return HttpResponse('login')
 
 def logout_req(request):
+    #Logout, Django의 기존 루틴을 그대로 사용함.
     print request.user
     if request.user.is_authenticated():
         logout(request)

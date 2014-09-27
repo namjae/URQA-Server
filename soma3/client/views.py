@@ -37,25 +37,22 @@ from utility import RANK
 from config import get_config
 from soma3.settings import PROJECT_DIR
 
-#삭제요망
 from common import validUserPjtError
 from django.core.exceptions import MultipleObjectsReturned
 
 
+#Client엡이 켜지면 이 루틴으로 접속이 들어오게된다.
+#Client API를 입력받아 접속 통계
 @csrf_exempt
 def connect(request):
     #req_dump = request.copy();
     try:
         jsonData = json.loads(request.body,encoding='utf-8')
-        #req_dump = None
     except Exception as e:
+        #Json Parsing Exception
         print >> sys.stderr, 'connect error!!!!! bad request.body'
-        #print >> sys.stderr, 'request.body = ', req_dump.body
-        #print >> sys.stderr, 'request = ',req_dump
         print >> sys.stderr, 'Exception = ', e
-        #req_dump = None
         return HttpResponse(json.dumps({'idsession':long(time.time() * 1000 + random.randint(0,1000))}), 'application/json');
-    #print jsonData
 
     #step1: apikey를 이용하여 project찾기
     try:
@@ -68,14 +65,12 @@ def connect(request):
     #step2: idsession 발급하기
     appversion = jsonData['appversion']
     idsession = long(time.time() * 1000 + random.randint(0,1000))
-    #duple = Session.objects.filter(idsession=idsession);
-    #if len(duple) != 0:
-    #    idsession = long(time.time() * 1000 + random.randint(0,1000));
-    #Session.objects.create(idsession=idsession,pid=projectElement,appversion=appversion)
+
     print 'Project: %s, Ver: %s, new idsession: %d' % (projectElement.name,appversion,idsession)
 
     #step3: app version별 누적카운트 증가하기
     try:
+        #App 실행횟수 증가
     	appruncountElement, created = Appruncount.objects.get_or_create(pid=projectElement,appversion=appversion,defaults={'runcount':1},date=getUTCawaredatetime())
     	if created == False:
         	appruncountElement.runcount += 1
@@ -89,6 +84,7 @@ def connect(request):
 
 
 def client_data_validate(jsonData):
+    #Client에서 비정상 데이터가 올라오는 경우가 발생하여 방어 코드를 넣었음.
     oriData = jsonData.copy();
     errorFlag = 0
     if not 'apikey' in jsonData:
@@ -191,6 +187,7 @@ def client_data_validate(jsonData):
         jsonData['eventpaths'] = 'unknown'
         errorFlag = 1
 
+    #Error가 발생하면 어떤데이터에서 에러가 발생했는지 확인하기위해 로그 찍기
     if errorFlag == 1:
         print >> sys.stderr, 'exception Data Error: ', oriData
         print >> sys.stderr, 'Revise JSON Data    : ', jsonData
@@ -198,6 +195,8 @@ def client_data_validate(jsonData):
     return jsonData
 
 def proguard_retrace_oneline(string,linenum,map_path,mapElement):
+    #Proguard에서 한줄만 파싱하기위한 루틴
+    #Proguard Line parsing
     if mapElement == None:
         return string
     for i in range(1,100):
@@ -208,8 +207,9 @@ def proguard_retrace_oneline(string,linenum,map_path,mapElement):
     fp.write('at\t'+string+'\t(:%s)' % linenum)
     fp.close()
 
+    #Config.cfg파일로부터 Proguard위치를 파악하여 라인 Parsing
     arg = ['java','-jar',os.path.join(PROJECT_DIR,get_config('proguard_retrace_path')),'-verbose',os.path.join(map_path,mapElement.filename),temp_path]
-    #print arg
+
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
     stdout_split = stdout.split('\t')
@@ -219,6 +219,7 @@ def proguard_retrace_oneline(string,linenum,map_path,mapElement):
     return string
 
 def proguard_retrace_callstack(string,map_path,mapElement):
+    #Callstack전체를 Parsing해주는 루틴.
     if mapElement == None:
         return string
     for i in range(1,100):
@@ -240,8 +241,7 @@ def proguard_retrace_callstack(string,map_path,mapElement):
 
 @csrf_exempt
 def receive_exception(request):
-    #jsonData = json.loads(request.body,encoding='utf-8')
-    #req_dump = request.copy();
+    #Client로부터 올라오는 exception을 수집하는 루틴
     try:
         jsonData = json.loads(request.body,encoding='utf-8')
         #req_dump = None
@@ -253,8 +253,10 @@ def receive_exception(request):
         #req_dump = None
         return HttpResponse(json.dumps({'idinstance':0}), 'application/json');
 
+    #Client로부터 들어온 데이터의 무결성을 검사한다.
     jsonData = client_data_validate(jsonData)
-    #print 'receive_exception requested'
+
+
     #step1: apikey를 이용하여 project찾기
     #apikey가 validate한지 확인하기.
     try:
@@ -264,10 +266,12 @@ def receive_exception(request):
         print 'Invalid apikey'
         return HttpResponse('Invalid apikey')
 
+    #Exception데이터 로깅.
     print >> sys.stderr, 'receive_exception requested',apikey
     print >> sys.stderr, '=========== JsonData ========='
     print >> sys.stderr, jsonData
     print >> sys.stderr, '=============================='
+
     #step2: errorname, errorclassname, linenum을 이용하여 동일한 에러가 있는지 찾기
     errorname = jsonData['errorname']
     errorclassname = jsonData['errorclassname']
@@ -283,20 +287,25 @@ def receive_exception(request):
     map_path = os.path.join(map_path,projectElement.apikey)
     map_path = os.path.join(map_path,appversion)
     try:
+        #Proguard가 적용된 프로젝트의 경우 Proguard Map파일을 이용하여 Parsing한다.
         mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appversion)
 
         errorname = proguard_retrace_oneline(errorname,linenum,map_path,mapElement)
         errorclassname = proguard_retrace_oneline(errorclassname,linenum,map_path,mapElement)
         callstack = proguard_retrace_callstack(jsonData['callstack'],map_path,mapElement)
     except ObjectDoesNotExist:
+        #Proguard가 적용되지 않은 프로젝트의 경우 데이터를 그대로 사용함.
         mapElement = None
         callstack = jsonData['callstack']
         print 'no proguard mapfile'
 
     try:
-        errorElement = Errors.objects.get(pid=projectElement,errorname=errorname,errorclassname=errorclassname,linenum=linenum)
-        #새로온 인스턴스 정보로 시간 갱신
+        #동일 에러가 있는지 DB로부터 얻어온다.
+        #동일 에러가 없을경우 exception루틴으로 간다.
 
+        errorElement = Errors.objects.get(pid=projectElement,errorname=errorname,errorclassname=errorclassname,linenum=linenum)
+
+        #새로온 인스턴스 정보로 시간 갱신
         #errorElement.lastdate = naive2aware(jsonData['datetime'])
         errorElement.callstack = callstack
         errorElement.lastdate = getUTCawaredatetime()
@@ -308,6 +317,7 @@ def receive_exception(request):
         errorElement.totalmemusage += int(jsonData['appmemtotal'])
         errorElement.save()
 
+        #통계에 사용할 DB갱신
         e, created = Appstatistics.objects.get_or_create(iderror=errorElement,appversion=jsonData['appversion'],defaults={'count':1})
         if not created:
             e.count += 1
@@ -329,17 +339,9 @@ def receive_exception(request):
             e.count += 1
             e.save()
 
-        #에러 스코어 계산 에러스코어 삭제
-        #calc_errorScore(errorElement)
-
     except ObjectDoesNotExist:
-        #새로 들어온 에러라면 새로운 에러 생성
-        #if int(jsonData['rank']) == -1:
-        #    autodetermine = 1 #True
-        #else:
-        #    autodetermine = 0 #False
-        autodetermine = 0
-
+        #새로운 에러로 판별하여 DB 에러테이블에 데이터를 생성한다.
+        autodetermine = 0 #deprecated
         errorElement = Errors(
             pid = projectElement,
             errorname = errorname,
@@ -360,6 +362,7 @@ def receive_exception(request):
             recur = 0,
         )
         errorElement.save()
+        #통계용 데이터도 생성한다.
         Appstatistics.objects.create(iderror=errorElement,appversion=jsonData['appversion'],count=1)
         Osstatistics.objects.create(iderror=errorElement,osversion=jsonData['osversion'],count=1)
         Devicestatistics.objects.create(iderror=errorElement,devicename=jsonData['device'],count=1)
@@ -369,11 +372,13 @@ def receive_exception(request):
         #calc_errorScore(errorElement)
     #step3: 테그 저장
     if jsonData['tag']:
+        #테그 데이터가 있다면 테그를 생성한다.
         tagstr = jsonData['tag']
         tagElement, created = Tags.objects.get_or_create(iderror=errorElement,pid=projectElement,tag=tagstr)
 
-    #step4: 인스턴스 생성하기
 
+    #step4: 인스턴스 생성하기
+    #1개의 에러에는 여러개이 인스턴스
     instanceElement = Instances(
         iderror = errorElement,
         ins_count = errorElement.numofinstances,
@@ -488,10 +493,8 @@ def receive_eventpath(request):
 
 @csrf_exempt
 def receive_native(request):
+    #Client Native를 받는 루틴
     print 'receive_native requested'
-    #print request.body
-    #jsonData = json.loads(request.body,encoding='utf-8')
-    #req_dump = request.copy();
     try:
         jsonData = json.loads(request.body,encoding='utf-8')
         #req_dump = None
@@ -628,7 +631,7 @@ def receive_native(request):
         depth -= 1
     return HttpResponse(json.dumps({'idinstance':instanceElement.idinstance}), 'application/json');
 
-
+#Native Symbol중에 Android 기본 Symbol은 제외함.
 class Ignore_clib:
     list = [
         'libWVStreamControlAPI_L1',
@@ -805,86 +808,3 @@ def receive_native_dump(request, idinstance):
         #errorscore 계산 에러스코어 삭제
         #calc_errorScore(errorElement)
     return HttpResponse('Success')
-
-def calc_errorScore(errorElement):
-
-    erscore_parameter = json.loads(get_config('error_score_parameter'))
-
-    date_er_score = 0.0
-    quantity_er_score = 0.0
-    rank_er_score = 0.0
-
-    #date 계산 k1
-    #print naive2aware(getUTCDatetime())
-    #print errorElement.lastdate
-    d = naive2aware(getUTCDatetime()) - errorElement.lastdate
-
-    #print d
-    #print d.days, d.seconds, d.microseconds
-    #print erscore_parameter['retention']
-    #print float(erscore_parameter['retention'])
-
-    date_er_score = ((erscore_parameter['retention'])/ (erscore_parameter['retention'] + float(d.days) )) * erscore_parameter['date_constant']
-    #print 'bunmo : '+ str((erscore_parameter['retention'] + d.days))
-    #print 'daily delta : ' +str(d.days)
-    #print 'bunja: ' + str(erscore_parameter['retention'])
-    #print 'date cal : ' + str(date_er_score)
-
-
-    #quantity 계산 k2
-    runcounts = Appruncount.objects.filter(pid=errorElement.pid)     #전체 앱버전별 실행수
-    errorcounts = Appstatistics.objects.filter(iderror=errorElement) #1개 에러에 대한 앱버전별 실행수
-
-    tlb = []
-    for r in runcounts:
-        for e in errorcounts:
-            if r.appversion == e.appversion:
-                tlb.append({'appversion':r.appversion,'runcount':r.runcount,'errcount':e.count})
-                break;
-
-        #print 'calc_errorscore',tlb
-
-    wholeErrorCounter = 0.0
-    errorCounter = 0.0
-    for version_statics in tlb:
-        wholeErrorCounter += version_statics['runcount']
-        errorCounter += version_statics['errcount']
-
-    quantity_er_score = errorCounter/wholeErrorCounter
-    #print 'whole : ' + str(wholeErrorCounter)
-    #print 'errorcount : ' + str(errorCounter)
-    #print 'quantity cal : ' + str(quantity_er_score)
-
-    #rank 계산 k3
-    rank_er_score = 0
-    rank_er_score = rank_to_constant(errorElement.rank) * erscore_parameter['rank_ratio_constant']
-    #print 'RANK : ' + RANK.toString[errorElement.rank]
-    #print 'rank cal : ' + str(rank_er_score)
-
-    #최종 ErrorScore 계산
-    error_Score = (date_er_score + quantity_er_score + rank_er_score) * erscore_parameter['constant']
-    #print 'last Error Score : ' + str(error_Score)
-
-    #디비에 저장
-    errorElement.errorweight = error_Score
-    errorElement.gain1 = float(date_er_score)
-    errorElement.gain2 = float(quantity_er_score)
-
-    errorElement.save()
-
-def rank_to_constant(int):
-
-    erscore_parameter = json.loads(get_config('error_score_parameter'))
-
-    if int == RANK.Native:
-        return erscore_parameter['na']
-    elif int == RANK.Unhandle:
-        return erscore_parameter['un']
-    elif int == RANK.Critical:
-        return erscore_parameter['cr']
-    elif int == RANK.Major:
-        return erscore_parameter['ma']
-    elif int == RANK.Minor:
-        return erscore_parameter['mi']
-    else:
-        return 'fail'

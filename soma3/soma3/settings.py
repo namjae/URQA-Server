@@ -13,6 +13,17 @@ MANAGERS = ADMINS
 
 PROJECT_DIR = os.path.join(os.path.dirname(__file__),'..')
 
+
+"""
+UrQA: UrQA용 DATABASE설정.
+UrQA는 MySQL을 DB로사용하고있음.
+USER
+PASSWORD
+HOST
+PORT
+내용을 설정하여아한다.
+"""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.

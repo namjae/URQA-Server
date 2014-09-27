@@ -75,6 +75,7 @@ from config import get_config
 from soma3.settings import PROJECT_DIR
 
 def newApikey():
+    #Random한 ID를 생성한다. 만약 기존존재하는 ID라면 새로 생성한다.
     while True:
         apikey = "%08X" % random.randint(1,4294967295)
         if not Projects.objects.filter(apikey=apikey).exists():
@@ -83,13 +84,14 @@ def newApikey():
 
 
 def registration(request):
+    #Project를 생성하는 루틴
     #step1: login user element가져오기
     try:
         userElement = AuthUser.objects.get(username=request.user)
     except ObjectDoesNotExist:
         return HttpResponse('user "%s" not exists' % request.user)
 
-
+    #Config.cfg 파일에서부터 Platform데이터를 읽어온다.
     categorydata = json.loads(get_config('app_categories'))
     platformdata = json.loads(get_config('app_platforms'))
     stagedata = json.loads(get_config('app_stages'))
@@ -121,6 +123,7 @@ def registration(request):
     return HttpResponse(json.dumps({'success': True , 'prjname' : name , 'apikey' : apikey, 'color' : color , 'platform' : platformtxt,'stage':stagetxt}), 'application/json')
 
 def delete_req(request,apikey):
+    #Project를 Delete하는 루틴
     print 'project delete request(APIKEY:%s)' % apikey
 
     try:
@@ -185,7 +188,8 @@ def delete_req(request,apikey):
     return HttpResponse('delete success')
 
 def modify_req(request, apikey):
-
+    #Project의 설정을 바꿀수 있다.
+    #Porject의 Status, Timezone, Viewer를 변경 할 수있다.
     username = request.user
 
     valid , message , userelement, projectelement = validUserPjt(username,apikey)
@@ -213,6 +217,7 @@ def modify_req(request, apikey):
     return HttpResponse(json.dumps({'success' : True , 'message' : 'success modify project'}),'application/json')
 
 def so2sym(projectElement, appver, so_path, filename):
+    #so파일을 Symbol화 한다.
     arg = [os.path.join(PROJECT_DIR,get_config('dump_syms_path')) ,os.path.join(so_path,filename)]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
@@ -221,6 +226,7 @@ def so2sym(projectElement, appver, so_path, filename):
         print stderr
         return False, 0
 
+    #So File에는 각각의 unique한 vkey가 존재한다.
     vkey =  stdout.splitlines(False)[0].split()[3]
     try:
         sofileElement = Sofiles.objects.get(pid=projectElement, appversion=appver, versionkey=vkey)
@@ -254,6 +260,7 @@ def so2sym(projectElement, appver, so_path, filename):
     return True, vkey
 
 def update_error_callstack(projectElement, appversion):
+    #심볼이 업로드되면 Callstack을 업데이트 한다. Human readable Call stack
     #print 'update_error_callstack'
     errorElements = Errors.objects.filter(pid=projectElement,rank=RANK.Native)
     for errorElement in errorElements:
@@ -294,18 +301,21 @@ def update_error_callstack(projectElement, appversion):
     return True
 
 def extractinfo(projectElement,temp_path,temp_fname):
+    #사용자가 업로드한 so파일에서 정보를 추출한다.
     print projectElement,temp_path,temp_fname
 
     arg = [os.path.join(PROJECT_DIR,get_config('dump_syms_path')) ,os.path.join(temp_path,temp_fname)]
     fd_popen = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (stdout, stderr) = fd_popen.communicate()
 
+    #추출한 데이터에 Debug정보가 없다면 False를 리턴한다.
     if stderr.find('no debugging') != -1:
         print stderr
         return False, '0', '0', 'No debug info'
 
+    #그러힞 않다면 Version키를 추출하려 리턴한다.
     vkey =  stdout.splitlines(False)[0].split()[3]
-    print 'uploaded version key = ',vkey
+    print >> sys.stderr, 'uploaded version key = ',vkey
 
     try:
         sofile = Sofiles.objects.get(pid=projectElement,versionkey=vkey)
@@ -316,8 +326,8 @@ def extractinfo(projectElement,temp_path,temp_fname):
     return True, sofile.appversion, sofile.filename, 'Success'
 
 def so_upload(request, apikey):
-    #print request
-    print 'so_upload',apikey
+    #So file upload루틴
+    #print 'so_upload',apikey
 
     #appver = request.POST['version']
 
@@ -329,9 +339,9 @@ def so_upload(request, apikey):
 
     if not result:
         return HttpResponse(msg)
-    print request.method
-    print request.FILES
-    print request.POST
+    #print request.method
+    #print request.FILES
+    #print request.POST
 
     retdat = {'result':-1,'msg':'Failed to Upload File'}
 
@@ -353,6 +363,7 @@ def so_upload(request, apikey):
                 fp.write(chunk)
             fp.close()
 
+            #업로드된 SO파일에서 정보를 추출한다.
             flag, appver, so_fname, msg = extractinfo(projectElement,temp_path,temp_fname)
             if flag:
                 print appver, so_fname
@@ -364,6 +375,7 @@ def so_upload(request, apikey):
             #if 1:
             #    return HttpResponse('Failed to Upload File')
 
+            #서버의 So pool Directory에 파일을 저장한다.
             so_path = os.path.join(PROJECT_DIR,get_config('so_pool_path') +'/%s' % apikey)
             if not os.path.isdir(so_path):
                 os.mkdir(so_path)
@@ -377,6 +389,7 @@ def so_upload(request, apikey):
             success_flag,vkey = so2sym(projectElement, appver, so_path, so_fname)
             print 'success_flag',success_flag
 
+            #So파일에서 Sym파일을 추출 하였으므로 분석이 완료된(필요없는) so파일은 삭제한다.
             os.remove(os.path.join(so_path, so_fname))#사용한 sofile 삭제, sym파일만 추출하면 so파일은 삭제해도 됨
             if success_flag:
                 #정상적으로 so파일이 업로드되었기 때문에 error들의 callstack 정보를 갱신한다.
@@ -393,6 +406,7 @@ def so_upload(request, apikey):
     return HttpResponse(json.dumps(retdat), 'application/json');
 
 def proguardmap_upload(request, apikey):
+    #Proguard MAP데이터를 업로드한다.
     print 'proguardmap_upload',apikey
 
     result, msg, userElement, projectElement = validUserPjt(request.user, apikey)
@@ -430,6 +444,7 @@ def proguardmap_upload(request, apikey):
         fp.close()
         retdat = {'result':0,'msg':'File successfully Uploaded'}
 
+    #정상적으로 Map파일이 업로드 되었다면
     if retdat['result'] == 0:
         try:
             mapElement = Proguardmap.objects.get(pid=projectElement,appversion=appver)
@@ -460,6 +475,7 @@ def proguardmap_upload(request, apikey):
     return HttpResponse(json.dumps(retdat), 'application/json');
 
 def proguardmap_delete(request,apikey):
+    #Proguard map data를 삭제한다.
     result, msg, userElement, projectElement = validUserPjt(request.user, apikey)
 
     appversion = request.POST['appversion']
@@ -479,7 +495,7 @@ def proguardmap_delete(request,apikey):
 
 
 def projects(request):
-
+    #Project리스트를 출력하는 루틴
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/urqa/')
 
@@ -490,29 +506,11 @@ def projects(request):
     #avgcolordata = json.loads(get_config('avg_error_score_color'))
     countcolordata = json.loads(get_config('error_rate_color'))
     platformdata = json.loads(get_config('app_platforms'))
-    """
-    if request.user.is_superuser:
-        #Super User일 경우 모든 프로젝트 보이기
-        MergeProjectElements = ProjectSummary.objects.all()
 
-        for idx, project in enumerate(MergeProjectElements):
-            projectdata = {}
-            projectdata['apikey'] = project.apikey
-            stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
-            projectdata['count'] =  project.instanceCount
-            #errorRate = int(project.instanceCount * 100 / project.runcount)
-            errorRate = 0
-            projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
-            projectdata['name'] = project.name
-            projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
-            projectdata['stage'] = stagetxt
-            project_list.append(projectdata)
-
-    else:"""
     if request.user.is_superuser:
         MergeProjectElements = Projects.objects.filter()
     else :
-        #주인인 project들
+        #User가 소유한 Project를 얻어온다.
         UserElement = AuthUser.objects.get(username = request.user)
         OwnerProjectElements = Projects.objects.filter(owner_uid = UserElement.id)
 
@@ -534,8 +532,7 @@ def projects(request):
 
         past, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
 
-        #errorElements = Errors.objects.filter(pid = project.pid, status__in = [Status.New,Status.Open])
-        #instanceCount = Instances.objects.filter(iderror__in=errorElements,datetime__range = (week, today)).count()
+        #Project에서 최근 7일간 Error의 수를 얻어온다.
         sql = "select B.iderror, count(*) as count "
         sql = sql + "from instances A, errors B "
         sql = sql + "where A.iderror = B.iderror "
@@ -554,19 +551,21 @@ def projects(request):
 
         if request.user.is_superuser and instanceCount == 0:
             continue
+
+        #Project에서 사용자의 수를 얻어온다
         apprunCount = Appruncount2.objects.filter(pid=project.pid,datetime__range = (past, today)).aggregate(apprunCount=Sum('appruncount'))['apprunCount']
         if apprunCount == 0 or apprunCount == None:
             apprunCount = 1;
 
 
+        #프로젝트 DAU대비 Error수를 측정한다.
         projectdata['count'] =  instanceCount
         if not apprunCount:
             errorRate = 0
         else:
             errorRate = int(instanceCount * 100.0 / apprunCount)
-        #print >> sys.stderr,errorRate,instanceCount,apprunCount
-        #print project.name, 'errorRate %d%%' % errorRate, instanceCount, apprunCount
-        #Avg ErrorScore에 대한 컬러
+
+        #Error발생 비율에 따라 Project의 컬러를 설정한다.
         projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
         #print projectdata['color']
 
@@ -578,7 +577,7 @@ def projects(request):
 
 
     
-
+    #로딩한 데이터를 Template에 Randering한다.
     categorydata = json.loads(get_config('app_categories'))
     platformdata = json.loads(get_config('app_platforms'))
     sorted_platform = [];
@@ -601,7 +600,7 @@ def projects(request):
     return render(request, 'project-select.html', ctx)
 
 def projectdashboard(request, apikey):
-
+    #Project의 데시보드를 랜더링 하는 루틴
     username = request.user
 
     valid , message , userelement, projectelement = validUserPjt(username,apikey)
@@ -627,7 +626,7 @@ def projectdashboard(request, apikey):
     return render(request, 'projectdashboard.html', ctx)
 
 def dailyesgraph(request, apikey):
-
+    #일간 에러 발생비율을 보여준다.
     default = {
         "max":{"key":5, "value":0},
         "tags":[
@@ -641,6 +640,7 @@ def dailyesgraph(request, apikey):
     if not valid:
         return HttpResponse(json.dumps(default),'application/json')
 
+    #일간 데이터를 얻어오기위한 쿼리 작성
     sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'%%y-%%m-%%d') as errorday "
     sql = sql + "from instances A, errors B "
     sql = sql + "where A.iderror = B.iderror "
@@ -654,6 +654,7 @@ def dailyesgraph(request, apikey):
     params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = ErrorsbyApp.objects.raw(sql, params)
 
+    #얻어온 데이터를 JSON으로 파싱한다.
     maxvalue = 0
     value = {'key' : 0 , 'value' : 0}
     for i in range(retention-1,-1,-1):
@@ -677,6 +678,7 @@ def dailyesgraph(request, apikey):
     return HttpResponse(json.dumps(default),'application/json')
 
 def typeesgraph(request, apikey):
+    #Error Type(Unhandle, Critical, Major, Minor, Native)에 따라 에러비율을 그래프로 나타내는 루틴
 
     #print >> sys.stderr,'typeesgraph'
     #프로젝트 ID에 맞는 에러들을 가져오기 위함
@@ -710,6 +712,8 @@ def typeesgraph(request, apikey):
     params = {'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = ErrorsbyApp.objects.raw(sql, params)
 
+
+    #DB로 얻어온 데이터를 JSON으로 변환함.
     for i in range(RANK.Unhandle,RANK.Minor+1):
         for idx, pl in enumerate(places):
             if pl.errorrank == i:
@@ -727,7 +731,6 @@ def typeesgraph(request, apikey):
     return HttpResponse(result,'application/json')
 
 def typeescolor(request ,apikey):
-
     timerange = TimeRange.weekly
 
     #print >> sys.stderr,'typeescolor'
@@ -769,8 +772,6 @@ def typeescolor(request ,apikey):
 
 #name, file, tag, counter
 def errorscorelist(apikey):
-
-
 
     try:
         ProjectElement = Projects.objects.get(apikey = apikey)
@@ -818,7 +819,8 @@ def errorscorelist(apikey):
 
 
 def viewer_registration(request,apikey):
-
+    #Project의 Viewer를 등록한다.
+    #Project는 하나의 Owner와 여럿의 Viewer를 가질 수 있다.
     username = request.user
 
     valid , message , userelement, projectelement = validUserPjt(username,apikey)
@@ -841,7 +843,7 @@ def viewer_registration(request,apikey):
     return HttpResponse(json.dumps({'success': True, 'username' : registusername , 'message' : 'success registration'}),'application/json')
 
 def viewer_delete(request,apikey):
-
+    #Viewer를 삭제하는 루틴.
     username = request.user
 
     valid , message , userelement, projectelement = validUserPjt(username,apikey)

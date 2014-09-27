@@ -45,6 +45,8 @@ from config import get_config
 
 
 def newTag(request, apikey, iderror):
+    #Error에 Tag를 생성함
+    #커맨드를 생성한 사용자가 Project에 Tag를 쓸 수 있는지 검 증
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,apikey,iderror)
 
     print msg
@@ -60,6 +62,8 @@ def newTag(request, apikey, iderror):
         return HttpResponse('success')
 
 def deleteTag(request, apikey, iderror):
+    #Error의 Tag를 삭제함
+    #커맨드를 생성한 사용자가 Project에 Tag를 삭제할 수 있는지 검증
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
 
     print msg
@@ -68,7 +72,6 @@ def deleteTag(request, apikey, iderror):
 
     tag = request.POST['tag']
     try:
-        #Tags.objects.get(iderror=errorElement, tag=tag).delete()
         tagElement = Tags.objects.get(iderror=errorElement, tag=tag)
         tagElement.delete()
     except ObjectDoesNotExist:
@@ -80,6 +83,8 @@ def deleteTag(request, apikey, iderror):
 
 
 def newComment(request, apikey, iderror):
+    #Error에 Comment를 생성함.
+    #커맨드를 생성한 사용자가 Project에 Comment를 쓸수있는지 검증
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,apikey,iderror)
 
     print msg
@@ -89,9 +94,11 @@ def newComment(request, apikey, iderror):
     time = utility.getUTCDatetime()
     datetime = naive2aware(time)
 
+    #입력받은 POST데이터에서 comment받아옴
     comment = request.POST['comment']
     element = Comments.objects.create(uid=userElement, iderror=errorElement, datetime=datetime, comment=comment)
 
+    #타임존을 적용한다.
     adtimezone = toTimezone(datetime,projectElement.timezone)
     print 'newcommand',adtimezone,datetime
     dict = {'imgsrc':userElement.image_path, 'name': userElement.last_name + userElement.first_name,
@@ -104,12 +111,14 @@ def newComment(request, apikey, iderror):
     return HttpResponse(json.dumps(dict), 'application/json')
 
 def deleteComment(request, apikey, iderror):
+    #Comment 삭제
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
 
     print msg
     if not result:
         return HttpResponse(msg)
 
+    #Commend ID를 입력받아 Comment를 삭제한다.
     idcomment = request.POST['idcomment']
     try:
         commentElement = Comments.objects.get(idcomment=idcomment)
@@ -120,12 +129,14 @@ def deleteComment(request, apikey, iderror):
     return HttpResponse('success')
 
 def os(request,apikey,iderror):
+    #Error Detail페이지에서 os버전별 통계데이터를 얻어오는 루틴
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
 
     print msg
     if not result:
         return HttpResponse(msg)
 
+    #DB에서 OS통계데이터를 얻어오는 쿼리
     sql = "select idinstance as iderrorstatistics, osversion as keyname, count(*) as count "
     sql = sql + "from instances where iderror = %(id_error)s "
     sql = sql + "group by keyname order by count desc"
@@ -133,6 +144,7 @@ def os(request,apikey,iderror):
     params = {'id_error':iderror}
     places = ErrorStatistics.objects.raw(sql, params)
 
+    #DB에서 받은데이터를 JSON데이터 생성
     data = []
     counter = 0
     others = 0
@@ -153,12 +165,14 @@ def os(request,apikey,iderror):
 
 
 def app(request,apikey,iderror):
+    #Error Detail페이지에서 엡 버전별 에러량을 보여주는 차트
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
 
     print msg
     if not result:
         return HttpResponse(msg)
 
+    #DB에 요청할 Query 생성
     sql = "select idinstance as iderrorstatistics, appversion as keyname, count(*) as count "
     sql = sql + "from instances where iderror = %(id_error)s "
     sql = sql + "group by keyname order by count desc"
@@ -166,6 +180,7 @@ def app(request,apikey,iderror):
     params = {'id_error':iderror}
     places = ErrorStatistics.objects.raw(sql, params)
 
+    #DB에서 온 값을 JSON으로 변환함
     data = []
     counter = 0
     others = 0
@@ -184,12 +199,14 @@ def app(request,apikey,iderror):
     return HttpResponse(json.dumps(data),'application/json')
 
 def device(request,apikey,iderror):
+    #Error Detail페이지에서 Device별 에러량을 보여주는 루틴
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
 
     print msg
     if not result:
         return HttpResponse(msg)
 
+    #DB쿼리를 생성
     sql = "select idinstance as iderrorstatistics, device as keyname, count(*) as count "
     sql = sql + "from instances where iderror = %(id_error)s "
     sql = sql + "group by keyname order by count desc"
@@ -197,6 +214,7 @@ def device(request,apikey,iderror):
     params = {'id_error':iderror}
     places = ErrorStatistics.objects.raw(sql, params)
 
+    #DB로부터 받은 데이터를 JSON으로 변경
     data = []
     counter = 0
     others = 0
@@ -215,12 +233,14 @@ def device(request,apikey,iderror):
     return HttpResponse(json.dumps(data),'application/json')
 
 def country(request,apikey,iderror):
+    #Error Detail페이지에서 Device별 에러량을 보여주는 루틴
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user, apikey, iderror)
 
     print msg
     if not result:
         return HttpResponse(msg)
 
+    #DB쿼리를 생성
     sql = "select idinstance as iderrorstatistics, country as keyname, count(*) as count "
     sql = sql + "from instances where iderror = %(id_error)s "
     sql = sql + "group by keyname order by count desc"
@@ -228,6 +248,7 @@ def country(request,apikey,iderror):
     params = {'id_error':iderror}
     places = ErrorStatistics.objects.raw(sql, params)
 
+    #DB로부터 받은 데이터를 JSON으로 변경
     data = []
     counter = 0
     others = 0
@@ -247,7 +268,7 @@ def country(request,apikey,iderror):
 
 
 def errorDetail(request,apikey,iderror):
-
+    #에러의 상세한 페이지를 보여주는 루틴
     valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
         print message
@@ -266,6 +287,7 @@ def errorDetail(request,apikey,iderror):
     else:
         isManual = True
 
+    #Error에 해당하는 Instance들을 최근 100개 가져온다.
     instanceElements = Instances.objects.filter(iderror = ErrorsElement).order_by('-datetime')[:100]
 
     #wifi
@@ -338,7 +360,7 @@ def errorDetail(request,apikey,iderror):
             break
 
     #projectelement = Projects.objects.get(apikey = apikey)
-    platformdata = json.loads(get_config('app_platforms'))
+    #platformdata = json.loads(get_config('app_platforms'))
     #platformtxt = get_dict_value_matchin_key(platformdata,projectelement.platform)
 
 
@@ -361,7 +383,7 @@ def errorDetail(request,apikey,iderror):
         commenttuple['id'] = comment.idcomment
         commentlist.append(commenttuple)
 
-
+    #DB에서 얻어돈 데이터들을 Web에 표시할 수 있도록 Template Rendering적용
     userdict = getUserProfileDict(user)
     apikeydict = getApikeyDict(apikey)
     settingdict = getSettingDict(projectelement,user)
@@ -399,7 +421,7 @@ def errorDetail(request,apikey,iderror):
     return render(request,'details.html',ctxdict)
 
 def instancedetatil(request, apikey, iderror, idinstance):
-
+    #Instance Data의 자세한 내용을 표시
     #권한 있나 없나 체크
     valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
@@ -412,6 +434,7 @@ def instancedetatil(request, apikey, iderror, idinstance):
     #datetime은 json sealize 안되서 ....
 
     key_to_remove = 'datetime'
+    #인스턴스테이블에 있는 애러 시간, 발생 클래스, 위치 기타 등등을 얻어와 웹에 보여줌
     dict = {key : value for key, value in instance[0].items() if key != key_to_remove}
     adtimezone = toTimezone(instance[0]['datetime'],projectelement.timezone)
     dict['datetime'] = adtimezone.__format__('%Y.%m.%d - %H:%M:%S')
@@ -421,6 +444,7 @@ def instancedetatil(request, apikey, iderror, idinstance):
     return HttpResponse(result,'application/json')
 
 def log(request, apikey, iderror, idinstance):
+    #Instance의 로그를 읽어와 보여줌
     #권한 있나 없나 체크
     valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
@@ -433,6 +457,7 @@ def log(request, apikey, iderror, idinstance):
 
 
     logstringlist = []
+    #File Read operation
     try:
         logfile = open(logpath)
         for s in logfile:
@@ -445,6 +470,7 @@ def log(request, apikey, iderror, idinstance):
 
 #instanceEventpath
 def instanceeventpath(request, apikey, iderror, idinstance):
+    #Instance의 개별 EventPath를 얻어온다.
     #권한 있나 없나 체크
     valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
     if not valid:
@@ -455,6 +481,7 @@ def instanceeventpath(request, apikey, iderror, idinstance):
 
     EventPathElements = Eventpaths.objects.filter(idinstance = instanceElement).order_by('depth')
 
+    #Event Path에는 시간, 클래스이름, 라인수, 사용자 Tag데이터가 들어간다.
     eventpathlist = []
     for eventpath in EventPathElements:
         adtimezone = toTimezone(eventpath.datetime,projectelement.timezone)
@@ -470,8 +497,8 @@ def instanceeventpath(request, apikey, iderror, idinstance):
 
 
 def calc_eventpath(errorElement):
-
-
+    #최근 10개데이터에서 이벤트 패스를 분석한다.
+    #이벤트패스에서 가장 많이 발생한 이벤트가 가중치가 높아지고 높은 데이터는 사용자에게 굵은 Box로 시각화 된다.
     #node들 추출하기
 #    eventHashs = []
     instance_limit_count = 10 #최근 몇개의 Instance의 이벤트패스만 표시할지 결정
@@ -593,7 +620,7 @@ def calc_eventpath(errorElement):
     #print json.dumps(result)
     return result
 
-#eventpath
+#Deprecated eventpath
 def eventpath(request,apikey,iderror):
 
     valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
@@ -621,11 +648,8 @@ def author_check_error_page(username,apikey,iderror):
     return True, 'success' , userelement ,ErrorsElement, projectelement
 
 
-
-
-
-
 def filter_view(request,apikey):
+    #Filter page를 Randering하는 루틴
     username = request.user
 
     valid , message , userelement, projectelement = validUserPjt(username,apikey)
@@ -643,6 +667,7 @@ def filter_view(request,apikey):
         print 'invalid pid'
         return HttpResponse('')
 
+    # Post 로 원하는 Date의 range를 얻어와서
     errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
     valid_tag = Tags.objects.filter(pid=projectElement).values('tag').distinct().order_by('tag')
     valid_class = errorElements.values('errorclassname').distinct().order_by('errorclassname')
@@ -650,6 +675,7 @@ def filter_view(request,apikey):
     valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
 
 
+    # Web Rendering용 데이터 만들기
     osv_list = []
     os_idx = -1
     prev_v = ['-1','-1','-1']
@@ -726,6 +752,7 @@ def filter_view(request,apikey):
 
 
 def error_list(request,apikey):
+    #Error Filtering페이지에서 보여줄 리스트를 랜더링함
     username = request.user
 
     valid , message , userelement, projectelement = validUserPjt(username,apikey)
@@ -753,6 +780,7 @@ def error_list(request,apikey):
     if osversion and osversion[0] == 'All':
         osversion = []
 
+    #Filtering Query를 적용하여 해당하는  Error를 보여줌
 
     week, today = getTimeRange(date,projectElement.timezone)
     errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status__in=status,lastdate__range=(week,today)).order_by('-errorweight','rank', '-lastdate')
@@ -819,13 +847,15 @@ def error_list(request,apikey):
     return HttpResponse(json.dumps(result), 'application/json')
 
 def chstatus(request,apikey,iderror):
+    #Error의 Status를 변경하는 루틴
+    #Error의 Status는 0=New, 1=Open, 2=Ignore, 3=Fix를 의미한다.
     result, msg, userElement, projectElement, errorElement = validUserPjtError(request.user,apikey,iderror)
 
     print msg
     if not result:
         return HttpResponse(msg)
     status = request.POST['status']
-    print 'y',status
+    #print 'y',status
     errorElement.status = status
     errorElement.save()
     return HttpResponse('success')
@@ -835,6 +865,9 @@ def chstatus(request,apikey,iderror):
 
 
 def appv_ratio(request,apikey):
+    #Filter페이지에 보여줄 App, OS Version의 비율을 계산하는 루틴
+    #에러가 많이 발생한 App, OS Version일 수록 비율이 크게 계산된다.
+
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
     depth = int(jsonData['depth'])
@@ -899,34 +932,3 @@ def appv_ratio(request,apikey):
 
     return HttpResponse(json.dumps({'total':instances.count(),'appv':appv_data,'osv':osv_data,'osv_list':osv_list,'appv_others':appv_others,'osv_others':osv_others}), 'application/json');
 
-    """
-    keys = []
-        idx = -1
-        for i in instances:
-            k = i.appversion.split('.')
-            key = k[0]+'.'+k[1]
-            if not key in keys:
-                idx += 1
-                keys.append(key)
-                data['appv'].append({'key':key,'value':1})
-            else:
-                data['appv'][idx]['value'] += 1
-        print data['appv']
-
-        instances.order_by('-osversion')
-        keys = []
-        idx = -1
-        for i in instances:
-            k = i.osversion.split('.')
-            key = k[0]+'.'+k[1];
-            if not key in keys:
-                idx += 1
-                keys.append(key)
-                data['osv'].append({'key':key,'value':1})
-            else:
-                data['osv'][idx]['value'] += 1
-        print data['osv']
-    """
-def osv_ratio(request,apikey):
-
-    return

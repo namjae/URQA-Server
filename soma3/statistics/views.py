@@ -29,6 +29,7 @@ from urqa.models import SessionbyApp
 from urqa.models import CountrysbyApp
 
 def statistics(request,apikey):
+    #통계페이지를 Randering하는 루틴
     username = request.user
 
     valid , message , userelement, projectelement = validUserPjt(username,apikey)
@@ -55,6 +56,7 @@ def statistics(request,apikey):
 
 
 def chartdata_sbav(request,apikey):
+    #App version별 Client의 Session을 보여주는 차트
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
@@ -75,6 +77,7 @@ def chartdata_sbav(request,apikey):
         strformat = '%y-%m-%d'
         dateformat = '%%y-%%m-%%d'
 
+    #날짜별 Session수를 얻어오기 위한 Query생성
     sql = 'select idappruncount2 as idsessionbyapp, sum(appruncount) as runcount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC",%(timezone)s),"' + dateformat +'") as sessionday'
     sql = sql + ' from urqa.appruncount2'
     sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s'
@@ -100,6 +103,8 @@ def chartdata_sbav(request,apikey):
     new_places = []
     for idx, pl in enumerate(places):
         new_places.append({'appversion':pl.appversion,'sessionday':pl.sessionday,'runcount':pl.runcount})
+
+    #시간,날짜별로 Session Data를 나눔
 
     for i in range(retention-1,-1,-1):
         if retention == 24: # Statistics 하루치
@@ -134,6 +139,7 @@ def chartdata_sbav(request,apikey):
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebav(request,apikey):
+    #App version별 Client의 Error 수를 보여주는 차트
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
@@ -159,6 +165,7 @@ def chartdata_ebav(request,apikey):
         strformat = '%y-%m-%d'
         dateformat = '%%y-%%m-%%d'
 
+    #Error Count를 얻어올 Query를 생성한다.
     sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'" + dateformat + "') as errorday "
     sql = sql + "from instances A, errors B "
     sql = sql + "where A.iderror = B.iderror "
@@ -192,6 +199,7 @@ def chartdata_ebav(request,apikey):
     for idx, pl in enumerate(places):
         new_places.append({'appversion':pl.appversion,'errorday':pl.errorday,'errorcount':pl.errorcount})
 
+    #시간,날짜별로 Error Count를 나눔
     for i in range(retention-1,-1,-1):
         if retention == 24:
             day1 = getTimezoneHour(projectElement.timezone) + datetime.timedelta(hours =  -i)
@@ -223,55 +231,6 @@ def chartdata_ebav(request,apikey):
     result['chart_sbav'] = chart_ebav
 
 
-    #Fixed, Ignore 찾기
-    """
-    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(A.datetime, '%%m-%%d') as errorday "
-    sql = sql + "from instances A, errors B "
-    sql = sql + "where A.iderror = B.iderror "
-    sql = sql + "and pid = %(pidinput)s "
-    sql = sql + "and B.status in (2) "
-    sql = sql + "and A.datetime > (curdate() - interval %(intervalinput)s day) "
-    sql = sql + "group by DATE_FORMAT(A.datetime, '%%m%%d'),appversion"
-
-    params = {'pidinput':projectElement.pid,'intervalinput':retention - 1}
-    places = ErrorsbyApp.objects.raw(sql, params)
-
-    dataList = [0] * len(dateList)
-    for index, date in enumerate(dateList):
-        for idx, pl in enumerate(places):
-            if pl.errorday == date:
-                dataList[index] = pl.errorcount
-    if max(dataList) > 0:
-        returnValue.append(
-            {
-                'name': 'Fixed',
-                'data': dataList
-            }
-        )
-    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(A.datetime, '%%m-%%d') as errorday "
-    sql = sql + "from instances A, errors B "
-    sql = sql + "where A.iderror = B.iderror "
-    sql = sql + "and pid = %(pidinput)s "
-    sql = sql + "and B.status in (3) "
-    sql = sql + "and A.datetime > (curdate() - interval %(intervalinput)s day) "
-    sql = sql + "group by DATE_FORMAT(A.datetime, '%%m%%d'),appversion"
-
-    params = {'pidinput':projectElement.pid,'intervalinput':retention - 1}
-    places = ErrorsbyApp.objects.raw(sql, params)
-
-    dataList = [0] * len(dateList)
-    for index, date in enumerate(dateList):
-        for idx, pl in enumerate(places):
-            if pl.errorday == date:
-                dataList[index] = pl.errorcount
-    if max(dataList) > 0:
-        returnValue.append(
-            {
-                'name': 'Ignore',
-                'data': dataList
-            }
-        )
-    """
     chart1 = {'categories':categories,'data':appver_data}
     result['chart1'] = chart1
     #print >>sys.stderr, chart1
@@ -279,6 +238,7 @@ def chartdata_ebav(request,apikey):
 
 
 def chartdata_erbc(request,apikey):
+    #발생한 에러를 Class별로 나누어 나타낸다.
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
     username = request.user
@@ -308,12 +268,11 @@ def chartdata_erbc(request,apikey):
             last = len(chart2)
             chart2[last-1] = [e.errorclassname,chart2[last-1][1] + (instanceCount)]
 
-
-
     result['chart2'] = chart2
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_erbd(request,apikey):
+    #발생한 에러를 Device별로 나누어 나타낸다.
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
@@ -339,6 +298,7 @@ def chartdata_erbd(request,apikey):
         if i.device:
             device = i.device
         else:
+            #디바이스중에 데이터를 얻을 수없다면 Unknown으로 처리한다.
             device = "Unknown"
         if not device in activities:
             activities.append(device)
@@ -369,6 +329,7 @@ def chartdata_erbd(request,apikey):
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_erba(request,apikey):
+    #발생한 에러를 Activity별로 나누어 나타낸다.
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
@@ -423,6 +384,7 @@ def chartdata_erba(request,apikey):
 
 
 def chartdata_erbv(request,apikey):
+    #발생한 에러를 OSVersion / AppVersion 별로 나누어 나타낸다.
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 
@@ -471,6 +433,7 @@ def chartdata_erbv(request,apikey):
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebcs(request,apikey):
+    #발생한 에러를 Country(나라)별로 나누어 나타낸다.
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
     retention = int(jsonData['retention'])
 

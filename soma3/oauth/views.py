@@ -25,7 +25,7 @@ FLOW = flow_from_clientsecrets(CLIENT_SECRETS,
                                    redirect_uri="http://urqa.io/urqa/user/auth_return")
 
 def login_by_google(request):
-
+    #Google login을 사용하기위한 API적용
     print 'login_by_google', request.user
     SK = request.POST['csrfmiddlewaretoken']
     #FLOW.params['state'] = xsrfutil.generate_token(SECRET_KEY,request.user)
@@ -37,6 +37,8 @@ def login_by_google(request):
 
 
 def auth_return(request):
+    #Google Oauth기능 구현
+
     print request.REQUEST
     if 'error' in request.REQUEST:
         return HttpResponseRedirect('/')
@@ -47,17 +49,17 @@ def auth_return(request):
     http = httplib2.Http()
     http = credential.authorize(http)
 
+    #Google은 oauth2라이브러리를 사용하여 받을 수 잇음
     users_service = build('oauth2', 'v2', http=http)
     user_document = users_service.userinfo().get().execute()
 
 
 
+    #Google로부터 User Email, Unique ID를 얻어온다.
     username = 'google:' + user_document['email']
     password = user_document['id']
 
-    print username
-    print password
-
+    #Google Oauth를 처음 사용하는 유저라면 ID를 생성한다.
     user = authenticate(username=username, password=password)
     print user
     if user is not None:
