@@ -1,14 +1,21 @@
-function copyClipboard(obj)
+function copyClipboard(obj, value)
 {
     $(obj).zclip({
         path: '_clipboard.swf',
-        copy: function(){ return $(obj).children("span").eq(0).text(); }
+        copy: function(){ return value; }
     });
 }
 
 $(document).ready(function () {
     $("#projects div aside section.panel > ul li.copy").each(function(obj) {
-        copyClipboard($(this));
+        copyClipboard($(this), $(this).find("span").text());
+        console.log($(this).find("span").text());
+    });
+    $(window).bind("load resize", function(){
+        var width = $("#projects div aside section.panel > ul li.copy").eq(0).width();
+
+        $("#projects div.zclip").width(width);
+        $("#projects div.zclip > embed").attr('width', width);
     });
 });
 
