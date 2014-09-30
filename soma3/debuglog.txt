@@ -1,0 +1,23 @@
+Unhandled exception in thread started by <bound method Command.inner_run of <django.contrib.staticfiles.management.commands.runserver.Command object at 0x10bdc4dd0>>
+Validating models...
+
+Traceback (most recent call last):
+  File "/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/django/core/management/commands/runserver.py", line 91, in inner_run
+    self.validate(display_num_errors=True)
+  File "/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/django/core/management/base.py", line 266, in validate
+    num_errors = get_validation_errors(s, app)
+  File "/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/django/core/management/validation.py", line 103, in get_validation_errors
+    connection.validation.validate_field(e, opts, f)
+  File "/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/django/db/backends/mysql/validation.py", line 14, in validate_field
+    db_version = self.connection.get_server_version()
+  File "/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/django/db/backends/mysql/base.py", line 415, in get_server_version
+    self.cursor().close()
+  File "/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/django/db/backends/__init__.py", line 317, in cursor
+    cursor = self.make_debug_cursor(self._cursor())
+  File "/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/django/db/backends/mysql/base.py", line 387, in _cursor
+    self.connection = Database.connect(**kwargs)
+  File "/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/MySQLdb/__init__.py", line 81, in Connect
+    return Connection(*args, **kwargs)
+  File "/usr/local/Cellar/python/2.7.6/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/MySQLdb/connections.py", line 187, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1044, "Access denied for user ''@'localhost' to database 'urqa'")

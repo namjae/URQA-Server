@@ -1,0 +1,30 @@
+.text-ellipsis
+{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.profile-nav .user-heading a img
+{
+	width:70px;
+	height:70px;
+}
+
+.profile-nav .user-heading h1
+{
+	font-size: 18px;
+	margin-top: 18px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.profile-nav .user-heading p
+{
+	font-size:14px;
+	margin-top:-2px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
