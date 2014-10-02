@@ -1,22 +1,44 @@
+function hyperlink(url)
+{
+    document.location = url;
+}
+
 function copyClipboard(obj, value)
 {
     $(obj).zclip({
         path: '_clipboard.swf',
-        copy: function(){ return value; }
+        copy: function(){ return value; },
+        beforeCopy: function () {},
+        afterCopy: function () {
+            alert("API Key '" + value + "'가 복사되었습니다.");
+        }
     });
 }
 
 $(document).ready(function () {
-    $("#projects div aside section.panel > ul li.copy").each(function(obj) {
-        copyClipboard($(this), $(this).find("span").text());
-        console.log($(this).find("span").text());
-    });
-    $(window).bind("load resize", function(){
-        var width = $("#projects div aside section.panel > ul li.copy").eq(0).width();
+    if ($("#projects").length != 0)
+    {
+        $(window).bind("load resize", function()
+        {
+            var projectList = $("#projects div aside section.panel > ul li.copy");
+            var zclipList = $("#projects div.zclip");
+            
+            if (zclipList.length > 0)
+            {
+                var obj = projectList.eq(0);
+                var width = obj.width();
+                var height = obj.height();
 
-        $("#projects div.zclip").width(width);
-        $("#projects div.zclip > embed").attr('width', width);
-    });
+                zclipList.width(width).height(height).children("embed").attr('width', width).attr('height', height);
+            }
+            else
+            {
+                projectList.each(function(obj) {
+                    copyClipboard($(this), $(this).find("span").text());
+                });
+            }
+        });
+    }
 });
 
 (function ($) {
