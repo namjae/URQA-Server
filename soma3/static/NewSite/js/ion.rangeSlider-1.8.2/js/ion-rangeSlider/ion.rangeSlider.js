@@ -1,6 +1,6 @@
 ﻿// Ion.RangeSlider
-// version 1.8.2 Build: 149
-// © 2013 Denis Ineshin | IonDen.com
+// version 1.9.3 Build: 176
+// © 2013-2014 Denis Ineshin | IonDen.com
 //
 // Project page:    http://ionden.com/a/plugins/ion.rangeSlider/
 // GitHub page:     https://github.com/IonDen/ion.rangeSlider
@@ -12,8 +12,10 @@
 (function ($, document, window, navigator) {
     "use strict";
 
-    var pluginCount = 0;
-    var isOldie = (function () {
+    var plugin_count = 0,
+        current;
+
+    var is_old_ie = (function () {
         var n = navigator.userAgent,
             r = /msie\s\d+/i,
             v;
@@ -26,14 +28,24 @@
         }
         return false;
     }());
-    var isTouch = (function () {
-        try {
-            document.createEvent("TouchEvent");
-            return true;
-        } catch (e) {
-            return false;
+    var is_touch = (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
+
+    var testNumber = function (num) {
+        if (typeof num === "number") {
+            if (isNaN(num)) {
+                return null;
+            } else {
+                return num;
+            }
+        } else {
+            num = parseFloat(num);
+            if (isNaN(num)) {
+                return null;
+            } else {
+                return num;
+            }
         }
-    }());
+    };
 
     var methods = {
         init: function (options) {
@@ -55,56 +67,123 @@
                 '<span class="irs-slider from"></span>' +
                 '<span class="irs-slider to"></span>';
 
+            var disableHTML =
+                '<span class="irs-disable-mask"></span>';
+
 
 
             return this.each(function () {
                 var settings = $.extend({
-                    min: 10,
-                    max: 100,
+                    min: null,
+                    max: null,
                     from: null,
                     to: null,
                     type: "single",
-                    step: 1,
+                    step: null,
                     prefix: "",
                     postfix: "",
+                    maxPostfix: "",
                     hasGrid: false,
+                    gridMargin: 0,
                     hideMinMax: false,
                     hideFromTo: false,
                     prettify: true,
-                    onChange: null,
+                    disable: false,
+                    values: null,
                     onLoad: null,
+                    onChange: null,
                     onFinish: null
                 }, options);
 
 
 
                 var slider = $(this),
-                    self = this;
+                    self = this,
+                    allow_values = false,
+                    value_array = null;
 
                 if (slider.data("isActive")) {
                     return;
                 }
                 slider.data("isActive", true);
 
-                pluginCount += 1;
-                this.pluginCount = pluginCount;
+                plugin_count += 1;
+                this.plugin_count = plugin_count;
 
 
 
                 // check default values
                 if (slider.prop("value")) {
-                    settings.min = parseInt(slider.prop("value").split(";")[0], 10);
-                    settings.max = parseInt(slider.prop("value").split(";")[1], 10);
+                    value_array = slider.prop("value").split(";");
                 }
-                if (typeof settings.from !== "number") {
-                    settings.from = settings.min;
+
+                if (settings.type === "single") {
+
+                    if (value_array && value_array.length > 1) {
+
+                        if (typeof settings.min !== "number") {
+                            settings.min = parseFloat(value_array[0]);
+                        } else {
+                            if (typeof settings.from !== "number") {
+                                settings.from = parseFloat(value_array[0]);
+                            }
+                        }
+
+                        if (typeof settings.max !== "number") {
+                            settings.max = parseFloat(value_array[1]);
+                        }
+
+                    } else if (value_array && value_array.length === 1) {
+
+                        if (typeof settings.from !== "number") {
+                            settings.from = parseFloat(value_array[0]);
+                        }
+
+                    }
+
+                } else if (settings.type === "double") {
+
+                    if (value_array && value_array.length > 1) {
+
+                        if (typeof settings.min !== "number") {
+                            settings.min = parseFloat(value_array[0]);
+                        } else {
+                            if (typeof settings.from !== "number") {
+                                settings.from = parseFloat(value_array[0]);
+                            }
+                        }
+
+                        if (typeof settings.max !== "number") {
+                            settings.max = parseFloat(value_array[1]);
+                        } else {
+                            if (typeof settings.to !== "number") {
+                                settings.to = parseFloat(value_array[1]);
+                            }
+                        }
+
+                    } else if (value_array && value_array.length === 1) {
+
+                        if (typeof settings.min !== "number") {
+                            settings.min = parseFloat(value_array[0]);
+                        } else {
+                            if (typeof settings.from !== "number") {
+                                settings.from = parseFloat(value_array[0]);
+                            }
+                        }
+
+                    }
+
                 }
-                if (typeof settings.to !== "number") {
-                    settings.to = settings.max;
-                }
+
 
 
                 // extend from data-*
+                if (typeof slider.data("min") === "number") {
+                    settings.min = parseFloat(slider.data("min"));
+                }
+                if (typeof slider.data("max") === "number") {
+                    settings.max = parseFloat(slider.data("max"));
+                }
                 if (typeof slider.data("from") === "number") {
                     settings.from = parseFloat(slider.data("from"));
                 }
@@ -123,8 +202,14 @@
                 if (slider.data("postfix")) {
                     settings.postfix = slider.data("postfix");
                 }
+                if (slider.data("maxpostfix")) {
+                    settings.maxPostfix = slider.data("maxpostfix");
+                }
                 if (slider.data("hasgrid")) {
                     settings.hasGrid = slider.data("hasgrid");
+                }
+                if (slider.data("gridmargin")) {
+                    settings.gridMargin = +slider.data("gridmargin");
                 }
                 if (slider.data("hideminmax")) {
                     settings.hideMinMax = slider.data("hideminmax");
@@ -135,15 +220,76 @@
                 if (slider.data("prettify")) {
                     settings.prettify = slider.data("prettify");
                 }
+                if (slider.data("disable")) {
+                    settings.disable = slider.data("disable");
+                }
+                if (slider.data("values")) {
+                    settings.values = slider.data("values").split(",");
+                }
+
+
+
+                // Set Min and Max if no
+                settings.min = testNumber(settings.min);
+                if (!settings.min && settings.min !== 0) {
+                    settings.min = 10;
+                }
+
+                settings.max = testNumber(settings.max);
+                if (!settings.max && settings.max !== 0) {
+                    settings.max = 100;
+                }
+
+
+
+                // Set values
+                if (Object.prototype.toString.call(settings.values) !== "[object Array]") {
+                    settings.values = null;
+                }
+                if (settings.values && settings.values.length > 0) {
+                    settings.min = 0;
+                    settings.max = settings.values.length - 1;
+                    settings.step = 1;
+                    allow_values = true;
+                }
+
+
+
+                // Set From and To if no
+                settings.from = testNumber(settings.from);
+                if (!settings.from && settings.from !== 0) {
+                    settings.from = settings.min;
+                }
+
+                settings.to = testNumber(settings.to);
+                if (!settings.to && settings.to !== 0) {
+                    settings.to = settings.max;
+                }
+
+
+                // Set step
+                settings.step = testNumber(settings.step);
+                if (!settings.step) {
+                    settings.step = 1;
+                }
+
 
 
                 // fix diapason
                 if (settings.from < settings.min) {
                     settings.from = settings.min;
                 }
+                if (settings.from > settings.max) {
+                    settings.from = settings.min;
+                }
+
+                if (settings.to < settings.min) {
+                    settings.to = settings.max;
+                }
                 if (settings.to > settings.max) {
                     settings.to = settings.max;
                 }
+
                 if (settings.type === "double") {
                     if (settings.from > settings.to) {
                         settings.from = settings.to;
@@ -163,11 +309,11 @@
                 };
 
 
-                var containerHTML = '<span class="irs" id="irs-' + this.pluginCount + '"></span>';
+                var containerHTML = '<span class="irs" id="irs-' + this.plugin_count + '"></span>';
                 slider[0].style.display = "none";
                 slider.before(containerHTML);
 
-                var $container = $("#irs-" + this.pluginCount),
+                var $container = slider.prev(),
                     $body = $(document.body),
                     $window = $(window),
                     $rangeSlider,
@@ -184,8 +330,8 @@
                     $grid;
 
                 var allowDrag = false,
-                    sliderIsActive = false,
-                    firstStart = true,
+                    is_slider_active = false,
+                    is_first_start = true,
                     numbers = {};
 
                 var mouseX = 0,
@@ -210,15 +356,15 @@
 
                 // public methods
                 this.updateData = function (options) {
-                    firstStart = true;
-                    settings = $.extend(settings, options);
+                    $.extend(settings, options);
                     removeHTML();
                 };
                 this.removeSlider = function () {
                     $container.find("*").off();
-                    $window.off("mouseup.irs" + self.pluginCount);
-                    $body.off("mouseup.irs" + self.pluginCount);
-                    $body.off("mousemove.irs" + self.pluginCount);
+                    $window.off("mouseup.irs" + self.plugin_count);
+                    $body.off("mouseup.irs" + self.plugin_count);
+                    $body.off("mouseleave.irs" + self.plugin_count);
+                    $body.off("mousemove.irs" + self.plugin_count);
                     $container.html("").remove();
                     slider.data("isActive", false);
                     slider.show();
@@ -231,9 +377,10 @@
                 // private methods
                 var removeHTML = function () {
                     $container.find("*").off();
-                    $window.off("mouseup.irs" + self.pluginCount);
-                    $body.off("mouseup.irs" + self.pluginCount);
-                    $body.off("mousemove.irs" + self.pluginCount);
+                    $window.off("mouseup.irs" + self.plugin_count);
+                    $body.off("mouseup.irs" + self.plugin_count);
+                    $body.off("mouseleave.irs" + self.plugin_count);
+                    $body.off("mousemove.irs" + self.plugin_count);
                     $container.html("");
 
                     placeHTML();
@@ -249,26 +396,44 @@
                     $fieldSingle = $rangeSlider.find(".irs-single");
                     $grid = $container.find(".irs-grid");
 
+                    if (settings.hideFromTo) {
+                        $fieldFrom[0].style.visibility = "hidden";
+                        $fieldTo[0].style.visibility = "hidden";
+                        $fieldSingle[0].style.visibility = "hidden";
+                    }
+                    if (!settings.hideFromTo) {
+                        $fieldFrom[0].style.visibility = "visible";
+                        $fieldTo[0].style.visibility = "visible";
+                        $fieldSingle[0].style.visibility = "visible";
+                    }
+
                     if (settings.hideMinMax) {
-                        $fieldMin[0].style.display = "none";
-                        $fieldMax[0].style.display = "none";
+                        $fieldMin[0].style.visibility = "hidden";
+                        $fieldMax[0].style.visibility = "hidden";
 
                         fieldMinWidth = 0;
                         fieldMaxWidth = 0;
                     }
-                    if (settings.hideFromTo) {
-                        $fieldFrom[0].style.display = "none";
-                        $fieldTo[0].style.display = "none";
-                        $fieldSingle[0].style.display = "none";
-                    }
                     if (!settings.hideMinMax) {
-                        $fieldMin.html(settings.prefix + prettify(settings.min) + settings.postfix);
-                        $fieldMax.html(settings.prefix + prettify(settings.max) + settings.postfix);
+                        $fieldMin[0].style.visibility = "visible";
+                        $fieldMax[0].style.visibility = "visible";
 
-                        fieldMinWidth = $fieldMin.outerWidth();
-                        fieldMaxWidth = $fieldMax.outerWidth();
+                        if (settings.values) {
+                            $fieldMin.html(settings.prefix + settings.values[0] + settings.postfix);
+                            $fieldMax.html(settings.prefix + settings.values[settings.values.length - 1] + settings.maxPostfix + settings.postfix);
+                        } else {
+                            $fieldMin.html(settings.prefix + prettify(settings.min) + settings.postfix);
+                            $fieldMax.html(settings.prefix + prettify(settings.max) + settings.maxPostfix + settings.postfix);
+                        }
+
+                        fieldMinWidth = $fieldMin.outerWidth(false);
+                        fieldMaxWidth = $fieldMax.outerWidth(false);
                     }
 
+                    bindEvents();
+                };
+
+                var bindEvents = function () {
                     if (settings.type === "single") {
                         $rangeSlider.append(singleHTML);
 
@@ -281,13 +446,14 @@
                             calcDimensions(e, $(this), null);
 
                             allowDrag = true;
-                            sliderIsActive = true;
+                            is_slider_active = true;
+                            current = self.plugin_count;
 
-                            if (isOldie) {
+                            if (is_old_ie) {
                                 $("*").prop("unselectable", true);
                             }
                         });
-                        if (isTouch) {
+                        if (is_touch) {
                             $singleSlider.on("touchstart", function (e) {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -295,7 +461,8 @@
                                 calcDimensions(e.originalEvent.touches[0], $(this), null);
 
                                 allowDrag = true;
-                                sliderIsActive = true;
+                                is_slider_active = true;
+                                current = self.plugin_count;
                             });
                         }
 
@@ -315,10 +482,12 @@
                             $(this).addClass("last");
                             $toSlider.removeClass("last");
                             calcDimensions(e, $(this), "from");
-                            allowDrag = true;
-                            sliderIsActive = true;
 
-                            if (isOldie) {
+                            allowDrag = true;
+                            is_slider_active = true;
+                            current = self.plugin_count;
+
+                            if (is_old_ie) {
                                 $("*").prop("unselectable", true);
                             }
                         });
@@ -329,15 +498,17 @@
                             $(this).addClass("last");
                             $fromSlider.removeClass("last");
                             calcDimensions(e, $(this), "to");
-                            allowDrag = true;
-                            sliderIsActive = true;
 
-                            if (isOldie) {
+                            allowDrag = true;
+                            is_slider_active = true;
+                            current = self.plugin_count;
+
+                            if (is_old_ie) {
                                 $("*").prop("unselectable", true);
                             }
                         });
 
-                        if (isTouch) {
+                        if (is_touch) {
                             $fromSlider.on("touchstart", function (e) {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -345,8 +516,10 @@
                                 $(this).addClass("last");
                                 $toSlider.removeClass("last");
                                 calcDimensions(e.originalEvent.touches[0], $(this), "from");
+
                                 allowDrag = true;
-                                sliderIsActive = true;
+                                is_slider_active = true;
+                                current = self.plugin_count;
                             });
                             $toSlider.on("touchstart", function (e) {
                                 e.preventDefault();
@@ -355,8 +528,10 @@
                                 $(this).addClass("last");
                                 $fromSlider.removeClass("last");
                                 calcDimensions(e.originalEvent.touches[0], $(this), "to");
+
                                 allowDrag = true;
-                                sliderIsActive = true;
+                                is_slider_active = true;
+                                current = self.plugin_count;
                             });
                         }
 
@@ -366,8 +541,12 @@
                     }
 
                     var mouseup = function () {
+                        if (current !== self.plugin_count) {
+                            return;
+                        }
+
                         if (allowDrag) {
-                            sliderIsActive = false;
+                            is_slider_active = false;
                             allowDrag = false;
                             $activeSlider.removeAttr("id");
                             $activeSlider = null;
@@ -376,30 +555,50 @@
                             }
                             getNumbers();
 
-                            if (isOldie) {
+                            if (is_old_ie) {
                                 $("*").prop("unselectable", false);
                             }
                         }
                     };
-                    $body.on("mouseup.irs" + self.pluginCount, function () {
-                        mouseup();
-                    });
-                    $window.on("mouseup.irs" + self.pluginCount, function () {
+
+                    $window.on("mouseup.irs" + self.plugin_count, function () {
                         mouseup();
                     });
 
+                    if (is_old_ie) {
+                        $body.on("mouseleave.irs" + self.plugin_count, function () {
+                            mouseup();
+                        });
+                    }
 
-                    $body.on("mousemove.irs" + self.pluginCount, function (e) {
+
+                    $body.on("mousemove.irs" + self.plugin_count, function (e) {
                         if (allowDrag) {
                             mouseX = e.pageX;
                             dragSlider();
                         }
                     });
 
-                    if (isTouch) {
+                    $container.on("mousedown", function () {
+                        current = self.plugin_count;
+                    });
+
+                    $container.on("mouseup", function (e) {
+                        if (current !== self.plugin_count) {
+                            return;
+                        }
+
+                        if (allowDrag || settings.disable) {
+                            return;
+                        }
+
+                        moveByClick(e.pageX);
+                    });
+
+                    if (is_touch) {
                         $window.on("touchend", function () {
                             if (allowDrag) {
-                                sliderIsActive = false;
+                                is_slider_active = false;
                                 allowDrag = false;
                                 $activeSlider.removeAttr("id");
                                 $activeSlider = null;
@@ -422,6 +621,11 @@
                     if (settings.hasGrid) {
                         setGrid();
                     }
+                    if (settings.disable) {
+                        setMask();
+                    } else {
+                        removeMask();
+                    }
                 };
 
                 var getSize = function () {
@@ -437,9 +641,9 @@
                 var calcDimensions = function (e, currentSlider, whichSlider) {
                     getSize();
 
-                    firstStart = false;
+                    is_first_start = false;
                     $activeSlider = currentSlider;
-                    $activeSlider.attr("id", "irs-active-slider");
+                    $activeSlider.prop("id", "irs-active-slider");
 
                     var _x1 = $activeSlider.offset().left,
                         _x2 = e.pageX - _x1;
@@ -472,9 +676,15 @@
                     $diapason[0].style.width = w + "px";
                 };
 
-                var dragSlider = function () {
+                var dragSlider = function (manual_x) {
                     var x_pure = mouseX - minusX,
                         x;
+
+                    if (manual_x) {
+                        x_pure = manual_x;
+                    } else {
+                        x_pure = mouseX - minusX;
+                    }
 
                     if (settings.type === "single") {
 
@@ -506,12 +716,18 @@
 
                 var getNumbers = function () {
                     var nums = {
+                        input: slider,
+                        slider: $container,
+                        min: settings.min,
+                        max: settings.max,
                         fromNumber: 0,
                         toNumber: 0,
                         fromPers: 0,
                         toPers: 0,
                         fromX: 0,
-                        toX: 0
+                        fromX_pure: 0,
+                        toX: 0,
+                        toX_pure: 0
                     };
                     var diapason = settings.max - settings.min, _from, _to;
 
@@ -519,28 +735,49 @@
 
                         nums.fromX = $.data($singleSlider[0], "x") || parseInt($singleSlider[0].style.left, 10) || $singleSlider.position().left;
                         nums.fromPers = nums.fromX / fullWidth * 100;
-                        _from = (diapason / 100 * nums.fromPers) + parseInt(settings.min, 10);
+                        _from = (diapason / 100 * nums.fromPers) + settings.min;
                         nums.fromNumber = Math.round(_from / settings.step) * settings.step;
+                        if (nums.fromNumber < settings.min) {
+                            nums.fromNumber = settings.min;
+                        }
+                        if (nums.fromNumber > settings.max) {
+                            nums.fromNumber = settings.max;
+                        }
 
                         if (stepFloat) {
                             nums.fromNumber = parseInt(nums.fromNumber * stepFloat, 10) / stepFloat;
+                        }
+
+                        if (allow_values) {
+                            nums.fromValue = settings.values[nums.fromNumber];
                         }
 
                     } else if (settings.type === "double") {
 
                         nums.fromX = $.data($fromSlider[0], "x") || parseInt($fromSlider[0].style.left, 10) || $fromSlider.position().left;
                         nums.fromPers = nums.fromX / fullWidth * 100;
-                        _from = (diapason / 100 * nums.fromPers) + parseInt(settings.min, 10);
+                        _from = (diapason / 100 * nums.fromPers) + settings.min;
                         nums.fromNumber = Math.round(_from / settings.step) * settings.step;
+                        if (nums.fromNumber < settings.min) {
+                            nums.fromNumber = settings.min;
+                        }
 
                         nums.toX = $.data($toSlider[0], "x") || parseInt($toSlider[0].style.left, 10) || $toSlider.position().left;
                         nums.toPers = nums.toX / fullWidth * 100;
-                        _to = (diapason / 100 * nums.toPers) + parseInt(settings.min, 10);
+                        _to = (diapason / 100 * nums.toPers) + settings.min;
                         nums.toNumber = Math.round(_to / settings.step) * settings.step;
+                        if (nums.toNumber > settings.max) {
+                            nums.toNumber = settings.max;
+                        }
 
                         if (stepFloat) {
                             nums.fromNumber = parseInt(nums.fromNumber * stepFloat, 10) / stepFloat;
                             nums.toNumber = parseInt(nums.toNumber * stepFloat, 10) / stepFloat;
+                        }
+
+                        if (allow_values) {
+                            nums.fromValue = settings.values[nums.fromNumber];
+                            nums.toValue = settings.values[nums.toNumber];
                         }
 
                     }
@@ -551,6 +788,10 @@
 
                 var setNumbers = function () {
                     var nums = {
+                        input: slider,
+                        slider: $container,
+                        min: settings.min,
+                        max: settings.max,
                         fromNumber: settings.from,
                         toNumber: settings.to,
                         fromPers: 0,
@@ -564,7 +805,7 @@
 
                     if (settings.type === "single") {
 
-                        nums.fromPers = (nums.fromNumber - settings.min) / diapason * 100;
+                        nums.fromPers = (diapason !== 0) ? (nums.fromNumber - settings.min) / diapason * 100 : 0;
                         nums.fromX_pure = fullWidth / 100 * nums.fromPers;
                         nums.fromX = Math.round(nums.fromX_pure);
                         $singleSlider[0].style.left = nums.fromX + "px";
@@ -572,13 +813,13 @@
 
                     } else if (settings.type === "double") {
 
-                        nums.fromPers = (nums.fromNumber - settings.min) / diapason * 100;
+                        nums.fromPers = (diapason !== 0) ? (nums.fromNumber - settings.min) / diapason * 100 : 0;
                         nums.fromX_pure = fullWidth / 100 * nums.fromPers;
                         nums.fromX = Math.round(nums.fromX_pure);
                         $fromSlider[0].style.left = nums.fromX + "px";
                         $.data($fromSlider[0], "x", nums.fromX_pure);
 
-                        nums.toPers = (nums.toNumber - settings.min) / diapason * 100;
+                        nums.toPers = (diapason !== 0) ? (nums.toNumber - settings.min) / diapason * 100 : 1;
                         nums.toX_pure = fullWidth / 100 * nums.toPers;
                         nums.toX = Math.round(nums.toX_pure);
                         $toSlider[0].style.left = nums.toX + "px";
@@ -592,150 +833,252 @@
                     setFields();
                 };
 
+                var moveByClick = function (page_x) {
+                    is_first_start = false;
+
+                    var x = page_x - $container.offset().left,
+                        d = numbers.toX - numbers.fromX,
+                        zero_point = numbers.fromX + (d / 2);
+
+                    left = 0;
+                    width = $rangeSlider.width() - sliderWidth;
+                    right = $rangeSlider.width() - sliderWidth;
+
+                    if (settings.type === "single") {
+                        $activeSlider = $singleSlider;
+                        $activeSlider.prop("id", "irs-active-slider");
+                        dragSlider(x);
+                    } else if (settings.type === "double") {
+                        if (x <= zero_point) {
+                            $activeSlider = $fromSlider;
+                        } else {
+                            $activeSlider = $toSlider;
+                        }
+                        $activeSlider.prop("id", "irs-active-slider");
+                        dragSlider(x);
+                        setDiapason();
+                    }
+
+                    $activeSlider.removeAttr("id");
+                    $activeSlider = null;
+                };
+
                 var setFields = function () {
                     var _from, _fromW, _fromX,
                         _to, _toW, _toX,
                         _single, _singleW, _singleX,
-                        _slW = (sliderWidth / 2);
+                        _slW = (sliderWidth / 2),
+                        maxPostfix = "";
 
                     if (settings.type === "single") {
 
-                        if (!settings.hideText) {
-                            $fieldFrom[0].style.display = "none";
-                            $fieldTo[0].style.display = "none";
+                        if (numbers.fromNumber === settings.max) {
+                            maxPostfix = settings.maxPostfix;
+                        } else {
+                            maxPostfix = "";
+                        }
 
-                            _single = settings.prefix +
-                                prettify(numbers.fromNumber) +
+                        $fieldFrom[0].style.display = "none";
+                        $fieldTo[0].style.display = "none";
+
+                        if (allow_values) {
+                            _single =
+                                settings.prefix +
+                                settings.values[numbers.fromNumber] +
+                                maxPostfix +
                                 settings.postfix;
-                            $fieldSingle.html(_single);
+                        } else {
+                            _single =
+                                settings.prefix +
+                                prettify(numbers.fromNumber) +
+                                maxPostfix +
+                                settings.postfix;
+                        }
 
-                            _singleW = $fieldSingle.outerWidth();
-                            _singleX = numbers.fromX - (_singleW / 2) + _slW;
-                            if (_singleX < 0) {
-                                _singleX = 0;
+                        $fieldSingle.html(_single);
+
+                        _singleW = $fieldSingle.outerWidth(false);
+                        _singleX = numbers.fromX - (_singleW / 2) + _slW;
+                        if (_singleX < 0) {
+                            _singleX = 0;
+                        }
+                        if (_singleX > normalWidth - _singleW) {
+                            _singleX = normalWidth - _singleW;
+                        }
+                        $fieldSingle[0].style.left = _singleX + "px";
+
+                        if (!settings.hideMinMax && !settings.hideFromTo) {
+                            if (_singleX < fieldMinWidth) {
+                                $fieldMin[0].style.display = "none";
+                            } else {
+                                $fieldMin[0].style.display = "block";
                             }
-                            if (_singleX > normalWidth - _singleW) {
-                                _singleX = normalWidth - _singleW;
-                            }
-                            $fieldSingle[0].style.left = _singleX + "px";
 
-                            if (!settings.hideMinMax && !settings.hideFromTo) {
-                                if (_singleX < fieldMinWidth) {
-                                    $fieldMin[0].style.display = "none";
-                                } else {
-                                    $fieldMin[0].style.display = "block";
-                                }
-
-                                if (_singleX + _singleW > normalWidth - fieldMaxWidth) {
-                                    $fieldMax[0].style.display = "none";
-                                } else {
-                                    $fieldMax[0].style.display = "block";
-                                }
+                            if (_singleX + _singleW > normalWidth - fieldMaxWidth) {
+                                $fieldMax[0].style.display = "none";
+                            } else {
+                                $fieldMax[0].style.display = "block";
                             }
                         }
 
-                        slider.attr("value", parseInt(numbers.fromNumber, 10));
+                        slider.prop("value", parseFloat(numbers.fromNumber));
 
                     } else if (settings.type === "double") {
 
-                        if (!settings.hideText) {
-                            _from = settings.prefix +
-                                prettify(numbers.fromNumber) +
+                        if (numbers.fromNumber === settings.max) {
+                            maxPostfix = settings.maxPostfix;
+                        } else {
+                            maxPostfix = "";
+                        }
+
+                        if (numbers.toNumber === settings.max) {
+                            maxPostfix = settings.maxPostfix;
+                        } else {
+                            maxPostfix = "";
+                        }
+
+                        if (allow_values) {
+                            _from =
+                                settings.prefix +
+                                settings.values[numbers.fromNumber] +
                                 settings.postfix;
-                            _to = settings.prefix +
-                                prettify(numbers.toNumber) +
+
+                            _to =
+                                settings.prefix +
+                                settings.values[numbers.toNumber] +
+                                maxPostfix +
                                 settings.postfix;
 
                             if (numbers.fromNumber !== numbers.toNumber) {
-                                _single = settings.prefix +
+                                _single =
+                                    settings.prefix +
+                                    settings.values[numbers.fromNumber] +
+                                    " — " + settings.prefix +
+                                    settings.values[numbers.toNumber] +
+                                    maxPostfix +
+                                    settings.postfix;
+                            } else {
+                                _single =
+                                    settings.prefix +
+                                    settings.values[numbers.fromNumber] +
+                                    maxPostfix +
+                                    settings.postfix;
+                            }
+                        } else {
+                            _from =
+                                settings.prefix +
+                                prettify(numbers.fromNumber) +
+                                settings.postfix;
+
+                            _to =
+                                settings.prefix +
+                                prettify(numbers.toNumber) +
+                                maxPostfix +
+                                settings.postfix;
+
+                            if (numbers.fromNumber !== numbers.toNumber) {
+                                _single =
+                                    settings.prefix +
                                     prettify(numbers.fromNumber) +
                                     " — " + settings.prefix +
                                     prettify(numbers.toNumber) +
+                                    maxPostfix +
                                     settings.postfix;
                             } else {
-                                _single = settings.prefix +
+                                _single =
+                                    settings.prefix +
                                     prettify(numbers.fromNumber) +
+                                    maxPostfix +
                                     settings.postfix;
-                            }
-
-                            $fieldFrom.html(_from);
-                            $fieldTo.html(_to);
-                            $fieldSingle.html(_single);
-
-                            _fromW = $fieldFrom.outerWidth();
-                            _fromX = numbers.fromX - (_fromW / 2) + _slW;
-                            if (_fromX < 0) {
-                                _fromX = 0;
-                            }
-                            if (_fromX > normalWidth - _fromW) {
-                                _fromX = normalWidth - _fromW;
-                            }
-                            $fieldFrom[0].style.left = _fromX + "px";
-
-                            _toW = $fieldTo.outerWidth();
-                            _toX = numbers.toX - (_toW / 2) + _slW;
-                            if (_toX < 0) {
-                                _toX = 0;
-                            }
-                            if (_toX > normalWidth - _toW) {
-                                _toX = normalWidth - _toW;
-                            }
-                            $fieldTo[0].style.left = _toX + "px";
-
-                            _singleW = $fieldSingle.outerWidth();
-                            _singleX = numbers.fromX + ((numbers.toX - numbers.fromX) / 2) - (_singleW / 2) + _slW;
-                            if (_singleX < 0) {
-                                _singleX = 0;
-                            }
-                            if (_singleX > normalWidth - _singleW) {
-                                _singleX = normalWidth - _singleW;
-                            }
-                            $fieldSingle[0].style.left = _singleX + "px";
-
-                            if (_fromX + _fromW < _toX) {
-                                $fieldSingle[0].style.display = "none";
-                                $fieldFrom[0].style.display = "block";
-                                $fieldTo[0].style.display = "block";
-                            } else {
-                                $fieldSingle[0].style.display = "block";
-                                $fieldFrom[0].style.display = "none";
-                                $fieldTo[0].style.display = "none";
-                            }
-
-                            if (!settings.hideMinMax && !settings.hideFromTo) {
-                                if (_singleX < fieldMinWidth || _fromX < fieldMinWidth) {
-                                    $fieldMin[0].style.display = "none";
-                                } else {
-                                    $fieldMin[0].style.display = "block";
-                                }
-
-                                if (_singleX + _singleW > normalWidth - fieldMaxWidth || _toX + _toW > normalWidth - fieldMaxWidth) {
-                                    $fieldMax[0].style.display = "none";
-                                } else {
-                                    $fieldMax[0].style.display = "block";
-                                }
                             }
                         }
 
-                        slider.attr("value", parseInt(numbers.fromNumber, 10) + ";" + parseInt(numbers.toNumber, 10));
+                        $fieldFrom.html(_from);
+                        $fieldTo.html(_to);
+                        $fieldSingle.html(_single);
+
+                        _fromW = $fieldFrom.outerWidth(false);
+                        _fromX = numbers.fromX - (_fromW / 2) + _slW;
+                        if (_fromX < 0) {
+                            _fromX = 0;
+                        }
+                        if (_fromX > normalWidth - _fromW) {
+                            _fromX = normalWidth - _fromW;
+                        }
+                        $fieldFrom[0].style.left = _fromX + "px";
+
+                        _toW = $fieldTo.outerWidth(false);
+                        _toX = numbers.toX - (_toW / 2) + _slW;
+                        if (_toX < 0) {
+                            _toX = 0;
+                        }
+                        if (_toX > normalWidth - _toW) {
+                            _toX = normalWidth - _toW;
+                        }
+                        $fieldTo[0].style.left = _toX + "px";
+
+                        _singleW = $fieldSingle.outerWidth(false);
+                        _singleX = numbers.fromX + ((numbers.toX - numbers.fromX) / 2) - (_singleW / 2) + _slW;
+                        if (_singleX < 0) {
+                            _singleX = 0;
+                        }
+                        if (_singleX > normalWidth - _singleW) {
+                            _singleX = normalWidth - _singleW;
+                        }
+                        $fieldSingle[0].style.left = _singleX + "px";
+
+                        if (_fromX + _fromW < _toX) {
+                            $fieldSingle[0].style.display = "none";
+                            $fieldFrom[0].style.display = "block";
+                            $fieldTo[0].style.display = "block";
+                        } else {
+                            $fieldSingle[0].style.display = "block";
+                            $fieldFrom[0].style.display = "none";
+                            $fieldTo[0].style.display = "none";
+                        }
+
+                        if (!settings.hideMinMax && !settings.hideFromTo) {
+                            if (_singleX < fieldMinWidth || _fromX < fieldMinWidth) {
+                                $fieldMin[0].style.display = "none";
+                            } else {
+                                $fieldMin[0].style.display = "block";
+                            }
+
+                            if (_singleX + _singleW > normalWidth - fieldMaxWidth || _toX + _toW > normalWidth - fieldMaxWidth) {
+                                $fieldMax[0].style.display = "none";
+                            } else {
+                                $fieldMax[0].style.display = "block";
+                            }
+                        }
+
+                        slider.prop("value", parseFloat(numbers.fromNumber) + ";" + parseFloat(numbers.toNumber));
 
                     }
 
-                    // trigger onChange function
-                    if (typeof settings.onChange === "function") {
-                        settings.onChange.call(this, numbers);
-                    }
+                    settings.from = numbers.fromNumber;
+                    settings.to = numbers.toNumber;
+                    callbacks();
+                };
 
+
+                var callbacks = function () {
                     // trigger onFinish function
-                    if (typeof settings.onFinish === "function" && !sliderIsActive && !firstStart) {
+                    if (typeof settings.onFinish === "function" && !is_slider_active && !is_first_start) {
                         settings.onFinish.call(this, numbers);
                     }
 
+                    // trigger onChange function
+                    if (typeof settings.onChange === "function" && !is_first_start) {
+                        settings.onChange.call(this, numbers);
+                    }
+
                     // trigger onLoad function
-                    if (typeof settings.onLoad === "function" && !sliderIsActive && firstStart) {
+                    if (typeof settings.onLoad === "function" && !is_slider_active && is_first_start) {
                         settings.onLoad.call(this, numbers);
+                        is_first_start = false;
                     }
                 };
+
 
                 var setGrid = function () {
                     $container.addClass("irs-with-grid");
@@ -746,21 +1089,24 @@
                         tStep = 0,
                         gridHTML = '',
                         smNum = 20,
-                        bigNum = 4;
+                        bigNum = 4,
+                        cont_width = normalWidth - (settings.gridMargin * 2);
+
+
 
                     for (i = 0; i <= smNum; i += 1) {
-                        step = Math.floor(normalWidth / smNum * i);
+                        step = Math.floor(cont_width / smNum * i);
 
-                        if (step >= normalWidth) {
-                            step = normalWidth - 1;
+                        if (step >= cont_width) {
+                            step = cont_width - 1;
                         }
                         gridHTML += '<span class="irs-grid-pol small" style="left: ' + step + 'px;"></span>';
                     }
                     for (i = 0; i <= bigNum; i += 1) {
-                        step = Math.floor(normalWidth / bigNum * i);
+                        step = Math.floor(cont_width / bigNum * i);
 
-                        if (step >= normalWidth) {
-                            step = normalWidth - 1;
+                        if (step >= cont_width) {
+                            step = cont_width - 1;
                         }
                         gridHTML += '<span class="irs-grid-pol" style="left: ' + step + 'px;"></span>';
 
@@ -772,6 +1118,20 @@
                             text = Math.round(settings.min + ((settings.max - settings.min) / bigNum * i));
                             text = Math.round(text / settings.step) * settings.step;
                             text = prettify(text);
+                        }
+
+                        if (allow_values) {
+                            if (settings.hideMinMax) {
+                                text = Math.round(settings.min + ((settings.max - settings.min) / bigNum * i));
+                                text = Math.round(text / settings.step) * settings.step;
+                                if (i === 0 || i === bigNum) {
+                                    text = settings.values[text];
+                                } else {
+                                    text = "";
+                                }
+                            } else {
+                                text = "";
+                            }
                         }
 
                         if (i === 0) {
@@ -787,7 +1147,23 @@
                     }
 
                     $grid.html(gridHTML);
+                    $grid[0].style.left = settings.gridMargin + "px";
                 };
+
+
+
+                // Disable state
+                var setMask = function () {
+                    $container.addClass("irs-disabled");
+                    $container.append(disableHTML);
+                };
+
+                var removeMask = function () {
+                    $container.removeClass("irs-disabled");
+                    $container.find(".irs-disable-mask").remove();
+                };
+
+
 
                 placeHTML();
             });

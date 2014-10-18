@@ -1,6 +1,6 @@
 /* Ion.RangeSlider, Flat UI Skin
-// css version 1.8.1
-// by Denis Ineshin | ionden.com
+// css version 1.9.2
+// © 2013-2014 Denis Ineshin | IonDen.com
 // ===================================================================================================================*/
 
 /* =====================================================================================================================
@@ -54,8 +54,7 @@
     color: #999;
     font-size: 10px; line-height: 1.333;
     text-shadow: none;
-    top: 0;
-    padding: 1px 3px;
+    top: 0; padding: 1px 3px;
     background: #e1e4e9;
     border-radius: 4px;
 }
@@ -64,8 +63,8 @@
     color: #fff;
     font-size: 10px; line-height: 1.333;
     text-shadow: none;
-    padding: 3px 5px;
-    background: #32323A;
+    padding: 1px 5px;
+    background: #ed5565;
     border-radius: 4px;
 }
 .irs-from:after, .irs-to:after, .irs-single:after {
@@ -75,7 +74,7 @@
     margin-left: -3px;
     overflow: hidden;
     border: 3px solid transparent;
-    border-top-color: #32323A;
+    border-top-color: #ed5565;
 }
 
 
@@ -84,4 +83,7 @@
 }
 .irs-grid-text {
     color: #999;
+}
+
+.irs-disabled {
 }

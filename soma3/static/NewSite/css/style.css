@@ -3990,7 +3990,7 @@ td.details table tr td,.dataTable tr:last-child {
     width:80%;
 }
 tr.odd.gradeX td.sorting_1,tr.even.gradeX td.sorting_1,table.display tr.even.gradeX,table.display tr.gradeX,tr.even.gradeU td.sorting_1,tr.even td.sorting_1,table.display tr.even.gradeC,table.display tr.gradeC,tr.odd.gradeC td.sorting_1,table.display tr.even.gradeU,table.display tr.gradeU,tr.odd.gradeU td.sorting_1 {
-    background: none !important;
+    background: none;
 }
 /*flot chart*/
 .flot-chart .chart,.flot-chart .pie,.flot-chart .bars {

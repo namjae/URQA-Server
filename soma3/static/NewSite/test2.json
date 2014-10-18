@@ -1,0 +1,21 @@
+{
+  "sEcho":0,
+  "iTotalRecords": 57,
+  "iTotalDisplayRecords": 2,
+  "aaData": [
+    [
+      "Unhandler",
+      "431",
+      "java.lang.OutOfMemoryError<br>java.lang.AbstractStringBuilder:94",
+      "",
+      "2014-10-02"
+    ],
+    [
+      "Unhandler",
+      "349",
+      "java.lang.RuntimeException: Unable to create application com.teletalkvi.android.app.BaseApplication: android.database.sqlite.SQLiteException: Can't downgrade database from version 7 to 3<br>android.database.sqlite.SQLiteOpenHelper:361",
+      "",
+      "2014-10-03"
+    ]
+  ]
+}

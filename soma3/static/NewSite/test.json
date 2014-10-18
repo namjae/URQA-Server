@@ -1,0 +1,77 @@
+{
+  "sEcho":0,
+  "iTotalRecords": 57,
+  "iTotalDisplayRecords": 57,
+  "aaData": [
+    [
+      "Unhandler",
+      "5342",
+      "java.lang.RuntimeException: An error occured while executing doInBackground()<br>com.teletalkvi.core.BaseAsyncTask:62",
+      "EventBus",
+      "2014-10-02"
+    ],
+    [
+      "Critical",
+      "1899",
+      "java.lang.OutOfMemoryError<br>android.graphics.BitmapFactory:-2",
+      "",
+      "2014-10-02"
+    ],
+    [
+      "Major",
+      "1191",
+      "java.lang.RuntimeException: An error occured while executing doInBackground()<br>com.teletalkvi.core.BaseAsyncTask:49",
+      "EventBus,Ignore,Youtube,ImageLoader",
+      "2014-10-02"
+    ],
+    [
+      "Minor",
+      "1087",
+      "java.lang.RuntimeException: Unable to create application com.teletalkvi.android.app.BaseApplication: android.database.sqlite.SQLiteDatabaseLockedException: database is locked (code 5): , while compiling: PRAGMA journal_mode<br>android.database.sqlite.SQLiteConnection:-2",
+      "",
+      "2014-10-02"
+    ],
+    [
+      "Native",
+      "1087",
+      "java.lang.RuntimeException: An error occured while executing doInBackground()<br>com.teletalkvi.android.network.timeline.async.AsyncGetComments:31",
+      "",
+      "2014-10-02"
+    ],
+    [
+      "Unhandler",
+      "1038",
+      "java.lang.RuntimeException: An error occured while executing doInBackground()<br>java.lang.AbstractStringBuilder:94",
+      "",
+      "2014-10-03"
+    ],
+    [
+      "Unhandler",
+      "1024",
+      "java.lang.RuntimeException: An error occured while executing doInBackground()<br>com.teletalkvi.android.network.timeline.async.AsyncGetTimelineContents:54",
+      "Ignore",
+      "2014-10-03"
+    ],
+    [
+      "Unhandler",
+      "639",
+      "java.lang.NullPointerException<br>com.teletalkvi.core.adapter.BaseListAdapter:71",
+      "",
+      "2014-10-03"
+    ],
+    [
+      "Unhandler",
+      "431",
+      "java.lang.OutOfMemoryError<br>java.lang.AbstractStringBuilder:94",
+      "",
+      "2014-10-02"
+    ],
+    [
+      "Unhandler",
+      "349",
+      "java.lang.RuntimeException: Unable to create application com.teletalkvi.android.app.BaseApplication: android.database.sqlite.SQLiteException: Can't downgrade database from version 7 to 3<br>android.database.sqlite.SQLiteOpenHelper:361",
+      "",
+      "2014-10-03"
+    ]
+  ]
+}

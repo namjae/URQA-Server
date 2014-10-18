@@ -3,6 +3,11 @@
  */
  a.none-style { margin: 0 !important; padding: 0 !important; background-color: transparent !important; }
 
+.text-bold
+{
+	font-weight: 700;
+}
+
 .text-ellipsis
 {
 	white-space: nowrap;
@@ -135,7 +140,11 @@ table .table-text-ellipsis > div
 
 #errors-table .tags > p { line-height: 26px; margin: 0; }
 
-#errors-table table { table-layout:fixed; }
+#errors-table table {
+	table-layout:fixed;
+	margin-bottom: 15px !important;
+	border-bottom: 1px solid #ccc;
+}
 #errors-table table thead { background:#474751; color:white; }
 #errors-table table th:nth-child(1) { border-radius: 4px 0 0 0; -webkit-border-radius: 4px 0 0 0; }
 #errors-table table th:nth-child(5) { border-radius: 0 4px 0 0; -webkit-border-radius: 0 4px 0 0; }
@@ -186,3 +195,12 @@ table .table-text-ellipsis > div
 	#errors-table table .res-hidden { display: none; }
 	#errors-table table th:nth-child(4) { border-radius: 0 4px 0 0; -webkit-border-radius: 0 4px 0 0; }
 }
+
+#dynamic-table {
+	width: auto !important;
+}
+
+#dynamic-table .auto-size {
+	width: auto !important;
+}
+
