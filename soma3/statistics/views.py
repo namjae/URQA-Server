@@ -416,7 +416,7 @@ def chartdata_erba(request,apikey):
     #하루 이상인 경우
         categories = []
         temp_data = []
-        sql = 'SELECT A.activity, A.sum FROM( '
+        sql = 'SELECT A.LASTACTIVITY as activity, A.sum FROM( '
         sql = sql + 'SELECT LASTACTIVITY, SUM(SUMCOUNT) as SUM FROM ERBA WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() AND lastactivity > ""'
         sql = sql + 'group by LASTACTIVITY ) A'
         sql = sql + ' order by sum desc limit 12'
