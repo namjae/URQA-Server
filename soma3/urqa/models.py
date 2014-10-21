@@ -372,5 +372,5 @@ class Erbd(models.Model):
     sum = models.IntegerField(blank=True, null=True)
 
 class Erba(models.Model):
-    activity = models.CharField(max_length=300, primary_key=True)
+    activity = models.CharField(max_length=255, primary_key=True)
     sum = models.IntegerField(blank=True, null=True)
