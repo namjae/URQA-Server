@@ -368,5 +368,5 @@ class ErrorStatistics(models.Model):
     count = models.IntegerField(blank=True, null=True)
 
 class Erbd(models.Model):
-    device = models.CharField(max_length=45, blank=True)
+    device = models.CharField(max_length=45, primary_key=True)
     sum = models.IntegerField(blank=True, null=True)

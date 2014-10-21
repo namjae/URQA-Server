@@ -345,8 +345,8 @@ def chartdata_erbd(request,apikey):
         places = Erbd.objects.raw(sql, params)
 
         for idx, pl in enumerate(places):
-            categories.append(pl.device)
-            temp_data.append(pl.sum)
+            categories.append(str(pl.device))
+            temp_data.append(int(pl.sum))
 
         dev_data = [{'name':'Device','data':temp_data}]
         chart3 = {'categories':categories,'data':dev_data}
