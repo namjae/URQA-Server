@@ -27,6 +27,7 @@ from urqa.models import Instances
 from urqa.models import ErrorsbyApp
 from urqa.models import SessionbyApp
 from urqa.models import CountrysbyApp
+from urqa.models import Erbd
 
 def statistics(request,apikey):
     #통계페이지를 Randering하는 루틴
