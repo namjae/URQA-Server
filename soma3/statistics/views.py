@@ -417,7 +417,7 @@ def chartdata_erba(request,apikey):
         categories = []
         temp_data = []
         sql = 'SELECT A.activity, A.sum FROM( '
-        sql = sql + 'SELECT LASTACTIVITY, SUM(SUMCOUNT) as SUM FROM ERBA WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() '
+        sql = sql + 'SELECT LASTACTIVITY, SUM(SUMCOUNT) as SUM FROM ERBA WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() AND lastactivity > ""'
         sql = sql + 'group by LASTACTIVITY ) A'
         sql = sql + ' order by sum desc limit 12'
         params = {'pidinput':projectElement.pid,'retentioninput':retention}
@@ -428,8 +428,8 @@ def chartdata_erba(request,apikey):
             temp_data.append(int(pl.sum))
 
         act_data = [{'name':'Device','data':temp_data}]
-        chart3 = {'categories':categories,'data':act_data}
-        result['chart3'] = chart3
+        chart4 = {'categories':categories,'data':act_data}
+        result['chart4'] = chart4
     return HttpResponse(json.dumps(result), 'application/json');
 
 
