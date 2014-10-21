@@ -281,50 +281,75 @@ def chartdata_erbd(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    #print 'retention', retention
-    # Common Data
-    past, today = getTimeRange(retention,projectElement.timezone)
-    #print 'past',past, 'today',today
-    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
-    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
+    # 하루치 통계
 
-    #chart3 - Device error
-    temp_data = {}
-    activities = []
-    instances = instanceElements.order_by('device')
-    for i in instances:
-        if i.device:
-            device = i.device
-        else:
-            #디바이스중에 데이터를 얻을 수없다면 Unknown으로 처리한다.
-            device = "Unknown"
-        if not device in activities:
-            activities.append(device)
-            temp_data[device] = 1
-        else:
-            temp_data[device] += 1
+    if retention == 1:
 
-    sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
-    categories = []
-    temp_data = []
-    i = 0
-    others_count = 0
-    for l,v in sorted_dic:
-        i += 1
-        if i>25:
-            others_count += v
-        else:
-            categories.append(l)
-            temp_data.append(v)
-    if others_count != 0:
-        categories.append('Others')
-        temp_data.append(others_count)
+        #print 'retention', retention
+        # Common Data
+        past, today = getTimeRange(retention,projectElement.timezone)
+        #print 'past',past, 'today',today
+        errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+        instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+        #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+        
 
-    dev_data = [{'name':'Device','data':temp_data}]
-    chart3 = {'categories':categories,'data':dev_data}
-    result['chart3'] = chart3
+        #chart3 - Device error
+        temp_data = {}
+        activities = []
+        instances = instanceElements.order_by('device')
+        for i in instances:
+            if i.device:
+                device = i.device
+            else:
+                #디바이스중에 데이터를 얻을 수없다면 Unknown으로 처리한다.
+                device = "Unknown"
+            if not device in activities:
+                activities.append(device)
+                temp_data[device] = 1
+            else:
+                temp_data[device] += 1
+
+        sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
+        categories = []
+        temp_data = []
+        i = 0
+        others_count = 0
+        for l,v in sorted_dic:
+            i += 1
+            if i>25:
+                others_count += v
+            else:
+                categories.append(l)
+                temp_data.append(v)
+        if others_count != 0:
+            categories.append('Others')
+            temp_data.append(others_count)
+
+        dev_data = [{'name':'Device','data':temp_data}]
+        chart3 = {'categories':categories,'data':dev_data}
+        result['chart3'] = chart3
+
+
+    else:
+    #하루 이상인 경우
+        categories = []
+        temp_data = []
+        sql = 'SELECT A.device, A.sum FROM( '
+        sql = 'SELECT DEVICE, SUM(SUMCOUNT) as SUM FROM ERBD WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() '
+        sql = 'group by DEVICE ) A'
+        sql = ' order by sumcount desc limit 12'
+        params = {'pidinput':projectElement.pid,'retentioninput':retention}
+        places = erbdlimit.objects.raw(sql, params)
+
+        for idx, pl in enumerate(places):
+            categories.append(pl.device)
+            temp_data.append(pl.sum)
+
+        dev_data = [{'name':'Device','data':temp_data}]
+        chart3 = {'categories':categories,'data':dev_data}
+        result['chart3'] = chart3
 
     return HttpResponse(json.dumps(result), 'application/json');
 
