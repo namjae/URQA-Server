@@ -366,3 +366,7 @@ class ErrorStatistics(models.Model):
     iderrorstatistics = models.IntegerField(primary_key=True)
     keyname = models.CharField(max_length=45, blank=True)
     count = models.IntegerField(blank=True, null=True)
+
+class Erbd(models.Model):
+    device = models.CharField(max_length=45, blank=True)
+    sum = models.IntegerField(blank=True, null=True)

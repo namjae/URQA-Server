@@ -341,7 +341,7 @@ def chartdata_erbd(request,apikey):
         sql = 'group by DEVICE ) A'
         sql = ' order by sumcount desc limit 12'
         params = {'pidinput':projectElement.pid,'retentioninput':retention}
-        places = erbdlimit.objects.raw(sql, params)
+        places = erbd.objects.raw(sql, params)
 
         for idx, pl in enumerate(places):
             categories.append(pl.device)
