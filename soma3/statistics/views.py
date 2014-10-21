@@ -29,6 +29,8 @@ from urqa.models import SessionbyApp
 from urqa.models import CountrysbyApp
 from urqa.models import Erbd
 from urqa.models import Erba
+from urqa.models import ErbvApps
+from urqa.models import Erbv
 
 def statistics(request,apikey):
     #통계페이지를 Randering하는 루틴
@@ -443,43 +445,78 @@ def chartdata_erbv(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    #print 'retention', retention
-    # Common Data
-    past, today = getTimeRange(retention,projectElement.timezone)
-    #print 'past',past, 'today',today
-    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
-    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
+    # 하루치 통계
+    if retention == 1:
+
+        #print 'retention', retention
+        # Common Data
+        past, today = getTimeRange(retention,projectElement.timezone)
+        #print 'past',past, 'today',today
+        errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+        instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+        #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+        result = {}
 
 
-    #Chart5
-    categories = []
-    ver_data = []
-    temp_data = {}
-    instances = instanceElements.order_by('-appversion','-osversion')
+        #Chart5
+        categories = []
+        ver_data = []
+        temp_data = {}
+        instances = instanceElements.order_by('-appversion','-osversion')
 
-    appv_idx = -1
-    for i in instances:
-        if not i.appversion in categories:
-            appv_idx += 1
-            categories.append(i.appversion)
-        if not i.osversion in temp_data:
-            temp_data[i.osversion] = []
-        while len(temp_data[i.osversion]) <= appv_idx:
-            temp_data[i.osversion].append(0)
-        #score = float(i.iderror.errorweight) / i.iderror.numofinstances
-        temp_data[i.osversion][appv_idx] += 1#score
+        appv_idx = -1
+        for i in instances:
+            if not i.appversion in categories:
+                appv_idx += 1
+                categories.append(i.appversion)
+            if not i.osversion in temp_data:
+                temp_data[i.osversion] = []
+            while len(temp_data[i.osversion]) <= appv_idx:
+                temp_data[i.osversion].append(0)
+            #score = float(i.iderror.errorweight) / i.iderror.numofinstances
+            temp_data[i.osversion][appv_idx] += 1#score
 
-    for t in temp_data:
-        idx = 0
-        for e in temp_data[t]:
-            temp_data[t][idx] = e#round(e,2)
-            idx += 1
-        ver_data.append({'name':t,'data':temp_data[t]})
+        for t in temp_data:
+            idx = 0
+            for e in temp_data[t]:
+                temp_data[t][idx] = e#round(e,2)
+                idx += 1
+            ver_data.append({'name':t,'data':temp_data[t]})
 
-    chart5 = {'categories':categories,'data':ver_data}
-    result['chart5'] = chart5
+        chart5 = {'categories':categories,'data':ver_data}
+        result['chart5'] = chart5
+
+    else:
+        #하루 이상인 경우
+        categories = []
+        temp_data = []
+
+        #max 12개만 가져올 appversion 구하는 쿼리
+        sql = 'SELECT appversion FROM ( '
+        sql = sql + 'SELECT sum(sumcount) as sum, appversion from ERBV where pid = %(pidinput)s and COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() '
+        sql = sql + 'group by appversion ) A'
+        sql = sql + 'order by sum desc limit 12'
+        params = {'pidinput':projectElement.pid,'retentioninput':retention}
+        places = ErbvApps.objects.raw(sql, params)
+
+        arraryInput = enumerate(places):
+        print >> sys.stderr, arraryInput
+
+        # sql = 'SELECT A.appversion , A.osversion, A.sum FROM( '
+        # sql = sql + 'SELECT appversion, osversion, SUM(SUMCOUNT) as SUM FROM ERBV WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() AND appversion in (%s)'
+        # sql = sql + 'group by LASTACTIVITY ) A'
+        # sql = sql + ' order by appversion desc, osversion desc'
+        # params = {'pidinput':projectElement.pid,'retentioninput':retention, arraryInput}
+        # places = Erbv.objects.raw(sql, params)
+
+        # for idx, pl in enumerate(places):
+        #     categories.append(str(pl.appversion))
+        #     temp_data.append(int(pl.sum))
+
+        # ver_data = [{'name':'Device','data':temp_data}]
+        # chart5 = {'categories':categories,'data':ver_data}
+        # result['chart5'] = chart5
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebcs(request,apikey):

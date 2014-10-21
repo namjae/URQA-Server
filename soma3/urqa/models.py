@@ -374,3 +374,11 @@ class Erbd(models.Model):
 class Erba(models.Model):
     activity = models.CharField(max_length=255, primary_key=True)
     sum = models.IntegerField(blank=True, null=True)
+
+class Erbv(models.Model):
+    appversion = models.CharField(max_length=255, primary_key=True)
+    osversion = models.CharField(max_length=255, primary_key=True)
+    sum = models.IntegerField(blank=True, null=True)
+    
+class ErbvApps(models.Model):
+    appversion = models.CharField(max_length=255, primary_key=True)
