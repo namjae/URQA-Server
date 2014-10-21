@@ -338,11 +338,11 @@ def chartdata_erbd(request,apikey):
         categories = []
         temp_data = []
         sql = 'SELECT A.device, A.sum FROM( '
-        sql = 'SELECT DEVICE, SUM(SUMCOUNT) as SUM FROM ERBD WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() '
-        sql = 'group by DEVICE ) A'
-        sql = ' order by sumcount desc limit 12'
+        sql = sql + 'SELECT DEVICE, SUM(SUMCOUNT) as SUM FROM ERBD WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() '
+        sql = sql + 'group by DEVICE ) A'
+        sql = sql + ' order by sum desc limit 12'
         params = {'pidinput':projectElement.pid,'retentioninput':retention}
-        places = erbd.objects.raw(sql, params)
+        places = Erbd.objects.raw(sql, params)
 
         for idx, pl in enumerate(places):
             categories.append(pl.device)
