@@ -370,3 +370,7 @@ class ErrorStatistics(models.Model):
 class Erbd(models.Model):
     device = models.CharField(max_length=45, primary_key=True)
     sum = models.IntegerField(blank=True, null=True)
+
+class Erba(models.Model):
+    activity = models.CharField(max_length=300, primary_key=True)
+    sum = models.IntegerField(blank=True, null=True)

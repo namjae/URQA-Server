@@ -364,48 +364,71 @@ def chartdata_erba(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    #print 'retention', retention
-    # Common Data
-    past, today = getTimeRange(retention,projectElement.timezone)
-    #print 'past',past, 'today',today
-    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-    instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
-    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
     result = {}
+    # 하루치 통계
+    if retention == 1:
 
-    #chart4
-    temp_data = {}
-    activities = []
-    instances = instanceElements.order_by('lastactivity')
-    for i in instances:
-        if i.lastactivity:
-            lastactivity = i.lastactivity
-        else:
-            lastactivity = "Unknown"
-        if not lastactivity in activities:
-            activities.append(lastactivity)
-            temp_data[lastactivity] = 1
-        else:
-            temp_data[lastactivity] += 1
-    sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
-    categories = []
-    temp_data = []
-    i = 0
-    others_count = 0
-    for l,v in sorted_dic:
-        i += 1
-        if i>25:
-            others_count += v
-        else:
-            categories.append(l)
-            temp_data.append(v)
-    if others_count != 0:
-        categories.append('Others')
-        temp_data.append(others_count)
+        #print 'retention', retention
+        # Common Data
+        past, today = getTimeRange(retention,projectElement.timezone)
+        #print 'past',past, 'today',today
+        errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
+        instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
+        #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
+        result = {}
 
-    act_data = [{'name':'Activity','data':temp_data}]
-    chart4 = {'categories':categories,'data':act_data}
-    result['chart4'] = chart4
+        #chart4
+        temp_data = {}
+        activities = []
+        instances = instanceElements.order_by('lastactivity')
+        for i in instances:
+            if i.lastactivity:
+                lastactivity = i.lastactivity
+            else:
+                lastactivity = "Unknown"
+            if not lastactivity in activities:
+                activities.append(lastactivity)
+                temp_data[lastactivity] = 1
+            else:
+                temp_data[lastactivity] += 1
+        sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
+        categories = []
+        temp_data = []
+        i = 0
+        others_count = 0
+        for l,v in sorted_dic:
+            i += 1
+            if i>25:
+                others_count += v
+            else:
+                categories.append(l)
+                temp_data.append(v)
+        if others_count != 0:
+            categories.append('Others')
+            temp_data.append(others_count)
+
+        act_data = [{'name':'Activity','data':temp_data}]
+        chart4 = {'categories':categories,'data':act_data}
+        result['chart4'] = chart4
+
+    else:
+    #하루 이상인 경우
+        categories = []
+        temp_data = []
+        sql = 'SELECT A.activity, A.sum FROM( '
+        sql = sql + 'SELECT LASTACTIVITY, SUM(SUMCOUNT) as SUM FROM ERBA WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() '
+        sql = sql + 'group by LASTACTIVITY ) A'
+        sql = sql + ' order by sum desc limit 12'
+        params = {'pidinput':projectElement.pid,'retentioninput':retention}
+        places = Erba.objects.raw(sql, params)
+
+        for idx, pl in enumerate(places):
+            categories.append(str(pl.activity))
+            temp_data.append(int(pl.sum))
+
+        act_data = [{'name':'Device','data':temp_data}]
+        chart3 = {'categories':categories,'data':act_data}
+        result['chart3'] = chart3
     return HttpResponse(json.dumps(result), 'application/json');
 
 
