@@ -5,6 +5,7 @@ import json
 import operator
 import datetime
 import sys
+import numpy
 from django.template import Context, loader
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -490,33 +491,54 @@ def chartdata_erbv(request,apikey):
     else:
         #하루 이상인 경우
         categories = []
+        osversions = []
         temp_data = []
 
         #max 12개만 가져올 appversion 구하는 쿼리
-        sql = 'SELECT appversion FROM ( '
+        sql = 'SELECT appversion, sum FROM ( '
         sql = sql + 'SELECT sum(sumcount) as sum, appversion from ERBV where pid = %(pidinput)s and COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() '
-        sql = sql + 'group by appversion ) A'
+        sql = sql + 'group by appversion ) A '
         sql = sql + 'order by sum desc limit 12'
         params = {'pidinput':projectElement.pid,'retentioninput':retention}
         places = ErbvApps.objects.raw(sql, params)
 
-        arraryInput = enumerate(places):
-        print >> sys.stderr, arraryInput
+        arrayInput = ()
+        arrayInput = list(arrayInput)
+        for idx, pl in enumerate(places):
+                arrayInput.append(str(pl.appversion))
 
-        # sql = 'SELECT A.appversion , A.osversion, A.sum FROM( '
-        # sql = sql + 'SELECT appversion, osversion, SUM(SUMCOUNT) as SUM FROM ERBV WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() AND appversion in (%s)'
-        # sql = sql + 'group by LASTACTIVITY ) A'
-        # sql = sql + ' order by appversion desc, osversion desc'
-        # params = {'pidinput':projectElement.pid,'retentioninput':retention, arraryInput}
-        # places = Erbv.objects.raw(sql, params)
+        arrayInput = tuple(arrayInput)
+        sql2 = 'SELECT A.appversion , A.osversion, A.sum FROM( '
+        sql2 = sql2 + 'SELECT appversion, osversion, SUM(SUMCOUNT) as SUM FROM ERBV WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() AND appversion in  ' + str(arrayInput)
+        sql2 = sql2 + ' group by appversion, osversion ) A '
+        sql2 = sql2 + ' order by appversion desc, osversion desc'
+        params2 = {'pidinput':projectElement.pid,'retentioninput':retention}
+        places2 = Erbv.objects.raw(sql2, params2)
 
-        # for idx, pl in enumerate(places):
-        #     categories.append(str(pl.appversion))
-        #     temp_data.append(int(pl.sum))
+         #fill categories
+        for idx, pl in enumerate(places2):
+            if pl.appversion not in categories:
+                categories.append(str(pl.appversion))
 
-        # ver_data = [{'name':'Device','data':temp_data}]
-        # chart5 = {'categories':categories,'data':ver_data}
-        # result['chart5'] = chart5
+        for idx, pl in enumerate(places2):
+            if pl.osversion not in osversions:
+                osversions.append(str(pl.osversion))
+
+        matrix = [[0 for i in range(len(categories))] for j in range(len(osversions))]
+        for idx, pl in enumerate(places2):
+            #get appversion's index
+            index1 = categories.index(pl.appversion)
+            index2 = osversions.index(pl.osversion)
+            matrix[index2][index1] = int(pl.sum)
+
+        for idx, pl in enumerate(places2):
+            if pl.osversion not in osversions2:
+                osversions2.append(str(pl.osversion))
+                ver_data.append({'name':pl.osversion,'data':matrix[idx]})
+
+        chart5 = {'categories':categories,'data':ver_data}
+        result['chart5'] = chart5
+        print >> sys.stderr, result
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebcs(request,apikey):

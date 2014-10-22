@@ -377,8 +377,9 @@ class Erba(models.Model):
 
 class Erbv(models.Model):
     appversion = models.CharField(max_length=255, primary_key=True)
-    osversion = models.CharField(max_length=255, primary_key=True)
+    osversion = models.CharField(max_length=255)
     sum = models.IntegerField(blank=True, null=True)
-    
+
 class ErbvApps(models.Model):
     appversion = models.CharField(max_length=255, primary_key=True)
+    sum = models.IntegerField(blank=True, null=True)
