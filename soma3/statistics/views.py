@@ -31,6 +31,7 @@ from urqa.models import Erbd
 from urqa.models import Erba
 from urqa.models import ErbvApps
 from urqa.models import Erbv
+from urqa.models import TotalSession
 
 def statistics(request,apikey):
     #통계페이지를 Randering하는 루틴
@@ -80,19 +81,32 @@ def chartdata_sbav(request,apikey):
         past, today = getTimeRange(retention,projectElement.timezone)
         strformat = '%y-%m-%d'
         dateformat = '%%y-%%m-%%d'
+    #########################################
+    #90% 에 해당하는 appversion 리스트 얻어오는 로직
+    # 1. 전체 session 수 구하기
+    # 2. 전체 세션수 대비 90% 에 해당하는 app version 리스트만 가져옴
+    #########################################
+   sql2 = 'SELECT appversion ,sum(appruncount) as total FROM appruncount2 where pid = %(pidinput)s and datetime >= %(pasttime)s group by appversion order by total desc'
+    params2 = {'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+    totalSession = TotalSession.objects.raw(sql2, params2)
+    sum = 0
+    for idx, pl in enumerate(totalSession):
+        sum = sum + pl.total
+    ratio = float(sum) / 1.1
+    ratioappversion = []
+    sum = 0
+    for idx, pl in enumerate(totalSession):
+        sum = sum + pl.total
+        if sum < ratio:
+                ratioappversion.append(pl.appversion)
+
+
 
     #날짜별 Session수를 얻어오기 위한 Query생성
-    sql = 'select idappruncount2 as idsessionbyapp, sum(appruncount) as runcount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC",%(timezone)s),"' + dateformat +'") as sessionday'
+    sql = 'SELECT idappruncount2 as idsessionbyapp, sum(appruncount) as runcount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC",%(timezone)s),"' + dateformat +'") as sessionday'
     sql = sql + ' from urqa.appruncount2'
-    sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s'
-    if retention == 90:
-            sql = sql + ' Group by appversion, WEEK(sessionday)'
-    elif retention == 180:
-            sql = sql + ' Group by appversion, MONTH(sessionday)'
-    elif retention == 365:
-            sql = sql + ' Group by appversion, MONTH(sessionday)'
-    else:
-        sql = sql + ' Group by appversion, sessionday'
+    sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s and appversion in ' + ratioappversion
+    sql = sql + ' Group by appversion, sessionday'
     params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = SessionbyApp.objects.raw(sql, params)
 
@@ -548,7 +562,6 @@ def chartdata_erbv(request,apikey):
 
         chart5 = {'categories':categories,'data':ver_data}
         result['chart5'] = chart5
-        print >> sys.stderr, result
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebcs(request,apikey):

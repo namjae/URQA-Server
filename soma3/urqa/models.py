@@ -383,3 +383,7 @@ class Erbv(models.Model):
 class ErbvApps(models.Model):
     appversion = models.CharField(max_length=255, primary_key=True)
     sum = models.IntegerField(blank=True, null=True)
+
+class TotalSession(models.Model):
+    appversion = models.CharField(max_length=255, primary_key=True)
+    total = models.IntegerField(blank=True, null=True)
