@@ -86,26 +86,29 @@ def chartdata_sbav(request,apikey):
     # 1. 전체 session 수 구하기
     # 2. 전체 세션수 대비 90% 에 해당하는 app version 리스트만 가져옴
     #########################################
-   sql2 = 'SELECT appversion ,sum(appruncount) as total FROM appruncount2 where pid = %(pidinput)s and datetime >= %(pasttime)s group by appversion order by total desc'
+    sql2 = 'SELECT appversion ,sum(appruncount) as total FROM appruncount2 where pid = %(pidinput)s and datetime >= %(pasttime)s group by appversion order by total desc'
     params2 = {'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     totalSession = TotalSession.objects.raw(sql2, params2)
     sum = 0
     for idx, pl in enumerate(totalSession):
         sum = sum + pl.total
     ratio = float(sum) / 1.1
-    ratioappversion = []
+
+    ratioappversion = ()
+    ratioappversion = list(ratioappversion)
+
     sum = 0
     for idx, pl in enumerate(totalSession):
         sum = sum + pl.total
         if sum < ratio:
-                ratioappversion.append(pl.appversion)
+                ratioappversion.append(str(pl.appversion))
 
-
+    ratioappversion = tuple(ratioappversion)
 
     #날짜별 Session수를 얻어오기 위한 Query생성
     sql = 'SELECT idappruncount2 as idsessionbyapp, sum(appruncount) as runcount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC",%(timezone)s),"' + dateformat +'") as sessionday'
     sql = sql + ' from urqa.appruncount2'
-    sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s and appversion in ' + ratioappversion
+    sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s and appversion in ' + str(ratioappversion)
     sql = sql + ' Group by appversion, sessionday'
     params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = SessionbyApp.objects.raw(sql, params)
@@ -190,13 +193,37 @@ def chartdata_ebav(request,apikey):
         strformat = '%y-%m-%d'
         dateformat = '%%y-%%m-%%d'
 
+    #########################################
+    #90% 에 해당하는 appversion 리스트 얻어오는 로직
+    # 1. 전체 session 수 구하기
+    # 2. 전체 세션수 대비 90% 에 해당하는 app version 리스트만 가져옴
+    #########################################
+    sql2 = 'SELECT appversion ,sum(appruncount) as total FROM instances A, errors B where A.iderror = B.iderror and pid = %(pidinput)s and B.status in (0,1)  and datetime >= %(pasttime)s group by appversion order by total desc'
+    params2 = {'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+    totalSession = TotalSession.objects.raw(sql2, params2)
+    sum = 0
+    for idx, pl in enumerate(totalSession):
+        sum = sum + pl.total
+    ratio = float(sum) / 1.1
+
+    ratioappversion = ()
+    ratioappversion = list(ratioappversion)
+
+    sum = 0
+    for idx, pl in enumerate(totalSession):
+        sum = sum + pl.total
+        if sum < ratio:
+                ratioappversion.append(str(pl.appversion))
+
+    ratioappversion = tuple(ratioappversion)
+
     #Error Count를 얻어올 Query를 생성한다.
     sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'" + dateformat + "') as errorday "
     sql = sql + "from instances A, errors B "
     sql = sql + "where A.iderror = B.iderror "
     sql = sql + "and pid = %(pidinput)s "
     sql = sql + "and B.status in (0,1) "
-    sql = sql + "and A.datetime > %(pasttime)s"
+    sql = sql + "and A.datetime > %(pasttime)s and appversion in " + str(ratioappversion)
     sql = sql + "group by errorday,appversion"
 
     past, today = getTimeRange(retention,projectElement.timezone)
