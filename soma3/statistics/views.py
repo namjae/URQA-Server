@@ -5,7 +5,6 @@ import json
 import operator
 import datetime
 import sys
-import numpy
 from django.template import Context, loader
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -86,7 +85,14 @@ def chartdata_sbav(request,apikey):
     sql = 'select idappruncount2 as idsessionbyapp, sum(appruncount) as runcount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC",%(timezone)s),"' + dateformat +'") as sessionday'
     sql = sql + ' from urqa.appruncount2'
     sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s'
-    sql = sql + ' Group by appversion, sessionday'
+    if retention == 90:
+            sql = sql + ' Group by appversion, WEEK(sessionday)'
+    elif retention == 180:
+            sql = sql + ' Group by appversion, MONTH(sessionday)'
+    elif retention == 365:
+            sql = sql + ' Group by appversion, MONTH(sessionday)'
+    else:
+        sql = sql + ' Group by appversion, sessionday'
     params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = SessionbyApp.objects.raw(sql, params)
 
@@ -492,6 +498,8 @@ def chartdata_erbv(request,apikey):
         #하루 이상인 경우
         categories = []
         osversions = []
+        ver_data = []
+        osversions2 = []
         temp_data = []
 
         #max 12개만 가져올 appversion 구하는 쿼리
@@ -531,10 +539,12 @@ def chartdata_erbv(request,apikey):
             index2 = osversions.index(pl.osversion)
             matrix[index2][index1] = int(pl.sum)
 
+        mindex = 0
         for idx, pl in enumerate(places2):
             if pl.osversion not in osversions2:
                 osversions2.append(str(pl.osversion))
-                ver_data.append({'name':pl.osversion,'data':matrix[idx]})
+                ver_data.append({'name':pl.osversion,'data':matrix[mindex]})
+                mindex = mindex + 1
 
         chart5 = {'categories':categories,'data':ver_data}
         result['chart5'] = chart5
