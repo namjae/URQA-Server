@@ -105,10 +105,16 @@ def chartdata_sbav(request,apikey):
 
     ratioappversion = tuple(ratioappversion)
 
+    if len(ratioappversion) == 1:
+        ratioappversion =  str(ratioappversion)[:len(str(ratioappversion)) - 2] + str(ratioappversion)[-1]
+
     #날짜별 Session수를 얻어오기 위한 Query생성
     sql = 'SELECT idappruncount2 as idsessionbyapp, sum(appruncount) as runcount, appversion, DATE_FORMAT(CONVERT_TZ(datetime,"UTC",%(timezone)s),"' + dateformat +'") as sessionday'
     sql = sql + ' from urqa.appruncount2'
-    sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s and appversion in ' + str(ratioappversion)
+    if len(ratioappversion) == 0:
+        sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s and appversion'
+    else:
+        sql = sql + ' where pid = %(pidinput)s and datetime >= %(pasttime)s and appversion in ' + str(ratioappversion)
     sql = sql + ' Group by appversion, sessionday'
     params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = SessionbyApp.objects.raw(sql, params)
@@ -198,7 +204,7 @@ def chartdata_ebav(request,apikey):
     # 1. 전체 session 수 구하기
     # 2. 전체 세션수 대비 90% 에 해당하는 app version 리스트만 가져옴
     #########################################
-    sql2 = 'SELECT appversion ,sum(appruncount) as total FROM instances A, errors B where A.iderror = B.iderror and pid = %(pidinput)s and B.status in (0,1)  and datetime >= %(pasttime)s group by appversion order by total desc'
+    sql2 = 'SELECT appversion ,count(*) as total FROM instances A, errors B where A.iderror = B.iderror and pid = %(pidinput)s and B.status in (0,1)  and datetime >= %(pasttime)s group by appversion order by total desc'
     params2 = {'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     totalSession = TotalSession.objects.raw(sql2, params2)
     sum = 0
@@ -217,20 +223,27 @@ def chartdata_ebav(request,apikey):
 
     ratioappversion = tuple(ratioappversion)
 
+    if len(ratioappversion) == 1:
+        ratioappversion =  str(ratioappversion)[:len(str(ratioappversion)) - 2] + str(ratioappversion)[-1]
+        
     #Error Count를 얻어올 Query를 생성한다.
     sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'" + dateformat + "') as errorday "
     sql = sql + "from instances A, errors B "
     sql = sql + "where A.iderror = B.iderror "
     sql = sql + "and pid = %(pidinput)s "
     sql = sql + "and B.status in (0,1) "
-    sql = sql + "and A.datetime > %(pasttime)s and appversion in " + str(ratioappversion)
+    if len(ratioappversion) == 0:
+        sql = sql + ' and datetime >= %(pasttime)s and appversion '
+    else:
+        sql = sql + ' and datetime >= %(pasttime)s and appversion in ' + str(ratioappversion)
     sql = sql + "group by errorday,appversion"
 
     past, today = getTimeRange(retention,projectElement.timezone)
 
     params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = ErrorsbyApp.objects.raw(sql, params)
-
+    
+    print >> sys.stderr, places
     #listing app version
     appversions = []
     dates = []
@@ -557,13 +570,17 @@ def chartdata_erbv(request,apikey):
                 arrayInput.append(str(pl.appversion))
 
         arrayInput = tuple(arrayInput)
+        if len(arrayInput) == 1:
+            arrayInput =  str(arrayInput)[:len(str(arrayInput)) - 2] + str(arrayInput)[-1]
         sql2 = 'SELECT A.appversion , A.osversion, A.sum FROM( '
-        sql2 = sql2 + 'SELECT appversion, osversion, SUM(SUMCOUNT) as SUM FROM ERBV WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() AND appversion in  ' + str(arrayInput)
+        if len(arrayInput) == 0:
+            sql2 = sql2 + 'SELECT appversion, osversion, SUM(SUMCOUNT) as SUM FROM ERBV WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW()  '
+        else:
+            sql2 = sql2 + 'SELECT appversion, osversion, SUM(SUMCOUNT) as SUM FROM ERBV WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() AND appversion in  ' + str(arrayInput)
         sql2 = sql2 + ' group by appversion, osversion ) A '
         sql2 = sql2 + ' order by appversion desc, osversion desc'
         params2 = {'pidinput':projectElement.pid,'retentioninput':retention}
         places2 = Erbv.objects.raw(sql2, params2)
-
          #fill categories
         for idx, pl in enumerate(places2):
             if pl.appversion not in categories:
