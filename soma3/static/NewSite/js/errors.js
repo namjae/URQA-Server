@@ -198,64 +198,100 @@ $(document).ready(function()
         });
     });
 
-    var checkboxList = [
-        $("#check-unhandled"),
-        $("#check-native"),
-        $("#check-critical"),
-        $("#check-major"),
-        $("#check-minor")
+    // Checkbox(Rank)
+    var checkInfo = [
+        "rank",
+        "status"
     ];
-    checkAll = function() {
-        var obj = $(this);
-        var checkCount = 0;
+    var checkList = [
+        [
+            $("#check-rank-unhandled"),
+            $("#check-rank-native"),
+            $("#check-rank-critical"),
+            $("#check-rank-major"),
+            $("#check-rank-minor")
+        ],
+        [
+            $("#check-status-new"),
+            $("#check-status-open"),
+            $("#check-status-fixed"),
+            $("#check-status-ignore")
+        ]
+    ];
+    checkboxCheck = function() {
+        splitName = function(n, o){return o.attr("id").split("check-"+n+"-")[1]}
 
-        filterData["rank"] = "";
-        for (var checkbox in checkboxList)
+        var obj = $(this);
+        var index = obj.attr("data-index");
+
+        var checkCount = 0;
+        var checkName = checkInfo[index];
+
+        filterData[checkName] = "";
+        for (var i in checkList[index])
         {
-            checkbox = checkboxList[checkbox];
+            var checkbox = checkList[index][i];
             if (checkbox[0] != obj[0] && checkbox.prop("checked"))
             {
-                checkCount++;
-                filterData["rank"] += checkbox.attr("id").split("check-")[1];
+                checkCount ++;
+                filterData[checkName] += splitName(checkName, checkbox);
             }
         }
         if (obj.prop("checked") == false)
-            filterData["rank"] += obj.attr("id").split("check-")[1];
-
-        if(checkCount == 4)
         {
-            if (obj.prop("checked") == false)
-                $("#check-all").prop("checked", true);
-            else
-                $("#check-all").prop("checked", false);
+            checkCount ++;
+            filterData[checkName] += splitName(checkName, obj);
         }
+
+        if (checkCount == checkList[index].length)
+            $("#check-" + checkName + "-all").prop("checked", true);
         else
-            $("#check-all").prop("checked", false);
+            $("#check-" + checkName + "-all").prop("checked", false);
 
         updateFilterData();
     };
-    $("#check-all").click(function(){
-        if ($(this).prop("checked") == false)
-        {
-            for (var checkbox in checkboxList)
-                checkboxList[checkbox].prop("checked", true);
+    checkAll = function() {
+        splitName = function(n, o){return o.attr("id").split("check-"+n+"-")[1]}
 
-            filterData["rank"] = "unhandled,native,critical,major,minor";
+        var obj = $(this);
+        var index = obj.attr("data-index");
+
+        var checkName = checkInfo[index];
+
+        if (obj.prop("checked") == false)
+        {
+            var arguments = "";
+            for (var i in checkList[index])
+            {
+                arguments += splitName(checkName, checkList[index][i]);
+                checkList[index][i].prop("checked", true);
+            }
+
+            filterData[checkName] = arguments;
         }
         else
         {
-            for (var checkbox in checkboxList)
-                checkboxList[checkbox].prop("checked", false);
+            for (var i in checkList[index])
+                checkList[index][i].prop("checked", false);
 
-            filterData["rank"] = "";
+            filterData[checkName] = "";
         }
         updateFilterData();
-    });
-    $("#check-unhandled").click(checkAll);
-    $("#check-native").click(checkAll);
-    $("#check-critical").click(checkAll);
-    $("#check-major").click(checkAll);
-    $("#check-minor").click(checkAll);
+    };
+    for (var i in checkList)
+    {
+        for (var j in checkList[i])
+        {
+            checkList[i][j].click(checkboxCheck);
+            checkList[i][j].attr("data-index", i);
+        }
+
+        $("#check-" + checkInfo[i] + "-all").click(checkAll);
+        $("#check-" + checkInfo[i] + "-all").attr("data-index", i);
+    }
+
+    // Checkbox(Status)
+
 
     $("input[name=status]").click(function(){
         filterData["status"] = $(this).attr("value");

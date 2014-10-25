@@ -32,6 +32,11 @@ table .table-text-ellipsis > div
 .label-minor { background-color: #95D7BB; }
 .label-native { background-color: #4D5360; }
 
+div.icheck > div > div.radio {
+	padding-left: 0;
+	margin-right: 30px;
+}
+
 /**
  * Header
  */
