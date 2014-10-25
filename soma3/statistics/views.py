@@ -99,10 +99,13 @@ def chartdata_sbav(request,apikey):
 
     sum = 0
     for idx, pl in enumerate(totalSession):
+        if len(ratioappversion) == 0:
+            ratioappversion.append(str(pl.appversion))
         sum = sum + pl.total
         if sum < ratio:
                 ratioappversion.append(str(pl.appversion))
-
+        #elif pl.appvesion is not in ratioappversion
+        #sum other count, and others
     ratioappversion = tuple(ratioappversion)
 
     if len(ratioappversion) == 1:
@@ -217,6 +220,8 @@ def chartdata_ebav(request,apikey):
 
     sum = 0
     for idx, pl in enumerate(totalSession):
+        if len(ratioappversion) == 0:
+            ratioappversion.append(str(pl.appversion))
         sum = sum + pl.total
         if sum < ratio:
                 ratioappversion.append(str(pl.appversion))
@@ -225,7 +230,7 @@ def chartdata_ebav(request,apikey):
 
     if len(ratioappversion) == 1:
         ratioappversion =  str(ratioappversion)[:len(str(ratioappversion)) - 2] + str(ratioappversion)[-1]
-        
+
     #Error Count를 얻어올 Query를 생성한다.
     sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'" + dateformat + "') as errorday "
     sql = sql + "from instances A, errors B "
@@ -243,7 +248,6 @@ def chartdata_ebav(request,apikey):
     params = {'timezone':projectElement.timezone,'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     places = ErrorsbyApp.objects.raw(sql, params)
     
-    print >> sys.stderr, places
     #listing app version
     appversions = []
     dates = []
