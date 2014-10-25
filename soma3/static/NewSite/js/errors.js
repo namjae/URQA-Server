@@ -198,106 +198,188 @@ $(document).ready(function()
         });
     });
 
-    // Checkbox(Rank)
+    // Checkbox
     var checkInfo = [
-        "rank",
-        "status"
+        {
+            "keyword": "rank",
+            "prefix": "check-rank-",
+            "all": $("#check-rank-all"),
+        },
+        {
+            "keyword": "status",
+            "prefix": "check-status-",
+            "all": $("#check-status-all")
+        },
+        {
+            "keyword": "appversion",
+            "prefix": "check-app-",
+            "all": $("#check-app-all"),
+            "filterString": function(obj) {
+                return obj.attr("id").split("-")[obj.attr("id").split("-").length - 1].split("_").join(".");
+            }
+        }
     ];
-    var checkList = [
-        [
-            $("#check-rank-unhandled"),
-            $("#check-rank-native"),
-            $("#check-rank-critical"),
-            $("#check-rank-major"),
-            $("#check-rank-minor")
-        ],
-        [
-            $("#check-status-new"),
-            $("#check-status-open"),
-            $("#check-status-fixed"),
-            $("#check-status-ignore")
-        ]
-    ];
-    checkboxCheck = function() {
-        splitName = function(n, o){return o.attr("id").split("check-"+n+"-")[1]}
 
+    reloadFilterData = function() {
+        for (var i in checkInfo)
+        {
+            var info = checkInfo[i];
+
+            filterData[info["keyword"]] = "";
+            for (var j in info["list"])
+            {
+                var checkbox = info["list"][j];
+                if (checkbox.prop("checked"))
+                    filterData[info["keyword"]] += info["filterString"](checkbox) + ",";
+            }
+        }
+
+        updateFilterData();
+    };
+    checkboxCheck = function() {
         var obj = $(this);
         var index = obj.attr("data-index");
 
         var checkCount = 0;
-        var checkName = checkInfo[index];
+        var info = checkInfo[index];
 
-        filterData[checkName] = "";
-        for (var i in checkList[index])
+        filterData[info["keyword"]] = "";
+        for (var i in info["list"])
         {
-            var checkbox = checkList[index][i];
+            var checkbox = info["list"][i];
             if (checkbox[0] != obj[0] && checkbox.prop("checked"))
             {
                 checkCount ++;
-                filterData[checkName] += splitName(checkName, checkbox);
+                filterData[info["keyword"]] += info["filterString"](checkbox) + ",";
             }
         }
         if (obj.prop("checked") == false)
         {
             checkCount ++;
-            filterData[checkName] += splitName(checkName, obj);
+            filterData[info["keyword"]] += info["filterString"](obj) + ",";
         }
 
-        if (checkCount == checkList[index].length)
-            $("#check-" + checkName + "-all").prop("checked", true);
+        if (checkCount == info["list"].length)
+            info["all"].prop("checked", true);
         else
-            $("#check-" + checkName + "-all").prop("checked", false);
+            info["all"].prop("checked", false);
 
         updateFilterData();
     };
     checkAll = function() {
-        splitName = function(n, o){return o.attr("id").split("check-"+n+"-")[1]}
-
         var obj = $(this);
         var index = obj.attr("data-index");
 
-        var checkName = checkInfo[index];
+        var info = checkInfo[index];
 
         if (obj.prop("checked") == false)
         {
             var arguments = "";
-            for (var i in checkList[index])
+            for (var i in info["list"])
             {
-                arguments += splitName(checkName, checkList[index][i]);
-                checkList[index][i].prop("checked", true);
+                arguments += info["filterString"](info["list"][i]) + ",";
+                info["list"][i].prop("checked", true);
             }
 
-            filterData[checkName] = arguments;
+            filterData[info["keyword"]] = arguments;
         }
         else
         {
-            for (var i in checkList[index])
-                checkList[index][i].prop("checked", false);
+            for (var i in info["list"])
+                info["list"][i].prop("checked", false);
 
-            filterData[checkName] = "";
+            filterData[info["keyword"]] = "";
         }
         updateFilterData();
     };
-    for (var i in checkList)
+
+    // Initialize
+    for (var i in checkInfo)
     {
-        for (var j in checkList[i])
+        // Checkbox
+        if (checkInfo[i]["info"] !== undefined)
         {
-            checkList[i][j].click(checkboxCheck);
-            checkList[i][j].attr("data-index", i);
+            for (var j in checkList[i])
+                checkList[i][j].click(checkboxCheck).attr("data-index", i);
+        }
+        else
+        {
+            var j = 0;
+            checkInfo[i].list = [];
+            $("[id^=" + checkInfo[i]["prefix"] + "]").each(function(){
+                if ($(this)[0] != checkInfo[i]["all"][0])
+                {
+                    $(this).click(checkboxCheck).attr("data-index", i);
+                    checkInfo[i].list[j++] = $(this);
+                }
+            });
         }
 
-        $("#check-" + checkInfo[i] + "-all").click(checkAll);
-        $("#check-" + checkInfo[i] + "-all").attr("data-index", i);
+        // Filtering String
+        if (checkInfo[i]["filterString"] === undefined)
+        {
+            checkInfo[i]["filterString"] = function(o) {
+                return o.attr("id").split("-")[o.attr("id").split("-").length-1];
+            };
+        }
+
+        // Check All
+        checkInfo[i]["all"].click(checkAll);
+        checkInfo[i]["all"].attr("data-index", i);
     }
+    reloadFilterData();
 
-    // Checkbox(Status)
+    /** SelectBox */
+    $("#select-app").change(function(){
+        if ($(this).val() === "Select")
+            return;
 
+        // Add Checkbox
+        var obj = $("#select-app option:selected");
+        var IDName = checkInfo[2]["prefix"] + obj.val().split(".").join("_");
+        $(this).before("<div class=\"flat-green\" style=\"white-space:nowrap;overflow:hidden\">\
+            <div class=\"radio\">\
+                <input id=\"" + IDName + "\" type=\"checkbox\" checked>\
+                <label>" + obj.val() + "</label>\
+            </div>\
+        </div>");
 
-    $("input[name=status]").click(function(){
-        filterData["status"] = $(this).attr("value");
+        // Add Checkbox Event
+        $("#" + IDName).on('ifCreated ifClicked ifChanged ifChecked ifUnchecked ifDisabled ifEnabled ifDestroyed check ', function(event){                
+            if(event.type ==="ifChecked"){
+                $(this).trigger('click');  
+                $('input').iCheck('update');
+            }
+            if(event.type ==="ifUnchecked"){
+                $(this).trigger('click');  
+                $('input').iCheck('update');
+            }       
+            if(event.type ==="ifDisabled"){
+                console.log($(this).attr('id')+'dis');  
+                $('input').iCheck('update');
+            }                                
+        }).iCheck({
+            checkboxClass: 'icheckbox_flat-green',
+            radioClass: 'iradio_flat-green'
+        }).click(checkboxCheck).attr("data-index", 2);
+        checkInfo[2]["list"][checkInfo[2]["list"].length] = $("#" + IDName);
         updateFilterData();
-    });
 
+        // Checkbox Animation
+        var newObj = $(this).prev();
+        var lastWidth = newObj.width();
+        newObj.css("width", 0);
+        setTimeout(function(){
+            newObj.css("transition", "width 0.35s").css("-webkit-transition", "width 0.35s").css("width", lastWidth);
+            setTimeout(function(){
+                newObj.css("width", "").css("white-space", "").css("overflow", "");
+            }, 350);
+        }, 50);
+
+        // SelectBox
+        $(this).val("Select");
+        obj.remove();
+    });
 
     /** Iron Range Slider */
     $("#date-slider").ionRangeSlider({
@@ -310,6 +392,12 @@ $(document).ready(function()
 
     var updateSliderScale = null;
     $(window).resize(function(){
+        clearTimeout(updateSliderScale);
+        updateSliderScale = setTimeout(function(){
+            $("#date-slider").ionRangeSlider('update');
+        }, 100);
+    });
+    $('.panel .tools .fa').click(function () {
         clearTimeout(updateSliderScale);
         updateSliderScale = setTimeout(function(){
             $("#date-slider").ionRangeSlider('update');
