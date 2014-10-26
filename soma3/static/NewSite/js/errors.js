@@ -199,187 +199,297 @@ $(document).ready(function()
     });
 
     // Checkbox
-    var checkInfo = [
-        {
-            "keyword": "rank",
-            "prefix": "check-rank-",
-            "all": $("#check-rank-all"),
-        },
-        {
-            "keyword": "status",
-            "prefix": "check-status-",
-            "all": $("#check-status-all")
-        },
-        {
-            "keyword": "appversion",
-            "prefix": "check-app-",
-            "all": $("#check-app-all"),
-            "filterString": function(obj) {
-                return obj.attr("id").split("-")[obj.attr("id").split("-").length - 1].split("_").join(".");
+    $(function(){
+        var checkInfo = [
+            {
+                "type": "check",
+                "keyword": "rank",
+                "prefix": "check-rank-",
+                "all": $("#check-rank-all")
+            },
+            {
+                "type": "check",
+                "keyword": "status",
+                "prefix": "check-status-",
+                "all": $("#check-status-all")
+            },
+            {
+                "type": "check",
+                "keyword": "appversion",
+                "prefix": "check-app-",
+                "all": $("#check-app-all"),
+                "selectbox": $("#select-app"),
+                "filterString": function(obj) {
+                    return obj.attr("id").split("-")[obj.attr("id").split("-").length - 1].split("_").join(".");
+                }
+            },
+            {
+                "type": "check",
+                "keyword": "osversion",
+                "prefix": "check-os-",
+                "all": $("#check-os-all"),
+                "selectbox": $("#select-os"),
+                "filterString": function(obj) {
+                    return obj.attr("id").split("-")[obj.attr("id").split("-").length - 1].split("_").join(".");
+                }
+            },
+            {
+                "type": "tags",
+                "keyword": "tag",
+                "taglist": $("#tagsearch")
+            },
+            {
+                "type": "tags",
+                "keyword": "classes",
+                "taglist": $("#classsearch")
             }
-        }
-    ];
+        ];
 
-    reloadFilterData = function() {
-        for (var i in checkInfo)
-        {
-            var info = checkInfo[i];
+        reloadFilterData = function() {
+            for (var i in checkInfo)
+            {
+                var info = checkInfo[i];
+
+                if (checkInfo[i]["type"] === "check")
+                {
+                    filterData[info["keyword"]] = "";
+                    for (var j in info["list"])
+                    {
+                        var checkbox = info["list"][j];
+                        if (checkbox.prop("checked"))
+                            filterData[info["keyword"]] += info["filterString"](checkbox) + ",";
+                    }
+                }
+                else if (checkInfo[i]["type"] === "tags")
+                {
+                    filterData[info["keyword"]] = "";
+                    checkInfo[i]["taglist"].children("span.tags").filter(function() {
+                        filterData[info["keyword"]] += info["filterString"]($(this)) + ",";
+                    });
+                }
+            }
+
+            updateFilterData();
+        };
+        selectboxChange = function(){
+            if ($(this).val() === "Select")
+                return;
+
+            // Add Checkbox
+            var index = $(this).attr("data-index");
+            var obj = $(this).children("option:selected");
+            var IDName = checkInfo[index]["prefix"] + obj.val().split(".").join("_");
+            $(this).before("<div class=\"flat-green\" style=\"white-space:nowrap;overflow:hidden\">\
+                <div class=\"radio\">\
+                    <input id=\"" + IDName + "\" type=\"checkbox\" checked>\
+                    <label>" + obj.val() + "</label>\
+                </div>\
+            </div>");
+
+            // Add Checkbox Event
+            $("#" + IDName).on('ifCreated ifClicked ifChanged ifChecked ifUnchecked ifDisabled ifEnabled ifDestroyed check ', function(event){                
+                if(event.type ==="ifChecked"){
+                    $(this).trigger('click');  
+                    $('input').iCheck('update');
+                }
+                if(event.type ==="ifUnchecked"){
+                    $(this).trigger('click');  
+                    $('input').iCheck('update');
+                }       
+                if(event.type ==="ifDisabled"){
+                    console.log($(this).attr('id')+'dis');  
+                    $('input').iCheck('update');
+                }                                
+            }).iCheck({
+                checkboxClass: 'icheckbox_flat-green',
+                radioClass: 'iradio_flat-green'
+            }).click(checkboxCheck).attr("data-index", index);
+            checkInfo[index]["list"][checkInfo[index]["list"].length] = $("#" + IDName);
+
+            filterData[checkInfo[index]["keyword"]] += checkInfo[index]["filterString"]($("#" + IDName)) + ',';
+            updateFilterData();
+
+            // Checkbox Animation
+            var newObj = $(this).prev();
+            var lastWidth = newObj.width();
+            newObj.css("width", 0);
+            setTimeout(function(){
+                newObj.css("transition", "width 0.35s").css("-moz-transition", "width 0.35s").css("-webkit-transition", "width 0.35s").css("width", lastWidth);
+                setTimeout(function(){
+                    newObj.css("width", "").css("white-space", "").css("overflow", "").css("transition", "").css("-moz-transition", "").css("-webkit-transition", "");
+                }, 350);
+            }, 50);
+
+            // SelectBox
+            $(this).val("Select");
+            obj.remove();
+        };
+        checkboxCheck = function() {
+            var obj = $(this);
+            var index = obj.attr("data-index");
+
+            var checkCount = 0;
+            var info = checkInfo[index];
 
             filterData[info["keyword"]] = "";
-            for (var j in info["list"])
+            for (var i in info["list"])
             {
-                var checkbox = info["list"][j];
-                if (checkbox.prop("checked"))
+                var checkbox = info["list"][i];
+                if (checkbox[0] != obj[0] && checkbox.prop("checked"))
+                {
+                    checkCount ++;
                     filterData[info["keyword"]] += info["filterString"](checkbox) + ",";
+                }
             }
-        }
-
-        updateFilterData();
-    };
-    checkboxCheck = function() {
-        var obj = $(this);
-        var index = obj.attr("data-index");
-
-        var checkCount = 0;
-        var info = checkInfo[index];
-
-        filterData[info["keyword"]] = "";
-        for (var i in info["list"])
-        {
-            var checkbox = info["list"][i];
-            if (checkbox[0] != obj[0] && checkbox.prop("checked"))
+            if (obj.prop("checked") == false)
             {
                 checkCount ++;
-                filterData[info["keyword"]] += info["filterString"](checkbox) + ",";
+                filterData[info["keyword"]] += info["filterString"](obj) + ",";
             }
-        }
-        if (obj.prop("checked") == false)
-        {
-            checkCount ++;
-            filterData[info["keyword"]] += info["filterString"](obj) + ",";
-        }
 
-        if (checkCount == info["list"].length)
-            info["all"].prop("checked", true);
-        else
-            info["all"].prop("checked", false);
+            if (checkCount == info["list"].length)
+                info["all"].prop("checked", true);
+            else
+                info["all"].prop("checked", false);
 
-        updateFilterData();
-    };
-    checkAll = function() {
-        var obj = $(this);
-        var index = obj.attr("data-index");
+            updateFilterData();
+        };
+        checkAll = function() {
+            var obj = $(this);
+            var index = obj.attr("data-index");
 
-        var info = checkInfo[index];
+            var info = checkInfo[index];
 
-        if (obj.prop("checked") == false)
-        {
-            var arguments = "";
-            for (var i in info["list"])
+            if (obj.prop("checked") == false)
             {
-                arguments += info["filterString"](info["list"][i]) + ",";
-                info["list"][i].prop("checked", true);
-            }
-
-            filterData[info["keyword"]] = arguments;
-        }
-        else
-        {
-            for (var i in info["list"])
-                info["list"][i].prop("checked", false);
-
-            filterData[info["keyword"]] = "";
-        }
-        updateFilterData();
-    };
-
-    // Initialize
-    for (var i in checkInfo)
-    {
-        // Checkbox
-        if (checkInfo[i]["info"] !== undefined)
-        {
-            for (var j in checkList[i])
-                checkList[i][j].click(checkboxCheck).attr("data-index", i);
-        }
-        else
-        {
-            var j = 0;
-            checkInfo[i].list = [];
-            $("[id^=" + checkInfo[i]["prefix"] + "]").each(function(){
-                if ($(this)[0] != checkInfo[i]["all"][0])
+                var arguments = "";
+                for (var i in info["list"])
                 {
-                    $(this).click(checkboxCheck).attr("data-index", i);
-                    checkInfo[i].list[j++] = $(this);
+                    arguments += info["filterString"](info["list"][i]) + ",";
+                    info["list"][i].prop("checked", true);
                 }
-            });
-        }
 
-        // Filtering String
-        if (checkInfo[i]["filterString"] === undefined)
-        {
-            checkInfo[i]["filterString"] = function(o) {
-                return o.attr("id").split("-")[o.attr("id").split("-").length-1];
-            };
-        }
-
-        // Check All
-        checkInfo[i]["all"].click(checkAll);
-        checkInfo[i]["all"].attr("data-index", i);
-    }
-    reloadFilterData();
-
-    /** SelectBox */
-    $("#select-app").change(function(){
-        if ($(this).val() === "Select")
-            return;
-
-        // Add Checkbox
-        var obj = $("#select-app option:selected");
-        var IDName = checkInfo[2]["prefix"] + obj.val().split(".").join("_");
-        $(this).before("<div class=\"flat-green\" style=\"white-space:nowrap;overflow:hidden\">\
-            <div class=\"radio\">\
-                <input id=\"" + IDName + "\" type=\"checkbox\" checked>\
-                <label>" + obj.val() + "</label>\
-            </div>\
-        </div>");
-
-        // Add Checkbox Event
-        $("#" + IDName).on('ifCreated ifClicked ifChanged ifChecked ifUnchecked ifDisabled ifEnabled ifDestroyed check ', function(event){                
-            if(event.type ==="ifChecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
+                filterData[info["keyword"]] = arguments;
             }
-            if(event.type ==="ifUnchecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }       
-            if(event.type ==="ifDisabled"){
-                console.log($(this).attr('id')+'dis');  
-                $('input').iCheck('update');
-            }                                
-        }).iCheck({
-            checkboxClass: 'icheckbox_flat-green',
-            radioClass: 'iradio_flat-green'
-        }).click(checkboxCheck).attr("data-index", 2);
-        checkInfo[2]["list"][checkInfo[2]["list"].length] = $("#" + IDName);
-        updateFilterData();
+            else
+            {
+                for (var i in info["list"])
+                    info["list"][i].prop("checked", false);
 
-        // Checkbox Animation
-        var newObj = $(this).prev();
-        var lastWidth = newObj.width();
-        newObj.css("width", 0);
-        setTimeout(function(){
-            newObj.css("transition", "width 0.35s").css("-webkit-transition", "width 0.35s").css("width", lastWidth);
+                filterData[info["keyword"]] = "";
+            }
+            updateFilterData();
+        };
+        tagClick = function() {
+            $(this).parent().children("select").append(new Option($(this).children("span").text(), $(this).children("span").text()));
+            $(this).css("white-space", "nowrap").css("overflow", "hidden").animate({
+                width: 0
+            }, 350, function() {
+                $(this).remove();
+            });
+        };
+        tagSelectboxChange = function() {
+            if ($(this).val() === "Select")
+                return;
+
+            // Add Checkbox
+            var index = $(this).parent().attr("data-index");
+            var obj = $(this).children("option:selected");
+            $(this).before("<span class=\"tags\" style=\"white-space:nowrap;overflow:hidden\">\
+                <span>" + obj.val() + "</span>\
+                <a>x</a>\
+            </span>");
+
+            $(this).prev().click(tagClick);
+            
+            filterData[checkInfo[index]["keyword"]] += checkInfo[index]["filterString"]($(this).prev()) + ',';
+            updateFilterData();
+
+            // Checkbox Animation
+            var newObj = $(this).prev();
+            var lastWidth = newObj.width();
+            newObj.css("width", 0);
             setTimeout(function(){
-                newObj.css("width", "").css("white-space", "").css("overflow", "");
-            }, 350);
-        }, 50);
+                newObj.css("transition", "width 0.35s").css("-moz-transition", "width 0.35s").css("-webkit-transition", "width 0.35s").css("width", lastWidth);
+                setTimeout(function(){
+                    newObj.css("width", "").css("white-space", "").css("overflow", "").css("transition", "").css("-moz-transition", "").css("-webkit-transition", "");
+                }, 350);
+            }, 50);
 
-        // SelectBox
-        $(this).val("Select");
-        obj.remove();
+            // SelectBox
+            $(this).val("Select");
+            obj.remove();
+        };
+
+        // Initialize
+        for (var i in checkInfo)
+        {
+            if (checkInfo[i]["type"] === "check")
+            {
+                // Checkbox
+                if (checkInfo[i]["info"] !== undefined)
+                {
+                    for (var j in checkList[i])
+                        checkList[i][j].click(checkboxCheck).attr("data-index", i);
+                }
+                else
+                {
+                    var j = 0;
+                    checkInfo[i].list = [];
+                    $("[id^=" + checkInfo[i]["prefix"] + "]").each(function(){
+                        if ($(this)[0] != checkInfo[i]["all"][0])
+                        {
+                            $(this).click(checkboxCheck).attr("data-index", i);
+                            checkInfo[i].list[j++] = $(this);
+                        }
+                    });
+                }
+
+                // Filtering String
+                if (checkInfo[i]["filterString"] === undefined)
+                {
+                    checkInfo[i]["filterString"] = function(o) {
+                        return o.attr("id").split("-")[o.attr("id").split("-").length-1];
+                    };
+                }
+
+                // SelectBox
+                if (checkInfo[i]["selectbox"] !== undefined)
+                {
+                    checkInfo[i]["selectbox"].attr("data-index", i);
+                    checkInfo[i]["selectbox"].change(selectboxChange);
+                }
+
+                // Check All
+                checkInfo[i]["all"].click(checkAll);
+                checkInfo[i]["all"].attr("data-index", i);
+            }
+            else if (checkInfo[i]["type"] === "tags")
+            {
+                // SelectBox
+                checkInfo[i]["taglist"].children("select").change(tagSelectboxChange);
+
+                // Tags
+                checkInfo[i]["taglist"].children("span.tags").filter(function() {
+                    $(this).click(tagClick);
+                });
+
+                // Filtering String
+                if (checkInfo[i]["filterString"] === undefined)
+                {
+                    checkInfo[i]["filterString"] = function(obj) {
+                        return obj.children("span").text();
+                    }
+                }
+
+                checkInfo[i]["taglist"].attr("data-index", i);
+            }
+        }
+        reloadFilterData();
     });
+
+    /** Tagsearch */
+    
 
     /** Iron Range Slider */
     $("#date-slider").ionRangeSlider({

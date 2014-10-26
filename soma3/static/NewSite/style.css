@@ -212,6 +212,38 @@ div.icheck > div > div.radio {
 /**
  * Errors
  */
-
+div.tagsearch { padding: 5px }
+div.tagsearch span.tags {
+	float: left;
+	display: block;
+	margin: auto 5px 4px auto;
+	padding: 8px 9px;
+	border: 0 none;
+	border-radius: 2px;
+	-moz-border-radius:2px;
+	-webkit-border-radius: 2px;
+	font-size: 13px;
+	text-decoration: none;
+	font-family: helvetica;
+	background: none repeat scroll 0 0 #CDE69C;
+	color: #638421;
+	cursor: pointer;
+}
+div.tagsearch span.tags:active { background-color: #bcd982 }
+div.tagsearch span.tags span {
+	max-width: 180px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: inline-block;
+	float: left;
+}
+div.tagsearch span.tags span:after { content: ' ' }
+div.tagsearch span.tags a {
+	font-weight: bold;
+	color: #82ad2b;
+	text-decoration: none;
+	font-size: 11px;
+}
 
 
