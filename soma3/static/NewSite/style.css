@@ -152,7 +152,7 @@ div.icheck > div > div.radio {
 }
 #errors-table table thead { background:#474751; color:white; }
 #errors-table table th:nth-child(1) { border-radius: 4px 0 0 0; -webkit-border-radius: 4px 0 0 0; }
-#errors-table table th:nth-child(5) { border-radius: 0 4px 0 0; -webkit-border-radius: 0 4px 0 0; }
+#errors-table table th:nth-last-child(1) { border-radius: 0 4px 0 0; -webkit-border-radius: 0 4px 0 0; }
 
 @media only screen and (max-width: 800px) {
     #errors-table table,
@@ -202,11 +202,11 @@ div.icheck > div > div.radio {
 }
 
 #dynamic-table {
-	width: auto !important;
+	width: 100% !important;
 }
 
 #dynamic-table .auto-size {
-	width: auto !important;
+	width: 100% !important;
 }
 
 /**

@@ -1,19 +1,24 @@
 $(document).ready(function()
 {
     filterData = {
-        "rank": "unhandled,native,critical,major,minor",
+        "rank": "",
         "datestart": 1,
         "dateend": 1,
-        "status": "all"
+        "status": "",
+        "appversion": "",
+        "osversion": "",
+        "tag": "",
+        "classes": ""
     };
 
     /** Data Table */
-    var _dataTable = $('#dynamic-table').dataTable( {
+    var _dataTable = $('#dynamic-table').dataTable(
+    {
         "bJQueryUI": true,
         "bStateSave": true,
         "bProcessing": true,
         "bServerSide": true,
-        "sAjaxSource": "./test.json",
+        "sAjaxSource": "./test3.json",
         "sAjaxDataProp": "aaData",
         "aaSorting": [[ 1, "desc" ]],
         "bUseRendered": true,
@@ -22,10 +27,10 @@ $(document).ready(function()
         "bInfo": false,
         "aoColumnDefs":[
             {
-                "aTargets": [0, 1, 2, 3, 4],
+                "aTargets": [0, 1, 2, 3, 4, 5],
                 "fnCreatedCell": function(nTd, sData, oData, iRow, iCol){
-                    var nameList = ["Rank", "Count", "Name", "Tags", "Date"];
-                    var styleList = ["text-center", "text-center", "table-text-ellipsis", "tags", "res-hidden"];
+                    var nameList = ["Rank", "Count", "Name", "Tags", "Status", "Date"];
+                    var styleList = ["text-center", "text-center", "table-text-ellipsis", "tags", "res-hidden", "res-hidden"];
                     $(nTd).attr("data-title", nameList[iCol]).addClass(styleList[iCol]);
 
                     if (iCol == 0)
@@ -51,6 +56,21 @@ $(document).ready(function()
 
                         $(nTd).html(sHTML);
                     }
+                    else if (iCol == 4)
+                    {
+                        $(nTd).html('<select data-index="' + oData["ID"] + '" class="form-control" \
+                            style="width:100%;margin-top:-4px;margin-bottom:-4px">\
+                            <option value="new">New</option>\
+                            <option value="open">Open</option>\
+                            <option value="fixed">Fixed</option>\
+                            <option value="ignore">Ignore</option>\
+                        </select>');
+                        $(nTd).children("select").val(sData.toLowerCase());
+                        $(nTd).children("select").change(function(){
+                            // Ajax to server
+                            alert("Update status(" + $(this).attr("data-index") + ", \"" + $(this).val() + "\")!");
+                        });
+                    }
                 }
             }
         ],
@@ -64,6 +84,7 @@ $(document).ready(function()
             {"bSortable": true},
             {"bSortable": false},
             {"bSortable": false},
+            {"bSortable": true},
             {"bSortable": true}
         ],
         "oLanguage":{
@@ -72,19 +93,31 @@ $(document).ready(function()
             }
         }
     } );
-    updateFilterData = function() { _dataTable.api().ajax.reload(); }
+    updateFilterData = function() {
+        _dataTable.api().ajax.reload();
 
-    $('#btnTranding').click(function() {
-        _dataTable.api().ajax.url('./test.json').load();
-    } );
-    $('#btnLatest').click(function() {
-        _dataTable.api().ajax.url('./test2.json').load();
-    } );
+        alert(' {\n\
+        "URL": "' + _dataTable.api().ajax.url() + '",\n\
+        "filterData": {\n\
+            "rank": "' + filterData["rank"] + '",\n\
+            "datestart": ' + filterData["datestart"] + ',\n\
+            "dateend": ' + filterData["dateend"] + ',\n\
+            "status": "' + filterData["status"] + '",\n\
+            "appversion": "' + filterData["appversion"] + '",\n\
+            "osversion": "' + filterData["osversion"] + '",\n\
+            "tag": "' + filterData["tag"] + '",\n\
+            "classes": "' + filterData["classes"] + '"\n\
+        }\n}');
+    };
+
+    $('#btnTranding').click(function() { _dataTable.api().ajax.url('./test3.json').load(); } );
+    $('#btnLatest').click(function() { _dataTable.api().ajax.url('./test4.json').load(); } );
 
 
     /** iCheck */
     $(function(){
-        $('.flat-red input').on('ifCreated ifClicked ifChanged ifChecked ifUnchecked ifDisabled ifEnabled ifDestroyed check ', function(event){                
+        eventCheckString = 'ifCreated ifClicked ifChanged ifChecked ifUnchecked ifDisabled ifEnabled ifDestroyed check ';
+        eventCheck = function(event){                
             if(event.type ==="ifChecked"){
                 $(this).trigger('click');  
                 $('input').iCheck('update');
@@ -97,102 +130,29 @@ $(document).ready(function()
                 console.log($(this).attr('id')+'dis');  
                 $('input').iCheck('update');
             }                                
-        }).iCheck({
+        };
+
+        $('.flat-red input').on(eventCheckString, eventCheck).iCheck({
             checkboxClass: 'icheckbox_flat-red',
             radioClass: 'iradio_flat-red'
         });
-    });
-    $(function(){
-        $('.flat-grey input').on('ifCreated ifClicked ifChanged ifChecked ifUnchecked ifDisabled ifEnabled ifDestroyed check ', function(event){                
-            if(event.type ==="ifChecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }
-            if(event.type ==="ifUnchecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }       
-            if(event.type ==="ifDisabled"){
-                console.log($(this).attr('id')+'dis');  
-                $('input').iCheck('update');
-            }                                
-        }).iCheck({
+        $('.flat-grey input').on(eventCheckString, eventCheck).iCheck({
             checkboxClass: 'icheckbox_flat-grey',
             radioClass: 'iradio_flat-grey'
         });
-    });
-    $(function(){
-        $('.flat-green input').on('ifCreated ifClicked ifChanged ifChecked ifUnchecked ifDisabled ifEnabled ifDestroyed check ', function(event){                
-            if(event.type ==="ifChecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }
-            if(event.type ==="ifUnchecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }       
-            if(event.type ==="ifDisabled"){
-                console.log($(this).attr('id')+'dis');  
-                $('input').iCheck('update');
-            }                                
-        }).iCheck({
+        $('.flat-green input').on(eventCheckString, eventCheck).iCheck({
             checkboxClass: 'icheckbox_flat-green',
             radioClass: 'iradio_flat-green'
         });
-    });
-    $(function(){
-        $('.flat-blue input').on('ifCreated ifClicked ifChanged ifChecked ifUnchecked ifDisabled ifEnabled ifDestroyed check ', function(event){                
-            if(event.type ==="ifChecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }
-            if(event.type ==="ifUnchecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }       
-            if(event.type ==="ifDisabled"){
-                console.log($(this).attr('id')+'dis');  
-                $('input').iCheck('update');
-            }                                
-        }).iCheck({
+        $('.flat-blue input').on(eventCheckString, eventCheck).iCheck({
             checkboxClass: 'icheckbox_flat-blue',
             radioClass: 'iradio_flat-blue'
         });
-    });
-    $(function(){
-        $('.flat-yellow input').on('ifCreated ifClicked ifChanged ifChecked ifUnchecked ifDisabled ifEnabled ifDestroyed check ', function(event){                
-            if(event.type ==="ifChecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }
-            if(event.type ==="ifUnchecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }       
-            if(event.type ==="ifDisabled"){
-                console.log($(this).attr('id')+'dis');  
-                $('input').iCheck('update');
-            }                                
-        }).iCheck({
+        $('.flat-yellow input').on(eventCheckString, eventCheck).iCheck({
             checkboxClass: 'icheckbox_flat-yellow',
             radioClass: 'iradio_flat-yellow'
         });
-    });
-    $(function(){
-        $('.flat-purple input').on('ifCreated ifClicked ifChanged ifChecked ifUnchecked ifDisabled ifEnabled ifDestroyed check ', function(event){                
-            if(event.type ==="ifChecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }
-            if(event.type ==="ifUnchecked"){
-                $(this).trigger('click');  
-                $('input').iCheck('update');
-            }       
-            if(event.type ==="ifDisabled"){
-                console.log($(this).attr('id')+'dis');  
-                $('input').iCheck('update');
-            }                                
-        }).iCheck({
+        $('.flat-purple input').on(eventCheckString, eventCheck).iCheck({
             checkboxClass: 'icheckbox_flat-purple',
             radioClass: 'iradio_flat-purple'
         });
@@ -252,13 +212,22 @@ $(document).ready(function()
 
                 if (checkInfo[i]["type"] === "check")
                 {
+                    var index = 0;
+
                     filterData[info["keyword"]] = "";
                     for (var j in info["list"])
                     {
                         var checkbox = info["list"][j];
                         if (checkbox.prop("checked"))
+                        {
                             filterData[info["keyword"]] += info["filterString"](checkbox) + ",";
+                            index ++;
+                        }
                     }
+
+                    // All Checked
+                    if (index >= info["list"].length)
+                        filterData[info["keyword"]] = "all";
                 }
                 else if (checkInfo[i]["type"] === "tags")
                 {
@@ -306,9 +275,6 @@ $(document).ready(function()
             }).click(checkboxCheck).attr("data-index", index);
             checkInfo[index]["list"][checkInfo[index]["list"].length] = $("#" + IDName);
 
-            filterData[checkInfo[index]["keyword"]] += checkInfo[index]["filterString"]($("#" + IDName)) + ',';
-            updateFilterData();
-
             // Checkbox Animation
             var newObj = $(this).prev();
             var lastWidth = newObj.width();
@@ -323,6 +289,11 @@ $(document).ready(function()
             // SelectBox
             $(this).val("Select");
             obj.remove();
+
+            // Request Data
+            if (filterData[checkInfo[index]["keyword"]] !== "all")
+                filterData[checkInfo[index]["keyword"]] += checkInfo[index]["filterString"]($("#" + IDName)) + ',';
+            updateFilterData();
         };
         checkboxCheck = function() {
             var obj = $(this);
@@ -348,7 +319,10 @@ $(document).ready(function()
             }
 
             if (checkCount == info["list"].length)
+            {
                 info["all"].prop("checked", true);
+                filterData[info["keyword"]] = "all";
+            }
             else
                 info["all"].prop("checked", false);
 
@@ -362,14 +336,10 @@ $(document).ready(function()
 
             if (obj.prop("checked") == false)
             {
-                var arguments = "";
                 for (var i in info["list"])
-                {
-                    arguments += info["filterString"](info["list"][i]) + ",";
                     info["list"][i].prop("checked", true);
-                }
 
-                filterData[info["keyword"]] = arguments;
+                filterData[info["keyword"]] = "all";
             }
             else
             {
@@ -381,7 +351,15 @@ $(document).ready(function()
             updateFilterData();
         };
         tagClick = function() {
-            $(this).parent().children("select").append(new Option($(this).children("span").text(), $(this).children("span").text()));
+            var index = $(this).parent().attr("data-index");
+            var nameValue = $(this).children("span").text();
+
+            // Request Data
+            filterData[checkInfo[index]["keyword"]] = filterData[checkInfo[index]["keyword"]].split(nameValue + ",").join("");
+            updateFilterData();
+
+            // Tag Animation
+            $(this).parent().children("select").append(new Option(nameValue, nameValue));
             $(this).css("white-space", "nowrap").css("overflow", "hidden").animate({
                 width: 0
             }, 350, function() {
@@ -399,13 +377,9 @@ $(document).ready(function()
                 <span>" + obj.val() + "</span>\
                 <a>x</a>\
             </span>");
-
             $(this).prev().click(tagClick);
-            
-            filterData[checkInfo[index]["keyword"]] += checkInfo[index]["filterString"]($(this).prev()) + ',';
-            updateFilterData();
 
-            // Checkbox Animation
+            // Tag Animation
             var newObj = $(this).prev();
             var lastWidth = newObj.width();
             newObj.css("width", 0);
@@ -419,6 +393,10 @@ $(document).ready(function()
             // SelectBox
             $(this).val("Select");
             obj.remove();
+
+            // Request Data
+            filterData[checkInfo[index]["keyword"]] += checkInfo[index]["filterString"]($(this).prev()) + ',';
+            updateFilterData();
         };
 
         // Initialize
@@ -494,9 +472,14 @@ $(document).ready(function()
     /** Iron Range Slider */
     $("#date-slider").ionRangeSlider({
         onFinish: function(data) {
-            filterData["datestart"] = data.fromNumber;
-            filterData["dateend"] = data.toNumber;
-            updateFilterData();
+            if (filterData["datestart"] !== data.fromNumber ||
+                filterData["dateend"] !== data.toNumber)
+            {
+                filterData["datestart"] = data.fromNumber;
+                filterData["dateend"] = data.toNumber;
+
+                updateFilterData();
+            }
         }
     });
 

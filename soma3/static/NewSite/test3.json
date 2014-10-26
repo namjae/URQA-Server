@@ -9,7 +9,8 @@
       "1": "5342",
       "2": "java.lang.RuntimeException: An error occured while executing doInBackground()<br>com.teletalkvi.core.BaseAsyncTask:62",
       "3": "EventBus",
-      "4": "2014-10-02"
+      "4": "Fixed",
+      "5": "2014-10-02"
     },
     {
       "ID": "1001",
@@ -17,7 +18,8 @@
       "1": "1899",
       "2": "java.lang.OutOfMemoryError<br>android.graphics.BitmapFactory:-2",
       "3": "",
-      "4": "2014-10-02"
+      "4": "Ignore",
+      "5": "2014-10-02"
     },
     {
       "ID": "1002",
@@ -25,7 +27,8 @@
       "1": "1191",
       "2": "java.lang.RuntimeException: An error occured while executing doInBackground()<br>com.teletalkvi.core.BaseAsyncTask:49",
       "3": "EventBus,Ignore,Youtube,ImageLoader",
-      "4": "2014-10-02"
+      "4": "Open",
+      "5": "2014-10-02"
     },
     {
       "ID": "1003",
@@ -33,7 +36,8 @@
       "1": "1087",
       "2": "java.lang.RuntimeException: Unable to create application com.teletalkvi.android.app.BaseApplication: android.database.sqlite.SQLiteDatabaseLockedException: database is locked (code 5): , while compiling: PRAGMA journal_mode<br>android.database.sqlite.SQLiteConnection:-2",
       "3": "",
-      "4": "2014-10-02"
+      "4": "New",
+      "5": "2014-10-02"
     },
     {
       "ID": "1004",
@@ -41,7 +45,8 @@
       "1": "1087",
       "2": "java.lang.RuntimeException: An error occured while executing doInBackground()<br>com.teletalkvi.android.network.timeline.async.AsyncGetComments:31",
       "3": "",
-      "4": "2014-10-02"
+      "4": "New",
+      "5": "2014-10-02"
     },
     {
       "ID": "1005",
@@ -49,7 +54,8 @@
       "1": "1038",
       "2": "java.lang.RuntimeException: An error occured while executing doInBackground()<br>java.lang.AbstractStringBuilder:94",
       "3": "",
-      "4": "2014-10-03"
+      "4": "New",
+      "5": "2014-10-03"
     },
     {
       "ID": "1006",
@@ -57,7 +63,8 @@
       "1": "1024",
       "2": "java.lang.RuntimeException: An error occured while executing doInBackground()<br>com.teletalkvi.android.network.timeline.async.AsyncGetTimelineContents:54",
       "3": "Ignore",
-      "4": "2014-10-03"
+      "4": "New",
+      "5": "2014-10-03"
     },
     {
       "ID": "1007",
@@ -65,7 +72,8 @@
       "1": "639",
       "2": "java.lang.NullPointerException<br>com.teletalkvi.core.adapter.BaseListAdapter:71",
       "3": "",
-      "4": "2014-10-03"
+      "4": "New",
+      "5": "2014-10-03"
     },
     {
       "ID": "1008",
@@ -73,7 +81,8 @@
       "1": "431",
       "2": "java.lang.OutOfMemoryError<br>java.lang.AbstractStringBuilder:94",
       "3": "",
-      "4": "2014-10-02"
+      "4": "New",
+      "5": "2014-10-02"
     },
     {
       "ID": "1009",
@@ -81,7 +90,8 @@
       "1": "349",
       "2": "java.lang.RuntimeException: Unable to create application com.teletalkvi.android.app.BaseApplication: android.database.sqlite.SQLiteException: Can't downgrade database from version 7 to 3<br>android.database.sqlite.SQLiteOpenHelper:361",
       "3": "",
-      "4": "2014-10-03"
+      "4": "New",
+      "5": "2014-10-03"
     }
   ]
 }
