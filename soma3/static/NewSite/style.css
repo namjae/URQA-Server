@@ -26,8 +26,8 @@ table .table-text-ellipsis > div
 	text-overflow: ellipsis;
 }
 
-.label-unhandler { background-color: #E67A77; }
-.label-critical { background-color: #D9DD81; }
+.label-unhandler { background-color: #D9DD81; }
+.label-critical { background-color: #E67A77; }
 .label-major { background-color: #79D1CF; }
 .label-minor { background-color: #95D7BB; }
 .label-native { background-color: #4D5360; }

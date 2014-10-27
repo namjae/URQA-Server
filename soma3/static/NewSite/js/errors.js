@@ -248,11 +248,11 @@ $(document).ready(function()
             var index = $(this).attr("data-index");
             var obj = $(this).children("option:selected");
             var IDName = checkInfo[index]["prefix"] + obj.val().split(".").join("_");
-            $(this).before("<div class=\"flat-green\" style=\"white-space:nowrap;overflow:hidden\">\
-                <div class=\"radio\">\
-                    <input id=\"" + IDName + "\" type=\"checkbox\" checked>\
-                    <label>" + obj.val() + "</label>\
-                </div>\
+            $(this).before("<div class=\"flat-green\" style=\"white-space:nowrap;overflow:hidden\">\n\
+                <div class=\"radio\">\n\
+                    <input id=\"" + IDName + "\" type=\"checkbox\" checked>\n\
+                    <label>" + obj.val() + "</label>\n\
+                </div>\n\
             </div>");
 
             // Add Checkbox Event
@@ -373,9 +373,9 @@ $(document).ready(function()
             // Add Checkbox
             var index = $(this).parent().attr("data-index");
             var obj = $(this).children("option:selected");
-            $(this).before("<span class=\"tags\" style=\"white-space:nowrap;overflow:hidden\">\
-                <span>" + obj.val() + "</span>\
-                <a>x</a>\
+            $(this).before("<span class=\"tags\" style=\"white-space:nowrap;overflow:hidden\">\n\
+                <span>" + obj.val() + "</span>\n\
+                <a>x</a>\n\
             </span>");
             $(this).prev().click(tagClick);
 
