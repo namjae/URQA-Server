@@ -106,7 +106,8 @@ def chartdata_sbav(request,apikey):
             ratioappversion.append(str(pl.appversion))
         sum = sum + pl.total
         if LooseVersion(recentVersion) < LooseVersion(pl.appversion):
-            recentVersion = pl.appversion
+            if not pl.appversion == "unknown":
+                recentVersion = pl.appversion
         if sum < ratio:
             ratioappversion.append(str(pl.appversion))
         else:
@@ -114,7 +115,7 @@ def chartdata_sbav(request,apikey):
 
     #check recent version is exist in array
     if not recentVersion in ratioappversion:
-        ratioappversion.append(recentVersion)
+        ratioappversion.append(str(recentVersion))
 
     ratioappversion = tuple(ratioappversion)
 
@@ -236,14 +237,15 @@ def chartdata_ebav(request,apikey):
             ratioappversion.append(str(pl.appversion))
         sum = sum + pl.total
         if LooseVersion(recentVersion) < LooseVersion(pl.appversion):
-            recentVersion = pl.appversion
+            if not pl.appversion == "unknown":
+                recentVersion = pl.appversion
         if sum < ratio:
                 ratioappversion.append(str(pl.appversion))
         else:
             othersNumber = othersNumber + pl.total
     #check recent version is exist in array
     if not recentVersion in ratioappversion:
-        ratioappversion.append(recentVersion)
+        ratioappversion.append(str(recentVersion))
 
     ratioappversion = tuple(ratioappversion)
 
