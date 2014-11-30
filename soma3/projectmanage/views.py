@@ -531,21 +531,25 @@ def projects(request):
     past, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
 
     if idxProjectList:
-        sql = "SELECT B.pid AS PID, SUM(B.numofinstances) AS COUNT FROM ERRORS B"
-        sql = sql + "WHERE B.pid in %(pidinput)s "
-        sql = sql + "and B.status in (0,1) "
-        sql = sql + "and B.lastdate > %(pasttime)s"
-        params = {'pidinput': "(" + ",".join(idxProjectList)+")" ,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+        pidList = ", ".join(str(v) for v in idxProjectList)
+        sql = "SELECT B.pid AS pid, SUM(B.numofinstances) AS count FROM errors B "
+        sql = sql + "WHERE B.pid IN ( " + pidList +") "
+        sql = sql + "and B.status IN (0,1) "
+        sql = sql + "and B.lastdate > %(pasttime)s "
+        sql = sql + "GROUP BY B.pid "
+        params = {'pidinput': "(" + ",".join(str(v) for v in idxProjectList)+")" ,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
         places = LoginErrorCountModel.objects.raw(sql, params)
         for idx,pl in enumerate(places):
             placesDict[pl.pid]  = pl.count;
 
-        sql = "SELECT app.pid AS PID ,SUM(app.appruncount) AS COUNT FROM appruncount2 app"
-        sql = sql + "WHERE app.pid in %(pidinput)s AND"
-        sql = sql + "app.datetime > %(pasttime)s"
+        sql = "SELECT app.pid AS pid ,SUM(app.appruncount) AS count FROM appruncount2 app "
+        sql = sql + "WHERE app.pid in (" + pidList + ") AND "
+        sql = sql + "app.datetime > %(pasttime)s "
+        sql = sql + "GROUP BY app.pid"
         apprunCount = LoginApprunCount.objects.raw(sql, params);
         for idx, app in enumerate(apprunCount):
             apprunDit[app.pid]  = app.count;
+
 
 
     for idx, project in enumerate(MergeProjectElements):
@@ -556,7 +560,7 @@ def projects(request):
 
         instanceCount = 0;
         if placesDict.has_key(project.pid):
-            instanceCount = placesDict.get(project.pid)
+            instanceCount = instanceCount + placesDict[project.pid]
 
         if request.user.is_superuser and instanceCount == 0:
             continue
@@ -571,10 +575,12 @@ def projects(request):
 
         #프로젝트 DAU대비 Error수를 측정한다.
         projectdata['count'] =  instanceCount
+        convertData = float(instanceCount)
         if not apprunCount:
             errorRate = 0
         else:
-            errorRate = int(instanceCount * 100.0 / apprunCount)
+            errorRate = int(convertData * 100.0 / float(apprunCount))
+
 
         #Error발생 비율에 따라 Project의 컬러를 설정한다.
         projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
