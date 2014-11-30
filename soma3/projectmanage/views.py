@@ -537,14 +537,14 @@ def projects(request):
         sql = sql + "and B.lastdate > %(pasttime)s"
         params = {'pidinput': "(" + ",".join(idxProjectList)+")" ,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
         places = LoginErrorCountModel.objects.raw(sql, params)
-        for idx,pl in enumerate(places)
+        for idx,pl in enumerate(places):
             placesDict[pl.pid]  = pl.count;
 
         sql = "SELECT app.pid AS PID ,SUM(app.appruncount) AS COUNT FROM appruncount2 app"
         sql = sql + "WHERE app.pid in %(pidinput)s AND"
         sql = sql + "app.datetime > %(pasttime)s"
         apprunCount = LoginApprunCount.objects.raw(sql, params);
-        for idx, app in enumerate(apprunCount)
+        for idx, app in enumerate(apprunCount):
             apprunDit[app.pid]  = app.count;
 
 
