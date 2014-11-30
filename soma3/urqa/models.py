@@ -387,3 +387,11 @@ class ErbvApps(models.Model):
 class TotalSession(models.Model):
     appversion = models.CharField(max_length=255, primary_key=True)
     total = models.IntegerField(blank=True, null=True)
+
+class LoginErrorCountModel(models.Model):
+    pid = models.IntegerField(primary_key=True)
+    count = models.IntegerField(blank=True, null=True)
+
+class LoginApprunCount(models.Model):
+    pid = models.IntegerField(primary_key=True)
+    count = models.IntegerField(blank=True, null=True)

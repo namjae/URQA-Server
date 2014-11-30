@@ -59,6 +59,8 @@ from urqa.models import Eventpaths
 from urqa.models import Proguardmap
 from urqa.models import ErrorsbyApp
 from urqa.models import InstanceCountModel
+from urqa.models import LoginErrorCountModel
+from urqa.models import LoginApprunCount
 
 #from utility import getTemplatePath
 from utility import getTimeRange
@@ -520,6 +522,33 @@ def projects(request):
 
 
     #print MergeProjectElements
+    idxProjectList = [];
+    placesDict = {};
+    apprunDit = {};
+    for idx, project in enumerate(MergeProjectElements):
+        idxProjectList.append(project.pid);
+    
+    past, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
+
+    if idxProjectList:
+        pidList = ", ".join(str(v) for v in idxProjectList)
+        sql = "SELECT B.pid AS pid, SUM(B.numofinstances) AS count FROM errors B "
+        sql = sql + "WHERE B.pid IN ( " + pidList +") "
+        sql = sql + "and B.status IN (0,1) "
+        sql = sql + "and B.lastdate > %(pasttime)s "
+        sql = sql + "GROUP BY B.pid "
+        params = {'pidinput': "(" + ",".join(str(v) for v in idxProjectList)+")" ,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+        places = LoginErrorCountModel.objects.raw(sql, params)
+        for idx,pl in enumerate(places):
+            placesDict[pl.pid]  = pl.count;
+
+        sql = "SELECT app.pid AS pid ,SUM(app.appruncount) AS count FROM appruncount2 app "
+        sql = sql + "WHERE app.pid in (" + pidList + ") AND "
+        sql = sql + "app.datetime > %(pasttime)s "
+        sql = sql + "GROUP BY app.pid"
+        apprunCount = LoginApprunCount.objects.raw(sql, params);
+        for idx, app in enumerate(apprunCount):
+            apprunDit[app.pid]  = app.count;
 
 
 
@@ -528,42 +557,30 @@ def projects(request):
         projectdata['apikey'] = project.apikey
         #stage color 구하기
         stagetxt = get_dict_value_matchin_key(stagedata,project.stage)
-        #projectdata['color'] = stagecolordata.get(stagetxt)
 
-        past, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
-
-        #Project에서 최근 7일간 Error의 수를 얻어온다.
-        sql = "select B.iderror, count(*) as count "
-        sql = sql + "from instances A, errors B "
-        sql = sql + "where A.iderror = B.iderror "
-        sql = sql + "and B.pid = %(pidinput)s "
-        sql = sql + "and B.status in (0,1) "
-        sql = sql + "and A.datetime > %(pasttime)s"
-
-        params = {'pidinput':project.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
-
-        places = InstanceCountModel.objects.raw(sql, params)
-        #print >> sys.stderr, places
         instanceCount = 0;
-        for idx, pl in enumerate(places):
-            #print >> sys.stderr, pl, pl.count
-            instanceCount = instanceCount + pl.count
+        if placesDict.has_key(project.pid):
+            instanceCount = instanceCount + placesDict[project.pid]
 
         if request.user.is_superuser and instanceCount == 0:
             continue
 
         #Project에서 사용자의 수를 얻어온다
-        apprunCount = Appruncount2.objects.filter(pid=project.pid,datetime__range = (past, today)).aggregate(apprunCount=Sum('appruncount'))['apprunCount']
+        if placesDict.has_key(project.pid):
+            apprunCount = apprunDit.get(project.pid)
+
         if apprunCount == 0 or apprunCount == None:
             apprunCount = 1;
 
 
         #프로젝트 DAU대비 Error수를 측정한다.
         projectdata['count'] =  instanceCount
+        convertData = float(instanceCount)
         if not apprunCount:
             errorRate = 0
         else:
-            errorRate = int(instanceCount * 100.0 / apprunCount)
+            errorRate = int(convertData * 100.0 / float(apprunCount))
+
 
         #Error발생 비율에 따라 Project의 컬러를 설정한다.
         projectdata['color'] = ErrorRate_for_color( countcolordata , errorRate )
