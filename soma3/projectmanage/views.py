@@ -532,10 +532,10 @@ def projects(request):
 
     if idxProjectList:
         pidList = ", ".join(str(v) for v in idxProjectList)
-        sql = "SELECT B.pid AS pid, SUM(B.numofinstances) AS count FROM errors B "
-        sql = sql + "WHERE B.pid IN ( " + pidList +") "
+        sql = "SELECT B.pid AS pid, count(*) AS count FROM errors B JOIN instances A ON A.iderror = B.iderror "
+        sql = sql + "where B.pid IN ( " + pidList +") "
         sql = sql + "and B.status IN (0,1) "
-        sql = sql + "and B.lastdate > %(pasttime)s "
+        sql = sql + "and A.datetime > %(pasttime)s "
         sql = sql + "GROUP BY B.pid "
         params = {'pidinput': "(" + ",".join(str(v) for v in idxProjectList)+")" ,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
         places = LoginErrorCountModel.objects.raw(sql, params)
