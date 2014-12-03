@@ -8,13 +8,16 @@
     <meta name="author" content="ThemeBucket">
     <link rel="shortcut icon" href="images/favicon.png">
 
-    <title>Morris</title>
+    <title>Vector map</title>
 
     <!--Core CSS -->
     <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-reset.css" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
-<link href="js/c3-chart/c3.css" rel="stylesheet"/>
+
+    <!--C3 Chart-->
+    <!-- <link href="js/c3-chart/c3.css" rel="stylesheet"/> -->
+
     <!--Morris Chart CSS -->
     <link rel="stylesheet" href="js/morris-chart/morris.css">
 
@@ -344,25 +347,25 @@
                 </ul>
             </li>
             <li class="sub-menu">
-                <a href="javascript:;" class="active">
+                <a href="javascript:;">
                     <i class=" fa fa-bar-chart-o"></i>
                     <span>Charts</span>
                 </a>
                 <ul class="sub">
-                    <li class="active"><a href="morris.html">Morris</a></li>
+                    <li><a href="morris.html">Morris</a></li>
                     <li><a href="chartjs.html">Chartjs</a></li>
                     <li><a href="flot_chart.html">Flot Charts</a></li>
                     <li><a href="c3_chart.html">C3 Chart</a></li>
                 </ul>
             </li>
             <li class="sub-menu">
-                <a href="javascript:;">
+                <a href="javascript:;" class="active">
                     <i class=" fa fa-bar-chart-o"></i>
                     <span>Maps</span>
                 </a>
                 <ul class="sub">
                     <li><a href="google_map.html">Google Map</a></li>
-                    <li><a href="vector_map.html">Vector Map</a></li>
+                    <li class="active"><a href="vector_map.html">Vector Map</a></li>
                 </ul>
             </li>
             <li class="sub-menu">
@@ -397,28 +400,319 @@
     <section id="main-content">
         <section class="wrapper">
         <!-- page start-->
-            <div class="row">
-                <div class="col-sm-12">
-                    <section class="panel">
-                        <header class="panel-heading">
-                            Customize Graph
-                        <span class="tools pull-right">
-                            <a href="javascript:;" class="fa fa-chevron-down"></a>
-                            <a href="javascript:;" class="fa fa-cog"></a>
-                            <a href="javascript:;" class="fa fa-times"></a>
-                         </span>
-                        </header>
-                        <div class="panel-body">
-                            <div id="graph-area"></div>
-                        </div>
-                    </section>
-                </div>
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="breadcrumb">
+                    <li><a href="projects.html"><i class="fa fa-home"></i> Home</a></li>
+                    <li><a href="#">텔레톡비-v2</a></li>
+                    <li class="active">Statistics</li>
+                </ul>
             </div>
+        </div>
+
+        <div id="statistics-chart-area" class="row">
+            <div class="col-md-4">
+                <section class="panel">
+                    <div class="panel-body">
+                        <div id="graph-bar"></div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-4">
+                <section class="panel">
+                    <div class="panel-body">
+                        <div id="graph-line"></div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-4">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Error Details
+                        <span class="tools pull-right">
+                            <a href="javascript:;" class="fa fa-chevron-up"></a>
+                        </span>
+                    </header>
+                    <div class="panel-body" style="display:none">
+                        <div class="row">
+                            <!-- App Version -->
+                            <div class="progress-table col-sm-12">
+                                <label>App Versions</label>
+                                <div class="title-body">
+                                    <div class="col-xs-3 text-small">Version</div>
+                                    <div class="col-xs-9 text-small">Percentage</div>
+                                </div>
+                                <div class="content-body">
+                                    <div class="content-row">
+                                        <p>2.0.6</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 100%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
+                                                    <span class="sr-only">100% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>100%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- OS Version -->
+                            <div class="progress-table col-sm-12">
+                                <label>OS Version</label>
+                                <div class="title-body">
+                                    <div class="col-xs-3 text-small">Version</div>
+                                    <div class="col-xs-9 text-small">Percentage</div>
+                                </div>
+                                <div class="content-body">
+                                    <div class="content-row">
+                                        <p>4.4.2</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 67%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
+                                                    <span class="sr-only">67% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>67%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>4.1.2</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 17%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-warning">
+                                                    <span class="sr-only">17% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>17%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>4.3</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 7%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">7% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>7%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>4.2.2</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">4% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>4%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>4.0.4</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">3% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>3%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>Others</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 2%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">2% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>2%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Device -->
+                            <div class="progress-table col-sm-12">
+                                <label>Device</label>
+                                <div class="title-body">
+                                    <div class="col-xs-3 text-small">Name</div>
+                                    <div class="col-xs-9 text-small">Percentage</div>
+                                </div>
+                                <div class="content-body">
+                                    <div class="content-row">
+                                        <p>SHV-E250S</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 6%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
+                                                    <span class="sr-only">6% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>6%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>SM-N900S</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-warning">
+                                                    <span class="sr-only">4% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>4%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>SHV-E250K</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">4% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>4%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>SM-N900K</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">4% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>4%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>SM-N900L</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">4% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>4%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>Others</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 77%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">77% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>77%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Country -->
+                            <div class="progress-table col-sm-12">
+                                <label>Country</label>
+                                <div class="title-body">
+                                    <div class="col-xs-3 text-small">Country</div>
+                                    <div class="col-xs-9 text-small">Percentage</div>
+                                </div>
+                                <div class="content-body">
+                                    <div class="content-row">
+                                        <p>KR</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 98%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
+                                                    <span class="sr-only">98% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>98%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>US</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 0.68%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-warning">
+                                                    <span class="sr-only">0.68% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>0.68%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>JP</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 0.27%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">0.27% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>0.27%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>GP</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 0.18%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">0.18% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>0.18%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>TW</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 0.12%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">0.12% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>0.12%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>Others</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 0.72%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">0.72% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>0.72%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-sm-12">
                 <section class="panel">
                     <header class="panel-heading">
-                       Bar Chart
+                        WORLD MAP
                         <span class="tools pull-right">
                             <a href="javascript:;" class="fa fa-chevron-down"></a>
                             <a href="javascript:;" class="fa fa-cog"></a>
@@ -426,60 +720,73 @@
                          </span>
                     </header>
                     <div class="panel-body">
-                        <div id="graph-bar"></div>
+                        <div id="world-vmap" style="width:100%; height: 400px;"></div>
+
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-12" style="margin-top: -20px;">
+                <section class="panel">
+                    <div class="panel-body">
+                        <div class="chartJS">
+                            <canvas id="bar-chart-js" height="250" width="800" ></canvas>
+                        </div>
                     </div>
                 </section>
             </div>
         </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <section class="panel">
-                        <header class="panel-heading">
-                            Line Chart
-                        <span class="tools pull-right">
-                            <a href="javascript:;" class="fa fa-chevron-down"></a>
-                            <a href="javascript:;" class="fa fa-cog"></a>
-                            <a href="javascript:;" class="fa fa-times"></a>
-                         </span>
-                        </header>
-                        <div class="panel-body">
-                            <div id="graph-line"></div>
-                        </div>
-                    </section>
-                </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Donut Chart
+                    <span class="tools pull-right">
+                        <a href="javascript:;" class="fa fa-chevron-down"></a>
+                        <a href="javascript:;" class="fa fa-cog"></a>
+                        <a href="javascript:;" class="fa fa-times"></a>
+                     </span>
+                    </header>
+                    <div class="panel-body">
+                        <div id="graph-donut"></div>
+                    </div>
+                </section>
             </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <section class="panel">
-                        <header class="panel-heading">
-                            Area Chart
-                        <span class="tools pull-right">
-                            <a href="javascript:;" class="fa fa-chevron-down"></a>
-                            <a href="javascript:;" class="fa fa-cog"></a>
-                            <a href="javascript:;" class="fa fa-times"></a>
-                         </span>
-                        </header>
-                        <div class="panel-body">
-                            <div id="graph-area-line"></div>
-                        </div>
-                    </section>
-                </div>
-                <div class="col-sm-6">
-                    <section class="panel">
-                        <header class="panel-heading">
-                            Donut Chart
-                        <span class="tools pull-right">
-                            <a href="javascript:;" class="fa fa-chevron-down"></a>
-                            <a href="javascript:;" class="fa fa-cog"></a>
-                            <a href="javascript:;" class="fa fa-times"></a>
-                         </span>
-                        </header>
-                        <div class="panel-body">
-                            <div id="graph-donut"></div>
-                        </div>
-                    </section>
-                </div>
+            <div class="col-sm-6" style="display:none;">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Area Chart
+                    <span class="tools pull-right">
+                        <a href="javascript:;" class="fa fa-chevron-down"></a>
+                        <a href="javascript:;" class="fa fa-cog"></a>
+                        <a href="javascript:;" class="fa fa-times"></a>
+                     </span>
+                    </header>
+                    <div class="panel-body">
+                        <div id="graph-area-line"></div>
+                    </div>
+                </section>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Roated Chart
+                    <span class="tools pull-right">
+                        <a href="javascript:;" class="fa fa-chevron-down"></a>
+                        <a href="javascript:;" class="fa fa-cog"></a>
+                        <a href="javascript:;" class="fa fa-times"></a>
+                    </span>
+                    </header>
+                    <div class="panel-body">
+                        <div class="chart">
+                            <div id="roated-chart"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
 
         <!-- page end-->
         </section>
@@ -534,9 +841,9 @@
                 </div>
                 <div class="side-mini-graph">
                     <div class="p-collection">
-						<span class="pc-epie-chart" data-percent="45">
-						<span class="percent"></span>
-						</span>
+                        <span class="pc-epie-chart" data-percent="45">
+                        <span class="percent"></span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -796,5 +1103,6 @@
         normalizeFunction: 'polynomial'
     });
 </script>
+
 </body>
 </html>

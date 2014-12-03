@@ -869,7 +869,7 @@
 
             selectChart = d3.select(__bindto);
             if (selectChart.empty()) {
-                window.alert('No bind element found. Check the selector specified by "bindto" and existance of that element. Default "bindto" is "#chart".');
+                //window.alert('No bind element found. Check the selector specified by "bindto" and existance of that element. Default "bindto" is "#chart".');
                 return;
             }
 

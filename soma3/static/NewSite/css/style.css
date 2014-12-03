@@ -4493,7 +4493,7 @@ tr.odd.gradeX td.sorting_1,tr.even.gradeX td.sorting_1,table.display tr.even.gra
 }
 /*tags input*/
 .tagsinput {
-    height:40px !important;
+    /*height:40px !important;*/
     min-height:41px !important;
     margin:0 !important;
     overflow:auto !important;

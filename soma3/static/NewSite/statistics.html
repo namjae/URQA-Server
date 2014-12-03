@@ -3,54 +3,42 @@
 <head>
     <meta charset="utf-8">
 
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="ThemeBucket">
     <link rel="shortcut icon" href="images/favicon.png">
 
-    <title>UrQA :: Dashboard</title>
-    
+    <title>Statistics</title>
+
     <!--Core CSS -->
     <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-reset.css" rel="stylesheet">
-    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
 
-    <!--icheck-->
-    <link href="js/iCheck/skins/flat/grey.css" rel="stylesheet">
-    <link href="js/iCheck/skins/flat/red.css" rel="stylesheet">
-    <link href="js/iCheck/skins/flat/green.css" rel="stylesheet">
-    <link href="js/iCheck/skins/flat/blue.css" rel="stylesheet">
-    <link href="js/iCheck/skins/flat/yellow.css" rel="stylesheet">
-    <link href="js/iCheck/skins/flat/purple.css" rel="stylesheet">
-    
-    <!--iron slider-->
-    <link href="js/ion.rangeSlider-1.8.2/css/ion.rangeSlider.css" rel="stylesheet" />
-    <link href="js/ion.rangeSlider-1.8.2/css/ion.rangeSlider.skinFlat.css" rel="stylesheet"/>
+    <!--C3 Chart-->
+    <!-- <link href="js/c3-chart/c3.css" rel="stylesheet"/> -->
 
-    <!--dynamic table-->
-    <link href="js/advanced-datatable/css/jquery.dataTables.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="js/data-tables/DT_bootstrap.css" />
-
-    <!--responsive table-->
-    <link href="css/table-responsive.css" rel="stylesheet" />
+    <!--Morris Chart CSS -->
+    <link rel="stylesheet" href="js/morris-chart/morris.css">
 
     <!-- Custom styles for this template -->
     <link href="css/style.css" rel="stylesheet">
-    <link href="css/style-responsive.css" rel="stylesheet"/>
-    <link href="style.css" rel="stylesheet">
+    <link href="css/style-responsive.css" rel="stylesheet" />
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]>
     <script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
 </head>
+
 <body>
-<section id="container">
+
+<section id="container" >
 <!--header start-->
 <header class="header fixed-top clearfix">
 <!--logo start-->
@@ -198,289 +186,311 @@
     </div>
 </aside>
 <!--sidebar end-->
-
-<!--main content start-->
-<section id="main-content">
-    <section id="errors" class="wrapper">
-        <!-- page start -->
-
+    <!--main content start-->
+    <section id="main-content">
+        <section class="wrapper">
+        <!-- page start-->
         <div class="row">
             <div class="col-md-12">
-                <!--breadcrumbs start -->
                 <ul class="breadcrumb">
                     <li><a href="projects.html"><i class="fa fa-home"></i> Home</a></li>
                     <li><a href="#">텔레톡비-v2</a></li>
-                    <li class="active">Errors</li>
+                    <li class="active">Statistics</li>
                 </ul>
-                <!--breadcrumbs end -->
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-12">
+        <div id="statistics-chart-area" class="row">
+            <div class="col-md-4">
+                <section class="panel">
+                    <div class="panel-body">
+                        <div id="graph-bar"></div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-4">
+                <section class="panel">
+                    <div class="panel-body">
+                        <div id="graph-line"></div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-4">
                 <section class="panel">
                     <header class="panel-heading">
-                        Filter
+                        Error Details
                         <span class="tools pull-right">
-                            <a href="javascript:;" class="fa fa-chevron-up" onclick="$(this).ionRangeSlider('update');"></a>
+                            <a href="javascript:;" class="fa fa-chevron-up"></a>
                         </span>
                     </header>
                     <div class="panel-body" style="display:none">
                         <div class="row">
-                            <div class="col-md-12">
-                                <form class="form-horizontal bucket-form" method="get">
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">Rank</label>
+                            <!-- App Version -->
+                            <div class="progress-table col-sm-12">
+                                <label>App Versions</label>
+                                <div class="title-body">
+                                    <div class="col-xs-3 text-small">Version</div>
+                                    <div class="col-xs-9 text-small">Percentage</div>
+                                </div>
+                                <div class="content-body">
+                                    <div class="content-row">
+                                        <p>2.0.6</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 100%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
+                                                    <span class="sr-only">100% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>100%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                                        <div class="col-sm-9 icheck">
-                                            <div class="flat-red">
-                                                <div class="radio" style="padding-left:0">
-                                                    <input id="check-rank-all" type="checkbox" checked>
-                                                    <label>All</label>
+                            <!-- OS Version -->
+                            <div class="progress-table col-sm-12">
+                                <label>OS Version</label>
+                                <div class="title-body">
+                                    <div class="col-xs-3 text-small">Version</div>
+                                    <div class="col-xs-9 text-small">Percentage</div>
+                                </div>
+                                <div class="content-body">
+                                    <div class="content-row">
+                                        <p>4.4.2</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 67%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
+                                                    <span class="sr-only">67% Complete</span>
                                                 </div>
                                             </div>
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-rank-unhandled" type="checkbox" checked>
-                                                    <label>Unhandled</label>
-                                                </div>
-                                            </div>
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-rank-native" type="checkbox" checked>
-                                                    <label>Native</label>
-                                                </div>
-                                            </div>
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-rank-critical" type="checkbox" checked>
-                                                    <label>Critical</label>
-                                                </div>
-                                            </div>
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-rank-major" type="checkbox" checked>
-                                                    <label>Major</label>
-                                                </div>
-                                            </div>
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-rank-minor" type="checkbox" checked>
-                                                    <label>Minor</label>
-                                                </div>
-                                            </div>
+                                            <div>67%</div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">Date</label>
-                                        <div class="col-sm-9">
-                                            <input id="date-slider" type="text" value="1;365" data-type="double" data-step="1" data-postfix=" day" data-from="1" data-to="1" data-hasgrid="true" />
+                                    <div class="content-row">
+                                        <p>4.1.2</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 17%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-warning">
+                                                    <span class="sr-only">17% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>17%</div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">Status</label>
-                                        <div class="col-sm-9 icheck">
-                                            <div class="flat-red">
-                                                <div class="radio" style="padding-left:0">
-                                                    <input id="check-status-all" type="checkbox" checked>
-                                                    <label>All</label>
+                                    <div class="content-row">
+                                        <p>4.3</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 7%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">7% Complete</span>
                                                 </div>
                                             </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-status-new" type="checkbox" checked>
-                                                    <label>New</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-status-open" type="checkbox" checked>
-                                                    <label>Open</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-status-fixed" type="checkbox" checked>
-                                                    <label>Fixed</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-status-ignore" type="checkbox" checked>
-                                                    <label>Ignore</label>
-                                                </div>
-                                            </div>
+                                            <div>7%</div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">APP Version</label>
-                                        <div class="col-sm-9 icheck">
-                                            <div class="flat-red">
-                                                <div class="radio" style="padding-left:0">
-                                                    <input id="check-app-all" type="checkbox" checked>
-                                                    <label>All</label>
+                                    <div class="content-row">
+                                        <p>4.2.2</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">4% Complete</span>
                                                 </div>
                                             </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-app-2_0_7" type="checkbox" checked>
-                                                    <label>2.0.7</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-app-2_0_6" type="checkbox" checked>
-                                                    <label>2.0.6</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-app-2_0_5" type="checkbox" checked>
-                                                    <label>2.0.5</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-app-2_0_3" type="checkbox" checked>
-                                                    <label>2.0.3</label>
-                                                </div>
-                                            </div>
-
-                                            <select id="select-app" class="form-control" style="width:100px">
-                                                <option>Select</option>
-                                                <option>2.0.2</option>
-                                                <option>2.0.1</option>
-                                                <option>2.0.0</option>
-                                                <option>1.9.8</option>
-                                                <option>1.9.6</option>
-                                            </select>
+                                            <div>4%</div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">OS Version</label>
-                                        <div class="col-sm-9 icheck">
-                                            <div class="flat-red">
-                                                <div class="radio" style="padding-left:0">
-                                                    <input id="check-os-all" type="checkbox" checked>
-                                                    <label>All</label>
+                                    <div class="content-row">
+                                        <p>4.0.4</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">3% Complete</span>
                                                 </div>
                                             </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-os-4_4" type="checkbox" checked>
-                                                    <label>4.4</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-os-4_1" type="checkbox" checked>
-                                                    <label>4.1</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-os-4_3" type="checkbox" checked>
-                                                    <label>4.3</label>
-                                                </div>
-                                            </div>
-
-                                            <div class="flat-green">
-                                                <div class="radio">
-                                                    <input id="check-os-4_2" type="checkbox" checked>
-                                                    <label>4.2</label>
-                                                </div>
-                                            </div>
-
-                                            <select id="select-os" class="form-control" style="width:100px">
-                                                <option>Select</option>
-                                                <option>4.0.1</option>
-                                                <option>3.2.6</option>
-                                                <option>3.2.2</option>
-                                                <option>3.2</option>
-                                                <option>2.3.7</option>
-                                                <option>2.3.2</option>
-                                                <option>2.3.1</option>
-                                                <option>2.2</option>
-                                                <option>2.0.1</option>
-                                            </select>
+                                            <div>3%</div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">Tag</label>
-                                        <div class="col-sm-9">
-                                            <div id="tagsearch" class="tagsearch">
-                                                <select class="form-control" style="width:100px">
-                                                    <option>Select</option>
-                                                    <option>EventBus</option>
-                                                    <option>Ignore</option>
-                                                    <option>ImageLoader</option>
-                                                    <option>Youtube</option>
-                                                </select>
+                                    <div class="content-row">
+                                        <p>Others</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 2%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">2% Complete</span>
+                                                </div>
                                             </div>
+                                            <div>2%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Device -->
+                            <div class="progress-table col-sm-12">
+                                <label>Device</label>
+                                <div class="title-body">
+                                    <div class="col-xs-3 text-small">Name</div>
+                                    <div class="col-xs-9 text-small">Percentage</div>
+                                </div>
+                                <div class="content-body">
+                                    <div class="content-row">
+                                        <p>SHV-E250S</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 6%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
+                                                    <span class="sr-only">6% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>6%</div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">Class</label>
-                                        <div class="col-sm-9">
-                                            <div id="classsearch" class="tagsearch">
-                                                <select class="form-control" style="width:100px">
-                                                    <option>Select</option>
-                                                    <option>android.app.LoadedApk</option>
-                                                    <option>android.database.sqlite.SQLiteConnection</option>
-                                                    <option>android.database.sqlite.SQLiteDatabase</option>
-                                                    <option>android.database.sqlite.SQLiteOpenHelper</option>
-                                                    <option>android.database.sqlite.SQLiteSession</option>
-                                                    <option>android.graphics.Bitmap</option>
-                                                    <option>android.graphics.BitmapFactory</option>
-                                                    <option>android.os.BinderProxy</option>
-                                                    <option>android.os.Parcel</option>
-                                                    <option>android.view.LayoutInflater</option>
-                                                    <option>android.view.ViewGroup</option>
-                                                    <option>android.view.LayoutInflater</option>
-                                                    <option>android.view.ViewGroup</option>
-                                                    <option>android.view.ViewRootImpl</option>
-                                                    <option>com.google.android.youtube.api.jar.client.RemoteEmbeddedPlayer</option>
-                                                    <option>com.google.android.youtube.player.internal.r</option>
-                                                    <option>com.teletalkvi.android.app.detail.header.DetailContents</option>
-                                                    <option>com.teletalkvi.android.app.detail.header.DetailShare</option>
-                                                    <option>com.teletalkvi.android.app.home.main.MainListAdapter$2</option>
-                                                    <option>com.teletalkvi.android.app.home.program.filter.ProgramCategories</option>
-                                                    <option>com.teletalkvi.android.app.timeline.TimelineActivity</option>
-                                                    <option>com.teletalkvi.android.app.view.ListThumbView</option>
-                                                    <option>com.teletalkvi.android.network.timeline.async.AsyncGetComments</option>
-                                                    <option>com.teletalkvi.android.network.timeline.async.AsyncGetTimelineContents</option>
-                                                    <option>com.teletalkvi.core.adapter.BaseListAdapter</option>
-                                                    <option>com.teletalkvi.core.BaseAsyncTask</option>
-                                                    <option>com.teletalkvi.core.util.NotifyUtils</option>
-                                                    <option>java.io.BufferedReader</option>
-                                                    <option>java.lang.AbstractStringBuilder</option>
-                                                    <option>java.lang.reflect.Constructor</option>
-                                                    <option>java.lang.String</option>
-                                                    <option>java.nio.HeapByteBuffer</option>
-                                                    <option>libcore.reflect.TypeVariableImpl</option>
-                                                    <option>org.apache.http.util.ByteArrayBuffer</option>
-                                                </select>
+                                    <div class="content-row">
+                                        <p>SM-N900S</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-warning">
+                                                    <span class="sr-only">4% Complete</span>
+                                                </div>
                                             </div>
+                                            <div>4%</div>
                                         </div>
                                     </div>
-                                </form>
+
+                                    <div class="content-row">
+                                        <p>SHV-E250K</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">4% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>4%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>SM-N900K</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">4% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>4%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>SM-N900L</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">4% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>4%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>Others</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 77%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">77% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>77%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Country -->
+                            <div class="progress-table col-sm-12">
+                                <label>Country</label>
+                                <div class="title-body">
+                                    <div class="col-xs-3 text-small">Country</div>
+                                    <div class="col-xs-9 text-small">Percentage</div>
+                                </div>
+                                <div class="content-body">
+                                    <div class="content-row">
+                                        <p>KR</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 98%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
+                                                    <span class="sr-only">98% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>98%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>US</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 0.68%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-warning">
+                                                    <span class="sr-only">0.68% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>0.68%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>JP</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 0.27%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">0.27% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>0.27%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>GP</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 0.18%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">0.18% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>0.18%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>TW</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 0.12%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">0.12% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>0.12%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>Others</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 0.72%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">0.72% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>0.72%</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -492,60 +502,86 @@
             <div class="col-sm-12">
                 <section class="panel">
                     <header class="panel-heading">
-                        Error Table
+                        WORLD MAP
                         <span class="tools pull-right">
                             <a href="javascript:;" class="fa fa-chevron-down"></a>
+                            <a href="javascript:;" class="fa fa-cog"></a>
+                            <a href="javascript:;" class="fa fa-times"></a>
                          </span>
                     </header>
                     <div class="panel-body">
-                        <div>
-                            <div class="btn-row">
-                                <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn btn-info active tooltips" id="btnTranding">
-                                        <input type="radio" name="options"><i class="fa fa-exclamation-triangle"></i> Tranding
-                                    </label>
-                                    <label class="btn btn-info tooltips" id="btnLatest">
-                                        <input type="radio" name="options"><i class="fa fa-refresh"></i> Latest
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="errors-table" class="adv-table">
-                            <table class="table table-hover table-striped" id="dynamic-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width:50px">Rank</th>
-                                        <th style="width:60px">Count</th>
-                                        <th class="auto-size">Name</th>
-                                        <th style="width:180px">Tags</th>
-                                        <th style="width:60px" class="res-hidden">Status</th>
-                                        <th style="width:60px" class="res-hidden">Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td data-title="Rank" class="text-center"></td>
-                                        <td data-title="Count" class="text-center text-danger text-bold"></td>
-                                        <td data-title="Name" class="table-text-ellipsis"></td>
-                                        <td data-title="Tags" class="tags"></td>
-                                        <td data-title="Status" class="res-hidden"></td>
-                                        <td data-title="Date" class="res-hidden"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div id="world-vmap" style="width:100%; height: 400px;"></div>
+
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-12" style="margin-top: -20px;">
+                <section class="panel">
+                    <div class="panel-body">
+                        <div class="chartJS">
+                            <canvas id="bar-chart-js" height="250" width="800" ></canvas>
                         </div>
                     </div>
                 </section>
             </div>
         </div>
-        <!--
-        1. 디바이스별 Crash Rank
-        2. 인기있는 APP Version
-        3. 
-        -->
+
+        <div class="row">
+            <div class="col-sm-6">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Donut Chart
+                    <span class="tools pull-right">
+                        <a href="javascript:;" class="fa fa-chevron-down"></a>
+                        <a href="javascript:;" class="fa fa-cog"></a>
+                        <a href="javascript:;" class="fa fa-times"></a>
+                     </span>
+                    </header>
+                    <div class="panel-body">
+                        <div id="graph-donut"></div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-sm-6" style="display:none;">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Area Chart
+                    <span class="tools pull-right">
+                        <a href="javascript:;" class="fa fa-chevron-down"></a>
+                        <a href="javascript:;" class="fa fa-cog"></a>
+                        <a href="javascript:;" class="fa fa-times"></a>
+                     </span>
+                    </header>
+                    <div class="panel-body">
+                        <div id="graph-area-line"></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Roated Chart
+                    <span class="tools pull-right">
+                        <a href="javascript:;" class="fa fa-chevron-down"></a>
+                        <a href="javascript:;" class="fa fa-cog"></a>
+                        <a href="javascript:;" class="fa fa-times"></a>
+                    </span>
+                    </header>
+                    <div class="panel-body">
+                        <div class="chart">
+                            <div id="roated-chart"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- page end-->
+        </section>
     </section>
-</section>
-<!--main content end-->
+    <!--main content end-->
 <!--right sidebar start-->
 <div class="right-sidebar">
 <div class="search-row">
@@ -595,9 +631,9 @@
                 </div>
                 <div class="side-mini-graph">
                     <div class="p-collection">
-						<span class="pc-epie-chart" data-percent="45">
-						<span class="percent"></span>
-						</span>
+                        <span class="pc-epie-chart" data-percent="45">
+                        <span class="percent"></span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -794,21 +830,27 @@
     </ul>
 </li>
 </ul>
-
 </div>
-
 </div>
 <!--right sidebar end-->
+
 </section>
+
 <!-- Placed js at the end of the document so the pages load faster -->
+
 <!--Core js-->
 <script src="js/jquery.js"></script>
-<script src="js/jquery-ui/jquery-ui-1.10.1.custom.min.js"></script>
 <script src="bs3/js/bootstrap.min.js"></script>
-<script src="js/jquery.dcjqaccordion.2.7.js"></script>
+<script class="include" type="text/javascript" src="js/jquery.dcjqaccordion.2.7.js"></script>
 <script src="js/jquery.scrollTo.min.js"></script>
 <script src="js/jQuery-slimScroll-1.3.0/jquery.slimscroll.js"></script>
 <script src="js/jquery.nicescroll.js"></script>
+<script src="js/jvector-map/jqvmap/jquery.vmap.js"></script>
+<script src="js/jvector-map/jqvmap/maps/jquery.vmap.world.js"></script>
+<script src="js/jvector-map/jqvmap/data/jquery.vmap.sampledata.js"></script>
+<script src="js/jvector-map/jqvmap/maps/continents/jquery.vmap.europe.js"></script>
+<script src="js/jvector-map/jqvmap/maps/continents/jquery.vmap.asia.js"></script>
+<script src="js/jvector-map/jqvmap/maps/continents/jquery.vmap.australia.js"></script>
 <!--Easy Pie Chart-->
 <script src="js/easypiechart/jquery.easypiechart.js"></script>
 <!--Sparkline Chart-->
@@ -818,16 +860,39 @@
 <script src="js/flot-chart/jquery.flot.tooltip.min.js"></script>
 <script src="js/flot-chart/jquery.flot.resize.js"></script>
 <script src="js/flot-chart/jquery.flot.pie.resize.js"></script>
-<!--iCheck-->
-<script src="js/iCheck/jquery.icheck.js"></script>
-<!--iron RangeSlider-->
-<script src="js/ion.rangeSlider-1.8.2/js/ion-rangeSlider/ion.rangeSlider.min.js" type="text/javascript"></script>
-<!--dynamic table-->
-<script type="text/javascript" language="javascript" src="js/data-tables/jquery.dataTables.js"></script>
-<script type="text/javascript" src="js/data-tables/DT_bootstrap.js"></script>
+
+<!--Morris Chart-->
+<script src="js/morris-chart/morris.js"></script>
+<script src="js/morris-chart/raphael-min.js"></script>
+<script src="js/morris.init.js"></script>
+
+<!--Chart JS-->
+<script src="js/chart-js/Chart.js"></script>
+<script src="js/chartjs.init.js"></script>
+
+<!--C3 Chart-->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="js/c3-chart/c3.js"></script>
+<script src="js/c3-chart.init.js"></script>
+
 <!--common script init for all pages-->
-<script src="js/errors.js"></script>
 <script src="js/scripts.js"></script>
-<!--script for this page-->
+
+<script>
+    jQuery('#world-vmap').vectorMap({
+        map: 'world_en',
+        backgroundColor: null,
+        color: '#ffffff',
+        hoverOpacity: 0.7,
+        selectedColor: '#666666',
+        enableZoom: true,
+        borderWidth:1,
+        showTooltip: true,
+        values: sample_data,
+        scaleColors: ['#C8EEFF', '#006491'],
+        normalizeFunction: 'polynomial'
+    });
+</script>
+
 </body>
 </html>

@@ -35,6 +35,8 @@ $(document).ready(function()
 
                     if (iCol == 0)
                     {
+                        $(nTd).parent().attr('onclick', 'document.location="error-details.html?id=' + oData["ID"] + '"').css("cursor", "pointer");
+                        
                         $(nTd).html('<span class=\"label label-' + sData.toLowerCase() + ' label-mini\" style=\"width:100%\">' + sData + '</span>');
                     }
                     else if (iCol == 1)

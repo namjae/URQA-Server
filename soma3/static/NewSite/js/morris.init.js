@@ -10,8 +10,6 @@ Morris.Bar({
     ykeys: ['y', 'z', 'a'],
     labels: ['Y', 'Z', 'A'],
     barColors:['#E67A77','#D9DD81','#79D1CF']
-
-
 });
 
 

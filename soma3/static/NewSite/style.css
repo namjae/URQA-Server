@@ -3,6 +3,10 @@
  */
  a.none-style { margin: 0 !important; padding: 0 !important; background-color: transparent !important; }
 
+.text-small
+{
+	font-size: 12px;
+}
 .text-bold
 {
 	font-weight: 700;
@@ -11,6 +15,17 @@
 .text-ellipsis
 {
 	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+table .table-text-ellipsis-1 > div
+{
+	/** Crop line count: 3 */
+	display: block;
+	max-height: 18.3px; /* font-size * line-height * 3 + padding-top */
+	-webkit-line-clamp: 1;
+	white-space: nowrap !important;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
@@ -246,4 +261,160 @@ div.tagsearch span.tags a {
 	font-size: 11px;
 }
 
+/**
+ * Error Details
+ */
+@media (min-width: 992px) and (max-width: 1240px) {
+	#error-history-graph {
+		height: 268px !important;
+	}
+}
+.panel-heading .nav>li>a {
+	padding:16px 15px !important;
+}
+#callstacks table {
+	table-layout:fixed;
+}
+#callstacks table td {
+	border-left:0;
+	border-right:0;
+}
+#callstacks table td.bold {
+	text-align:center;
+	font-weight:700;
+	width:30px;
+	color:#1FB5AD;
+}
 
+#instance table thead { background:#474751; color:white; }
+#instance table th:nth-child(1) { border-radius: 4px 0 0 0; -webkit-border-radius: 4px 0 0 0; }
+#instance table th:nth-last-child(1) { border-radius: 0 4px 0 0; -webkit-border-radius: 0 4px 0 0; }
+#instance table th,
+#instance table td {
+	text-align:center;
+}
+#instance table th:after {
+	content: attr(data-label);
+	font-size: 12px;
+}
+#instance .form-group {
+	padding-bottom:11px;
+	margin-top:-4px;
+	margin-bottom:9px;
+}
+@media only screen and (max-width: 800px) {
+	#instance table th:nth-child(4),
+	#instance table th:nth-child(5),
+	#instance table th:nth-child(6),
+	#instance table td:nth-child(4),
+	#instance table td:nth-child(5),
+	#instance table td:nth-child(6) { display: none; }
+
+	#instance table th:after {
+		content: attr(data-mini);
+		font-size: 11px;
+	}
+	#callstacks table td,
+	#instance table td {
+		font-size: 11px;
+	}
+	#instance .control-label {
+		font-size: 11px;
+	}
+	#instance .form-group {
+		padding-bottom:9px;
+		margin-top:-8px;
+		margin-bottom:8px;
+	}
+}
+
+.comment-body {
+	margin-bottom:12px;
+}
+.comment-body .comment-block {
+	border-bottom: 1px #dfdfdf solid;
+}
+.comment-body:nth-last-child(2) .comment-block {
+	border-bottom: 0;
+}
+.comment-body div.profile {
+	float:left;
+	margin-right:8px;
+}
+.comment-body div.content {
+	margin-left:60px;
+	min-height:48px;
+}
+.comment-body img {
+	width:50px;
+	height:50px;
+	border:1px #ccc solid;
+	border-radius:5px;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	-o-border-radius:5px;
+}
+.comment-body label {
+	font-size:14px;
+}
+.comment-body div > span:before {
+	content:'\2014 \00A0';
+}
+.comment-body div > span {
+	font-size:11px;
+}
+.comment-body p {
+	margin-top:-3px;
+	font-size:13px;
+}
+
+.panel-body > .row > div {
+	margin-bottom: 20px;
+}
+.panel-body > .row > div > label {
+	font-weight: 100;
+	font-size: 17px;
+}
+div.progress-table {
+	padding-right:15px;
+}
+div.progress-table .title-body > div {
+	height:26px;
+	border-bottom:1px #ccc solid;
+	padding-right:15px;
+	margin-bottom:8px;
+	padding-left:0;
+	font-size:13px;
+}
+div.progress-table .content-row:before,
+div.progress-table .content-row:after {
+	content: ' ';
+	display: table;
+}
+div.progress-table .content-row > p {
+	display:block;
+	float:left;
+	width:25%;
+	margin:0;
+	padding-right:15px;
+	font-weight: 700;
+}
+div.progress-table .content-row > div {
+	width:75%;
+	float:left;
+	/*padding-left:15px;*/
+	padding-right:15px;
+	margin-bottom:5px;
+}
+div.progress-table .content-row div.progress {
+	margin-top:5px;
+	margin-right:26px;
+	margin-bottom:5px;
+}
+div.progress-table .content-row div.progress + div {
+	float:right;
+	margin-top:-20px;
+	margin-right:-18px;
+	width:42px;
+	text-align:center;
+}

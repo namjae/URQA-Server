@@ -329,5 +329,8 @@ $(document).ready(function () {
 
     });
 
-
+    $("#timezone").select2({
+        minimumResultsForSearch: -1
+    });
+    
 })(jQuery);
