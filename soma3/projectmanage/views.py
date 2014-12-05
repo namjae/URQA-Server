@@ -527,8 +527,7 @@ def projects(request):
     apprunDit = {};
     for idx, project in enumerate(MergeProjectElements):
         idxProjectList.append(project.pid);
-    
-    past, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
+        past, today = getTimeRange(TimeRange.weekly,project.timezone)#최근 7일이내것만 표시
 
     if idxProjectList:
         pidList = ", ".join(str(v) for v in idxProjectList)
@@ -540,7 +539,7 @@ def projects(request):
         params = {'pidinput': "(" + ",".join(str(v) for v in idxProjectList)+")" ,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
         places = LoginErrorCountModel.objects.raw(sql, params)
         for idx,pl in enumerate(places):
-            placesDict[pl.pid]  = pl.count;
+            placesDict[pl.pid]  =pl.count
 
         sql = "SELECT app.pid AS pid ,SUM(app.appruncount) AS count FROM appruncount2 app "
         sql = sql + "WHERE app.pid in (" + pidList + ") AND "
@@ -548,9 +547,7 @@ def projects(request):
         sql = sql + "GROUP BY app.pid"
         apprunCount = LoginApprunCount.objects.raw(sql, params);
         for idx, app in enumerate(apprunCount):
-            apprunDit[app.pid]  = app.count;
-
-
+            apprunDit[app.pid]  = app.count
 
     for idx, project in enumerate(MergeProjectElements):
         projectdata = {}
@@ -566,12 +563,10 @@ def projects(request):
             continue
 
         #Project에서 사용자의 수를 얻어온다
-        if placesDict.has_key(project.pid):
-            apprunCount = apprunDit.get(project.pid)
 
-        if apprunCount == 0 or apprunCount == None:
-            apprunCount = 1;
-
+        apprunCount = float('1')
+        if apprunDit.has_key(project.pid):
+            apprunCount = float(apprunDit.get(project.pid))
 
         #프로젝트 DAU대비 Error수를 측정한다.
         projectdata['count'] =  instanceCount
@@ -579,7 +574,7 @@ def projects(request):
         if not apprunCount:
             errorRate = 0
         else:
-            errorRate = int(convertData * 100.0 / float(apprunCount))
+            errorRate = int(convertData * 100.0 / apprunCount)
 
 
         #Error발생 비율에 따라 Project의 컬러를 설정한다.
@@ -590,8 +585,6 @@ def projects(request):
         projectdata['platform'] = get_dict_value_matchin_key(platformdata,project.platform).lower()
         projectdata['stage'] = stagetxt
         project_list.append(projectdata)
-
-
 
     
     #로딩한 데이터를 Template에 Randering한다.
