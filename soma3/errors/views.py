@@ -648,15 +648,6 @@ def author_check_error_page(username,apikey,iderror):
     return True, 'success' , userelement ,ErrorsElement, projectelement
 
 
-def filter_view(request,apikey):
-    #Filter page를 Randering하는 루틴
-    username = request.user
-
-    valid , message , userelement, projectelement = validUserPjt(username,apikey)
-
-    if not valid:
-        return HttpResponseRedirect('/urqa')
-
 """
 		SELECT DISTINCT `appstatistics`.`appversion` FROM `appstatistics` WHERE 
 				`appstatistics`.`pid` = 186
@@ -670,8 +661,15 @@ def filter_view(request,apikey):
 	valid_app , valid_os 의 for 문을 통한 자바스크립트 로직을 Front End 에서
 	하는게 어떨지?
 """	
+def filter_view(request,apikey):
+    #Filter page를 Randering하는 루틴
+    username = request.user
 
-    user = AuthUser.objects.get(username = request.user)
+    valid , message , userelement, projectelement = validUserPjt(username,apikey)
+
+    if not valid:
+        return HttpResponseRedirect('/urqa')
+	user = AuthUser.objects.get(username = request.user)
 
     week, today = getTimeRange(TimeRange.weekly,projectelement.timezone)
 
@@ -875,8 +873,19 @@ def chstatus(request,apikey,iderror):
     return HttpResponse('success')
 
 
-#def so_list(request,apikey,iderror):
+"""
+    errorElements = Errors.objects.filter(pid=projectElement)
 
+    instances =
+	Instances.objects.prefetch_related('iderror').filter(iderror__in=errorElements,,iderror__lastdate__range=(past,today),datetime__range=(past,today)).order_by('-appversion')[page * num : (page + 1) * num]
+
+test query 
+
+	Instances.objects.prefetch_related('iderror').annotate(sum_app=Count('appversion').group_by('appversion')
+"""
+
+def so_list(request,apikey,iderror):
+	pass
 
 def appv_ratio(request,apikey):
     #Filter페이지에 보여줄 App, OS Version의 비율을 계산하는 루틴
@@ -900,16 +909,7 @@ def appv_ratio(request,apikey):
 
     data = {'appv':{},'osv':{}}
     instances = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today)).order_by('-appversion')
-"""
-    errorElements = Errors.objects.filter(pid=projectElement)
 
-    instances =
-	Instances.objects.prefetch_related('iderror').filter(iderror__in=errorElements,,iderror__lastdate__range=(past,today),datetime__range=(past,today)).order_by('-appversion')[page * num : (page + 1) * num]
-
-test query 
-
-	Instances.objects.prefetch_related('iderror').annotate(sum_app=Count('appversion').group_by('appversion')
-"""
     for i in instances:
         key = i.appversion
         if not key in data['appv']:

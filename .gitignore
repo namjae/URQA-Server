@@ -1,3 +1,4 @@
-google_client_secrets.json
-settings.py
-.idea
+**/*.pyc
+*.pyc
+**/google_client_secrets.json
+**/settings.py

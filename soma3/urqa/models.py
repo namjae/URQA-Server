@@ -42,7 +42,7 @@ class Appruncount2(models.Model):
 
 class Appstatistics(models.Model):
     idappstatistics = models.AutoField(primary_key=True)
-    pid = models.ForeignKey(Projects)
+    pid = models.ForeignKey('Projects')
     iderror = models.ForeignKey('Errors', db_column='iderror')
     appversion = models.CharField(max_length=45)
     count = models.IntegerField()
