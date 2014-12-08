@@ -883,6 +883,10 @@ def appv_ratio(request,apikey):
     #에러가 많이 발생한 App, OS Version일 수록 비율이 크게 계산된다.
 
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
+
+    num = request.POST.get('num',10)
+    page = request.POST('page', 0)
+
     retention = int(jsonData['retention'])
     depth = int(jsonData['depth'])
 
@@ -896,7 +900,16 @@ def appv_ratio(request,apikey):
 
     data = {'appv':{},'osv':{}}
     instances = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today)).order_by('-appversion')
+"""
+    errorElements = Errors.objects.filter(pid=projectElement)
 
+    instances =
+	Instances.objects.prefetch_related('iderror').filter(iderror__in=errorElements,,iderror__lastdate__range=(past,today),datetime__range=(past,today)).order_by('-appversion')[page * num : (page + 1) * num]
+
+test query 
+
+	Instances.objects.prefetch_related('iderror').annotate(sum_app=Count('appversion').group_by('appversion')
+"""
     for i in instances:
         key = i.appversion
         if not key in data['appv']:
