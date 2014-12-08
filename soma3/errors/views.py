@@ -657,6 +657,20 @@ def filter_view(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
+"""
+		SELECT DISTINCT `appstatistics`.`appversion` FROM `appstatistics` WHERE 
+				`appstatistics`.`pid` = 186
+						order by `appstatistics`.`appversion` DESC
+	appElements = Appstatistics.objects.distinct().filter(pk=Projects.objects.get(apikey = apikey))
+	
+	valid_app = appElements.order_by('-appversion')
+	valid_os = appElements.order_by('-osversion')
+	
+
+	valid_app , valid_os 의 for 문을 통한 자바스크립트 로직을 Front End 에서
+	하는게 어떨지?
+"""	
+
     user = AuthUser.objects.get(username = request.user)
 
     week, today = getTimeRange(TimeRange.weekly,projectelement.timezone)
