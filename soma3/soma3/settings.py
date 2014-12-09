@@ -13,6 +13,7 @@ MANAGERS = ADMINS
 
 PROJECT_DIR = os.path.join(os.path.dirname(__file__),'..')
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 """
 UrQA: UrQA용 DATABASE설정.
@@ -29,10 +30,10 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'urqa',               # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'USER': os.environ['URQA_USER'],
+        'PASSWORD': os.environ['URQA_PASSWORD'],
+        'HOST': os.environ['URQA_HOST'],                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': os.environ['URQA_PORT'],                      # Set to empty string for default.
     }
 }
 

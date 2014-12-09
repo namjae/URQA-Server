@@ -38,6 +38,7 @@ class Appruncount2(models.Model):
     appruncount = models.BigIntegerField(blank=True, null=True)
     class Meta:
         managed = False
+        unique_together = ('pid', 'datetime', 'appversion')
         db_table = 'appruncount2'
 
 class Appstatistics(models.Model):
@@ -232,14 +233,22 @@ class Instances(models.Model):
     callstack = models.TextField(blank=True)
     dump_path = models.CharField(max_length=260, blank=True)
     lastactivity = models.CharField(max_length=300, blank=True)
+    pid = models.ForeignKey('Projects', db_column='pid')
     class Meta:
         managed = False
+        unique_together= (('pid', 'datetime'), ('iderror', 'appversion'),
+                        ('iderror', 'osversion'), ('iderror', 'device'),
+                        ('iderror', 'country'), ('iderror', 'wifion'),
+                        ('iderror', 'gpson'),('iderror', 'mobileon'),
+                        ('pid', 'datetime', 'country'))
+
         db_table = 'instances'
 
 class Osstatistics(models.Model):
     idosstatistics = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
     osversion = models.CharField(max_length=10)
+    pid = models.ForeignKey('Projects')
     count = models.IntegerField()
     class Meta:
         managed = False
