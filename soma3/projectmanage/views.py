@@ -533,32 +533,42 @@ def projects(request):
 
     if idxProjectList:
         pasttime = '%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)
-        pidList = ", ".join(str(v) for v in idxProjectList)
+        #pidList = ", ".join(str(v) for v in idxProjectList)
 
-        #pidList = [for str(project) in Projects.objects.values_list('pid')]
+
+        pasttime = '%d-%d-%d %d:%d:%d' % (2014,12,3,12,0,0)
+
+        #pid_list = [str(project) for project in Projects.objects.values_list('pid')]
         #Instances.objects.values('iderror').annotate(count=Count('iderror')).prefech_selected('iderror').filter(
         #    iderror__pid__in=pidList,
         #    datetime__gt=pasttime
-        #).group_by('ierror__pid')
+        #).group_by('iderror__pid')
 
-        sql = "SELECT B.pid AS pid, count(*) AS count FROM errors B JOIN instances A ON A.iderror = B.iderror "
-        sql = sql + "where B.pid IN ( " + pidList +") "
-        sql = sql + "and B.status IN (0,1) "
-        sql = sql + "and A.datetime > %(pasttime)s "
-        sql = sql + "GROUP BY B.pid "
-        params = {'pidinput': "(" + ",".join(str(v) for v in idxProjectList)+")" ,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
-        places = LoginErrorCountModel.objects.raw(sql, params)
+        places = Instances.objects.values('pid').annotate(
+            count=Count('iderror')).prefetch_related('iderror').filter(
+            iderror__pid__in=idxProjectList, datetime__gt=pasttime
+        ).group_by('pid')
+
+        # sql = "SELECT B.pid AS pid, count(*) AS count FROM errors B JOIN instances A ON A.iderror = B.iderror "
+        # sql = sql + "where B.pid IN ( " + pidList +") "
+        # sql = sql + "and B.status IN (0,1) "
+        # sql = sql + "and A.datetime > %(pasttime)s "
+        # sql = sql + "GROUP BY B.pid "
+        # params = {'pidinput': "(" + ",".join(str(v) for v in idxProjectList)+")" ,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+        # places = LoginErrorCountModel.objects.raw(sql, params)
         for idx,pl in enumerate(places):
-            placesDict[pl.pid]  =pl.count
+            placesDict[pl.pid]=pl.count
 
-        #Appruncount2.objects.values('pid').annotate(count=Sum('appruncount')).filter(
-        #    pid__in=pidList).filter(datetime__gt=pasttime).group_by('pid')
 
-        sql = "SELECT app.pid AS pid ,SUM(app.appruncount) AS count FROM appruncount2 app "
-        sql = sql + "WHERE app.pid in (" + pidList + ") AND "
-        sql = sql + "app.datetime > %(pasttime)s "
-        sql = sql + "GROUP BY app.pid"
-        apprunCount = LoginApprunCount.objects.raw(sql, params);
+        # sql = "SELECT app.pid AS pid ,SUM(app.appruncount) AS count FROM appruncount2 app "
+        # sql = sql + "WHERE app.pid in (" + pidList + ") AND "
+        # sql = sql + "app.datetime > %(pasttime)s "
+        # sql = sql + "GROUP BY app.pid"
+        # apprunCount = LoginApprunCount.objects.raw(sql, params);
+
+        apprunCount = Appruncount2.objects.values('pid').annotate(count=Sum('appruncount')).filter(
+            pid__in=idxProjectList).filter(datetime__gt=pasttime).group_by('pid')
+
         for idx, app in enumerate(apprunCount):
             apprunDit[app.pid]  = app.count
 

@@ -6,7 +6,7 @@ import re
 import json
 import operator
 from collections import OrderedDict
-
+from django.db.models import Count
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -683,8 +683,12 @@ def filter_view(request,apikey):
     errorElements = Errors.objects.filter(pid = projectElement , lastdate__range = (week, today) ).order_by('-errorweight','rank', '-lastdate')
     valid_tag = Tags.objects.filter(pid=projectElement).values('tag').distinct().order_by('tag')
     valid_class = errorElements.values('errorclassname').distinct().order_by('errorclassname')
-    valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct().order_by('-appversion')
-    valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
+
+    #valid_app = Appstatistics.objects.filter(iderror__in=errorElements).values('appversion').distinct().order_by('-appversion')
+    #valid_os = Osstatistics.objects.filter(iderror__in=errorElements).values('osversion').distinct().order_by('-osversion')
+
+    valid_app = Appstatistics.objects.filter(pid=projectElement).values('appversion').distinct().order_by('-appversion')
+    valid_os = Osstatistics.objects.filter(pid=projectElement).values('osversion').distinct().order_by('-osversion')
 
 
     # Web Rendering용 데이터 만들기
@@ -779,6 +783,11 @@ def error_list(request,apikey):
 
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
 
+
+
+    #Appstatistics.objects.values('ierror').annotate(iderror_count=Count('iderror')).filter(pid=projectElement).group_by('iderror')
+
+
     date = int(jsonData['date'])
     _status = [[0,1,2,3],[0],[1],[2],[3]]
     status = _status[int(jsonData['status'])]
@@ -802,6 +811,8 @@ def error_list(request,apikey):
         errorElements = errorElements.filter(errorclassname__in=classes)
     #print tags
     if tags:
+        #tagElements = Tags.objects.filter(iderror__in=errorElements,tag__in=tags).values('iderror').distinct().order_by('iderror')
+
         tagElements = Tags.objects.select_related().filter(iderror__in=errorElements,tag__in=tags).values('iderror').distinct().order_by('iderror')
         print tagElements
         iderror_list = []
