@@ -23,6 +23,7 @@ from utility import Status
 from utility import getTimezoneMidNight
 from utility import getTimezoneHour
 
+from urqa.models import AuthUser
 from urqa.models import Errors
 from urqa.models import Instances
 from urqa.models import ErrorsbyApp
@@ -34,6 +35,9 @@ from urqa.models import ErbvApps
 from urqa.models import Erbv
 from urqa.models import TotalSession
 
+# 임시로 포함함 --> 나중에 없애 거나, urqa.models 로 옮길 예정 
+from django.db import models
+
 def statistics(request,apikey):
     #통계페이지를 Randering하는 루틴
     username = request.user
@@ -43,22 +47,25 @@ def statistics(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    #ser = AuthUser.objects.get(username = request.user)
+    user = AuthUser.objects.get(username = request.user)
 
-    #tpl = loader.get_template('statistics.html')
+    tpl = loader.get_template('statistics.html')
 
-    userdict = getUserProfileDict(userelement)
+    #userdict = getUserProfileDict(userelement)
+    userdict = getUserProfileDict(user)
     apikeydict = getApikeyDict(apikey)
     settingdict = getSettingDict(projectelement,userelement)
 
+    
     statisticsdict = {
         'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
     }
 
     ctxdict = dict(userdict.items() + apikeydict.items() + settingdict.items() + statisticsdict.items() )
     ctx = Context(ctxdict)
-    return render(request, 'statistics.html', ctx)
-    #return HttpResponse(tpl.render(ctx))
+
+    #return render(request, 'statistics.html', ctx)
+    return HttpResponse(tpl.render(ctx))
 
 
 def chartdata_sbav(request,apikey):
@@ -218,7 +225,15 @@ def chartdata_ebav(request,apikey):
     # 1. 전체 session 수 구하기
     # 2. 전체 세션수 대비 90% 에 해당하는 app version 리스트만 가져옴
     #########################################
-    sql2 = 'SELECT appversion ,count(*) as total FROM instances A, errors B where A.iderror = B.iderror and pid = %(pidinput)s and B.status in (0,1)  and datetime >= %(pasttime)s group by appversion order by total desc'
+    #sql2 = 'SELECT appversion ,count(*) as total FROM instances A, errors B where A.iderror = B.iderror and pid = %(pidinput)s and B.status in (0,1)  and datetime >= %(pasttime)s group by appversion order by total desc'
+    sql2 =  "SELECT appversion ,count(*) as total "
+    sql2 = sql2 + "FROM instances "
+    sql2 = sql2 + "where pid =  %(pidinput)s and datetime >= %(pasttime)s "
+    sql2 = sql2 + "group by appversion "
+    sql2 = sql2 + "order by total desc"
+
+    
+
     params2 = {'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
     totalSession = TotalSession.objects.raw(sql2, params2)
     sum = 0
@@ -256,10 +271,8 @@ def chartdata_ebav(request,apikey):
 
     #Error Count를 얻어올 Query를 생성한다.
     sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'" + dateformat + "') as errorday "
-    sql = sql + "from instances A, errors B "
-    sql = sql + "where A.iderror = B.iderror "
-    sql = sql + "and pid = %(pidinput)s "
-    sql = sql + "and B.status in (0,1) "
+    sql = sql + "from instances "
+    sql = sql + "where pid = %(pidinput)s "
     if len(ratioappversion) == 0:
         sql = sql + ' and datetime >= %(pasttime)s and appversion '
     else:
@@ -328,6 +341,9 @@ def chartdata_ebav(request,apikey):
     #print >>sys.stderr, chart1
     return HttpResponse(json.dumps(result), 'application/json');
 
+class Erbc(models.Model):
+    errorclassname = models.CharField(primary_key=True, max_length=300)
+    count = models.IntegerField(blank=True, null=True)
 
 def chartdata_erbc(request,apikey):
     #발생한 에러를 Class별로 나누어 나타낸다.
@@ -338,28 +354,23 @@ def chartdata_erbc(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    #print 'retention', retention
     # Common Data
-    past, today = getTimeRange(retention,projectElement.timezone)
-    #print 'past',past, 'today',today
-    errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-    #instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
-    #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
-    result = {}
+    #past, today = getTimeRange(retention,projectElement.timezone)
 
-    #chart2
+    sql = "select errorclassname, ( select count(*) from instances where iderror = A.iderror ) as cnt "
+    sql = sql + "from errors A "
+    sql = sql + "where lastdate > (curdate() - interval %(intervalinput)s day) and A.pid = %(pidinput)s "
+
+    params = {'pidinput':projectElement.pid,'intervalinput':retention }
+
+    tmp = Erbc.objects.raw(sql, params)
     chart2 = []
-    pre_class = ''
-    #print 'past',past
-    for e in errorElements:
-        instanceCount = Instances.objects.filter(iderror=e,datetime__gte=past).count()
-        if pre_class != e.errorclassname:
-            pre_class = e.errorclassname
-            chart2.append([e.errorclassname, instanceCount])
-        else:
-            last = len(chart2)
-            chart2[last-1] = [e.errorclassname,chart2[last-1][1] + (instanceCount)]
 
+    for idx, pl in enumerate(tmp):
+        chart2.append( [str(pl.errorclassname), int(pl.cnt) ] )
+        #print str(pl.errorclassname)
+
+    result = {}
     result['chart2'] = chart2
     return HttpResponse(json.dumps(result), 'application/json');
 
@@ -372,76 +383,32 @@ def chartdata_erbd(request,apikey):
     valid , message , userElement, projectElement = validUserPjt(username,apikey)
     if not valid:
         return HttpResponseRedirect('/urqa')
-
-    result = {}
+    
     # 하루치 통계
-
     if retention == 1:
-
-        #print 'retention', retention
-        # Common Data
-        past, today = getTimeRange(retention,projectElement.timezone)
-        #print 'past',past, 'today',today
-        errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-        instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
-        #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
-        
-
-        #chart3 - Device error
-        temp_data = {}
-        activities = []
-        instances = instanceElements.order_by('device')
-        for i in instances:
-            if i.device:
-                device = i.device
-            else:
-                #디바이스중에 데이터를 얻을 수없다면 Unknown으로 처리한다.
-                device = "Unknown"
-            if not device in activities:
-                activities.append(device)
-                temp_data[device] = 1
-            else:
-                temp_data[device] += 1
-
-        sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
-        categories = []
-        temp_data = []
-        i = 0
-        others_count = 0
-        for l,v in sorted_dic:
-            i += 1
-            if i>25:
-                others_count += v
-            else:
-                categories.append(l)
-                temp_data.append(v)
-        if others_count != 0:
-            categories.append('Others')
-            temp_data.append(others_count)
-
-        dev_data = [{'name':'Device','data':temp_data}]
-        chart3 = {'categories':categories,'data':dev_data}
-        result['chart3'] = chart3
-
+        sql = 'select device, count(*) as sum from instances where pid = %(pidinput)s and datetime BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() group by device'
 
     else:
     #하루 이상인 경우
-        categories = []
-        temp_data = []
         sql = 'SELECT A.device, A.sum FROM( '
         sql = sql + 'SELECT DEVICE, SUM(SUMCOUNT) as SUM FROM ERBD WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() '
         sql = sql + 'group by DEVICE ) A'
         sql = sql + ' order by sum desc limit 12'
-        params = {'pidinput':projectElement.pid,'retentioninput':retention}
-        places = Erbd.objects.raw(sql, params)
 
-        for idx, pl in enumerate(places):
-            categories.append(str(pl.device))
-            temp_data.append(int(pl.sum))
+    # query run
+    params = {'pidinput':projectElement.pid,'retentioninput':retention}
+    places = Erbd.objects.raw(sql, params)
 
-        dev_data = [{'name':'Device','data':temp_data}]
-        chart3 = {'categories':categories,'data':dev_data}
-        result['chart3'] = chart3
+    categories = []
+    temp_data = []
+    for idx, pl in enumerate(places):
+        categories.append(str(pl.device))
+        temp_data.append(int(pl.sum))
+
+    dev_data = [{'name':'Device','data':temp_data}]
+    chart3 = {'categories':categories,'data':dev_data}
+    result = {}
+    result['chart3'] = chart3
 
     return HttpResponse(json.dumps(result), 'application/json');
 
@@ -458,68 +425,29 @@ def chartdata_erba(request,apikey):
     result = {}
     # 하루치 통계
     if retention == 1:
-
-        #print 'retention', retention
-        # Common Data
-        past, today = getTimeRange(retention,projectElement.timezone)
-        #print 'past',past, 'today',today
-        errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-        instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
-        #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
-        result = {}
-
-        #chart4
-        temp_data = {}
-        activities = []
-        instances = instanceElements.order_by('lastactivity')
-        for i in instances:
-            if i.lastactivity:
-                lastactivity = i.lastactivity
-            else:
-                lastactivity = "Unknown"
-            if not lastactivity in activities:
-                activities.append(lastactivity)
-                temp_data[lastactivity] = 1
-            else:
-                temp_data[lastactivity] += 1
-        sorted_dic = sorted(temp_data.iteritems(), key=operator.itemgetter(1), reverse=True)
-        categories = []
-        temp_data = []
-        i = 0
-        others_count = 0
-        for l,v in sorted_dic:
-            i += 1
-            if i>25:
-                others_count += v
-            else:
-                categories.append(l)
-                temp_data.append(v)
-        if others_count != 0:
-            categories.append('Others')
-            temp_data.append(others_count)
-
-        act_data = [{'name':'Activity','data':temp_data}]
-        chart4 = {'categories':categories,'data':act_data}
-        result['chart4'] = chart4
+        sql = 'select LASTACTIVITY as activity, count(*) as sum from instances where pid = %(pidinput)s and datetime BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() group by lastactivity'
 
     else:
     #하루 이상인 경우
-        categories = []
-        temp_data = []
         sql = 'SELECT A.LASTACTIVITY as activity, A.sum FROM( '
         sql = sql + 'SELECT LASTACTIVITY, SUM(SUMCOUNT) as SUM FROM ERBA WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() AND lastactivity > ""'
         sql = sql + 'group by LASTACTIVITY ) A'
         sql = sql + ' order by sum desc limit 12'
-        params = {'pidinput':projectElement.pid,'retentioninput':retention}
-        places = Erba.objects.raw(sql, params)
 
-        for idx, pl in enumerate(places):
-            categories.append(str(pl.activity))
-            temp_data.append(int(pl.sum))
 
-        act_data = [{'name':'Device','data':temp_data}]
-        chart4 = {'categories':categories,'data':act_data}
-        result['chart4'] = chart4
+    categories = []
+    temp_data = []
+    params = {'pidinput':projectElement.pid,'retentioninput':retention}
+    places = Erba.objects.raw(sql, params)
+
+    for idx, pl in enumerate(places):
+        categories.append(str(pl.activity))
+        temp_data.append(int(pl.sum))
+
+    act_data = [{'name':'Device','data':temp_data}]
+    chart4 = {'categories':categories,'data':act_data}
+    result['chart4'] = chart4
+
     return HttpResponse(json.dumps(result), 'application/json');
 
 
@@ -534,55 +462,20 @@ def chartdata_erbv(request,apikey):
         return HttpResponseRedirect('/urqa')
 
     result = {}
+    categories = []
+    osversions = []
+    ver_data = []
+    osversions2 = []
+    temp_data = []
+
     # 하루치 통계
     if retention == 1:
-
-        #print 'retention', retention
-        # Common Data
-        past, today = getTimeRange(retention,projectElement.timezone)
-        #print 'past',past, 'today',today
-        errorElements = Errors.objects.filter(pid=projectElement,status__in=[Status.New,Status.Open],lastdate__range=(past,today)).order_by('errorclassname','errorweight')
-        instanceElements = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today))
-        #AppruncountElemtns = Appruncount.objects.filter(pid=projectElement,date__range=(past,today))
-        result = {}
-
-
-        #Chart5
-        categories = []
-        ver_data = []
-        temp_data = {}
-        instances = instanceElements.order_by('-appversion','-osversion')
-
-        appv_idx = -1
-        for i in instances:
-            if not i.appversion in categories:
-                appv_idx += 1
-                categories.append(i.appversion)
-            if not i.osversion in temp_data:
-                temp_data[i.osversion] = []
-            while len(temp_data[i.osversion]) <= appv_idx:
-                temp_data[i.osversion].append(0)
-            #score = float(i.iderror.errorweight) / i.iderror.numofinstances
-            temp_data[i.osversion][appv_idx] += 1#score
-
-        for t in temp_data:
-            idx = 0
-            for e in temp_data[t]:
-                temp_data[t][idx] = e#round(e,2)
-                idx += 1
-            ver_data.append({'name':t,'data':temp_data[t]})
-
-        chart5 = {'categories':categories,'data':ver_data}
-        result['chart5'] = chart5
+        sql2 =          'select appversion, osversion, count(*) as sum from instances where pid = %(pidinput)s and datetime BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() '
+        sql2 = sql2 +   'group by appversion, osversion '
+        sql2 = sql2 +   'order by appversion desc, osversion desc' 
 
     else:
         #하루 이상인 경우
-        categories = []
-        osversions = []
-        ver_data = []
-        osversions2 = []
-        temp_data = []
-
         #max 12개만 가져올 appversion 구하는 쿼리
         sql = 'SELECT appversion, sum FROM ( '
         sql = sql + 'SELECT sum(sumcount) as sum, appversion from ERBV where pid = %(pidinput)s and COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() '
@@ -606,33 +499,36 @@ def chartdata_erbv(request,apikey):
             sql2 = sql2 + 'SELECT appversion, osversion, SUM(SUMCOUNT) as SUM FROM ERBV WHERE PID = %(pidinput)s AND COUNTEDAT BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() AND appversion in  ' + str(arrayInput)
         sql2 = sql2 + ' group by appversion, osversion ) A '
         sql2 = sql2 + ' order by appversion desc, osversion desc'
-        params2 = {'pidinput':projectElement.pid,'retentioninput':retention}
-        places2 = Erbv.objects.raw(sql2, params2)
-         #fill categories
-        for idx, pl in enumerate(places2):
-            if pl.appversion not in categories:
-                categories.append(str(pl.appversion))
 
-        for idx, pl in enumerate(places2):
-            if pl.osversion not in osversions:
-                osversions.append(str(pl.osversion))
+    # raw query run and make data 
+    params2 = {'pidinput':projectElement.pid,'retentioninput':retention}
+    places2 = Erbv.objects.raw(sql2, params2)
+     #fill categories
+    for idx, pl in enumerate(places2):
+        if pl.appversion not in categories:
+            categories.append(str(pl.appversion))
 
-        matrix = [[0 for i in range(len(categories))] for j in range(len(osversions))]
-        for idx, pl in enumerate(places2):
-            #get appversion's index
-            index1 = categories.index(pl.appversion)
-            index2 = osversions.index(pl.osversion)
-            matrix[index2][index1] = int(pl.sum)
+    for idx, pl in enumerate(places2):
+        if pl.osversion not in osversions:
+            osversions.append(str(pl.osversion))
 
-        mindex = 0
-        for idx, pl in enumerate(places2):
-            if pl.osversion not in osversions2:
-                osversions2.append(str(pl.osversion))
-                ver_data.append({'name':pl.osversion,'data':matrix[mindex]})
-                mindex = mindex + 1
+    matrix = [[0 for i in range(len(categories))] for j in range(len(osversions))]
+    for idx, pl in enumerate(places2):
+        #get appversion's index
+        index1 = categories.index(pl.appversion)
+        index2 = osversions.index(pl.osversion)
+        matrix[index2][index1] = int(pl.sum)
 
-        chart5 = {'categories':categories,'data':ver_data}
-        result['chart5'] = chart5
+    mindex = 0
+    for idx, pl in enumerate(places2):
+        if pl.osversion not in osversions2:
+            osversions2.append(str(pl.osversion))
+            ver_data.append({'name':pl.osversion,'data':matrix[mindex]})
+            mindex = mindex + 1
+
+    chart5 = {'categories':categories,'data':ver_data}
+    result['chart5'] = chart5
+
     return HttpResponse(json.dumps(result), 'application/json');
 
 def chartdata_ebcs(request,apikey):
@@ -645,7 +541,6 @@ def chartdata_ebcs(request,apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print 'retention', retention
     # Common Data
     result = {}
 
@@ -653,11 +548,9 @@ def chartdata_ebcs(request,apikey):
     temp_data = {}
     activities = []
 
-    sql = "select count(*) count, country from errors e, instances i, projects p"
-    sql = sql + " where e.iderror = i.iderror"
-    sql = sql + " and e.pid = p.pid"
-    sql = sql + " and p.pid = %(pname)s"
-    sql = sql + " and i.datetime > (curdate() - interval %(intervalinput)s day) "
+    sql = "select count(*) count, country from instances "
+    sql = sql + " where pid = %(pname)s "
+    sql = sql + " and datetime > (curdate() - interval %(intervalinput)s day) "
     sql = sql + " group by country"
     sql = sql + " order by count desc"
     sql = sql + " limit 10"
