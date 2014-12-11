@@ -26,6 +26,8 @@
 	<script type="text/javascript">
         var project_id = "{{ projectid }}";
         var server_url = "{{ ServerURL }}";
+		var max_error = "{{ max_error }}";
+		console.log(max_error);
 
         $("head").compileCSS("{% static 'css/' %}",'style.css', new Array("theme/dark") );
 
