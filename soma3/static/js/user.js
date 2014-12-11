@@ -1441,6 +1441,9 @@ $("head").styleReady(function(){
                 query['classes']=class_list;
                 query['appv']=appv_list;
                 query['osv']=osv_list;
+                //page , num  값 추가 하였습니다.
+                query['page']=0;
+                query['num']=10;
                 if(JSON.stringify(pre_query) == JSON.stringify(query))  return;
                 if(pre_query['date'] != query['date'])
                     appv_osv_update(date_idx);
