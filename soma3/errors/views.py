@@ -752,6 +752,7 @@ def filter_view(request,apikey):
         'osv_list' : osv_list,
         'margin' : {'osv':osv_margin,'appv':appv_margin},
         'appv_list' : appv_list,
+        'max_error' : errorElements.count()
     }
 
     userdict = getUserProfileDict(user)
@@ -801,19 +802,26 @@ def error_list(request,apikey):
     if osversion and osversion[0] == 'All':
         osversion = []
 
+    page = jsonData['page']
+    num = jsonData['num']
     #Filtering Query를 적용하여 해당하는  Error를 보여줌
 
     week, today = getTimeRange(date,projectElement.timezone)
-    errorElements = Errors.objects.filter(pid=projectElement,rank__in=rank,status__in=status,lastdate__range=(week,today)).order_by('-errorweight','rank', '-lastdate')
+
+    ##일단 로직을 추가 하고 page, num 처리하여씀 여기서 속도가 느릴 경우 errorElements 쪽을 수정
+    errorElements = Errors.objects.filter(pid=projectElement,
+                                          rank__in=rank,
+                                          status__in=status,lastdate__range=(week,today)
+    ).order_by('-errorweight','rank', '-lastdate')
     #print '1',errorElements
     #print classes
     if classes:
-        errorElements = errorElements.filter(errorclassname__in=classes)
+        errorElements = errorElements.filter(errorclassname__in=classes)[page * num: (page+1) * num]
     #print tags
     if tags:
         #tagElements = Tags.objects.filter(iderror__in=errorElements,tag__in=tags).values('iderror').distinct().order_by('iderror')
 
-        tagElements = Tags.objects.select_related().filter(iderror__in=errorElements,tag__in=tags).values('iderror').distinct().order_by('iderror')
+        tagElements = Tags.objects.select_related().filter(iderror__in=errorElements,tag__in=tags).values('iderror').distinct().order_by('iderror')[page * num: (page+1) * num]
         print tagElements
         iderror_list = []
         for e in tagElements:
@@ -822,7 +830,7 @@ def error_list(request,apikey):
     #print appversion
     if appversion:
         print 'appversion',appversion
-        appvElements = Appstatistics.objects.select_related().filter(iderror__in=errorElements,appversion__in=appversion).values('iderror').distinct().order_by('iderror')
+        appvElements = Appstatistics.objects.select_related().filter(iderror__in=errorElements,appversion__in=appversion).values('iderror').distinct().order_by('iderror')[page * num: (page+1) * num]
         print 'appvElements',appvElements
         iderror_list = []
         for e in appvElements:
@@ -831,12 +839,12 @@ def error_list(request,apikey):
         errorElements = errorElements.filter(iderror__in=iderror_list)
     #print osversion
     if osversion:
-        osvElements = Osstatistics.objects.select_related().filter(iderror__in=errorElements,osversion__in=osversion).values('iderror').distinct().order_by('iderror')
+        osvElements = Osstatistics.objects.select_related().filter(iderror__in=errorElements,osversion__in=osversion).values('iderror').distinct().order_by('iderror')[page * num: (page+1) * num]
         iderror_list = []
         for e in osvElements:
             iderror_list.append(int(e['iderror']))
         #if iderror_list:
-        errorElements = errorElements.filter(iderror__in=iderror_list)
+        errorElements = errorElements.filter(iderror__in=iderror_list)[page * num: (page+1) * num]
 
     #print errorElements
 
