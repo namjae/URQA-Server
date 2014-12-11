@@ -5,6 +5,7 @@ import json
 import operator
 import datetime
 import sys
+from django.db.models import Count
 from django.template import Context, loader
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -232,10 +233,19 @@ def chartdata_ebav(request,apikey):
     sql2 = sql2 + "group by appversion "
     sql2 = sql2 + "order by total desc"
 
-    
 
     params2 = {'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+
+
     totalSession = TotalSession.objects.raw(sql2, params2)
+
+    #======= 장고로 변환 테스트가 안되어 있음;;
+    # pasttime= '%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)
+    #
+    # totalSession = sorted(Instances.objects.values('appversion').annotate(total=Count('*')).filter(
+    #     pid=projectElement, datetime__gte=pasttime
+    # ).group_by('appversion'), key=lambda instance: instance['total'], reverse=True)
+
     sum = 0
     for idx, pl in enumerate(totalSession):
         sum = sum + pl.total
