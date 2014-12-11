@@ -248,7 +248,7 @@ class Osstatistics(models.Model):
     idosstatistics = models.AutoField(primary_key=True)
     iderror = models.ForeignKey(Errors, db_column='iderror')
     osversion = models.CharField(max_length=10)
-    pid = models.ForeignKey('Projects')
+    pid = models.ForeignKey('Projects', db_column="pid")
     count = models.IntegerField()
     class Meta:
         managed = False
