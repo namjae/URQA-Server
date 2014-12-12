@@ -3,3 +3,5 @@
 **/google_client_secrets.json
 **/settings.py
 **/.idea/
+**/bin
+**/lib

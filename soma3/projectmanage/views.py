@@ -539,35 +539,30 @@ def projects(request):
         pasttime = '%d-%d-%d %d:%d:%d' % (2014,12,3,12,0,0)
 
         #pid_list = [str(project) for project in Projects.objects.values_list('pid')]
-        #Instances.objects.values('iderror').annotate(count=Count('iderror')).prefech_selected('iderror').filter(
+        #places = Instances.objects.values('iderror').annotate(count=Count('iderror')).prefech_selected('iderror').filter(
         #    iderror__pid__in=pidList,
         #    datetime__gt=pasttime
         #).group_by('iderror__pid')
 
-        places = Instances.objects.values('pid').annotate(
-            count=Count('iderror')).prefetch_related('iderror').filter(
-            iderror__pid__in=idxProjectList, datetime__gt=pasttime
-        ).group_by('pid')
+        pidList = ", ".join(str(v) for v in idxProjectList)
 
-        # sql = "SELECT B.pid AS pid, count(*) AS count FROM errors B JOIN instances A ON A.iderror = B.iderror "
-        # sql = sql + "where B.pid IN ( " + pidList +") "
-        # sql = sql + "and B.status IN (0,1) "
-        # sql = sql + "and A.datetime > %(pasttime)s "
-        # sql = sql + "GROUP BY B.pid "
-        # params = {'pidinput': "(" + ",".join(str(v) for v in idxProjectList)+")" ,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
-        # places = LoginErrorCountModel.objects.raw(sql, params)
+        sql = "SELECT B.pid AS pid, count(*) AS count FROM errors B JOIN instances A ON A.iderror = B.iderror "
+        sql = sql + "where B.pid IN ( " + pidList +") "
+        sql = sql + "and B.status IN (0,1) "
+        sql = sql + "and A.datetime > %(pasttime)s "
+        sql = sql + "GROUP BY B.pid "
+        
+        params = {'pidinput': "(" + ",".join(str(v) for v in idxProjectList)+")" ,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+        places = LoginErrorCountModel.objects.raw(sql, params)
+
         for idx,pl in enumerate(places):
             placesDict[pl.pid]=pl.count
 
-
-        # sql = "SELECT app.pid AS pid ,SUM(app.appruncount) AS count FROM appruncount2 app "
-        # sql = sql + "WHERE app.pid in (" + pidList + ") AND "
-        # sql = sql + "app.datetime > %(pasttime)s "
-        # sql = sql + "GROUP BY app.pid"
-        # apprunCount = LoginApprunCount.objects.raw(sql, params);
-
-        apprunCount = Appruncount2.objects.values('pid').annotate(count=Sum('appruncount')).filter(
-            pid__in=idxProjectList).filter(datetime__gt=pasttime).group_by('pid')
+        sql = "SELECT app.pid AS pid ,SUM(app.appruncount) AS count FROM appruncount2 app "
+        sql = sql + "WHERE app.pid in (" + pidList + ") AND "
+        sql = sql + "app.datetime > %(pasttime)s "
+        sql = sql + "GROUP BY app.pid"
+        apprunCount = LoginApprunCount.objects.raw(sql, params);
 
         for idx, app in enumerate(apprunCount):
             apprunDit[app.pid]  = app.count
@@ -641,13 +636,14 @@ def projectdashboard(request, apikey):
     if not valid:
         return HttpResponseRedirect('/urqa')
 
-    print request.META.get('REMOTE_ADDR'),username, projectelement.name
+    #print request.META.get('REMOTE_ADDR'),username, projectelement.name
 
     userdict = getUserProfileDict(userelement)
     apikeydict = getApikeyDict(apikey)
     settingdict = getSettingDict(projectelement,userelement)
 
     listdict = errorscorelist(apikey)
+    #listdict = []
 
     dashboarddict = {
         'error_list' : listdict,
@@ -674,10 +670,11 @@ def dailyesgraph(request, apikey):
         return HttpResponse(json.dumps(default),'application/json')
 
     #일간 데이터를 얻어오기위한 쿼리 작성
-    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'%%y-%%m-%%d') as errorday "
+    #sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(CONVERT_TZ(datetime,'UTC',%(timezone)s),'%%y-%%m-%%d') as errorday "
+    sql = "select count(*) as errorcount ,appversion, DATE_FORMAT(datetime,'%%y-%%m-%%d') as errorday "
     sql = sql + "from instances A, errors B "
     sql = sql + "where A.iderror = B.iderror "
-    sql = sql + "and pid = %(pidinput)s "
+    sql = sql + "and B.pid = %(pidinput)s "
     sql = sql + "and B.status in (0,1) "
     sql = sql + "and A.datetime > %(pasttime)s"
     sql = sql + "group by errorday"
@@ -788,11 +785,10 @@ def typeescolor(request ,apikey):
     week , today = getTimeRange(timerange,ProjectElement.timezone)
 
     for i in range(RANK.Unhandle,RANK.Minor+1): # unhandled 부터 Minor 까지
-       ErrorsElements = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open] ,lastdate__range = (week,today), rank = i) #일주일치 얻어옴
-       if len(ErrorsElements) > 0:
-           for error in ErrorsElements:
-               default['tags'][i]['value'] += error.errorweight
-               #print str(i) + ':' +  str(default['tags'][i]['value'])
+       errorweight = Errors.objects.filter(pid = ProjectElement ,status__in=[Status.New,Status.Open] ,lastdate__range = (week,today), rank = i).aggregate(Sum('errorweight')) #일주일치 얻어옴
+
+       if errorweight is not None:
+            default['tags'][i]['value'] = errorweight
 
     ColorTable = []
     for i in range(RANK.Unhandle,RANK.Minor+1):
@@ -815,7 +811,9 @@ def errorscorelist(apikey):
     #print today
 
     week, today = getTimeRange(TimeRange.weekly,ProjectElement.timezone)
-    ErrorElements = Errors.objects.filter(pid = ProjectElement , status__in=[Status.New,Status.Open],lastdate__range = (week, today) ).order_by('rank','-numofinstances','-lastdate')
+
+    # 최초 50개 만 가져온다.
+    ErrorElements = Errors.objects.filter(pid = ProjectElement , status__in=[Status.New,Status.Open],lastdate__range = (week, today) ).order_by('rank','-numofinstances','-lastdate')[:50]
 
     jsondata = []
 

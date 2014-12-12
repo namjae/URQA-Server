@@ -519,6 +519,7 @@ def calc_eventpath(errorElement):
         eventHash = {}
         #최근 인스턴스를 우선적으로 비교하기위해 -idinstance를 사용함
         eventElements = Eventpaths.objects.filter(iderror=errorElement,depth=depth,ins_count__gte=ins_count_limit).order_by('-idinstance')
+
         #print 'event:',depth,eventElements
         limit_count = 0
         for event in eventElements:
@@ -567,6 +568,7 @@ def calc_eventpath(errorElement):
     for instanceElement in instanceElements:
         #print instanceElement.idinstance
         eventElements = Eventpaths.objects.filter(iderror=errorElement,idinstance=instanceElement).order_by('-depth')
+
         length = min(len(eventElements),depth_count)
         for i in range(0,length-1):
             #print i
@@ -577,10 +579,16 @@ def calc_eventpath(errorElement):
                 source_key = source_key + ': '
             #source_key = str(eventElements[i].depth) + ':' + str(eventElements[i].linenum)
             #print 'source_key',source_key
+
             if not source_key in k2i_table:
-                source_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others: : : ']
+                if (str(eventElements[i].depth) + ':' + 'Others: : : ') in k2i_table:
+                    source_id = k2i_table[str(eventElements[i].depth) + ':' + 'Others: : : ']
+                else:
+                    print "Error : do not find source_key " , source_key
+                    source_id = -1
             else:
                 source_id = k2i_table[source_key]
+
             target_key = str(eventElements[i+1].depth) + ':' + eventElements[i+1].classname + ':' + eventElements[i+1].methodname + ':' + str(eventElements[i+1].linenum)
             if eventElements[i+1].label != None:
                 target_key = target_key + ':' + eventElements[i+1].label
@@ -589,7 +597,13 @@ def calc_eventpath(errorElement):
             #target_key = str(eventElements[i+1].depth) + ':' + str(eventElements[i+1].linenum)
             #print 'target_key',target_key
             if not target_key in k2i_table:
-                target_id = k2i_table[str(eventElements[i+1].depth) + ':' + 'Others: : : ']
+                if (str(eventElements[i].depth) + ':' + 'Others: : : ') in k2i_table:
+                    target_id = k2i_table[str(eventElements[i+1].depth) + ':' + 'Others: : : ']
+                else:
+                    print "Error : do not find target_key " , target_key
+                    target_id = -1
+
+                #target_id = k2i_table[str(eventElements[i+1].depth) + ':' + 'Others: : : ']
             else:
                 target_id = k2i_table[target_key]
 
@@ -669,7 +683,6 @@ def filter_view(request,apikey):
 
     if not valid:
         return HttpResponseRedirect('/urqa')
-	user = AuthUser.objects.get(username = request.user)
 
     week, today = getTimeRange(TimeRange.weekly,projectelement.timezone)
 
@@ -744,7 +757,10 @@ def filter_view(request,apikey):
     for i in range(0,5 - len(appv_list)):
         appv_margin += ' '
 
-    #tpl = loader.get_template('filter.html')
+
+    user = AuthUser.objects.get( username = request.user )
+
+    tpl = loader.get_template('filter.html')
     filterdict = {
         #'ServerURL' : 'http://'+request.get_host() + '/urqa/project/',
         'tag_list' : tag_list,
@@ -754,18 +770,18 @@ def filter_view(request,apikey):
         'appv_list' : appv_list,
         'max_error' : errorElements.count()
     }
-
+    
     userdict = getUserProfileDict(user)
     apikeydict = getApikeyDict(apikey)
     settingdict = getSettingDict(projectelement,user)
-    print userdict
+    
     ctxdict  = dict(userdict.items() + apikeydict.items() + settingdict.items() + filterdict.items() )
     ctx = Context(ctxdict);
 
 
-    #return HttpResponse(tpl.render(ctx))
+    return HttpResponse(tpl.render(ctx))
 
-    return render(request, 'filter.html', ctx)
+    #return render(request, 'filter.html', ctx)
 
 
 def error_list(request,apikey):
@@ -913,7 +929,7 @@ def appv_ratio(request,apikey):
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
 
     num = request.POST.get('num',10)
-    page = request.POST('page', 0)
+    page = request.POST.get('page', 0)
 
     retention = int(jsonData['retention'])
     depth = int(jsonData['depth'])
@@ -927,7 +943,7 @@ def appv_ratio(request,apikey):
     errorElements = Errors.objects.filter(pid=projectElement,lastdate__range=(past,today))
 
     data = {'appv':{},'osv':{}}
-    instances = Instances.objects.select_related().filter(iderror__in=errorElements,datetime__range=(past,today)).order_by('-appversion')
+    instances = Instances.objects.select_related().filter(pid=projectElement,datetime__range=(past,today)).order_by('-appversion')
 
     for i in instances:
         key = i.appversion
