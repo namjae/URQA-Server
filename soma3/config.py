@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import os
-import ConfigParser
 
-cfg = ConfigParser.RawConfigParser()
-cfg.read(os.path.join(os.path.dirname(__file__),'config.cfg'))
-#print 'config.py'
+from UrqaConfigLoader import UrqaConfigLoader
+
+urqaConfig = UrqaConfigLoader("/data/etc/urqa.io/config.cfg")
+
+
 def get_config(option):
-    return cfg.get('urqa',option)
+    return urqaConfig.get_config(option)
 
 """
 

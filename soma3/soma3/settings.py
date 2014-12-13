@@ -1,6 +1,10 @@
 # Django settings for soma3 project.
 # -*- coding: utf-8 -*-
 import os
+from UrqaConfigLoader import UrqaConfigLoader
+
+urqaDbConfig = UrqaConfigLoader("/data/etc/urqa.io/dbconfig.cfg")
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -28,14 +32,16 @@ PORT
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'urqa',               # Or path to database file if using sqlite3.
+        'NAME': urqaDbConfig.get_config('DB_NAME'),               # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': os.environ['URQA_USER'],
-        'PASSWORD': os.environ['URQA_PASSWORD'],
-        'HOST': os.environ['URQA_HOST'],                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': os.environ['URQA_PORT'],                      # Set to empty string for default.
+        'USER': urqaDbConfig.get_config('DB_USER'),
+        'PASSWORD': urqaDbConfig.get_config('DB_PASSWORD'),
+        'HOST': urqaDbConfig.get_config('DB_HOST'),                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': urqaDbConfig.get_config('DB_PORT'),                      # Set to empty string for default.
     }
 }
+
+
 
 DATABASE_OPTIONS = {'charset':'utf8'}
 
