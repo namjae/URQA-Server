@@ -2,7 +2,6 @@
 
 ---
 
-- pip install mysql
 - pip install virtualenv
 - pip install virtualenvwrapper
 - source /usr/local/bin/virtualenvwrapper.sh 를 .bashrc 나 .profile 에 추가
