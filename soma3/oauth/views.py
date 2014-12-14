@@ -24,7 +24,7 @@ from config import get_config
 CLIENT_SECRETS = get_config('GOOGLE_OAUTH_PATH')
 FLOW = flow_from_clientsecrets(CLIENT_SECRETS,
                                    scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
-                                   redirect_uri="http://urqa.io/urqa/user/auth_return")
+                                   redirect_uri=get_config('GOOGLE_AUTH_REDIRECT'))
 
 def login_by_google(request):
     #Google login을 사용하기위한 API적용
