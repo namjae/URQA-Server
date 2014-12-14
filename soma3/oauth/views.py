@@ -18,11 +18,13 @@ from oauth2client import xsrfutil
 from apiclient.discovery import build
 from oauth2client.client import OAuth2WebServerFlow
 
+from config import get_config
 
-CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'google_client_secrets.json')
+
+CLIENT_SECRETS = get_config('GOOGLE_OAUTH_PATH')
 FLOW = flow_from_clientsecrets(CLIENT_SECRETS,
                                    scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
-                                   redirect_uri="http://urqa.io/urqa/user/auth_return")
+                                   redirect_uri=get_config('GOOGLE_AUTH_REDIRECT'))
 
 def login_by_google(request):
     #Google login을 사용하기위한 API적용
@@ -42,8 +44,9 @@ def auth_return(request):
     print request.REQUEST
     if 'error' in request.REQUEST:
         return HttpResponseRedirect('/')
-    if not xsrfutil.validate_token(settings.SECRET_KEY, request.REQUEST['state'],request.user):
+    if not xsrfutil.validate_token(settings.SECRET_KEY, request.REQUEST['state'], request.user):
         return  HttpResponseBadRequest()
+
     credential = FLOW.step2_exchange(request.REQUEST)
 
     http = httplib2.Http()
