@@ -469,31 +469,31 @@ def log(request, apikey, iderror, idinstance):
     return HttpResponse(json.dumps(logstringlist),'appliacation/json')
 
 #instanceEventpath
-def instanceeventpath(request, apikey, iderror, idinstance):
+#def instanceeventpath(request, apikey, iderror, idinstance):
     #Instance의 개별 EventPath를 얻어온다.
     #권한 있나 없나 체크
-    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
-    if not valid:
-        print message
-        return HttpResponseRedirect('/urqa')
+ #   valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
+ #   if not valid:
+ #       print message
+ #       return HttpResponseRedirect('/urqa')
 
-    instanceElement = Instances.objects.get(idinstance = idinstance)
+ #   instanceElement = Instances.objects.get(idinstance = idinstance)
 
-    EventPathElements = Eventpaths.objects.filter(idinstance = instanceElement).order_by('depth')
+ #   EventPathElements = Eventpaths.objects.filter(idinstance = instanceElement).order_by('depth')
 
     #Event Path에는 시간, 클래스이름, 라인수, 사용자 Tag데이터가 들어간다.
-    eventpathlist = []
-    for eventpath in EventPathElements:
-        adtimezone = toTimezone(eventpath.datetime,projectelement.timezone)
-        eventpathttuple = {'date' : '' , 'time' : '', 'class' : '', 'methodline' : ''}
-        eventpathttuple['date'] =adtimezone.__format__('%Y.%m.%d')
-        eventpathttuple['time'] =adtimezone.__format__('%H:%M:%S')
-        eventpathttuple['class'] = eventpath.classname
-        eventpathttuple['methodline'] = str(eventpath.methodname) + ':' + str(eventpath.linenum)
-        eventpathlist.append(eventpathttuple)
+ #   eventpathlist = []
+ #   for eventpath in EventPathElements:
+ #       adtimezone = toTimezone(eventpath.datetime,projectelement.timezone)
+ #       eventpathttuple = {'date' : '' , 'time' : '', 'class' : '', 'methodline' : ''}
+ #       eventpathttuple['date'] =adtimezone.__format__('%Y.%m.%d')
+ #       eventpathttuple['time'] =adtimezone.__format__('%H:%M:%S')
+ #       eventpathttuple['class'] = eventpath.classname
+ #       eventpathttuple['methodline'] = str(eventpath.methodname) + ':' + str(eventpath.linenum)
+ #       eventpathlist.append(eventpathttuple)
         #print 'evd',eventpath.depth
 
-    return HttpResponse(json.dumps(eventpathlist),'application/json')
+ #   return HttpResponse(json.dumps(eventpathlist),'application/json')
 
 
 def calc_eventpath(errorElement):
@@ -635,16 +635,13 @@ def calc_eventpath(errorElement):
     return result
 
 #Deprecated eventpath
-def eventpath(request,apikey,iderror):
-
-    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
-    if not valid:
-        print message
-        return HttpResponseRedirect('/urqa')
-
-    result = calc_eventpath(ErrorsElement)
-
-    return HttpResponse(json.dumps(result),'application/json')
+#def eventpath(request,apikey,iderror):
+#    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
+#    if not valid:
+#        print message
+#        return HttpResponseRedirect('/urqa')
+#    result = calc_eventpath(ErrorsElement)
+#    return HttpResponse(json.dumps(result),'application/json')
 
 
 def author_check_error_page(username,apikey,iderror):
@@ -832,12 +829,12 @@ def error_list(request,apikey):
     #print '1',errorElements
     #print classes
     if classes:
-        errorElements = errorElements.filter(errorclassname__in=classes)[page * num: (page+1) * num]
+        errorElements = errorElements.filter(errorclassname__in=classes)
     #print tags
     if tags:
         #tagElements = Tags.objects.filter(iderror__in=errorElements,tag__in=tags).values('iderror').distinct().order_by('iderror')
 
-        tagElements = Tags.objects.select_related().filter(iderror__in=errorElements,tag__in=tags).values('iderror').distinct().order_by('iderror')[page * num: (page+1) * num]
+        tagElements = Tags.objects.select_related('iderror').filter(iderror__in=errorElements,tag__in=tags).values('iderror').distinct().order_by('iderror')[page * num: (page+1) * num]
         print tagElements
         iderror_list = []
         for e in tagElements:
@@ -846,7 +843,7 @@ def error_list(request,apikey):
     #print appversion
     if appversion:
         print 'appversion',appversion
-        appvElements = Appstatistics.objects.select_related().filter(iderror__in=errorElements,appversion__in=appversion).values('iderror').distinct().order_by('iderror')[page * num: (page+1) * num]
+        appvElements = Appstatistics.objects.select_related().filter(iderror__in=errorElements,appversion__in=appversion).values('iderror').distinct().order_by('iderror')
         print 'appvElements',appvElements
         iderror_list = []
         for e in appvElements:
@@ -855,19 +852,20 @@ def error_list(request,apikey):
         errorElements = errorElements.filter(iderror__in=iderror_list)
     #print osversion
     if osversion:
-        osvElements = Osstatistics.objects.select_related().filter(iderror__in=errorElements,osversion__in=osversion).values('iderror').distinct().order_by('iderror')[page * num: (page+1) * num]
+        osvElements = Osstatistics.objects.select_related().filter(iderror__in=errorElements,osversion__in=osversion).values('iderror').distinct().order_by('iderror')
         iderror_list = []
         for e in osvElements:
             iderror_list.append(int(e['iderror']))
         #if iderror_list:
-        errorElements = errorElements.filter(iderror__in=iderror_list)[page * num: (page+1) * num]
+        errorElements = errorElements.filter(iderror__in=iderror_list)
 
     #print errorElements
 
 
+    errorElements = errorElements[page*num : (page+1) * num]
 
     result = []
-    for e in errorElements:
+    for e in errorElements.iterator():
         adtimezone = toTimezone(e.lastdate,projectelement.timezone)
         #print adtimezone
         new_e = {}
@@ -928,7 +926,7 @@ def appv_ratio(request,apikey):
 
     jsonData = json.loads(request.POST['json'],encoding='utf-8')
 
-    num = request.POST.get('num',10)
+    num = request.POST.get('num', 10)
     page = request.POST.get('page', 0)
 
     retention = int(jsonData['retention'])
@@ -940,57 +938,65 @@ def appv_ratio(request,apikey):
         return HttpResponseRedirect('/urqa')
 
     past, today = getTimeRange(retention,projectElement.timezone)
-    errorElements = Errors.objects.filter(pid=projectElement,lastdate__range=(past,today))
+    #errorElements = Errors.objects.filter(pid=projectElement,lastdate__range=(past,today))
 
     data = {'appv':{},'osv':{}}
-    instances = Instances.objects.select_related().filter(pid=projectElement,datetime__range=(past,today)).order_by('-appversion')
+    instances = Instances.objects.select_related('pid').filter(
+        pid=projectElement, datetime__range=(past, today))
 
-    for i in instances:
-        key = i.appversion
-        if not key in data['appv']:
-            data['appv'][key] = 1
-        else:
-            data['appv'][key] += 1
+    #Instances.objects.select_related('pid').values('appversion').filter(pid=projectElement,datetime__range=(past,today)).annotate(count=Count('appversion')).order_by('-count')
+    print 1
+    appv_instances = instances.values('appversion').annotate(count=Count('appversion')).order_by('-count')
+    for i in appv_instances.iterator():
+        key = i['appversion']
+        print key
+        #if not key in data['appv']:
+        data['appv'][key] = i['count']
+        #else:
+        #   data['appv'][key] += 1
     #print "data['appv']",data['appv']
-
+    print 2
     osv_list = {}
-    instances.order_by('-osversion')
-    for i in instances:
-        k = i.osversion.split('.')
+    os_instances = instances.values('osversion').annotate(count=Count('osversion')).order_by('-count')
+    for i in os_instances.iterator():
+        k = i['osversion'].split('.')
         if len(k) < 2:
             k.append(' ')
-        key = k[0]+'.'+k[1];
-        if not key in data['osv']:
+        key = k[0]+'.'+k[1]
+        data['osv'][key] = i['count']
+        #if not key in data['osv']:
             #print key
-            data['osv'][key] = 1
-            osv_list[key] = []
-        else:
-            data['osv'][key] += 1
-        if not i.osversion in osv_list[key]:
-            osv_list[key].append(i.osversion)
+        data['osv'][key] = 1
+        osv_list[key] = []
+        #else:
+        #    data['osv'][key] += 1
+        #if not i.osversion in osv_list[key]:
+        osv_list[key].append(i['osversion'])
     #print "data['osv']",data['osv']
-
+    print 3
     max_count = 5
     appv_data = sorted(data['appv'].iteritems(), key=operator.itemgetter(1), reverse=True)
 
     appv_others = []
     if len(appv_data) > max_count:
         appv_others.append(appv_data[max_count-1][0])
+
     while len(appv_data) > max_count:
         appv_data[max_count-1] = ('Others',appv_data[max_count-1][1] + appv_data[max_count][1])
         appv_others.append(appv_data[max_count][0])
         appv_data.pop(max_count)
-
+    print 4
     osv_data = sorted(data['osv'].iteritems(), key=operator.itemgetter(1), reverse=True)
     osv_others = []
     if len(appv_data) > max_count:
         osv_others.append(appv_data[max_count-1][0])
+
+    print 5
     while len(osv_data) > max_count:
-        osv_data[max_count-1] = ('Others',osv_data[max_count-1][1] + osv_data[max_count][1])
+        osv_data[max_count-1] = ('Others', osv_data[max_count-1][1] + osv_data[max_count][1])
         osv_others.append(osv_data[max_count][0])
         osv_data.pop(max_count)
-    #print osv_data
 
-
+    print 6
     return HttpResponse(json.dumps({'total':instances.count(),'appv':appv_data,'osv':osv_data,'osv_list':osv_list,'appv_others':appv_others,'osv_others':osv_others}), 'application/json');
 

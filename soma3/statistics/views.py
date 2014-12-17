@@ -353,7 +353,7 @@ def chartdata_ebav(request,apikey):
 
 class Erbc(models.Model):
     errorclassname = models.CharField(primary_key=True, max_length=300)
-    count = models.IntegerField(blank=True, null=True)
+    cnt = models.IntegerField(blank=True, null=True)
 
 def chartdata_erbc(request,apikey):
     #발생한 에러를 Class별로 나누어 나타낸다.
@@ -373,7 +373,7 @@ def chartdata_erbc(request,apikey):
 
     params = {'pidinput':projectElement.pid,'intervalinput':retention }
 
-    tmp = Erbc.objects.raw(sql, params)
+    tmp = Erbc.objects.raw(sql, params)[:100]
     chart2 = []
 
     for idx, pl in enumerate(tmp):
