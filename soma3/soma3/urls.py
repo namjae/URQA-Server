@@ -76,8 +76,8 @@ urlpatterns = patterns('',
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/$', 'errors.views.errorDetail'), #Error Detail page
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)$', 'errors.views.instancedetatil'),    #Error Instance Detail Page
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/log$', 'errors.views.log'),    #Error Log View Page
-    url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/instanceeventpath$', 'errors.views.instanceeventpath'),    #Error Instance event path
-    url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/eventpath$', 'errors.views.eventpath'),    #Error Event path calculation
+    #url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/(?P<idinstance>\d+)/instanceeventpath$', 'errors.views.instanceeventpath'),    #Error Instance event path
+    #url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/eventpath$', 'errors.views.eventpath'),    #Error Event path calculation
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/tag/new$', 'errors.views.newTag'),         #Error Tagging
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/tag/delete$', 'errors.views.deleteTag'),   #Error Delete Tagging
     url(r'^urqa/project/(?P<apikey>.{8})/errors/(?P<iderror>\d+)/comment/new$', 'errors.views.newComment'), #Error Create comment

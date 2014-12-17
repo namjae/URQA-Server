@@ -41,6 +41,7 @@ function getinstancedata(idinstance)
     })
 }
 
+/*
 function geteventpath(idinstance)
 {
       $.ajax({
@@ -68,6 +69,7 @@ function geteventpath(idinstance)
         }
     })
 }
+*/
 function getlog(idinstance)
 {
      $.ajax({
