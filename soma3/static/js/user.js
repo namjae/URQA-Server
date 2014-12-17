@@ -1119,7 +1119,7 @@ $("head").styleReady(function(){
     if($("body").hasClass("error") )
     {
         page_num = 1;
-        list_per_page = 15;
+        list_per_page = 100;
         listData = [];
         list_count = 0;
         pre_query={};
@@ -1445,7 +1445,7 @@ $("head").styleReady(function(){
                 query['osv']=osv_list;
                 //page , num  값 추가 하였습니다.
                 query['page']=0;
-                query['num']=10;
+                query['num']=list_per_page;
                 if(JSON.stringify(pre_query) == JSON.stringify(query))  return;
                 if(pre_query['date'] != query['date'])
                     appv_osv_update(date_idx);
