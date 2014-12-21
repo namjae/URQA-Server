@@ -5,7 +5,7 @@ import json
 import operator
 import datetime
 import sys
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.template import Context, loader
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -24,7 +24,7 @@ from utility import Status
 from utility import getTimezoneMidNight
 from utility import getTimezoneHour
 
-from urqa.models import AuthUser
+from urqa.models import AuthUser, Appruncount2
 from urqa.models import Errors
 from urqa.models import Instances
 from urqa.models import ErrorsbyApp
@@ -97,6 +97,10 @@ def chartdata_sbav(request,apikey):
     #########################################
     sql2 = 'SELECT appversion ,sum(appruncount) as total FROM appruncount2 where pid = %(pidinput)s and datetime >= %(pasttime)s group by appversion order by total desc'
     params2 = {'pidinput':projectElement.pid,'pasttime':'%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)}
+
+    #pasttime='%d-%d-%d %d:%d:%d' % (past.year,past.month,past.day,past.hour,past.minute,past.second)
+    #totalSession = Appruncount2.objects.values('appversion').annotate(total=Sum('appruncount')).filter(pid=projectElement, datetime=pasttime).group_by('appversion').order_by('-total')
+
     totalSession = TotalSession.objects.raw(sql2, params2)
     sum = 0
     for idx, pl in enumerate(totalSession):

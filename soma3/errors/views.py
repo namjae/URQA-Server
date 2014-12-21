@@ -986,17 +986,20 @@ def appv_ratio(request,apikey):
         appv_others.append(appv_data[max_count][0])
         appv_data.pop(max_count)
     print 4
+    print data['osv']
     osv_data = sorted(data['osv'].iteritems(), key=operator.itemgetter(1), reverse=True)
-    osv_others = []
-    if len(appv_data) > max_count:
-        osv_others.append(appv_data[max_count-1][0])
 
     print 5
+    osv_others = []
+    if len(osv_data) > max_count:
+        osv_others.append(osv_data[max_count-1][0])
+
+    print 6
     while len(osv_data) > max_count:
         osv_data[max_count-1] = ('Others', osv_data[max_count-1][1] + osv_data[max_count][1])
         osv_others.append(osv_data[max_count][0])
         osv_data.pop(max_count)
 
-    print 6
+    print 7
     return HttpResponse(json.dumps({'total':instances.count(),'appv':appv_data,'osv':osv_data,'osv_list':osv_list,'appv_others':appv_others,'osv_others':osv_others}), 'application/json');
 
