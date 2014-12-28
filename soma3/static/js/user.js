@@ -1136,16 +1136,28 @@ $("head").styleReady(function(){
         function initPageChanger()
         {
             list_count = listData.length
-            page_num = 1; //page_number초기화
-            $('.page-changer>ul').empty()
-            if(list_count / list_per_page > 1)
+            //page_num = 1; //page_number초기화
+            // max 667 /
+            console.log(list_count);
+            console.log(list_per_page);
+            console.log(max_error);
+            var page_count = max_error / list_per_page;
+            console.log(page_count);
+            $('.page-changer>ul').empty();
+            if(page_count > 1)
             {
-                $('.page-changer>ul').append($('<li class="dont" onclick="pageChange(1);">&lt;&lt;</li>'))
-                for(var i=0;i<Math.ceil(list_count/list_per_page);i++)
-                    $('.page-changer>ul').append($('<li onclick="pageChange('+Number(i+1)+');">'+ (i+1) +'</li>'))
-                $('.page-changer>ul').append($('<li onclick="pageChange('+Math.ceil(list_count/list_per_page)+');">&gt;&gt;</li>'))
+                $('.page-changer>ul').append($('<li class="dont" onclick="pageChange2(0);">&lt;&lt;</li>'))
+                for(var i=0;i<Math.ceil(page_count);i++)
+                    $('.page-changer>ul').append($('<li onclick="pageChange2('+Number(i)+');">'+ (i+1) +'</li>'))
+
+                $('.page-changer>ul').append($('<li onclick="pageChange2('+Math.ceil(page_count)+');">&gt;&gt;</li>'))
+
                 $('.page-changer>ul').children('li').eq(page_num).addClass('select')
             }
+        }
+        pageChange2 = function(p_num){
+            console.log(p_num);
+            query_maker2(1,p_num);
         }
         pageChange = function(p_num)
         {
@@ -1155,7 +1167,7 @@ $("head").styleReady(function(){
             $('.page-changer>ul').children('.dont').removeClass('dont')
             if(p_num == 1)
                 $('.page-changer>ul').children('li').eq(0).addClass('dont')
-            else if(p_num == Math.ceil(list_count/list_per_page))
+            else if(p_num == Math.ceil(max_error/list_per_page))
                 $('.page-changer>ul').children('li').eq(p_num+1).addClass('dont')
             $('.page-changer>ul').children('.select').removeClass('select')
             $('.page-changer>ul').children('li').eq(p_num).addClass('select')
@@ -1361,7 +1373,9 @@ $("head").styleReady(function(){
         }
 
         var try_again = 0
-        query_maker = function (reload)
+
+
+        query_maker2 = function (reload, pagenum)
         {
             if(reload == undefined)
             {
@@ -1444,7 +1458,152 @@ $("head").styleReady(function(){
                 query['appv']=appv_list;
                 query['osv']=osv_list;
                 //page , num  값 추가 하였습니다.
-                query['page']=0;
+                query['num']=list_per_page;
+                if(JSON.stringify(pre_query) == JSON.stringify(query))  return;
+                if(pre_query['date'] != query['date'])
+                    appv_osv_update(date_idx);
+                pre_query = query;
+            }
+            else
+                query = pre_query;
+
+            query['page'] = pagenum || 0;
+            $.ajax( {
+                 type :'POST'
+                ,asyn :true
+                ,url :'./list'
+                ,dataType :"json"
+                ,data:{'json':JSON.stringify(query)}
+                ,success : function(jsonData) {
+                    // unhandled = 0, native = 1, critical = 2, major = 3, minor = 4
+                    if(jsonData.length == 0)
+                        $('.noerror_msg').show();
+                    else
+                        $('.noerror_msg').hide();
+                    listData = jsonData;
+                    //if(reload == undefined)
+                    //   initPageChanger();
+                    sort_list();
+
+                    $('.page-changer>ul').children('.dont').removeClass('dont')
+                    if(query['page'] == 0)
+                        $('.page-changer>ul').children('li').eq(0).addClass('dont')
+                    else if(query['page'] + 1 == Math.ceil(max_error/list_per_page)) {
+                        $('.page-changer>ul').children('li').eq(query['page'] + 2).addClass('dont')
+                    }
+                    $('.page-changer>ul').children('.select').removeClass('select')
+
+                    $('div.page-changer > ul > li').removeClass('select');
+                    $('div.page-changer > ul > li').eq(query['page'] + 1).addClass('select');
+                    //pageChange(query['page']);
+                }
+                ,error : function(){
+                    //retry
+                    if(try_again == 0)
+                    {
+                        console.log('retry query once more!')
+                        try_again++;
+                        //query_maker()
+                        location.reload();
+                    }
+                }
+                , beforeSend: function(xhr, settings) {
+                    var csrftoken = getCookie('csrftoken')
+                    if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                        // Send the token to same-origin, relative URLs only.
+                        // Send the token only if the method warrants CSRF protection
+                        // Using the CSRFToken value acquired earlier
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+        }
+
+        query_maker = function (reload, pagenum)
+        {
+            if(reload == undefined)
+            {
+                query = {}
+                tID = 0
+
+                //Rank
+                rank_chk = $('#rank_tr>td>div[data-value="checked"]');
+                var rank_list=[];
+                for(var i=0;i<rank_chk.length;i++)
+                {
+                    if(Number(rank_chk.eq(0).attr('value')) == 5)
+                    {
+                        rank_list.push(0,1,2,3,4);
+                    }
+                    else rank_list.push(Number(rank_chk.eq(i).attr('value')))
+                }
+                if(rank_chk.length == 0)
+                {
+                    rank_list.push(0,1,2,3,4);
+                }
+                //Status
+                status_idx = $('#status_tr>td>div>span[data-value="checked"]').parent().attr('data-value');
+                //Date
+                date_idx = $('.scrollbar>ul>li[data-value="true"]').attr('value')
+
+
+                //Tags
+                tags = $('.tags-list:not(.classes-list)>ul>li:not(.dropdown)')
+                tag_list = []
+                for(var i=0;i<tags.length;i++)
+                {
+                    if(tags.eq(i).parent().parent().hasClass('updated-tags'))
+                        continue;
+                    tag_list.push(tags.eq(i).text())
+                }
+                //Classes
+                classes = $('.classes-list>ul>li:not(.dropdown)')
+                class_list = []
+                for(var i=0;i<classes.length;i++)
+                    class_list.push(classes.eq(i).text())
+
+                appv_list = []
+                appv = $('#appvtr').find('.checkbox[data-value="checked"]');
+                for(var i=0;i<appv.length;i++)   appv_list.push(appv.eq(i).children('label').text());
+                appv = $('#appvtr').find('.button[data-value="checked"]');
+                for(var i=0;i<appv.length;i++)
+                {
+                    if(appv.eq(i).children('label').text()=='Others')
+                        appv_list = appv_list.concat(appv_others)
+                    appv_list.push(appv.eq(i).children('label').text());
+                }
+
+                osv_list = []
+                osv = $('#osvtr').find('.checkbox[data-value="checked"]');
+                for(var i=0;i<osv.length;i++)    osv_list.push(osv.eq(i).children('label').text());
+                osv = $('#osvtr').find('.button[data-value="checked"]');
+                for(var i=0;i<osv.length;i++)
+                {
+                    if(osv.eq(i).children('label').text()=='Others')
+                        osv_list = osv_list.concat(osv_others)
+                    osv_list.push(osv.eq(i).children('label').text());
+                }
+
+                if(typeof osv_sub_list != 'undefined')
+                {
+                    for(var i=0;i<osv_list.length;i++)
+                    {
+                        var key = osv_list[i]
+                        if(typeof osv_sub_list[key] == 'undefined')    continue;
+                        osv_list = osv_list.concat(osv_sub_list[key])
+                        osv_list.unique()
+                    }
+                }
+                query['rank']=rank_list;
+                query['status']=status_idx;
+                query['date']=date_idx;
+                query['tags']=tag_list;
+                query['classes']=class_list;
+                query['appv']=appv_list;
+                query['osv']=osv_list;
+                //page , num  값 추가 하였습니다.
+                query['page']=pagenum || 0;
                 query['num']=list_per_page;
                 if(JSON.stringify(pre_query) == JSON.stringify(query))  return;
                 if(pre_query['date'] != query['date'])
@@ -1467,7 +1626,7 @@ $("head").styleReady(function(){
                         $('.noerror_msg').hide();
                     listData = jsonData;
                     if(reload == undefined)
-                        initPageChanger();
+                       initPageChanger();
                     sort_list();
                     pageChange(page_num);
                 }
