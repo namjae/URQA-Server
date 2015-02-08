@@ -48,6 +48,7 @@ var chart = c3.generate({
         ]
     },
     axis: {
+        rotated: true,
         x: {
             type: 'categorized'
         }
@@ -68,7 +69,7 @@ var chart = c3.generate({
         }
     },
     axis: {
-        rotated: true,
+        rotated: false,
         x: {
         type: 'categorized'
         }

@@ -329,8 +329,11 @@ $(document).ready(function () {
 
     });
 
-    $("#timezone").select2({
-        minimumResultsForSearch: -1
-    });
+    if ($("#timezone").length > 0)
+    {
+        $("#timezone").select2({
+            minimumResultsForSearch: -1
+        });
+    }
     
 })(jQuery);

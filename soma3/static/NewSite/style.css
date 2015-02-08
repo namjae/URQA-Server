@@ -418,3 +418,5 @@ div.progress-table .content-row div.progress + div {
 	width:42px;
 	text-align:center;
 }
+div.progress-table.large-table .content-row > p {width:75%}
+div.progress-table.large-table .content-row > div {width:25%}

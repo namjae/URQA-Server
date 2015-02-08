@@ -16,7 +16,7 @@
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
 
     <!--C3 Chart-->
-    <!-- <link href="js/c3-chart/c3.css" rel="stylesheet"/> -->
+    <link href="js/c3-chart/c3.css" rel="stylesheet"/>
 
     <!--Morris Chart CSS -->
     <link rel="stylesheet" href="js/morris-chart/morris.css">
@@ -24,6 +24,7 @@
     <!-- Custom styles for this template -->
     <link href="css/style.css" rel="stylesheet">
     <link href="css/style-responsive.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]>
@@ -163,13 +164,13 @@
                     </a>
                 </li>
                 <li>
-                    <a class="active" href="errors.html">
+                    <a href="errors.html">
                         <i class="fa fa-laptop"></i>
                         <span>Errors</span>
                     </a>
                 </li>
                 <li>
-                    <a href="statistics.html">
+                    <a class="active" href="statistics.html">
                         <i class="fa fa-book"></i>
                         <span>Statistics</span>
                     </a>
@@ -203,53 +204,42 @@
         <div id="statistics-chart-area" class="row">
             <div class="col-md-4">
                 <section class="panel">
+                    <header class="panel-heading">
+                        Daily Active Users
+                        <span class="tools pull-right">
+                            <a href="javascript:;" class="fa fa-chevron-down"></a>
+                         </span>
+                    </header>
                     <div class="panel-body">
-                        <div id="graph-bar"></div>
-                    </div>
-                </section>
-            </div>
-            <div class="col-md-4">
-                <section class="panel">
-                    <div class="panel-body">
-                        <div id="graph-line"></div>
+                        <div id="dau-bar"></div>
                     </div>
                 </section>
             </div>
             <div class="col-md-4">
                 <section class="panel">
                     <header class="panel-heading">
-                        Error Details
+                        Crash Rates
                         <span class="tools pull-right">
-                            <a href="javascript:;" class="fa fa-chevron-up"></a>
+                            <a href="javascript:;" class="fa fa-chevron-down"></a>
+                         </span>
+                    </header>
+                    <div class="panel-body">
+                        <div id="crash-rate"></div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-4">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Popular APP Version
+                        <span class="tools pull-right">
+                            <a href="javascript:;" class="fa fa-chevron-down"></a>
                         </span>
                     </header>
-                    <div class="panel-body" style="display:none">
+                    <div class="panel-body">
                         <div class="row">
-                            <!-- App Version -->
-                            <div class="progress-table col-sm-12">
-                                <label>App Versions</label>
-                                <div class="title-body">
-                                    <div class="col-xs-3 text-small">Version</div>
-                                    <div class="col-xs-9 text-small">Percentage</div>
-                                </div>
-                                <div class="content-body">
-                                    <div class="content-row">
-                                        <p>2.0.6</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 100%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
-                                                    <span class="sr-only">100% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>100%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- OS Version -->
-                            <div class="progress-table col-sm-12">
-                                <label>OS Version</label>
+                            <div class="progress-table col-sm-12" style="height:326px">
                                 <div class="title-body">
                                     <div class="col-xs-3 text-small">Version</div>
                                     <div class="col-xs-9 text-small">Percentage</div>
@@ -316,6 +306,66 @@
                                     </div>
 
                                     <div class="content-row">
+                                        <p>4.0.4</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">3% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>3%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>4.0.4</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">3% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>3%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>4.0.4</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">3% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>3%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>4.0.4</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">3% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>3%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
+                                        <p>4.0.4</p>
+                                        <div>
+                                            <div class="progress progress-xs">
+                                                <div style="width: 3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                    <span class="sr-only">3% Complete</span>
+                                                </div>
+                                            </div>
+                                            <div>3%</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="content-row">
                                         <p>Others</p>
                                         <div>
                                             <div class="progress progress-xs">
@@ -324,170 +374,6 @@
                                                 </div>
                                             </div>
                                             <div>2%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Device -->
-                            <div class="progress-table col-sm-12">
-                                <label>Device</label>
-                                <div class="title-body">
-                                    <div class="col-xs-3 text-small">Name</div>
-                                    <div class="col-xs-9 text-small">Percentage</div>
-                                </div>
-                                <div class="content-body">
-                                    <div class="content-row">
-                                        <p>SHV-E250S</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 6%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
-                                                    <span class="sr-only">6% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>6%</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="content-row">
-                                        <p>SM-N900S</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-warning">
-                                                    <span class="sr-only">4% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>4%</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="content-row">
-                                        <p>SHV-E250K</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
-                                                    <span class="sr-only">4% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>4%</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="content-row">
-                                        <p>SM-N900K</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
-                                                    <span class="sr-only">4% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>4%</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="content-row">
-                                        <p>SM-N900L</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
-                                                    <span class="sr-only">4% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>4%</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="content-row">
-                                        <p>Others</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 77%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
-                                                    <span class="sr-only">77% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>77%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Country -->
-                            <div class="progress-table col-sm-12">
-                                <label>Country</label>
-                                <div class="title-body">
-                                    <div class="col-xs-3 text-small">Country</div>
-                                    <div class="col-xs-9 text-small">Percentage</div>
-                                </div>
-                                <div class="content-body">
-                                    <div class="content-row">
-                                        <p>KR</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 98%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
-                                                    <span class="sr-only">98% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>98%</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="content-row">
-                                        <p>US</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 0.68%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-warning">
-                                                    <span class="sr-only">0.68% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>0.68%</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="content-row">
-                                        <p>JP</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 0.27%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
-                                                    <span class="sr-only">0.27% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>0.27%</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="content-row">
-                                        <p>GP</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 0.18%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
-                                                    <span class="sr-only">0.18% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>0.18%</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="content-row">
-                                        <p>TW</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 0.12%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
-                                                    <span class="sr-only">0.12% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>0.12%</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="content-row">
-                                        <p>Others</p>
-                                        <div>
-                                            <div class="progress progress-xs">
-                                                <div style="width: 0.72%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
-                                                    <span class="sr-only">0.72% Complete</span>
-                                                </div>
-                                            </div>
-                                            <div>0.72%</div>
                                         </div>
                                     </div>
                                 </div>
@@ -505,21 +391,18 @@
                         WORLD MAP
                         <span class="tools pull-right">
                             <a href="javascript:;" class="fa fa-chevron-down"></a>
-                            <a href="javascript:;" class="fa fa-cog"></a>
-                            <a href="javascript:;" class="fa fa-times"></a>
                          </span>
                     </header>
                     <div class="panel-body">
-                        <div id="world-vmap" style="width:100%; height: 400px;"></div>
-
+                        <div id="world-vmap" style="width:100%; height: 400px"></div>
                     </div>
                 </section>
             </div>
             <div class="col-md-12" style="margin-top: -20px;">
                 <section class="panel">
                     <div class="panel-body">
-                        <div class="chartJS">
-                            <canvas id="bar-chart-js" height="250" width="800" ></canvas>
+                        <div class="chartJS" style="width:100%; height: 350px">
+                            <canvas id="world_vmap_info"></canvas>
                         </div>
                     </div>
                 </section>
@@ -527,51 +410,327 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-12">
                 <section class="panel">
                     <header class="panel-heading">
-                        Donut Chart
+                        Class Error Rate
                     <span class="tools pull-right">
                         <a href="javascript:;" class="fa fa-chevron-down"></a>
-                        <a href="javascript:;" class="fa fa-cog"></a>
-                        <a href="javascript:;" class="fa fa-times"></a>
                      </span>
                     </header>
                     <div class="panel-body">
-                        <div id="graph-donut"></div>
-                    </div>
-                </section>
-            </div>
-            <div class="col-sm-6" style="display:none;">
-                <section class="panel">
-                    <header class="panel-heading">
-                        Area Chart
-                    <span class="tools pull-right">
-                        <a href="javascript:;" class="fa fa-chevron-down"></a>
-                        <a href="javascript:;" class="fa fa-cog"></a>
-                        <a href="javascript:;" class="fa fa-times"></a>
-                     </span>
-                    </header>
-                    <div class="panel-body">
-                        <div id="graph-area-line"></div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div id="graph-donut"></div>
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="progress-table large-table col-sm-12">
+                                    <div class="title-body">
+                                        <div class="col-xs-9 text-small">Class</div>
+                                        <div class="col-xs-3 text-small">Percentage</div>
+                                    </div>
+                                    <div class="content-body">
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">com.android.volley.toolbox.d</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 17.6%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
+                                                        <span class="sr-only">17.6% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>17.6%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">at droom.sleepIfUCan.activity.af (:211)</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 13.7%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-warning">
+                                                        <span class="sr-only">13.7% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>13.7%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">droom.sleepIfUCan.activity.af</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 11%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">11% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>11%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">android.database.sqlite.SQLiteStatement</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 8.7%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">8.7% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>8.7%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">android.content.res.Resources</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 8.5%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">8.5% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>8.5%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">android.os.BinderProxy</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 5.3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">5.3% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>5.3%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">at android.widget.NumberPicker$ChangeCurrentByOneFromLongPressCommand</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 4.5%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">4.5% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>4.5%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">at android.content.res.Resources</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 4.3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">4.3% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>4.3%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">android.database.sqlite.SQLiteStatement</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">4% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>4%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">android.database.sqlite.SQLiteConnection</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 2%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">2% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>2%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">droom.sleepIfUCan.activity.SelectPictureActivity</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 1.6%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">1.6% Complate</span>
+                                                    </div>
+                                                </div>
+                                                <div>1.6%</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="content-row">
+                                            <p class="text-ellipsis">Others</p>
+                                            <div>
+                                                <div class="progress progress-xs">
+                                                    <div style="width: 18.8%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                        <span class="sr-only">18.8% Complete</span>
+                                                    </div>
+                                                </div>
+                                                <div>18.8%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
         </div>
+
         <div class="row">
             <div class="col-sm-12">
                 <section class="panel">
                     <header class="panel-heading">
-                        Roated Chart
-                    <span class="tools pull-right">
-                        <a href="javascript:;" class="fa fa-chevron-down"></a>
-                        <a href="javascript:;" class="fa fa-cog"></a>
-                        <a href="javascript:;" class="fa fa-times"></a>
-                    </span>
+                        Version Error Rate
+                        <span class="tools pull-right">
+                            <a href="javascript:;" class="fa fa-chevron-down"></a>
+                        </span>
                     </header>
                     <div class="panel-body">
                         <div class="chart">
-                            <div id="roated-chart"></div>
+                            <div id="version-chart"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Device Error Rate
+                        <span class="tools pull-right">
+                            <a href="javascript:;" class="fa fa-chevron-down"></a>
+                        </span>
+                    </header>
+                    <div class="panel-body">
+                        <div class="chartJS" style="width:100%; height: 350px">
+                            <canvas id="device-errorrate"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        Error by Activity
+                        <span class="tools pull-right">
+                            <a href="javascript:;" class="fa fa-chevron-down"></a>
+                        </span>
+                    </header>
+                    <div class="panel-body">
+                        <div class="progress-table large-table col-sm-12">
+                            <div class="title-body">
+                                <div class="col-xs-9 text-small">Version</div>
+                                <div class="col-xs-3 text-small">Percentage</div>
+                            </div>
+                            <div class="content-body">
+                                <div class="content-row">
+                                    <p class="text-ellipsis">unknown</p>
+                                    <div>
+                                        <div class="progress progress-xs">
+                                            <div style="width: 51.2%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-danger">
+                                                <span class="sr-only">51.2% Complete</span>
+                                            </div>
+                                        </div>
+                                        <div>21</div>
+                                    </div>
+                                </div>
+
+                                <div class="content-row">
+                                    <p class="text-ellipsis">droom.sleepIfUCan.activity.PhotoAlarmDismissActivity</p>
+                                    <div>
+                                        <div class="progress progress-xs">
+                                            <div style="width: 12.1%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-warning">
+                                                <span class="sr-only">12.1% Complete</span>
+                                            </div>
+                                        </div>
+                                        <div>5</div>
+                                    </div>
+                                </div>
+
+                                <div class="content-row">
+                                    <p class="text-ellipsis">android.app.Activity</p>
+                                    <div>
+                                        <div class="progress progress-xs">
+                                            <div style="width: 9.7%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                <span class="sr-only">9.7% Complete</span>
+                                            </div>
+                                        </div>
+                                        <div>4</div>
+                                    </div>
+                                </div>
+
+                                <div class="content-row">
+                                    <p class="text-ellipsis">droom.sleepIfUCan.activity.AlarmAlertFullScreenActivity</p>
+                                    <div>
+                                        <div class="progress progress-xs">
+                                            <div style="width: 7.3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                <span class="sr-only">7.3% Complete</span>
+                                            </div>
+                                        </div>
+                                        <div>3</div>
+                                    </div>
+                                </div>
+
+                                <div class="content-row">
+                                    <p class="text-ellipsis">droom.sleepIfUCan.activity.SetAlarmActivity</p>
+                                    <div>
+                                        <div class="progress progress-xs">
+                                            <div style="width: 7.3%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                <span class="sr-only">7.3% Complete</span>
+                                            </div>
+                                        </div>
+                                        <div>3</div>
+                                    </div>
+                                </div>
+
+                                <div class="content-row">
+                                    <p class="text-ellipsis">droom.sleepIfUCan.activity.MainActivity</p>
+                                    <div>
+                                        <div class="progress progress-xs">
+                                            <div style="width: 4.8%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                <span class="sr-only">4.8% Complete</span>
+                                            </div>
+                                        </div>
+                                        <div>2</div>
+                                    </div>
+                                </div>
+
+                                <div class="content-row">
+                                    <p class="text-ellipsis">droom.sleepIfUCan.activity.MenuActivity</p>
+                                    <div>
+                                        <div class="progress progress-xs">
+                                            <div style="width: 4.8%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                <span class="sr-only">4.8% Complete</span>
+                                            </div>
+                                        </div>
+                                        <div>2</div>
+                                    </div>
+                                </div>
+
+                                <div class="content-row">
+                                    <p class="text-ellipsis">droom.sleepIfUCan.activity.SelectPictureActivity</p>
+                                    <div>
+                                        <div class="progress progress-xs">
+                                            <div style="width: 2.4%" aria-valuemax="100" aria-valuemin="0" aria-valuenow="20" role="progressbar" class="progress-bar progress-bar-info">
+                                                <span class="sr-only">2.4% Complete</span>
+                                            </div>
+                                        </div>
+                                        <div>1</div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -847,52 +1006,21 @@
 <script src="js/jquery.nicescroll.js"></script>
 <script src="js/jvector-map/jqvmap/jquery.vmap.js"></script>
 <script src="js/jvector-map/jqvmap/maps/jquery.vmap.world.js"></script>
-<script src="js/jvector-map/jqvmap/data/jquery.vmap.sampledata.js"></script>
-<script src="js/jvector-map/jqvmap/maps/continents/jquery.vmap.europe.js"></script>
-<script src="js/jvector-map/jqvmap/maps/continents/jquery.vmap.asia.js"></script>
-<script src="js/jvector-map/jqvmap/maps/continents/jquery.vmap.australia.js"></script>
-<!--Easy Pie Chart-->
-<script src="js/easypiechart/jquery.easypiechart.js"></script>
-<!--Sparkline Chart-->
-<script src="js/sparkline/jquery.sparkline.js"></script>
-<!--jQuery Flot Chart-->
-<script src="js/flot-chart/jquery.flot.js"></script>
-<script src="js/flot-chart/jquery.flot.tooltip.min.js"></script>
-<script src="js/flot-chart/jquery.flot.resize.js"></script>
-<script src="js/flot-chart/jquery.flot.pie.resize.js"></script>
 
 <!--Morris Chart-->
 <script src="js/morris-chart/morris.js"></script>
 <script src="js/morris-chart/raphael-min.js"></script>
-<script src="js/morris.init.js"></script>
 
 <!--Chart JS-->
 <script src="js/chart-js/Chart.js"></script>
-<script src="js/chartjs.init.js"></script>
 
 <!--C3 Chart-->
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="js/c3-chart/c3.js"></script>
-<script src="js/c3-chart.init.js"></script>
 
 <!--common script init for all pages-->
+<script src="js/statistics.js"></script>
 <script src="js/scripts.js"></script>
-
-<script>
-    jQuery('#world-vmap').vectorMap({
-        map: 'world_en',
-        backgroundColor: null,
-        color: '#ffffff',
-        hoverOpacity: 0.7,
-        selectedColor: '#666666',
-        enableZoom: true,
-        borderWidth:1,
-        showTooltip: true,
-        values: sample_data,
-        scaleColors: ['#C8EEFF', '#006491'],
-        normalizeFunction: 'polynomial'
-    });
-</script>
 
 </body>
 </html>

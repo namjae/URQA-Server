@@ -39,8 +39,8 @@ var chart = c3.generate({
         types: {
             data1: 'bar',
             data2: 'bar',
-            data3: 'spline',
-            data4: 'line',
+            data3: 'bar',
+            data4: 'bar',
             data5: 'bar'
         },
         groups: [
@@ -48,6 +48,7 @@ var chart = c3.generate({
         ]
     },
     axis: {
+        rotated: true,
         x: {
             type: 'categorized'
         }
