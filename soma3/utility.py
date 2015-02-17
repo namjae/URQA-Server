@@ -118,3 +118,9 @@ def get_dict_value_matchin_number(dict,value):
             return count
         count += 1
     return count
+
+def get_or_none(model, *args, **kwargs):
+    try:
+        return model.objects.get(*args, **kwargs)
+    except model.DoesNotExist:
+        return None
