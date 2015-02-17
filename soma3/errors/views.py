@@ -26,6 +26,7 @@ from urqa.models import Tags
 from urqa.models import Comments
 from urqa.models import Sofiles
 from urqa.models import ErrorStatistics
+from urqa.models import InstanceLog
 
 from common import validUserPjt
 from common import validUserPjtError
@@ -450,12 +451,10 @@ def log(request, apikey, iderror, idinstance):
     if not valid:
         print message
         return HttpResponseRedirect('/urqa')
-
+    '''
     instanceElement = Instances.objects.get(idinstance = int(idinstance))
 
     logpath = instanceElement.log_path
-
-
     logstringlist = []
     #File Read operation
     try:
@@ -464,8 +463,15 @@ def log(request, apikey, iderror, idinstance):
             logstringlist.append(s)
     except IOError:
         print 'file read fail'
-
-    print '!!!!!!!log'
+    '''
+    try :
+        instanceLog=InstanceLog.objects.get(idinstance= int(idinstance));
+        logstring = instanceLog.log;
+    except ObjectDoesNotExist:
+        logstring = ''
+        print '!!!!!!!log does not exist'
+    print logstring
+    logstringlist=logstring.split("\n")
     return HttpResponse(json.dumps(logstringlist),'appliacation/json')
 
 #instanceEventpath
