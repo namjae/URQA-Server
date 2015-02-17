@@ -405,3 +405,13 @@ class LoginErrorCountModel(models.Model):
 class LoginApprunCount(models.Model):
     pid = models.IntegerField(primary_key=True)
     count = models.IntegerField(blank=True, null=True)
+
+class InstanceLog(models.Model):
+    idinstance = models.IntegerField(primary_key=True)
+    log = models.TextField(blank=True, null=True)
+    savetime = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = False
+        db_table = 'instancelog'
+
+
