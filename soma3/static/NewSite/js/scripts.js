@@ -57,21 +57,21 @@ $(document).ready(function () {
                 classExpand: 'dcjq-current-parent'
             });
         }
-        /*==Slim Scroll ==*/
-        if ($.fn.slimScroll) {
-            $('.event-list').slimscroll({
-                height: '305px',
-                wheelStep: 20
-            });
-            $('.conversation-list').slimscroll({
-                height: '360px',
-                wheelStep: 35
-            });
-            $('.to-do-list').slimscroll({
-                height: '300px',
-                wheelStep: 35
-            });
-        }
+        // /*==Slim Scroll ==*/
+        // if ($.fn.slimScroll) {
+        //     $('.event-list').slimscroll({
+        //         height: '305px',
+        //         wheelStep: 20
+        //     });
+        //     $('.conversation-list').slimscroll({
+        //         height: '360px',
+        //         wheelStep: 35
+        //     });
+        //     $('.to-do-list').slimscroll({
+        //         height: '300px',
+        //         wheelStep: 35
+        //     });
+        // }
         /*==Nice Scroll ==*/
         if ($.fn.niceScroll) {
 

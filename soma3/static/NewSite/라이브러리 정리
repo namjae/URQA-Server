@@ -1,0 +1,106 @@
+:: CSS 라이브러리 정리 ::
+
+bootstrap
+font-awesome
+SIL OFL 1.1
+MIT License
+CC BY 3.0 License
+
+
+
+:: JS 라이브러리 정리 ::
+
+jQuery
+File: js/jquery.js
+
+jquery.zclip
+File: js/jquery.zclip.min.js
+Version: 1.1.1
+사용 목적: 클립보드에 API키를 복사
+MIT License
+
+jquery.dataTables
+Folder: js/advanced-datatable
+Version: 1.10.3
+사용 목적: 동적으로 테이블을 로드하기 위해서 사용
+MIT License
+
+flotcharts.org
+Folder: js/flot-chart
+Version: 1.1
+사용 목적: 차트 표시를 위해서 사용
+Apache 2.0 License
+
+jquery.icheck
+Folder: js/iCheck
+Version: 0.9.1
+사용 목적: 커스텀 체크박스
+MIT License
+
+ion.rangeSlider
+Folder: js/ion.rangeSlider-1.8.2
+Version: 1.8.2
+사용 목적: 커스텀 스크롤뷰
+MIT License
+
+jquery.tagsinput
+Folder: js/jquery-tags-input
+Version: 1.3.3
+사용 목적: 태그 목록
+MIT License
+
+morris.js
+Folder: js/morris-chart
+Version: ?
+사용 목적: 차트 표시를 위해서 사용
+BSD License
+
+c3.js
+Folder: js/c3-chart
+Version: ?
+사용 목적: 차트 표시를 위해서 사용
+MIT License
+
+d3.js
+CDN Access
+Version: v3
+사용 목적: 차트 표시를 위해서 사용
+BSD License
+
+jqvmap
+Folder: js/jvector-map/jqvmap
+Version: 1.0
+사용 목적: 벡터맵 표시를 위해서 사용
+MIT / GPL License
+
+chart.js
+Folder: js/chart-js
+Version: ?
+사용 목적: 차트 표시를 위해서 사용
+MIT License
+
+select2
+Folder: js/select2
+Version: 3.4.5
+사용 목적: 커스텀 셀렉트뷰, 국가 선택
+MIT License, CC BY 3.0
+
+Bootstrap Switch
+File: js/bootstrap-switch.js
+Version: 2.0.0
+사용 목적: 스위치 버튼 표현
+Apache License, Version 2.0
+
+jquery.fileupload
+File: js/mini-upload-form/assets/js/jquery.fileupload.js
+Version: 5.26
+사용 목적: 파일 업로드
+MIT License
+
+jquery.iframe-transport
+File: js/mini-upload-form/assets/js/jquery.iframe-transport
+Version: 1.6.1
+사용 목적: 파일 업로드
+MIT License
+
+
