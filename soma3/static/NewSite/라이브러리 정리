@@ -1,10 +1,11 @@
 :: CSS 라이브러리 정리 ::
 
 bootstrap
+
 font-awesome
-SIL OFL 1.1
-MIT License
-CC BY 3.0 License
+ - SIL OFL 1.1
+ - MIT License
+ - CC BY 3.0 License
 
 
 
@@ -12,6 +13,7 @@ CC BY 3.0 License
 
 jQuery
 File: js/jquery.js
+Version: 1.10.2
 
 jquery.zclip
 File: js/jquery.zclip.min.js
@@ -30,6 +32,18 @@ Folder: js/flot-chart
 Version: 1.1
 사용 목적: 차트 표시를 위해서 사용
 Apache 2.0 License
+
+jquery.dcjqaccordion
+File: js/jquery.dcjqaccordion.2.7.js
+Version: 2.7
+사용 목적: 세로 아코디언 메뉴 표현
+MIT / GPL license
+
+jquery.scrollTo
+File: js/jquery.scrollTo.min.js
+Version: 1.4.6
+사용 목적: 스크롤
+MIT License
 
 jquery.icheck
 Folder: js/iCheck
@@ -51,13 +65,13 @@ MIT License
 
 morris.js
 Folder: js/morris-chart
-Version: ?
+Version: 0.5.1
 사용 목적: 차트 표시를 위해서 사용
 BSD License
 
 c3.js
 Folder: js/c3-chart
-Version: ?
+Version: 0.4.10-RC2
 사용 목적: 차트 표시를 위해서 사용
 MIT License
 
@@ -75,7 +89,7 @@ MIT / GPL License
 
 chart.js
 Folder: js/chart-js
-Version: ?
+Version: 1.0.1
 사용 목적: 차트 표시를 위해서 사용
 MIT License
 
