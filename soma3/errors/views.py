@@ -970,14 +970,14 @@ def appv_ratio(request,apikey):
             k.append(' ')
         key = k[0]+'.'+k[1]
         data['osv'][key] = i['count']
-        #if not key in data['osv']:
-            #print key
-        data['osv'][key] = 1
-        osv_list[key] = []
-        #else:
-        #    data['osv'][key] += 1
-        #if not i.osversion in osv_list[key]:
-        osv_list[key].append(i['osversion'])
+        if not key in data['osv']:
+            print key
+            data['osv'][key] = 1
+            osv_list[key] = []
+        else:
+            data['osv'][key] += 1
+        #if not i['osversion'] in osv_list[key]:
+            #osv_list[key].append(i['osversion'])
     #print "data['osv']",data['osv']
     print 3
     max_count = 5
