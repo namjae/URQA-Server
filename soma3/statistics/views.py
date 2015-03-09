@@ -396,7 +396,7 @@ def chartdata_erbd(request,apikey):
     
     # 하루치 통계
     if retention == 1:
-        sql = 'select device, count(*) as sum from instances where pid = %(pidinput)s and datetime BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() group by device'
+        sql = 'select device, count(*) as sum from instances where pid = %(pidinput)s and datetime BETWEEN DATE_SUB(NOW(), INTERVAL %(retentioninput)s DAY) AND NOW() group by device order by sum desc limit 12'
 
     else:
     #하루 이상인 경우
