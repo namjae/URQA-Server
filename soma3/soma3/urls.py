@@ -117,3 +117,6 @@ urlpatterns = patterns('',
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()
+
+urlpatterns += patterns('',
+                        (r'^api', include('api.urls')))
