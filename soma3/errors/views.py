@@ -666,18 +666,18 @@ def author_check_error_page(username,apikey,iderror):
 
 
 """
-		SELECT DISTINCT `appstatistics`.`appversion` FROM `appstatistics` WHERE 
+		SELECT DISTINCT `appstatistics`.`appversion` FROM `appstatistics` WHERE
 				`appstatistics`.`pid` = 186
 						order by `appstatistics`.`appversion` DESC
 	appElements = Appstatistics.objects.distinct().filter(pk=Projects.objects.get(apikey = apikey))
-	
+
 	valid_app = appElements.order_by('-appversion')
 	valid_os = appElements.order_by('-osversion')
-	
+
 
 	valid_app , valid_os 의 for 문을 통한 자바스크립트 로직을 Front End 에서
 	하는게 어떨지?
-"""	
+"""
 def filter_view(request,apikey):
     #Filter page를 Randering하는 루틴
     username = request.user
@@ -773,11 +773,11 @@ def filter_view(request,apikey):
         'appv_list' : appv_list,
         'max_error' : errorElements.count()
     }
-    
+
     userdict = getUserProfileDict(user)
     apikeydict = getApikeyDict(apikey)
     settingdict = getSettingDict(projectelement,user)
-    
+
     ctxdict  = dict(userdict.items() + apikeydict.items() + settingdict.items() + filterdict.items() )
     ctx = Context(ctxdict);
 
@@ -918,7 +918,7 @@ def chstatus(request,apikey,iderror):
     instances =
 	Instances.objects.prefetch_related('iderror').filter(iderror__in=errorElements,,iderror__lastdate__range=(past,today),datetime__range=(past,today)).order_by('-appversion')[page * num : (page + 1) * num]
 
-test query 
+test query
 
 	Instances.objects.prefetch_related('iderror').annotate(sum_app=Count('appversion').group_by('appversion')
 """
@@ -1000,5 +1000,4 @@ def appv_ratio(request,apikey):
         osv_data.pop(max_count)
 
     print 6
-    return HttpResponse(json.dumps({'total':instances.count(),'appv':appv_data,'osv':osv_data,'osv_list':osv_list,'appv_others':appv_others,'osv_others':osv_others}), 'application/json');
-
+    return HttpResponse(json.dumps({'total':instances.count(),'appv':appv_data,'osv':osv_data,'osv_list':osv_list,'appv_others':appv_others,'osv_others':osv_others}), 'application/json')
