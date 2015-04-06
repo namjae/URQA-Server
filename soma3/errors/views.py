@@ -475,31 +475,31 @@ def log(request, apikey, iderror, idinstance):
     return HttpResponse(json.dumps(logstringlist),'appliacation/json')
 
 #instanceEventpath
-#def instanceeventpath(request, apikey, iderror, idinstance):
+def instanceeventpath(request, apikey, iderror, idinstance):
     #Instance의 개별 EventPath를 얻어온다.
     #권한 있나 없나 체크
- #   valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
- #   if not valid:
- #       print message
- #       return HttpResponseRedirect('/urqa')
+    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
+    if not valid:
+        print message
+        return HttpResponseRedirect('/urqa')
 
- #   instanceElement = Instances.objects.get(idinstance = idinstance)
+    instanceElement = Instances.objects.get(idinstance = idinstance)
 
- #   EventPathElements = Eventpaths.objects.filter(idinstance = instanceElement).order_by('depth')
+    EventPathElements = Eventpaths.objects.filter(idinstance = instanceElement).order_by('depth')
 
     #Event Path에는 시간, 클래스이름, 라인수, 사용자 Tag데이터가 들어간다.
- #   eventpathlist = []
- #   for eventpath in EventPathElements:
- #       adtimezone = toTimezone(eventpath.datetime,projectelement.timezone)
- #       eventpathttuple = {'date' : '' , 'time' : '', 'class' : '', 'methodline' : ''}
- #       eventpathttuple['date'] =adtimezone.__format__('%Y.%m.%d')
- #       eventpathttuple['time'] =adtimezone.__format__('%H:%M:%S')
- #       eventpathttuple['class'] = eventpath.classname
- #       eventpathttuple['methodline'] = str(eventpath.methodname) + ':' + str(eventpath.linenum)
- #       eventpathlist.append(eventpathttuple)
+    eventpathlist = []
+    for eventpath in EventPathElements:
+        adtimezone = toTimezone(eventpath.datetime,projectelement.timezone)
+        eventpathttuple = {'date' : '' , 'time' : '', 'class' : '', 'methodline' : ''}
+        eventpathttuple['date'] =adtimezone.__format__('%Y.%m.%d')
+        eventpathttuple['time'] =adtimezone.__format__('%H:%M:%S')
+        eventpathttuple['class'] = eventpath.classname
+        eventpathttuple['methodline'] = str(eventpath.methodname) + ':' + str(eventpath.linenum)
+        eventpathlist.append(eventpathttuple)
         #print 'evd',eventpath.depth
 
- #   return HttpResponse(json.dumps(eventpathlist),'application/json')
+    return HttpResponse(json.dumps(eventpathlist),'application/json')
 
 
 def calc_eventpath(errorElement):
@@ -641,13 +641,13 @@ def calc_eventpath(errorElement):
     return result
 
 #Deprecated eventpath
-#def eventpath(request,apikey,iderror):
-#    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
-#    if not valid:
-#        print message
-#        return HttpResponseRedirect('/urqa')
-#    result = calc_eventpath(ErrorsElement)
-#    return HttpResponse(json.dumps(result),'application/json')
+def eventpath(request,apikey,iderror):
+    valid , message , user ,ErrorsElement, projectelement = author_check_error_page(request.user, apikey, iderror)
+    if not valid:
+        print message
+        return HttpResponseRedirect('/urqa')
+    result = calc_eventpath(ErrorsElement)
+    return HttpResponse(json.dumps(result),'application/json')
 
 
 def author_check_error_page(username,apikey,iderror):
