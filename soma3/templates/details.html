@@ -438,7 +438,7 @@
                     </table>
 				</div>
 			</div>
-            <!--
+            
 			<div id="popup-eventpath">
 				<div class="body mini">
 					<span>Instance event path</span>
@@ -452,7 +452,7 @@
 					</table>
 				</div>
 			</div>
-            -->
+            
 			<div id="popup-logdata">
 				<div class="body mini">
 					<span>Log Data</span>
@@ -735,7 +735,7 @@
 				</div>
 			</div>
             <div class="white-area"></div>
-            <!--
+            
 			<div class="title" data="event-path"></div>
 			<div class="content">
 				<table style="margin-top: -10px;">
@@ -749,7 +749,7 @@
 					</tbody>
 				</table>
 			</div>
-            -->
+           
 			<div class="title" data="call-stack"></div>
 			<div class="table-button">
                 {% if isNative %}
@@ -799,7 +799,7 @@
 						<td class="center" style="width: 11%">APP Version</td>
 						<td class="center">Device</td>
 						<td class="center" style="width: 11%">Country</td>
-						<!--<td class="center" style="width: 11%">Event Path</td>-->
+						<td class="center" style="width: 11%">Event Path</td>
 						<td class="center" style="width: 11%">Logs</td>
 					</tr></thead>
 					<tbody>
@@ -810,7 +810,7 @@
 							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">{{ instance.appversion }}</td>
 							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">{{ instance.device }}</td>
 							<td class="center" onclick="showPopupInformation(400, 400,{{ instance.idinstance }});">{{ instance.country }}</td>
-							<!--<td class="center" onclick="showPopupEventpath(400, 400, {{ instance.idinstance }});">View</td>-->
+							<td class="center" onclick="showPopupEventpath(400, 400, {{ instance.idinstance }});">View</td>
 							<td class="center" onclick="showPopupLogdata(800, 400,{{ instance.idinstance }});">View</td>
 						</tr>
 						{% endfor %}
