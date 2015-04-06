@@ -44,8 +44,8 @@ def auth_return(request):
     print request.REQUEST
     if 'error' in request.REQUEST:
         return HttpResponseRedirect('/')
-    if not xsrfutil.validate_token(settings.SECRET_KEY, request.REQUEST['state'], request.user):
-        return  HttpResponseBadRequest()
+    #if not xsrfutil.validate_token(settings.SECRET_KEY, request.REQUEST['state'], request.user):
+    #    return  HttpResponseBadRequest()
 
     credential = FLOW.step2_exchange(request.REQUEST)
 
