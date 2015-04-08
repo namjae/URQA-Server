@@ -112,14 +112,14 @@ def chartdata_sbav(request,apikey):
     for idx, pl in enumerate(totalSession):
         if len(ratioappversion) == 0:
             ratioappversion.append(str(pl.appversion))
-        sum = sum + pl.total
         if LooseVersion(recentVersion) < LooseVersion(pl.appversion):
             if not pl.appversion == "unknown":
                 recentVersion = pl.appversion
-        if sum < ratio:
+        if sum <= ratio:
             ratioappversion.append(str(pl.appversion))
         else:
             othersNumber = othersNumber + pl.total
+        sum = sum + pl.total
 
     #check recent version is exist in array
     if not recentVersion in ratioappversion:
@@ -267,7 +267,7 @@ def chartdata_ebav(request,apikey):
                 ratioappversion.append(str(pl.appversion))
         else:
             othersNumber = othersNumber + pl.total
-            
+
         sum = sum + pl.total
     
     #check recent version is exist in array
@@ -344,6 +344,8 @@ def chartdata_ebav(request,apikey):
                 'data': appcount_data[appversion]
             }
         )
+
+
     chart_ebav = {'categories':categories,'data':appver_data}
     result['chart_sbav'] = chart_ebav
 
