@@ -824,7 +824,7 @@ function showPopupInformation(w, h, idinstance)
 
 
 }
-/*
+
 function showPopupEventpath(w, h, idinstance)
 {
 	var oriW = $("#popup-eventpath > .body").width();
@@ -856,7 +856,7 @@ function showPopupEventpath(w, h, idinstance)
     geteventpath(idinstance)
 
 }
-*/
+
 function showPopupLogdata(w, h, idinstance)
 {
 	var oriW = $("#popup-logdata > .body").width();
